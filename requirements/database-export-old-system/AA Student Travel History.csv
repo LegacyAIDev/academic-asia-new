@@ -1,0 +1,1041 @@
+"aa_id"|"case"|"pickupby"|"flightno"|"airline"|"arrivalairport"|"arrivaldate"|"arrivaltime"|"predepart"|"joininst"|"lastupdate"|"staffid"|"remarks"|"journeyno"|"route"
+"S007974"|"Y"|"WHG"|"SQ328"|"Singapore Airlines"|"Manchester International Airport"|"20130905"|"0750"|""|""|"20130615153435"|"AA00019"|"Rainky can't return to school until 7/9 so will require homestay for the first 2 nights
+Airport transfer and homestay request sent to WHG (15/6/2013)"|0|0
+"S011357"|"Y"|"Etherton Education"|"CZ303"|""|"London Heathrow - T4"|"20130708"|"19:05"|""|""|"20130703103928"|"AA00002"|""|0|0
+"S011357"|"Y"|"Etherton Education"|"CZ303"|""|"London Heathrow - T4"|"20130708"|"19:05"|""|""|"20130703103944"|"AA00002"|""|0|0
+"S011357"|"Y"|"Etherton Education"|"CZ303"|""|"London Heathrow - T4"|"20130708"|"19:05"|""|""|"20130703104218"|"AA00002"|"cfm"|0|0
+"S009294"|"Y"|"Etherton Education"|"CX255"|""|"London Heathrow"|"20130805"|"19:05"|""|""|"20130703112911"|"AA00036"|""|0|0
+"S009294"|"N"|""|"CX255"|""|"London Heathrow"|"20130805"|"19:05"|""|""|"20130703112919"|"AA00036"|""|0|0
+"S009294"|"N"|""|"CX255"|""|"London Heathrow"|"20130805"|"19:05"|""|""|"20130703112924"|"AA00036"|""|0|0
+"S009294"|"Y"|"Etherton Education"|"CX255"|""|"London Heathrow"|"20130805"|"19:05"|""|""|"20130703113020"|"AA00036"|""|0|0
+"S009294"|"Y"|"Etherton Education"|"CX255"|""|"London Heathrow"|"20130805"|"19:05"|""|""|"20130703113022"|"AA00036"|""|0|0
+"S009294"|"N"|""|"CX255"|""|"London Heathrow"|"20130805"|"06:20"|""|""|"20130703113900"|"AA00036"|""|0|0
+"S009294"|"N"|""|"CX255"|""|"London Heathrow"|"20130805"|"06:20"|""|""|"20130703113902"|"AA00036"|""|0|0
+"S009294"|"Y"|"Francessa Palmer"|"CX255"|""|"London Heathrow"|"20130805"|"06:20"|""|""|"20130703114619"|"AA00036"|"Francessa Palmer: 07894806973
+Arriveal Terminal : 3"|0|0
+"S009294"|"Y"|"Francessa Palmer"|"CX255"|""|"London Heathrow"|"20130805"|"06:20"|""|""|"20130703114620"|"AA00036"|"Francessa Palmer: 07894806973
+Arriveal Terminal : 3"|0|0
+"S009294"|"Y"|"Francessa Palmer"|"CX255"|""|"London Heathrow"|"20130805"|"06:20"|""|""|"20130703114641"|"AA00036"|"Francessa Palmer: 07894806973
+Arriveal Terminal : 3"|0|0
+"S009294"|"Y"|"Francessa Palmer (Etherton Education)"|"CX255"|""|"London Heathrow - T3"|"20130805"|"06:20"|""|""|"20130703114859"|"AA00036"|"Francessa Palmer: 07894806973"|0|0
+"S009294"|"Y"|"Francessa Palmer (Etherton Education)"|"CX255"|""|"London Heathrow - T3"|"20130805"|"06:20"|""|""|"20130703114901"|"AA00002"|"Francessa Palmer: 07894806973"|0|0
+"S011357"|"Y"|"Etherton Education"|"CZ303"|""|"London Heathrow - T4"|"20130708"|"19:05"|""|""|"20130703104221"|"AA00002"|"cfm"|0|0
+"S011357"|"Y"|"Etherton Education (Francessa Palmer)"|"CZ303"|""|"London Heathrow - T4"|"20130708"|"19:05"|""|""|"20130703114956"|"AA00002"|"Francessa Palmer: 07894806973"|0|0
+"S005817"|"Y"|"School"|""|""|""|"20130702"|""|""|""|"20130702104805"|"AA00019"|"p wants sch to arrange pick up for Tommy, Mrs Chan and Tommy's sister"|0|0
+"S005817"|"Y"|"School"|""|""|""|"20130702"|""|""|""|"20130703122113"|"AA00019"|"p wants sch to arrange pick up for Tommy, Mrs Chan and Tommy's sister.
+3 Jul 13: request sent to sch
+
+1st Journey
+Date: 4th Sep 2013
+Time: 10am
+Location: Heathrow Terminal 5 -> School
+Remark: Total number of passenger = 3 (Tommy, Mrs Chan and Tommy’s sister). The family will travel to Heathrow Terminal 5 to meet with the pick-up taxi/ coach.
+
+2nd Journey
+Date: 4th Sep 2013
+Time: 3:30pm
+Location: School -> Heathrow Terminal 5
+Remark: Total number of passenger = 2 (Mrs Chan and Tommy’s sister). Please help to arrange a taxi to bring Mrs Chan and Tommy’s sister back to the airport."|0|0
+"S011357"|"Y"|"Etherton Education (Francessa Palmer)"|"CZ303"|""|"London Heathrow - T4"|"20130708"|"19:05"|""|""|"20130703114958"|"AA00002"|"Francessa Palmer: 07894806973"|0|0
+"S011357"|"Y"|"Etherton Education (Francessa Palmer)"|"CZ303"|""|"London Heathrow - T4"|"20130708"|"19:05"|""|""|"20130703140915"|"AA00002"|"Francessa Palmer: 07894806973
+confirmed"|0|0
+"S009294"|"Y"|"Francessa Palmer (Etherton Education)"|"CX255"|""|"London Heathrow - T3"|"20130805"|"06:20"|""|""|"20130703114951"|"AA00002"|"Francessa Palmer: 07894806973"|0|0
+"S009294"|"Y"|"Francessa Palmer (Etherton Education)"|"CX255"|""|"London Heathrow - T3"|"20130805"|"06:20"|""|""|"20130703140932"|"AA00002"|"Francessa Palmer: 07894806973
+confirmed"|0|0
+"S005817"|"Y"|"School"|""|""|""|"20130702"|""|""|""|"20130703122115"|"AA00019"|"p wants sch to arrange pick up for Tommy, Mrs Chan and Tommy's sister.
+3 Jul 13: request sent to sch
+
+1st Journey
+Date: 4th Sep 2013
+Time: 10am
+Location: Heathrow Terminal 5 -> School
+Remark: Total number of passenger = 3 (Tommy, Mrs Chan and Tommy’s sister). The family will travel to Heathrow Terminal 5 to meet with the pick-up taxi/ coach.
+
+2nd Journey
+Date: 4th Sep 2013
+Time: 3:30pm
+Location: School -> Heathrow Terminal 5
+Remark: Total number of passenger = 2 (Mrs Chan and Tommy’s sister). Please help to arrange a taxi to bring Mrs Chan and Tommy’s sister back to the airport."|0|0
+"S005817"|"Y"|"School"|""|""|""|"20130702"|""|""|""|"20130703192334"|"AA00019"|"p wants sch to arrange pick up for Tommy, Mrs Chan and Tommy's sister.
+3 Jul 13: request sent to sch
+
+1st Journey
+Date: 3rd Sep 2013
+Time: 10am
+Location: Heathrow Terminal 5 -> School
+Remark: Total number of passenger = 3 (Tommy, Mrs Chan and Tommy’s sister). The family will travel to Heathrow Terminal 5 to meet with the pick-up taxi/ coach.
+
+2nd Journey
+Date: 4th Sep 2013
+Time: 3:30pm
+Location: School -> Heathrow Terminal 5
+Remark: Total number of passenger = 2 (Mrs Chan and Tommy’s sister). Please help to arrange a taxi to bring Mrs Chan and Tommy’s sister back to the airport."|0|0
+"S010859"|"Y"|"WHG"|"LH2470"|"Lufthansa"|"London Heathrow T1"|"20130829"|"0850"|""|""|"20130725141319"|"AA00019"|"airport transfer + homestay + transfer to sch on 31/8"|0|0
+"S010859"|"Y"|"WHG"|"LH2470"|"Lufthansa"|"London Heathrow T1"|"20130829"|"0850"|""|""|"20130725141339"|"AA00019"|"airport transfer + homestay + transfer to sch on 31/8, request sent to whg (25/7/2013)"|0|0
+"S007990"|"N"|""|"sf556"|"cx"|"france"|"20131129"|"0900"|""|""|"20131129212414"|""|""|1|1
+"S007990"|"Y"|"school"|"ba"|"ba"|"london"|"20131129"|"1200"|""|""|"20131129212531"|""|""|1|2
+"S012361"|"N"|""|"CX253"|""|"LONDON HEATHROW T3"|"20140106"|"2010"|""|""|"20131213151845"|"AA00002"|"Mother will send student to school on the next day, 7 Jan 2014"|2|1
+"S012361"|"N"|""|"CX253"|""|"LONDON HEATHROW T3"|"20140106"|"2010"|""|""|"20131213151920"|"AA00002"|"Mother will send student to school on the next day, 7 Jan 2014"|2|1
+"S012361"|"N"|""|"CX253"|""|"LONDON HEATHROW T3"|"20140106"|"2010"|""|""|"20131213155324"|"AA00002"|"Mother will send student to school on the next day, 7 Jan 2014"|2|1
+"S011679"|"N"|""|"CX253"|""|"London Heathrow T3"|"20140106"|"2010"|""|""|"20131213165730"|"AA00002"|""|4|1
+"S012361"|"N"|""|"CX253"|""|"LONDON HEATHROW T3"|"20140106"|"2010"|""|""|"20131213165738"|"AA00002"|"Mother will send student to school on the next day, 7 Jan 2014"|2|1
+"S012035"|"Y"|"School"|"BA26"|""|"London Heathrow T5"|"20140105"|"0450"|""|""|"20131213160330"|"AA00002"|"by Diane"|3|1
+"S009208"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140112"|"0450"|""|""|"20140102133809"|"AA00003"|""|6|1
+"S009208"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140112"|"0450"|"Central City Cars (tel 01902 42346)"|"Angus should look for the driver inside the terminal once he has his luggage and has cleared customs.  The driver will be carrying a sign with either the School’s name or Angus’ name on it."|"20140106194113"|"AA00003"|"to be billed on sch bill"|6|1
+"S009208"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140113"|"0450"|"Central City Cars (tel 01902 42346)"|"Angus should look for the driver inside the terminal once he has his luggage and has cleared customs.  The driver will be carrying a sign with either the School’s name or Angus’ name on it."|"20140113171258"|"AA00003"|"to be billed on sch bill"|6|1
+"S011944"|"N"|""|""|""|""|"20140519"|""|""|""|"20140519122244"|"AA00007"|""|7|1
+"S012619"|"N"|""|"Cathay Pacific CX207"|""|"`"|"20140709"|"0620"|""|""|"20140709110602"|"AA00003"|""|8|1
+"S012619"|"Y"|""|"British Airways BA26"|""|"London Heathrow T5"|"20140903"|"0455"|""|""|"20140709165241"|"AA00032"|""|8|1
+"S006434"|"N"|""|""|""|""|"20140709"|""|""|""|"20140709172803"|"AA00003"|"for the beginning of Sep14"|9|1
+"S030645"|"N"|""|""|""|""|"20140712"|""|""|""|"20140712122059"|"AA00032"|""|123|1
+"S030645"|"N"|""|""|""|""|"20140712"|""|""|""|"20140712122121"|"AA00032"|""|123|1
+"S010184"|"Y"|""|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140830"|"1505"|""|""|"20140712122256"|"AA00032"|""|126|1
+"S031158"|"N"|""|"British Airways BA28"|""|"London Heathrow T5"|"20140830"|"0535"|""|""|"20140712144257"|"AA00032"|""|165|1
+"S010986"|"Y"|"Quest"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140901"|"0540"|""|""|"20140712175159"|"AA00032"|""|199|1
+"S030367"|"N"|""|"Emirate"|""|""|"20140903"|""|""|""|"20140714114328"|"AA00032"|""|324|1
+"S007454"|"N"|""|""|""|""|"20140712"|""|""|""|"20140712175022"|"AA00032"|""|195|1
+"S012619"|"Y"|""|"British Airways BA26"|""|"London Heathrow T5"|"20140903"|"0455"|""|""|"20140709165257"|"AA00032"|""|8|1
+"S011940"|"Y"|""|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|""|""|"20140718160810"|"AA00032"|""|352|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|""|"20140831"|"0525"|""|""|"20140718171637"|"AA00032"|""|353|1
+"S031517"|"Y"|"WHG"|""|""|""|"20140712"|""|""|""|"20140712111918"|"AA00032"|""|75|1
+"S030451"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140831"|"0620"|""|""|"20140714110850"|"AA00032"|""|267|1
+"S010184"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140830"|"1505"|""|""|"20140712122302"|"AA00032"|""|126|1
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140714"|"1500"|""|""|"20140714104113"|"AA00032"|"Arrival date (?)"|221|1
+"S006369"|"N"|""|"British Airways"|""|""|"20131213"|""|""|""|"20131213193923"|"AA00003"|""|5|1
+"S006369"|"N"|""|"British Airways"|""|""|"20131213"|""|"itinerary received"|""|"20140726105850"|"AA00003"|""|5|1
+"S012618"|"Y"|"School"|"Cathay Pacific CX215"|""|"London Heathrow T1"|"20140829"|"2355"|""|""|"20140714104652"|"AA00032"|""|231|1
+"S011869"|"Y"|"WHG"|""|""|""|"20140712"|""|""|""|"20140712103255"|"AA00032"|""|48|1
+"S011869"|"Y"|"WHG"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140827"|"1810"|""|""|"20140726121344"|"AA00032"|""|48|1
+"S030367"|"N"|""|"Emirate EK383"|""|""|"20140903"|""|""|""|"20140714114426"|"AA00032"|""|324|1
+"S030367"|"Y"|"School"|"Emirate EK007"|""|"London Heathrow T3"|"20140903"|"0700"|""|""|"20140714114418"|"AA00032"|""|324|2
+"S012035"|"Y"|"School"|"BA26"|""|"London Heathrow T5"|"20140105"|"0450"|""|""|"20131214102035"|"AA00002"|"by Diane"|3|1
+"S031115"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|""|""|"20140712141223"|"AA00032"|""|141|1
+"S031276"|"Y"|"WHG"|""|""|""|"20140714"|""|""|""|"20140714112656"|"AA00032"|""|295|1
+"S031276"|"Y"|"WHG"|""|""|""|"20140714"|""|"itin received"|""|"20140726123016"|"AA00032"|""|295|1
+"S009822"|"Y"|"WHG"|"Singapore Airlines SQ322"|""|"London Heathrow T3"|"20140830"|"0555"|""|""|"20140712104457"|"AA00032"|""|61|1
+"S031517"|"Y"|"WHG"|""|""|""|"20140712"|""|""|""|"20140721172708"|"AA00032"|"travel as UM"|75|1
+"S030389"|"Y"|""|"British Airways BA26"|""|"London Heathrow T3"|"20140826"|""|""|""|"20140712105124"|"AA00032"|""|65|1
+"S030389"|"Y"|""|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"itin received"|""|"20140726135331"|"AA00032"|""|65|1
+"S011715"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714114200"|"AA00032"|""|321|1
+"S030736"|"Y"|"Quest"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20141102"|"1500"|""|""|"20140711145843"|"AA00032"|""|30|1
+"S030276"|"Y"|"WHG"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|""|""|"20140714113403"|"AA00032"|""|309|1
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140726140211"|"AA00032"|""|309|1
+"S030276"|"Y"|"WHG"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|"itin received"|""|"20140726140449"|"AA00032"|""|309|2
+"S011940"|"Y"|"School"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|""|""|"20140718170219"|"AA00032"|""|352|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|""|""|"20140718171739"|"AA00032"|""|353|1
+"S031198"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|""|""|"20140712102629"|"AA00032"|""|38|1
+"S031236"|"Y"|"School"|"Emirate EK381"|""|"London Heathrow T3"|"20140828"|"1215"|""|""|"20140712103956"|"AA00032"|""|57|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140726142225"|"AA00032"|""|57|1
+"S031236"|"N"|""|"Emirate EK001"|""|"London Heathrow T3"|"20140728"|"1215"|""|""|"20140726142317"|"AA00032"|""|57|2
+"S012499"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714111110"|"AA00032"|""|277|1
+"S010986"|"Y"|"Quest"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140901"|"0540"|""|""|"20140714110047"|"AA00032"|""|257|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140726142330"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|""|"London Heathrow T3"|"20140728"|"1215"|"itin received"|""|"20140726142343"|"AA00032"|""|57|2
+"S030367"|"N"|""|"Emirate EK383"|""|"Dubai"|"20140902"|"2310"|""|""|"20140726121736"|"AA00032"|""|324|1
+"S030367"|"Y"|"School"|"Emirate EK007"|""|"London Heathrow T3"|"20140903"|"0700"|"itin received"|""|"20140726121800"|"AA00032"|""|324|2
+"S030367"|"N"|""|"Emirate EK383"|""|"Dubai T3"|"20140902"|"2310"|""|""|"20140726143729"|"AA00032"|""|324|1
+"S030367"|"Y"|"School"|"Emirate EK007"|""|"London Heathrow T3"|"20140903"|"0700"|"itin received"|""|"20140726143741"|"AA00032"|""|324|2
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow"|"20140831"|"0525"|"itin received"|""|"20140726141926"|"AA00032"|""|353|1
+"S012618"|"Y"|"School"|"Cathay Pacific CX215"|""|"London Heathrow T1"|"20140830"|"0540"|"itin received"|""|"20140726121222"|"AA00032"|"Travel alone
+coach service"|231|1
+"S009822"|"N"|""|"Singapore Airlines SQ865"|""|"Singapore"|"20140829"|"2240"|"itin received"|""|"20140726123346"|"AA00032"|""|61|1
+"S009822"|"Y"|"WHG"|"Singapore Airlines SQ322"|""|"London Heathrow T3"|"20140830"|"0555"|"itin received"|""|"20140726134654"|"AA00032"|""|61|2
+"S031517"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140731"|"0455"|"itin received"|""|"20140726135115"|"AA00032"|"travel as UM"|75|1
+"S011940"|"Y"|"School"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|"itin received"|""|"20140726140646"|"AA00032"|""|352|1
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140726140513"|"AA00032"|""|309|1
+"S012209"|"Y"|"Others"|""|""|""|"20140711"|""|""|""|"20140711132431"|"AA00032"|""|26|1
+"S011347"|"Y"|"School"|""|""|""|"20140711"|""|""|""|"20140711131940"|"AA00032"|""|24|1
+"S031243"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140712103444"|"AA00032"|""|51|1
+"S012234"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140712103521"|"AA00032"|""|53|1
+"S012517"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140712103147"|"AA00032"|""|45|1
+"S031341"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140712103829"|"AA00032"|""|55|1
+"S030622"|"Y"|"Quest"|""|""|""|"20140712"|""|""|""|"20140712105215"|"AA00032"|""|66|1
+"S010882"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140712115332"|"AA00032"|""|88|1
+"S010882"|"Y"|"School"|""|""|""|"20140712"|""|"itin requested"|""|"20140726154018"|"AA00032"|""|88|1
+"S010882"|"Y"|"School"|""|""|""|"20140712"|""|"itin requested"|"will reply later"|"20140726154244"|"AA00032"|""|88|1
+"S031337"|"Y"|"Quest"|""|""|""|"20140712"|""|""|""|"20140712120818"|"AA00032"|""|111|1
+"S031400"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140712145415"|"AA00032"|""|169|1
+"S012637"|"Y"|"WHG"|""|""|""|"20140714"|""|""|""|"20140714101150"|"AA00032"|""|201|1
+"S011517"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714105131"|"AA00032"|""|238|1
+"S031400"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140726154741"|"AA00032"|"voicemail on 26July"|169|1
+"S031070"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714105254"|"AA00032"|""|243|1
+"S031310"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714110123"|"AA00032"|""|258|1
+"S031043"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714111058"|"AA00032"|""|276|1
+"S012282"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714112921"|"AA00032"|""|305|1
+"S031070"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726155726"|"AA00032"|"voicemail on 26July"|243|1
+"S030215"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714113605"|"AA00032"|""|312|1
+"S031127"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714115338"|"AA00032"|""|341|1
+"S012525"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714115409"|"AA00032"|""|343|1
+"S012343"|"Y"|"WHG"|""|""|""|"20140714"|""|""|""|"20140714115530"|"AA00032"|""|349|1
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140714"|"1500"|""|""|"20140726101511"|"AA00032"|""|221|1
+"S011666"|"Y"|""|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140829"|""|""|""|"20140712120523"|"AA00032"|""|103|1
+"S031158"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140830"|"0535"|""|""|"20140712144306"|"AA00032"|""|165|1
+"S031310"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726160017"|"AA00032"|"voicemail on 26July"|258|1
+"S030678"|"Y"|"School"|"Emirate EK0017"|""|"Manchester T1"|"20140831"|"1155"|""|""|"20140711150817"|"AA00032"|""|34|1
+"S007454"|"Y"|"School"|"Cathay Pacific"|""|"London Heathrow T3"|"20140901"|""|""|""|"20140714115653"|"AA00032"|""|195|1
+"S008681"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140902"|"0455"|""|""|"20140714102803"|"AA00032"|""|208|1
+"S012619"|"Y"|""|"British Airways BA26"|""|"London Heathrow T5"|"20140903"|"0455"|""|""|"20140718103236"|"AA00032"|""|8|1
+"S009308"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140714105304"|"AA00032"|""|244|1
+"S007454"|"Y"|"School"|"Cathay Pacific"|""|"London Heathrow T3"|"20140901"|""|""|""|"20140726164539"|"AA00032"|"will send later"|195|1
+"S030678"|"Y"|"School"|"Emirate EK0017"|""|"Manchester T1"|"20140831"|"1155"|""|""|"20140726164215"|"AA00032"|"will send later"|34|1
+"S030678"|"N"|""|"Emirate EK0381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140726174309"|"AA00032"|""|34|1
+"S030678"|"N"|""|"Emirate EK0017"|""|"Manchester T1"|"20140831"|"1155"|"itin received"|""|"20140726174343"|"AA00032"|""|34|2
+"S008681"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140902"|"0455"|""|""|"20140726164800"|"AA00032"|"will send later"|208|1
+"S012618"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140830"|"0540"|"itin received"|""|"20140726145240"|"AA00032"|"Travel alone,
+coach service"|231|1
+"S011517"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726155417"|"AA00032"|"voicemail on 26July"|238|1
+"S012637"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726155034"|"AA00032"|"will send later 26July"|201|1
+"S030215"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726161345"|"AA00032"|"will send it today or next mon"|312|1
+"S031310"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726163821"|"AA00032"|"will send later"|258|1
+"S009822"|"N"|""|"Singapore Airlines SQ865"|""|"Singapore"|"20140829"|"2240"|"itin received"|""|"20140726145454"|"AA00032"|""|61|1
+"S009822"|"Y"|"WHG"|"Singapore Airlines SQ322"|""|"London Heathrow"|"20140830"|"0555"|"itin received"|""|"20140726150229"|"AA00032"|""|61|2
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140714"|"1500"|""|""|"20140726163141"|"AA00032"|"will give us on 28July"|221|1
+"S012619"|"Y"|""|"British Airways BA26"|""|"London Heathrow T5"|"20140903"|"0455"|""|""|"20140726165151"|"AA00032"|"voicemail on 26July"|8|1
+"S011666"|"Y"|""|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140829"|""|""|""|"20140726163406"|"AA00032"|"voicemail on 26July"|103|1
+"S012282"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726160906"|"AA00032"|"voicemail on 26July"|305|1
+"S012282"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140804113211"|"AA00032"|"will reply and send us asap"|305|1
+"S011347"|"Y"|"School"|""|""|""|"20140711"|""|""|""|"20140726151957"|"AA00032"|"call again later"|24|1
+"S011347"|"Y"|"School"|""|""|""|"20140711"|""|""|""|"20140804113445"|"AA00032"|"voicemal on 4Aug"|24|1
+"S012282"|"Y"|"School"|""|""|""|"20140714"|""|"itin requested"|""|"20140804113222"|"AA00032"|"will reply and send us asap"|305|1
+"S012234"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140726152721"|"AA00032"|"voicemail on 26July"|53|1
+"S031043"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726160544"|"AA00032"|"voicemail on 26July"|276|1
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140714"|"1500"|"itin received"|""|"20140804111715"|"AA00032"|"will give us on 28July"|221|1
+"S030215"|"Y"|"School"|""|""|""|"20140714"|""|"itin received"|""|"20140801104804"|"AA00003"|"will send it today or next mon"|312|1
+"S011517"|"Y"|"School"|""|""|""|"20140714"|""|"itin received"|""|"20140801104341"|"AA00003"|"voicemail on 26July"|238|1
+"S006369"|"Y"|""|"British Airways BA605"|""|"London Gatwick"|"20150910"|"0600"|""|""|"20150710110700"|"AA00061"|""|382|1
+"S031310"|"Y"|"School"|""|""|""|"20140714"|""|"itin received"|""|"20140801105118"|"AA00003"|"[1Aug14] asking Mrs Pang to cfm if they require transfer service for Jacob only or with family member, before sending the request to sch
+will send later"|258|1
+"S012234"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140804115126"|"AA00032"|"[4Aug14]will send itin later"|53|1
+"S031198"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"itin received"|""|"20140726142052"|"AA00032"|""|38|1
+"S031198"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"request made"|""|"20140804161952"|"AA00032"|""|38|1
+"S031043"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140804115457"|"AA00032"|"voicemail on 4Aug"|276|1
+"S031115"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"itin received"|""|"20140726122915"|"AA00032"|""|141|1
+"S031198"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"request made"|""|"20140804162024"|"AA00032"|"request to sch on 4Aug"|38|1
+"S030215"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"itin received"|""|"20140804115654"|"AA00032"|""|312|1
+"S012035"|"Y"|"School"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140910"|"0620"|"itin received"|""|"20140726122458"|"AA00032"|""|354|1
+"S031517"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"itin received"|""|"20140726150341"|"AA00032"|"travel as UM"|75|1
+"S031517"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"request made"|""|"20140804174727"|"AA00032"|"travel as UM/ [4Aug14] req to sch"|75|1
+"S011940"|"Y"|"School"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|"itin received"|""|"20140726150529"|"AA00032"|""|352|1
+"S011940"|"Y"|"Quest"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|"itin received"|""|"20140804181144"|"AA00032"|""|352|1
+"S030367"|"N"|""|"Emirate EK383"|""|"Dubai T3"|"20140902"|"2310"|""|""|"20140726144311"|"AA00032"|""|324|1
+"S030367"|"N"|""|"Emirate EK383"|""|"Dubai T3"|"20140902"|"2310"|""|""|"20140804183142"|"AA00032"|""|324|1
+"S030367"|"Y"|"School"|"Emirate EK007"|""|"London Heathrow T3"|"20140903"|"0700"|"itin received"|""|"20140726144314"|"AA00032"|""|324|2
+"S011940"|"Y"|"Quest"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|"itin received"|""|"20140804181812"|"AA00032"|"will arrive a day earlier, frm host family to sch on 31Aug"|352|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|"itin received"|""|"20140726144513"|"AA00032"|""|353|1
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"itin received"|""|"20140804115535"|"AA00032"|""|221|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|"request made"|""|"20140804185931"|"AA00032"|"[4Aug14] req to sch"|353|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|"request made"|""|"20140805123509"|"AA00032"|"[5Aug] confirmation frm sch/ will provide driver's details later"|353|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140726143054"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|""|"London Heathrow T3"|"20140728"|"1215"|"itin received"|""|"20140726143105"|"AA00032"|""|57|2
+"S012499"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140828"|"0540"|"itin received"|""|"20140726142451"|"AA00032"|""|277|1
+"S011517"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140830"|"0535"|"itin received"|""|"20140804120557"|"AA00032"|""|238|1
+"S011517"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140830"|"0535"|"itin received"|""|"20140805130119"|"AA00032"|"[5Aug14] req to sch"|238|1
+"S012618"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140830"|"0540"|"itin received"|""|"20140726192113"|"AA00003"|"Travel alone, coach service"|231|1
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140726150617"|"AA00032"|""|309|1
+"S030276"|"Y"|"School"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|"itin received"|""|"20140726140518"|"AA00032"|""|309|2
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140805134121"|"AA00032"|""|309|1
+"S030276"|"Y"|"WHG"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|"itin received"|""|"20140805134124"|"AA00032"|""|309|2
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140805134907"|"AA00032"|""|309|1
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|"request made"|""|"20140805135017"|"AA00032"|"[5Aug14] req to WHG, travel with 8956 Liam YUEN"|309|1
+"S030678"|"N"|""|"Emirate EK0381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140726174401"|"AA00032"|""|34|1
+"S030678"|"Y"|""|"Emirate EK0017"|""|"Manchester T1"|"20140831"|"1155"|"itin received"|""|"20140726174403"|"AA00032"|""|34|2
+"S030736"|"Y"|"Quest"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140828"|"0620"|"itin received"|""|"20140726140109"|"AA00032"|""|30|1
+"S010986"|"Y"|"Quest"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140901"|"0540"|"itin received"|""|"20140726142739"|"AA00032"|"from airport to hotel:
+Park Inn - 2 St. Mary's Street, Bedford MK42 0AR"|257|1
+"S007454"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140901"|"0620"|"itin received"|""|"20140726174208"|"AA00032"|""|195|1
+"S031243"|"Y"|"School"|""|""|""|"20140712"|""|""|""|"20140726152448"|"AA00032"|"will send itin on 29July"|51|1
+"S012525"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726162356"|"AA00032"|"will send later"|343|1
+"S012525"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140805172542"|"AA00032"|"[5Aug14] will send itin later"|343|1
+"S012343"|"Y"|"WHG"|""|""|""|"20140714"|""|""|""|"20140726162852"|"AA00032"|"will send later"|349|1
+"S031310"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"itin received"|""|"20140804121203"|"AA00032"|"[1Aug14] asking Mrs Pang to cfm if they require transfer service for Jacob only or with family member, before sending the request to sch
+will send later"|258|1
+"S030389"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"itin received"|""|"20140726135341"|"AA00032"|""|65|1
+"S008681"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140902"|"0455"|"itin received"|""|"20140726183320"|"AA00032"|"travel with mum"|208|1
+"S030389"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"request made"|""|"20140805180749"|"AA00032"|"[5Aug14] req to sch"|65|1
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"itin received"|""|"20140805105346"|"AA00032"|"[5Aug14] ask abt the pickup date"|221|1
+"S012525"|"Y"|"WHG"|""|""|""|"20140714"|""|""|""|"20140805172549"|"AA00032"|"[5Aug14] will send itin later"|343|1
+"S012525"|"Y"|"WHG"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140828"|"0525"|""|""|"20140805183019"|"AA00032"|"[5Aug14] req to whg/ frm host fam to sch on 29Aug"|343|1
+"S011715"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"itin received"|""|"20140726135658"|"AA00032"|""|321|1
+"S010986"|"Y"|"Quest"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140901"|"0540"|"request made"|""|"20140805170037"|"AA00032"|"[5Aug14] req to q
+from airport to hotel:
+Park Inn - 2 St. Mary's Street, Bedford MK42 0AR"|257|1
+"S030678"|"N"|""|"Emirate EK0381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140805164415"|"AA00032"|""|34|1
+"S030678"|"Y"|""|"Emirate EK0017"|""|"Manchester T1"|"20140831"|"1155"|"request made"|""|"20140805164425"|"AA00032"|"[5Aug14] req to sch"|34|2
+"S012525"|"Y"|"WHG"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140828"|"0525"|"request made"|""|"20140805183026"|"AA00032"|"[5Aug14] req to whg/ frm host fam to sch on 29Aug"|343|1
+"S030215"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"request made"|""|"20140804170753"|"AA00032"|"[4Aug14] req to sch"|312|1
+"S030678"|"N"|""|"Emirate EK0381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140806150613"|"AA00032"|""|34|1
+"S030678"|"Y"|""|"Emirate EK0017"|""|"Manchester T1"|"20140831"|"1155"|"confirmation emailed family"|""|"20140806150621"|"AA00032"|"[5Aug14] req to sch"|34|2
+"S030215"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"sch/guardian cfm booking will be made"|""|"20140806152700"|"AA00032"|"[4Aug14] req to sch"|312|1
+"S030367"|"N"|""|"Emirate EK383"|""|"Dubai T3"|"20140902"|"2310"|""|""|"20140804183421"|"AA00032"|""|324|1
+"S030367"|"Y"|"School"|"Emirate EK007"|""|"London Heathrow T3"|"20140903"|"0700"|"request made"|""|"20140804183434"|"AA00032"|"[4Aug14] req to sch"|324|2
+"S011940"|"Y"|"Quest"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|"request made"|""|"20140804185535"|"AA00032"|"will arrive a day earlier, frm host family to sch on 31Aug
+[4Aug14] req to q"|352|1
+"S031115"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"request made"|""|"20140804165822"|"AA00032"|"[4Aug14] req to sch"|141|1
+"S031115"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"confirmation emailed family"|""|"20140807103416"|"AA00032"|"[4Aug14] req to sch"|141|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|"booking made & awt contact details"|""|"20140805123533"|"AA00032"|"[5Aug] confirmation frm sch/ will provide driver's details later"|353|1
+"S012035"|"Y"|"School"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140910"|"0620"|"request made"|""|"20140804171828"|"AA00032"|"[4Aug14] req to sch"|354|1
+"S031115"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"confirmation emailed family"|""|"20140807103850"|"AA00032"|"[5Aug14] will send us the driver's details once available
+[4Aug14] req to sch"|141|1
+"S011347"|"Y"|"School"|""|""|""|"20140711"|""|""|""|"20140804113516"|"AA00032"|"voicemail on 4Aug"|24|1
+"S009308"|"Y"|"School"|""|""|""|"20140714"|""|""|""|"20140726165255"|"AA00032"|"email to Mr Ng, ask him to arrange with guardian"|244|1
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"itin received"|""|"20140805180920"|"AA00032"|"[5Aug14] ask abt the pickup date, will reply later"|221|1
+"S031276"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"itin received"|""|"20140726123125"|"AA00032"|""|295|1
+"S011869"|"Y"|"WHG"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140827"|"1810"|"itin received"|""|"20140726121352"|"AA00032"|""|48|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|"confirmation emailed family"|""|"20140807104534"|"AA00032"|"[5Aug] confirmation frm sch/ will provide driver's details later"|353|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|"family acknowledged confirmation"|""|"20140807153703"|"AA00032"|"[5Aug] confirmation frm sch/ will provide driver's details later"|353|1
+"S010986"|"Y"|"Quest"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140901"|"0540"|"confirmation emailed family"|""|"20140806133357"|"AA00032"|"[5Aug14] req to q
+from airport to hotel:
+Park Inn - 2 St. Mary's Street, Bedford MK42 0AR"|257|1
+"S010882"|"Y"|"School"|""|""|""|"20140712"|""|"itin requested"|""|"20140726154258"|"AA00032"|"will reply later"|88|1
+"S011347"|"Y"|"School"|""|""|""|"20140711"|""|""|""|"20140807111858"|"AA00032"|"voicemail on 7Aug"|24|1
+"S012343"|"Y"|"WHG"|""|""|""|"20140714"|""|""|""|"20140805180001"|"AA00032"|"[5Aug14] voicemail"|349|1
+"S011347"|"Y"|"School"|""|""|""|"20140711"|""|""|""|"20140807180618"|"AA00032"|"[7Aug14]email & voicemail"|24|1
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|"request made"|""|"20140805145526"|"AA00032"|"[5Aug14] req to WHG, travel with 8956 Liam YUEN"|309|1
+"S030276"|"Y"|"WHG"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|"itin received"|""|"20140805134908"|"AA00032"|""|309|2
+"S030276"|"N"|""|""|""|""|"20140806"|""|""|""|"20140806111949"|""|""|309|3
+"S030276"|"N"|""|""|""|""|"20140806"|""|""|""|"20140806112000"|""|""|309|4
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|"request made"|""|"20140808125400"|"AA00003"|"[5Aug14] req to WHG, travel with 8956 Liam YUEN"|309|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140805124347"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|""|"London Heathrow T3"|"20140728"|"1215"|"request made"|""|"20140805124404"|"AA00032"|"[5Aug14] req to sch"|57|2
+"S012343"|"Y"|"WHG"|""|""|""|"20140714"|""|""|""|"20140807182227"|"AA00032"|"[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|1
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin received"|""|"20140808164043"|"AA00032"|"[8Aug14] ask if the stu wants to go to the host family on arrival
+[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|1
+"S012343"|"Y"|""|"Aeroflot Russian Airlines SU2584"|""|"London Heathrow"|"20140902"|"2125"|""|""|"20140808164402"|"AA00032"|""|349|2
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|"request made"|""|"20140808125553"|"AA00003"|"[5Aug14] req to WHG, travel with 8956 Liam YUEN"|309|1
+"S030276"|"Y"|"WHG"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|"itin received"|""|"20140808125453"|"AA00003"|""|309|2
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin received"|""|"20140808164427"|"AA00032"|""|349|1
+"S012343"|"Y"|""|"Aeroflot Russian Airlines SU2584"|""|"London Heathrow"|"20140902"|"2125"|"itin received"|""|"20140808164433"|"AA00032"|"[8Aug14] ask if the stu wants to go to the host family on arrival
+[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|2
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin requested"|""|"20140808172416"|"AA00032"|""|349|1
+"S012343"|"Y"|""|"Aeroflot Russian Airlines SU2584"|""|"London Heathrow"|"20140902"|"2125"|"itin requested"|""|"20140808172444"|"AA00032"|"[8Aug14] req to q/ ask if the stu wants to go to the host family on arrival
+[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|2
+"S031517"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"request made"|""|"20140804174732"|"AA00032"|"travel as UM/ [4Aug14] req to sch"|75|1
+"S010986"|"Y"|"Quest"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140901"|"0540"|"confirmation emailed family"|""|"20140807174842"|"AA00032"|"[7Aug14] ask abt the cost
+[5Aug14] req to q
+from airport to hotel:
+Park Inn - 2 St. Mary's Street, Bedford MK42 0AR"|257|1
+"S012035"|"Y"|"School"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140910"|"0620"|"confirmation emailed family"|""|"20140807105321"|"AA00032"|"[4Aug14] req to sch"|354|1
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin requested"|""|"20140808173126"|"AA00032"|""|349|1
+"S012343"|"Y"|"WHG"|"Aeroflot Russian Airlines SU2584"|""|"London Heathrow"|"20140902"|"2125"|"request made"|""|"20140808173138"|"AA00032"|"[8Aug14] req to WHG/ ask if the stu wants to go to the host family on arrival
+[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|2
+"S012282"|"Y"|"School"|""|""|""|"20140714"|""|"itin requested"|""|"20140804113540"|"AA00032"|"[4Aug14]will reply and send us asap"|305|1
+"S009525"|"Y"|""|""|""|""|"20140910"|""|""|""|"20140811154508"|"AA00032"|"[11Aug14] ask sch to pick up, group pickup"|357|1
+"S009525"|"Y"|"School"|""|""|""|"20140910"|""|""|""|"20140811154517"|"AA00032"|"[11Aug14] ask sch to pick up, group pickup"|357|1
+"S012234"|"Y"|"WHG"|""|""|""|"20140712"|""|"itin requested"|""|"20140804125649"|"AA00032"|"[4Aug14]will send itin later"|53|1
+"S010882"|"Y"|"School"|""|""|""|"20140712"|""|"itin requested"|""|"20140807175222"|"AA00032"|"[7Aug14] will send itin tdy"|88|1
+"S030367"|"N"|""|"Emirate EK383"|""|"Dubai T3"|"20140902"|"2310"|""|""|"20140807102429"|"AA00032"|""|324|1
+"S030367"|"Y"|"School"|"Emirate EK007"|""|"London Heathrow T3"|"20140903"|"0700"|"sch/guardian cfm booking will be made"|""|"20140807102524"|"AA00032"|"[4Aug14] req to sch"|324|2
+"S030678"|"N"|""|"Emirate EK0381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140806160109"|"AA00032"|""|34|1
+"S030678"|"Y"|""|"Emirate EK0017"|""|"Manchester T1"|"20140831"|"1155"|"family acknowledged confirmation"|""|"20140806160116"|"AA00032"|"[5Aug14] req to sch"|34|2
+"S009525"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140910"|"1505"|""|""|"20140811182000"|"AA00032"|"[11Aug14] ask sch to pick up, group pickup"|357|1
+"S031517"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"request made"|""|"20140808175421"|"AA00032"|"travel as UM/ [4Aug14] req to sch"|75|1
+"S031517"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"request made"|""|"20140813121230"|"AA00032"|"[13Aug14] chase
+travel as UM/ [4Aug14] req to sch"|75|1
+"S006747"|"Y"|""|""|""|""|"20140813"|""|""|""|"20140813104807"|"AA00032"|""|358|1
+"S031310"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"itin received"|""|"20140805180523"|"AA00032"|"[5Aug14] will reply on friday to see if they join the coach
+[1Aug14] asking Mrs Pang to cfm if they require transfer service for Jacob only or with family member, before sending the request to sch
+will send later"|258|1
+"S031517"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"request made"|""|"20140813165657"|"AA00032"|"[13Aug14] fwd to house staff/ chase
+travel as UM/ [4Aug14] req to sch"|75|1
+"S011940"|"Y"|"Quest"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|"sch/guardian cfm booking will be made"|""|"20140807102611"|"AA00032"|"will arrive a day earlier, frm host family to sch on 31Aug
+[4Aug14] req to q"|352|1
+"S031517"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"sch/guardian cfm booking will be made"|""|"20140815103306"|"AA00032"|"[13Aug14] fwd to house staff/ chase
+travel as UM/ [4Aug14] req to sch"|75|1
+"S030251"|"Y"|"School"|""|""|""|"20140813"|""|"itin requested"|""|"20140813184412"|"AA00032"|""|359|1
+"S007454"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140901"|"0620"|"request made"|""|"20140805170754"|"AA00032"|"[5Aug14] req to sch"|195|1
+"S011715"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"itin received"|""|"20140806101219"|"AA00032"|"[6Aug14] ask if the sch can help"|321|1
+"S030251"|"Y"|"School"|""|""|""|"20140813"|""|"itin received"|""|"20140815124344"|"AA00032"|""|359|1
+"S030251"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140828"|"0535"|"request made"|""|"20140815132148"|"AA00032"|"[15Aug14] req to sch"|359|1
+"S031804"|"N"|""|"Air France AF185"|""|"Paris T2E"|"20140904"|"0750"|""|""|"20140815151150"|"AA00032"|""|360|1
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"itin received"|""|"20140807145622"|"AA00032"|"[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S007710"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"itin received"|""|"20140815151952"|"AA00032"|"[15Aug14] ask p abt the hotel name
+[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S010882"|"Y"|"School"|""|""|""|"20140712"|""|"itin requested"|""|"20140811183314"|"AA00032"|"[11Aug14] ask p & stu to send itin
+[7Aug14] will send itin tdy"|88|1
+"S011715"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"itin received"|""|"20140815130645"|"AA00032"|"[15Aug14] chase
+[6Aug14] ask if the sch can help"|321|1
+"S009525"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140910"|"1505"|""|""|"20140813105744"|"AA00032"|"[12Aug14] sch ask if stu can arrive at T5 at 1500
+[11Aug14] ask sch to pick up, group pickup"|357|1
+"S012234"|"Y"|"WHG"|""|""|""|"20140712"|""|"itin requested"|""|"20140811182805"|"AA00032"|"[11Aug14] ask if need us to arrange
+[4Aug14]will send itin later"|53|1
+"S030367"|"N"|""|"Emirate EK383"|""|"Dubai T3"|"20140902"|"2310"|""|""|"20140812103521"|"AA00032"|""|324|1
+"S030367"|"Y"|"School"|"Emirate EK007"|""|"London Heathrow T3"|"20140903"|"0700"|"sch/guardian cfm booking will be made"|""|"20140812103542"|"AA00032"|"[12Aug14] sch asks to complete travel form
+[4Aug14] req to sch"|324|2
+"S030389"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"request made"|""|"20140805180835"|"AA00032"|"[5Aug14] req to sch/ travel with mum"|65|1
+"S008681"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140902"|"0455"|"request made"|""|"20140805180819"|"AA00032"|"[5Aug14] req to sch/ travel with mum"|208|1
+"S012499"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140828"|"0540"|"request made"|""|"20140805124432"|"AA00032"|"[5Aug14] req to sch"|277|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140808130527"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|""|"London Heathrow T3"|"20140828"|"1215"|"request made"|""|"20140808130532"|"AA00032"|"[5Aug14] req to sch"|57|2
+"S011517"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140830"|"0535"|"request made"|""|"20140805130133"|"AA00032"|"[5Aug14] req to sch"|238|1
+"S012618"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140830"|"0540"|"request made"|""|"20140805130200"|"AA00032"|"[5Aug14] req to sch
+Travel alone, coach service"|231|1
+"S031198"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"request made"|""|"20140804165846"|"AA00032"|"[4Aug14] req to sch"|38|1
+"S012234"|"Y"|"WHG"|""|""|""|"20140712"|""|"request made"|""|"20140815155229"|"AA00032"|"[15Aug14] ask whg to arrange
+[11Aug14] ask if need us to arrange
+[4Aug14]will send itin later"|53|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|"family acknowledged confirmation"|""|"20140807173603"|"AA00032"|"[5Aug] confirmation frm sch/ will provide driver's details later"|353|1
+"S009525"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140910"|"1505"|"sch/guardian cfm booking will be made"|""|"20140815152448"|"AA00032"|"[12Aug14] sch ask if stu can arrive at T5 at 1500
+[11Aug14] ask sch to pick up, group pickup"|357|1
+"S031198"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"request made"|""|"20140815173447"|"AA00032"|"[15Aug14] chase
+[4Aug14] req to sch"|38|1
+"S011715"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"request made"|""|"20140815152404"|"AA00032"|"[15Aug14] chase
+[6Aug14] ask if the sch can help"|321|1
+"S012499"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140828"|"0540"|"request made"|""|"20140815171707"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch"|277|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140815171714"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|""|"London Heathrow T3"|"20140828"|"1215"|"request made"|""|"20140815171724"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch"|57|2
+"S011517"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140830"|"0535"|"request made"|""|"20140815172935"|"AA00032"|"[15Aug14] req to sch"|238|1
+"S011517"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140830"|"0535"|"booking made & awt contact details"|""|"20140816121522"|"AA00032"|"[15Aug14] req to sch"|238|1
+"S012618"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140830"|"0540"|"request made"|""|"20140815172942"|"AA00032"|"[15Aug14] req to sch
+Travel alone, coach service"|231|1
+"S031028"|"Y"|"School"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140831"|"0525"|"family acknowledged confirmation"|""|"20140815174655"|"AA00032"|"[5Aug14] confirmation frm sch/ will provide driver's details later"|353|1
+"S030678"|"N"|""|"Emirate EK0381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140812162906"|"AA00032"|""|34|1
+"S030678"|"Y"|"School"|"Emirate EK0017"|""|"Manchester T1"|"20140831"|"1155"|"family acknowledged confirmation"|""|"20140812162909"|"AA00032"|"[5Aug14] req to sch"|34|2
+"S010986"|"Y"|"Quest"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140901"|"0540"|"family acknowledged confirmation"|""|"20140808175549"|"AA00032"|"[7Aug14] ask abt the cost
+[5Aug14] req to q
+from airport to hotel:
+Park Inn - 2 St. Mary's Street, Bedford MK42 0AR"|257|1
+"S012035"|"Y"|"School"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140910"|"0620"|"family acknowledged confirmation"|""|"20140811100430"|"AA00032"|"[4Aug14] req to sch"|354|1
+"S007710"|"Y"|"WHG"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"itin received"|""|"20140815151959"|"AA00032"|"[15Aug14] ask p abt the hotel name
+[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin requested"|""|"20140811102437"|"AA00032"|""|349|1
+"S012343"|"Y"|"WHG"|"Aeroflot Russian Airlines SU2584"|""|"London Heathrow"|"20140902"|"2125"|"sch/guardian cfm booking will be made"|""|"20140811102440"|"AA00032"|"[8Aug14] req to WHG/ ask if the stu wants to go to the host family on arrival
+[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|2
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|"request made"|""|"20140808164502"|"AA00032"|""|309|1
+"S030276"|"Y"|"WHG"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|"sch/guardian cfm booking will be made"|""|"20140808164510"|"AA00032"|"[5Aug14] req to WHG, travel with 8956 Liam YUEN"|309|2
+"S031276"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"itin received"|""|"20140807152925"|"AA00032"|"[7Aug14] ask how much, frm airport to hotel, hotel to ashford"|295|1
+"S012525"|"Y"|"WHG"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140828"|"0525"|"sch/guardian cfm booking will be made"|""|"20140806152031"|"AA00032"|"[5Aug14] req to whg/ frm host fam to sch on 29Aug"|343|1
+"S031115"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"family acknowledged confirmation"|""|"20140807110523"|"AA00032"|"[5Aug14] will send us the driver's details once available
+[4Aug14] req to sch"|141|1
+"S011517"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140830"|"0535"|"confirmation emailed family"|""|"20140816121528"|"AA00032"|"[15Aug14] req to sch"|238|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140816114815"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|""|"London Heathrow T3"|"20140828"|"1215"|"request made"|""|"20140816114825"|"AA00032"|"[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|57|2
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140816171007"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|"50"|"London Heathrow T3"|"20140828"|"1215"|"sch/guardian cfm booking will be made"|""|"20140816171049"|"AA00032"|"[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|57|2
+"S012499"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140828"|"0540"|"request made"|""|"20140816114519"|"AA00032"|"[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|277|1
+"S031804"|"N"|""|"Air France AF185"|""|"Paris T2E"|"20140904"|"0605"|""|""|"20140815151244"|"AA00032"|""|360|1
+"S031804"|"Y"|"School"|"Air France AF1680"|""|"London Heathrow T4"|"20140904"|"0750"|"request made"|""|"20140815151235"|"AA00032"|"[15Aug14] req to sch"|360|2
+"S030215"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"sch/guardian cfm booking will be made"|""|"20140807101208"|"AA00032"|"[7aug14] asking student phone no. [4Aug14] req to sch"|312|1
+"S007710"|"Y"|"WHG"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"itin received"|""|"20140816161053"|"AA00032"|"[16Aug14] email p n ask abt the hotel name
+[15Aug14] ask p abt the hotel name
+[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S011715"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"confirmation emailed family"|""|"20140816113841"|"AA00032"|"[15Aug14] chase
+[6Aug14] ask if the sch can help"|321|1
+"S012618"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140830"|"0540"|"confirmation emailed family"|""|"20140816121730"|"AA00032"|"[15Aug14] req to sch
+Travel alone, coach service"|231|1
+"S030389"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"request made"|""|"20140815170515"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch/ travel with mum"|65|1
+"S030277"|"Y"|""|""|""|""|"20140828"|""|""|""|"20140818102530"|"AA00032"|""|361|1
+"S010882"|"Y"|"School"|""|""|""|"20140712"|""|"itin requested"|""|"20140815152339"|"AA00032"|"[15Aug14] stu will be back next week
+[11Aug14] ask p & stu to send itin
+[7Aug14] will send itin tdy"|88|1
+"S031276"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"itin received"|""|"20140816165607"|"AA00032"|"[16Aug14] ask ag
+[7Aug14] ask how much, frm airport to hotel, hotel to ashford"|295|1
+"S030277"|"Y"|""|""|""|""|"20140828"|""|"itin requested"|""|"20140818104832"|"AA00032"|""|361|1
+"S012499"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140828"|"0540"|"sch/guardian cfm booking will be made"|""|"20140816171507"|"AA00032"|"[16Aug14] ask stu contact no.
+[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|277|1
+"S031848"|"Y"|"School"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140902"|"0620"|"itin received"|""|"20140818164008"|"AA00032"|""|362|1
+"S030856"|"Y"|""|"Cathay Pacific CX251"|""|"London Heathrow T5"|"20140818"|""|""|""|"20140818181043"|"AA00032"|""|363|1
+"S030277"|"Y"|"School"|"Cathay Pacific CX255"|"50"|"London Heathrow T3"|"20140828"|"0620"|"request made"|""|"20140818161406"|"AA00032"|""|361|1
+"S031848"|"Y"|"School"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140902"|"0620"|"request made"|""|"20140818174651"|"AA00032"|""|362|1
+"S009525"|"Y"|"School"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140910"|"1505"|"confirmation emailed family"|""|"20140816112203"|"AA00032"|"[12Aug14] sch ask if stu can arrive at T5 at 1500
+[11Aug14] ask sch to pick up, group pickup"|357|1
+"S030251"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140828"|"0535"|"request made"|""|"20140815132408"|"AA00032"|"[15Aug14] req to sch/ will back on 19"|359|1
+"S030251"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140828"|"0535"|"confirmation emailed family"|""|"20140819100817"|"AA00032"|"[15Aug14] req to sch/ will back on 19"|359|1
+"S011940"|"Y"|"Quest"|"Cathay Pacific CX239"|""|"London Heathrow T3"|"20140830"|"1810"|"confirmation emailed family"|""|"20140815113942"|"AA00032"|"will arrive a day earlier, frm host family to sch on 31Aug
+[4Aug14] req to q"|352|1
+"S030251"|"Y"|"School"|"British Airways BA28"|"45"|"London Heathrow T5"|"20140828"|"0535"|"confirmation emailed family"|""|"20140819101230"|"AA00032"|"[15Aug14] req to sch/ will back on 19"|359|1
+"S012499"|"Y"|"School"|"Cathay Pacific CX251"|"50"|"London Heathrow T3"|"20140828"|"0540"|"sch/guardian cfm booking will be made"|""|"20140818161817"|"AA00032"|"[16Aug14] ask stu contact no.
+[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|277|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140816171054"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|"50"|"London Heathrow T3"|"20140828"|"1215"|"sch/guardian cfm booking will be made"|""|"20140816171107"|"AA00032"|"[16Aug14] ask stu contact no.
+[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|57|2
+"S031848"|"Y"|"School"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140902"|"0620"|"request made"|""|"20140818182309"|"AA00032"|"[18Aug14] req to sch"|362|1
+"S031848"|"Y"|"School"|"Cathay Pacific CX255"|"0"|"London Heathrow T3"|"20140902"|"0620"|"confirmation emailed family"|""|"20140819102356"|"AA00032"|"[18Aug14] req to sch"|362|1
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin requested"|""|"20140816165520"|"AA00032"|""|349|1
+"S012343"|"Y"|"WHG"|"Aeroflot Russian Airlines SU2584"|""|"London Heathrow"|"20140902"|"2125"|"sch/guardian cfm booking will be made"|""|"20140816165531"|"AA00032"|"[16Aug14] chase
+[8Aug14] req to WHG/ ask if the stu wants to go to the host family on arrival
+[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|2
+"S009525"|"Y"|"School"|"Cathay Pacific CX257"|"60"|"London Heathrow T3"|"20140910"|"1505"|"confirmation emailed family"|""|"20140819100050"|"AA00032"|"[12Aug14] sch ask if stu can arrive at T5 at 1500
+[11Aug14] ask sch to pick up, group pickup"|357|1
+"S007710"|"Y"|"WHG"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"itin received"|""|"20140816185131"|"AA00032"|"[16Aug14] ask WHG the cost / email p n ask abt the hotel name
+[15Aug14] ask p abt the hotel name
+[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin requested"|""|"20140819104354"|"AA00032"|""|349|1
+"S012343"|"Y"|"WHG"|"Aeroflot Russian Airlines SU2584"|""|"London Heathrow"|"20140902"|"2125"|"confirmation emailed family"|""|"20140819104359"|"AA00032"|"[16Aug14] chase
+[8Aug14] req to WHG/ ask if the stu wants to go to the host family on arrival
+[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|2
+"S031848"|"Y"|"School"|"Cathay Pacific CX255"|"0"|"London Heathrow T3"|"20140902"|"0620"|"family acknowledged confirmation"|""|"20140819103048"|"AA00032"|"[18Aug14] req to sch"|362|1
+"S007710"|"Y"|"WHG"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"request made"|""|"20140819160454"|"AA00032"|"[16Aug14] ask WHG the cost / email p n ask abt the hotel name
+[15Aug14] ask p abt the hotel name
+[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S012525"|"Y"|"WHG"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140828"|"0525"|"sch/guardian cfm booking will be made"|""|"20140816165623"|"AA00032"|"[16Aug14] chase
+[5Aug14] req to whg/ frm host fam to sch on 29Aug"|343|1
+"S031276"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"itin received"|""|"20140818111855"|"AA00032"|"[16Aug14] ask ag for the cost
+[7Aug14] ask how much, frm airport to hotel, hotel to ashford"|295|1
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|"request made"|""|"20140816165537"|"AA00032"|""|309|1
+"S030276"|"Y"|"WHG"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|"sch/guardian cfm booking will be made"|""|"20140816165553"|"AA00032"|"[16Aug14] chase
+[5Aug14] req to WHG, travel with 8956 Liam YUEN"|309|2
+"S032757"|"Y"|""|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123532"|"AA00032"|""|398|1
+"S007710"|"Y"|"WHG"|"Cathay Pacific CX257"|""|"London Heathrow T3"|"20140821"|"1505"|"request made"|""|"20140819174307"|"AA00032"|"[19Aug14] req to whg
+[16Aug14] ask WHG the cost / email p n ask abt the hotel name
+[15Aug14] ask p abt the hotel name
+[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S006747"|"N"|""|"Emirate EK0383"|""|"Dubai T3"|"20140831"|"2310"|""|""|"20140813182434"|"AA00032"|""|358|1
+"S006747"|"Y"|"School"|"Emirate EK0007"|""|"London Heathrow T3"|"20140901"|"0700"|"request made"|""|"20140813182520"|"AA00032"|"[13Aug14] req to sch"|358|2
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin requested"|""|"20140819160512"|"AA00032"|""|349|1
+"S012343"|"Y"|"WHG"|"Aeroflot Russian Airlines SU2584"|"85"|"London Heathrow"|"20140902"|"2125"|"confirmation emailed family"|""|"20140819160522"|"AA00032"|"[16Aug14] chase
+[8Aug14] req to WHG/ ask if the stu wants to go to the host family on arrival
+[7Aug14] email ask if need pickup
+[5Aug14] voicemail"|349|2
+"S006747"|"N"|""|"Emirate EK0383"|""|"Dubai T3"|"20140831"|"2310"|""|""|"20140820102412"|"AA00032"|""|358|1
+"S006747"|"Y"|"School"|"Emirate EK0007"|"190"|"London Heathrow T3"|"20140901"|"0700"|"request made"|""|"20140820102415"|"AA00032"|"[13Aug14] req to sch"|358|2
+"S031198"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"sch/guardian cfm booking will be made"|""|"20140816112414"|"AA00032"|"[15Aug14] chase
+[4Aug14] req to sch"|38|1
+"S007454"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140901"|"0620"|"sch/guardian cfm booking will be made"|""|"20140815124454"|"AA00032"|"[5Aug14] req to sch"|195|1
+"S030856"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"request made"|""|"20140818181210"|"AA00032"|"[18Aug14] req to sch"|363|1
+"S030856"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"booking made & awt contact details"|""|"20140820184631"|"AA00032"|"[18Aug14] req to sch"|363|1
+"S007710"|"Y"|"WHG"|"Cathay Pacific CX257"|"96"|"London Heathrow T3"|"20140821"|"1505"|"request made"|""|"20140820102354"|"AA00032"|"[19Aug14] req to whg
+[16Aug14] ask WHG the cost / email p n ask abt the hotel name
+[15Aug14] ask p abt the hotel name
+[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S007454"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140901"|"0620"|"booking made & awt contact details"|""|"20140820184610"|"AA00032"|"[5Aug14] req to sch"|195|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140819102135"|"AA00032"|""|57|1
+"S031236"|"Y"|"School"|"Emirate EK001"|"50"|"London Heathrow T3"|"20140828"|"1215"|"booking made & awt contact details"|""|"20140819102140"|"AA00032"|"[16Aug14] ask stu contact no.
+[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|57|2
+"S012499"|"Y"|"School"|"Cathay Pacific CX251"|"50"|"London Heathrow T3"|"20140828"|"0540"|"booking made & awt contact details"|""|"20140819102128"|"AA00032"|"[16Aug14] ask stu contact no.
+[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|277|1
+"S030277"|"Y"|"School"|"Cathay Pacific CX255"|"50"|"London Heathrow T3"|"20140828"|"0620"|"request made"|""|"20140818182248"|"AA00032"|"[18Aug14] req to sch"|361|1
+"S030389"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"request made"|""|"20140818102817"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch/ travel with mum/ will take the coach on 2nd Sept"|65|1
+"S030389"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"sch/guardian cfm booking will be made"|""|"20140820194711"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch/ travel with mum/ will take the coach on 2nd Sept"|65|1
+"S008681"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140902"|"0455"|"request made"|""|"20140815170538"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch/ travel with mum"|208|1
+"S012234"|"Y"|"WHG"|""|""|""|"20140712"|""|"confirmation emailed family"|""|"20140815174350"|"AA00032"|"[15Aug14] ask whg to arrange
+[11Aug14] ask if need us to arrange
+[4Aug14]will send itin later"|53|1
+"S012234"|"Y"|"WHG"|""|""|""|"20140712"|""|"confirmation emailed family"|""|"20140823101148"|"AA00040"|"[23Aug2014] received contact details of WHG
+[15Aug14] ask whg to arrange
+[11Aug14] ask if need us to arrange
+[4Aug14]will send itin later"|53|1
+"S007899"|"Y"|""|"British Airways"|""|"London Heathrow T5"|"20140902"|"0535"|""|""|"20140823115206"|"AA00040"|""|364|1
+"S031804"|"Y"|"Quest"|"Air France AF1680"|""|"London Heathrow T4"|"20140904"|"0750"|"request made"|""|"20140826114701"|"AA00040"|"Change flight from
+Paris T2E AF185 0605"|365|1
+"S031804"|"Y"|"Quest"|"Air France AF1680"|""|"London Heathrow T4"|"20140904"|"0750"|"request made"|"[26Aug] req sent - pick up from airport to school"|"20140826120701"|"AA00040"|"Change flight from
+Paris T2E AF185 0605"|365|1
+"S031804"|"Y"|"Quest"|"Air France AF1680"|""|"London Heathrow T4"|"20140904"|"0750"|"request made"|""|"20140826120718"|"AA00040"|"Change flight from
+Paris T2E AF185 0605
+[26Aug] req sent - pick up from airport to school"|365|1
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|"request made"|""|"20140819174645"|"AA00032"|""|309|1
+"S031276"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"itin received"|""|"20140819174612"|"AA00032"|"[19Aug14] chase
+[16Aug14] ask ag for the cost
+[7Aug14] ask how much, frm airport to hotel, hotel to ashford"|295|1
+"S012233"|"Y"|""|"Qatar Airways QR7"|""|"London Heathrow T4"|"20140902"|"1200"|"request made"|""|"20140828112948"|"AA00032"|"[28Aug14] req to sch
+change flight from Doha T2 QR815 0450"|366|1
+"S031517"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"sch/guardian cfm booking will be made"|""|"20140815123727"|"AA00032"|"[13Aug14] fwd to house staff (Mrs Jayne Bloye)/ chase
+travel as UM/ [4Aug14] req to sch"|75|1
+"S007454"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140901"|"0620"|"confirmation emailed family"|""|"20140820190953"|"AA00032"|"[5Aug14] req to sch"|195|1
+"S031198"|"Y"|"School"|"British Airways BA28"|""|"London Heathrow T5"|"20140902"|"0535"|"confirmation emailed family"|""|"20140820180759"|"AA00032"|"[15Aug14] chase
+[4Aug14] req to sch"|38|1
+"S007710"|"Y"|"WHG"|"Cathay Pacific CX257"|"96"|"London Heathrow T3"|"20140821"|"1505"|"confirmation emailed family"|""|"20140820190534"|"AA00032"|"[19Aug14] req to whg
+[16Aug14] ask WHG the cost / email p n ask abt the hotel name
+[15Aug14] ask p abt the hotel name
+[5Aug14] ask p abt the pickup date, will reply later"|221|1
+"S012499"|"Y"|"School"|"Cathay Pacific CX251"|"50"|"London Heathrow T3"|"20140828"|"0540"|"confirmation emailed family"|""|"20140820192443"|"AA00032"|"[16Aug14] ask stu contact no.
+[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|277|1
+"S030277"|"Y"|"School"|"Cathay Pacific CX255"|"50"|"London Heathrow T3"|"20140828"|"0620"|"confirmation emailed family"|""|"20140820192721"|"AA00032"|"[18Aug14] req to sch"|361|1
+"S031236"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140828"|"0435"|"itin received"|""|"20140820192103"|"AA00032"|""|57|1
+"S031980"|"Y"|""|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123519"|"AA00032"|""|397|1
+"S031236"|"Y"|"School"|"Emirate EK001"|"50"|"London Heathrow T3"|"20140828"|"1215"|"confirmation emailed family"|""|"20140820192108"|"AA00032"|"[16Aug14] ask stu contact no.
+[15Aug14] fwd to ben/ chase
+[5Aug14] req to sch"|57|2
+"S006747"|"N"|""|"Emirate EK0383"|""|"Dubai T3"|"20140831"|"2310"|""|""|"20140820171712"|"AA00032"|""|358|1
+"S006747"|"Y"|"School"|"Emirate EK0007"|"190"|"London Heathrow T3"|"20140901"|"0700"|"confirmation emailed family"|""|"20140820171717"|"AA00032"|"[13Aug14] req to sch"|358|2
+"S012525"|"Y"|"WHG"|"Virgin Atlantic VS201"|""|"London Heathrow T3"|"20140828"|"0525"|"sch/guardian cfm booking will be made"|""|"20140819174354"|"AA00032"|"[19Aug14] chase
+[16Aug14] chase
+[5Aug14] req to whg/ frm host fam to sch on 29Aug"|343|1
+"S030215"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"sch/guardian cfm booking will be made"|""|"20140816173321"|"AA00032"|"[16Aug14] give sch contact no.
+[7aug14] asking student phone no. [4Aug14] req to sch"|312|1
+"S030367"|"N"|""|"Emirate EK383"|""|"Dubai T3"|"20140902"|"2310"|""|""|"20140815155506"|"AA00032"|""|324|1
+"S030367"|"Y"|"School"|"Emirate EK007"|""|"London Heathrow T3"|"20140903"|"0700"|"sch/guardian cfm booking will be made"|""|"20140815155522"|"AA00032"|"[15Aug14] travel form to sch
+[12Aug14] sch asks to complete travel form
+[4Aug14] req to sch"|324|2
+"S030276"|"N"|""|"Emirate EK381"|""|"Dubai T3"|"20140831"|"0435"|"Consultant handle"|""|"20140828103751"|"AA00032"|""|309|1
+"S030276"|"Y"|"WHG"|"Emirate EK1"|""|"London Heathrow T3"|"20140831"|"1215"|"sch/guardian cfm booking will be made"|""|"20140819174657"|"AA00032"|"[19Aug14] chase
+[16Aug14] chase
+[5Aug14] req to WHG, travel with 8956 Liam YUEN"|309|2
+"S007899"|"Y"|"School"|"British Airways BA0028"|""|"London Heathrow T5"|"20140902"|"0535"|"request made"|"[23Aug] req to school"|"20140823115322"|"AA00040"|""|364|1
+"S010882"|"Y"|"School"|""|""|""|"20140904"|""|"itin requested"|""|"20140818111800"|"AA00032"|"[15Aug14] stu will be back next week
+[11Aug14] ask p & stu to send itin
+[7Aug14] will send itin tdy"|88|1
+"S030215"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"confirmation emailed family"|""|"20140828122342"|"AA00032"|"[16Aug14] give sch contact no.
+[7aug14] asking student phone no. [4Aug14] req to sch"|312|1
+"S031804"|"N"|""|"Air France AF185"|""|"Paris T2E"|"20140904"|"0605"|""|""|"20140816171522"|"AA00032"|""|360|1
+"S031804"|"Y"|"School"|"Air France AF1680"|""|"London Heathrow T4"|"20140904"|"0750"|"request made"|""|"20140816171541"|"AA00032"|"[16Aug14] sch ask if the stu will arrive earlier
+[15Aug14] req to sch"|360|2
+"S031804"|"Y"|"Quest"|"Air France AF1680"|""|"London Heathrow T4"|"20140904"|"0750"|"request made"|"[26Aug] req sent - pick up from airport to school"|"20140826122449"|"AA00040"|"Change flight from
+Paris T2E AF185 0605"|365|1
+"S011715"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"family acknowledged confirmation"|""|"20140818101219"|"AA00032"|"[15Aug14] chase
+[6Aug14] ask if the sch can help"|321|1
+"S010882"|"Y"|"School"|""|""|""|"20140904"|""|"booking made & awt contact details"|""|"20140828133942"|"AA00032"|"[28Aug14] ask sch for the fee
+[15Aug14] stu will be back next week
+[11Aug14] ask p & stu to send itin
+[7Aug14] will send itin tdy"|88|1
+"S030389"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"sch/guardian cfm booking will be made"|""|"20140820194821"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch/ travel with mum/ will take the coach on 2nd Sept"|65|1
+"S008681"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140902"|"0455"|"sch/guardian cfm booking will be made"|""|"20140820194843"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch/ travel with mum"|208|1
+"S031276"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"request made"|""|"20140828111220"|"AA00032"|"[28Aug14] req to whg
+[19Aug14] chase
+[16Aug14] ask ag for the cost
+[7Aug14] ask how much, frm airport to hotel, hotel to ashford"|295|1
+"S012343"|"N"|""|"Aeroflot Russian Airlines SU213"|""|"Moscow (Sheremetyevo) Russia"|"20140902"|"1710"|"itin requested"|""|"20140820123907"|"AA00032"|""|349|1
+"S007899"|"Y"|"School"|"British Airways BA0028"|""|"London Heathrow T5"|"20140902"|"0535"|"request made"|"[23Aug] req to school"|"20140828124159"|"AA00032"|"[28Aug14] req to sch"|364|1
+"S006369"|"Y"|""|"British Airways"|""|"London Heathrow T5"|"20141203"|"0520"|""|""|"20141203124134"|"AA00003"|""|369|1
+"S010882"|"Y"|"School"|""|""|""|"20140901"|""|"booking made & awt contact details"|""|"20140828175644"|"AA00032"|"[28Aug14] ask sch for the fee
+[15Aug14] stu will be back next week
+[11Aug14] ask p & stu to send itin
+[7Aug14] will send itin tdy"|88|1
+"S030389"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140826"|"0455"|"confirmation emailed family"|""|"20140828190828"|"AA00032"|"[15Aug14] chase
+[5Aug14] req to sch/ travel with mum/ will take the coach on 2nd Sept"|65|1
+"S010882"|"Y"|"School"|""|""|""|"20140901"|""|"confirmation emailed family"|""|"20140830103506"|"AA00032"|"[28Aug14] ask sch for the fee
+[15Aug14] stu will be back next week
+[11Aug14] ask p & stu to send itin
+[7Aug14] will send itin tdy"|88|1
+"S030215"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140902"|"0540"|"family acknowledged confirmation"|""|"20140828145824"|"AA00032"|"[16Aug14] give sch contact no.
+[7aug14] asking student phone no. [4Aug14] req to sch"|312|1
+"S031804"|"Y"|"Quest"|"Air France AF1680"|""|"London Heathrow T4"|"20140904"|"0750"|"booking made & awt contact details"|"[26Aug] req sent - pick up from airport to school"|"20140828161455"|"AA00032"|"Change flight from
+Paris T2E AF185 0605"|365|1
+"S031276"|"Y"|"WHG"|"British Airways BA26"|""|"London Heathrow T5"|"20140829"|"0455"|"booking made & awt contact details"|""|"20140828191202"|"AA00032"|"[28Aug14] req to whg
+[19Aug14] chase
+[16Aug14] ask ag for the cost
+[7Aug14] ask how much, frm airport to hotel, hotel to ashford"|295|1
+"S007899"|"Y"|"School"|"British Airways BA0028"|""|"London Heathrow T5"|"20140902"|"0535"|"confirmation emailed family"|"[23Aug] req to school"|"20140830103345"|"AA00032"|"[30Aug14] waiting for driver details
+[28Aug14] req to sch"|364|1
+"S007454"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140901"|"0620"|"confirmation emailed family"|""|"20140828114632"|"AA00032"|"[28Aug14] ask p for stu contact no
+[5Aug14] req to sch"|195|1
+"S007454"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140901"|"0620"|"confirmation emailed family"|""|"20140830164055"|"AA00032"|"[30Aug14] email sch stu contact no
+[28Aug14] ask p for stu contact no
+[5Aug14] req to sch"|195|1
+"S011940"|"Y"|"Quest"|"Cathay Pacific CX239"|"160"|"London Heathrow T3"|"20140830"|"1810"|"confirmation emailed family"|""|"20140819101554"|"AA00032"|"will arrive a day earlier, frm host family to sch on 31Aug
+[4Aug14] req to q"|352|1
+"S030928"|"N"|""|""|""|""|"20140712"|""|""|""|"20140712103411"|"AA00032"|""|50|1
+"S031517"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"booking made & awt contact details"|""|"20140828113907"|"AA00032"|"[28Aug14] ask sch for driver details
+[13Aug14] fwd to house staff (Mrs Jayne Bloye)/ chase
+travel as UM/ [4Aug14] req to sch"|75|1
+"S031517"|"Y"|"School"|"British Airways BA26"|""|"London Heathrow T5"|"20140831"|"0455"|"confirmation emailed family"|""|"20140830190637"|"AA00032"|"[28Aug14] ask sch for driver details
+[13Aug14] fwd to house staff (Mrs Jayne Bloye)/ chase
+travel as UM/ [4Aug14] req to sch"|75|1
+"S030678"|"N"|""|"Emirate EK0381"|""|"Dubai T3"|"20140831"|"0435"|""|""|"20140816151824"|"AA00032"|""|34|1
+"S030928"|"Y"|"School"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20140902"|"0620"|"request made"|""|"20140830182658"|"AA00032"|""|50|1
+"S006121"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140908"|"0540"|"request made"|""|"20140830121422"|"AA00032"|""|367|1
+"S030928"|"Y"|"School"|"Cathay Pacific CX255"|"0"|"London Heathrow T3"|"20140902"|"0620"|"confirmation emailed family"|""|"20140901101907"|"AA00032"|""|50|1
+"S007454"|"Y"|"School"|"Cathay Pacific CX237"|""|"London Heathrow T3"|"20140901"|"0620"|"confirmation emailed family"|""|"20140830164429"|"AA00032"|"[30Aug14] email sch stu contact no
+[28Aug14] ask p for stu contact no
+[5Aug14] req to sch"|195|1
+"S031804"|"Y"|"Quest"|"Air France AF1680"|""|"London Heathrow T4"|"20140904"|"0750"|"confirmation emailed family"|"[26Aug] req sent - pick up from airport to school"|"20140830115319"|"AA00032"|"Change flight from
+Paris T2E AF185 0605"|365|1
+"S006121"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140908"|"0540"|"request made"|""|"20140901112908"|"AA00032"|"[30Aug14] req to sch"|367|1
+"S006121"|"Y"|"School"|"Cathay Pacific CX251"|""|"London Heathrow T3"|"20140908"|"0540"|"booking made & awt contact details"|""|"20140905101635"|"AA00032"|"[30Aug14] req to sch"|367|1
+"S006369"|"N"|""|"Emirate"|""|"Edinburgh"|"20150205"|""|"sch/guardian cfm booking will be made"|""|"20150205163332"|""|""|370|1
+"S006369"|"N"|""|"Emirate"|""|"Edinburgh"|"20150205"|""|"sch/guardian cfm booking will be made"|""|"20150205163451"|""|""|370|1
+"S006369"|"N"|""|"Cathay Pacific"|""|"Edinburgh"|"20150205"|""|""|""|"20150205163414"|""|""|370|2
+"S006369"|"Y"|""|"Emirate"|""|"Dubai"|"20150830"|"0700"|""|""|"20150328154928"|"AA00003"|""|372|1
+"S006369"|"Y"|""|"Emirate"|""|"Dubai"|"20150830"|"0700"|""|""|"20150328155035"|"AA00003"|""|372|1
+"S006369"|"Y"|""|"Emirate"|""|"Dubai"|"20150830"|"0700"|""|""|"20150328155043"|"AA00003"|""|372|1
+"S006369"|"N"|""|"Emirate"|""|"London Heathrow T3"|"20150830"|"1030"|""|""|"20150328155021"|"AA00003"|""|372|2
+"S006369"|"Y"|""|"British Airways"|""|"London Heathrow T5"|"20150613"|""|""|""|"20150613124204"|"AA00003"|"join UM"|373|1
+"S006369"|"N"|""|"British Airways"|""|"Manchester T1"|"20150613"|""|""|""|"20150613124225"|"AA00003"|""|373|2
+"S006369"|"N"|""|"British Airways"|""|"London Heathrow T5"|"20150613"|""|""|""|"20150613124239"|"AA00003"|"join UM"|373|1
+"S006369"|"N"|""|"British Airways"|""|"France"|"20150903"|"1100"|""|""|"20150703110610"|""|""|374|1
+"S006369"|"N"|""|"Cathay Pacific"|""|"England"|"20150905"|"1000"|""|""|"20150703110708"|""|"Remark"|374|2
+"S006369"|"N"|""|"British Airways"|""|"France"|"20150903"|"1100"|""|""|"20150703110753"|""|""|374|1
+"S006369"|"Y"|"School"|"Cathay Pacific CX450"|""|"London Heathrow T1"|"20150903"|"05:00"|"sch/guardian cfm booking will be made"|"Heathrow Terminal 1 Arrvial Area
+Pick up by: Mr Robinson
+Tel: XX-XXXX-XXXXX"|"20150703120831"|"AA00061"|""|377|1
+"S006369"|"Y"|""|"Air New Zealand"|""|"Bristol"|"20150703"|""|""|""|"20150703130955"|"AA00061"|""|376|1
+"S006369"|"N"|""|"Emirate"|""|"Paris"|"20150911"|"0800"|""|""|"20150710111649"|"AA00061"|""|383|1
+"S006369"|"N"|""|""|""|""|"20150710"|""|""|""|"20150710111807"|"AA00061"|""|382|1
+"S006369"|"N"|""|"British Airways"|""|"London Heathrow T1"|"20150711"|"1200"|""|""|"20150710111905"|"AA00061"|""|383|2
+"S006369"|"N"|""|"Air France"|""|"Paris"|"20150908"|"0900"|"sch/guardian cfm booking will be made"|""|"20150710125957"|"AA00061"|""|386|1
+"S006369"|"N"|""|"Air France"|""|"Paris"|"20150908"|"0900"|"Family self-arrange"|""|"20150710130049"|"AA00061"|""|386|1
+"S006369"|"Y"|""|"Cathay Pacific CX455"|""|"London Heathrow T1"|"20150908"|"1200"|""|""|"20150710130028"|"AA00061"|""|386|2
+"S006369"|"N"|""|""|""|""|"20150710"|""|""|""|"20150710130213"|"AA00061"|""|386|2
+"S006369"|"N"|""|"Air France"|""|"paris"|"20150911"|"0900"|""|""|"20150710132613"|"AA00003"|""|387|1
+"S006369"|"Y"|""|"British Airways"|""|"London Luton"|"20150911"|"1200"|""|""|"20150710132634"|"AA00003"|""|387|2
+"S006369"|"N"|""|"British Airways"|""|"London Heathrow T5"|"20150710"|"0520"|""|""|"20150710133255"|"AA00003"|""|388|1
+"S006369"|"Y"|""|"Cathay Pacific CX555"|""|"Birmingham"|"20150710"|"1000"|""|""|"20150710133954"|"AA00061"|""|389|1
+"S006369"|"N"|""|"British Airways"|""|"Paris"|"20150710"|"1000"|""|""|"20150710134113"|"AA00061"|""|390|1
+"S006369"|"Y"|"School"|"Cathay Pacific CX450"|""|"London Heathrow T1"|"20150903"|"0500"|"sch/guardian cfm booking will be made"|"Terminal 1 arrvial lobby"|"20150710115338"|"AA00061"|""|385|1
+"S006369"|"N"|""|"British Airways"|""|"London Heathrow T1"|"20150713"|"0500"|""|""|"20150713102234"|"AA00061"|""|392|1
+"S006369"|"Y"|""|"British Airways"|""|"Manchester T1"|"20150713"|"1200"|""|""|"20150713102253"|"AA00061"|""|392|2
+"S006369"|"N"|""|"KLM Royal Dutch"|""|"france"|"20150902"|"23:40"|""|""|"20150713142846"|"AA00032"|""|394|1
+"S006369"|"N"|""|"Air France"|"100"|"London"|"20150903"|"5:00"|"sch/guardian cfm booking will be made"|"airport t3"|"20150713143017"|"AA00032"|""|394|2
+"S033048"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123345"|"AA00032"|""|401|1
+"S031980"|"N"|""|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123212"|"AA00032"|""|397|1
+"S030634"|"N"|""|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123258"|"AA00032"|""|399|1
+"S032149"|"Y"|"WHG"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124110"|"AA00032"|""|405|1
+"S032006"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124945"|"AA00032"|""|417|1
+"S030542"|"Y"|"WHG"|""|""|""|"20150714"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714125236"|"AA00032"|""|422|1
+"S032151"|"Y"|"Quest"|""|""|"London Heathrow T2"|"20150830"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714125441"|"AA00032"|""|426|1
+"S030803"|"Y"|"School"|"British Airways"|""|"London Heathrow T1"|"20150904"|"05:35"|"sch/guardian cfm booking will be made"|""|"20150714125614"|"AA00032"|""|428|1
+"S031924"|"Y"|"WHG"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714123044"|"AA00032"|""|395|1
+"S031133"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123136"|"AA00032"|""|396|1
+"S006369"|"Y"|""|"Cathay Pacific"|""|"England"|"20150905"|"1000"|""|""|"20150703110803"|""|"Remark"|374|2
+"S006369"|"Y"|""|"Cathay Pacific  CX"|""|"London Heathrow T1"|"20150905"|"00:00"|""|""|"20150703112036"|""|""|375|1
+"S006369"|"N"|""|"Cathay Pacific  CX"|""|"rome"|"20150905"|"00:00"|""|""|"20150703112143"|""|""|375|1
+"S006369"|"Y"|""|"CX hh"|""|"London Heathrow T1"|"20150704"|"00:00"|""|""|"20150703112204"|""|""|375|2
+"S006369"|"N"|""|"Air France"|""|"France"|"20150703"|"04:00"|""|""|"20150703112543"|""|""|376|1
+"S006369"|"N"|""|"Air France"|""|"France"|"20150703"|"04:00"|""|""|"20150703112622"|""|""|376|1
+"S006369"|"N"|""|"Air France"|""|"London Heathrow T3"|"20150703"|"06:00"|""|""|"20150703112600"|""|""|376|2
+"S006369"|"N"|""|"British Airways"|""|"France"|"20150903"|"1100"|""|""|"20150703110852"|""|""|374|1
+"S006369"|"Y"|""|"Air New Zealand"|""|"Bristol"|"20150703"|""|""|""|"20150703113524"|""|""|376|1
+"S006369"|"N"|""|"Air France"|"100"|"Bristol"|"20150703"|"06:00"|"details confirmed"|"arrival"|"20150703113254"|""|""|376|2
+"S006369"|"Y"|""|"Cathay Pacific"|""|"London Heathrow T1"|"20150903"|"05:00"|""|""|"20150703114734"|"AA00061"|""|377|1
+"S006369"|"Y"|""|"Cathay Pacific CX450"|""|"London Heathrow T1"|"20150903"|"05:00"|""|""|"20150703120050"|"AA00061"|""|377|1
+"S006369"|"N"|""|"Air France"|""|"Paris"|"20150703"|"05:00"|""|""|"20150703115515"|"AA00061"|""|378|1
+"S006369"|"Y"|""|"Cathay Pacific CX450"|""|"London Heathrow T1"|"20150706"|"05:00"|""|""|"20150703115837"|"AA00061"|""|378|2
+"S006369"|"N"|""|"Air France"|""|"Paris"|"20150903"|"05:00"|""|""|"20150703122246"|"AA00061"|""|379|1
+"S006369"|"N"|""|"Cathay Pacific CX450"|""|"London Heathrow T1"|"20150906"|"05:00"|""|""|"20150703123039"|"AA00061"|""|379|2
+"S006369"|"N"|""|"British Airways"|""|"France"|"20150903"|"1100"|""|""|"20150703113312"|""|""|374|1
+"S006369"|"N"|""|"British Airways"|""|"France"|"20150903"|"1100"|""|""|"20150703124519"|"AA00061"|""|374|1
+"S006369"|"N"|""|"Air France"|""|"Paris"|"20150903"|"05:00"|""|""|"20150703124714"|"AA00061"|""|380|1
+"S006369"|"N"|""|"Cathay Pacific CX450"|""|"London Heathrow T1"|"20150906"|"05:00"|""|""|"20150703124739"|"AA00061"|""|380|2
+"S006369"|"N"|""|"Air France"|""|"Paris"|"20150903"|"05:00"|""|""|"20150703124750"|"AA00061"|""|380|1
+"S006369"|"N"|""|""|""|""|"20150703"|""|""|""|"20150703125307"|"AA00061"|""|380|2
+"S006369"|"N"|""|"Cathay Pacific CX450"|""|"London Heathrow T1"|"20150906"|"05:00"|"sch/guardian cfm booking will be made"|"T1"|"20150703125457"|"AA00061"|""|380|2
+"S006369"|"Y"|""|"Air New Zealand"|""|"Bristol"|"20150703"|""|""|""|"20150703113540"|""|""|376|1
+"S006369"|"N"|""|"Qantas"|""|"Italy"|"20150904"|"05:00"|""|""|"20150703131122"|"AA00061"|""|381|1
+"S006369"|"N"|""|"British Airways"|""|"London Heathrow T1"|"20150707"|"05:00"|""|""|"20150703131140"|"AA00061"|""|381|2
+"S006369"|"N"|""|"Qantas"|""|"Italy"|"20150904"|"05:00"|""|""|"20150703131154"|"AA00061"|""|381|1
+"S006369"|"Y"|""|"British Airways"|""|"London Heathrow T1"|"20150707"|"05:00"|""|""|"20150703131158"|"AA00061"|""|381|2
+"S006369"|"Y"|""|"British Airways"|""|"London Heathrow T1"|"20150907"|"05:00"|""|""|"20150703131330"|"AA00061"|""|381|2
+"S006369"|"Y"|"School"|"British Airways BA334"|""|"London Heathrow T1"|"20150904"|"05:00"|"sch/guardian cfm booking will be made"|"Heathrow Terminal 1 Arrvial Area
+Pick up by: Mr Robinson
+Tel: XX-XXXX-XXXXX"|"20150710110512"|"AA00061"|""|377|1
+"S006369"|"N"|""|"Emirate"|""|"Paris"|"20150911"|"0800"|""|""|"20150710111544"|"AA00061"|""|383|1
+"S006369"|"Y"|""|"Emirate"|""|"Paris"|"20150911"|"0800"|""|""|"20150710111638"|"AA00061"|""|383|1
+"S006369"|"N"|""|"British Airways"|""|"London Heathrow T1"|"20150911"|"1200"|""|""|"20150710111631"|"AA00061"|""|383|2
+"S006369"|"Y"|"School"|"Cathay Pacific CX450"|""|"London Heathrow T5"|"20150907"|"0500"|"sch/guardian cfm booking will be made"|"Terminal 5 arrival lobby"|"20150710115108"|"AA00061"|""|384|1
+"S006369"|"Y"|""|"British Airways"|""|"Manchester T1"|"20150710"|"0920"|""|""|"20150710133315"|"AA00003"|""|388|2
+"S006369"|"Y"|""|"Cathay Pacific"|""|"Birmingham"|"20150710"|"1000"|""|""|"20150710133937"|"AA00061"|""|389|1
+"S006369"|"Y"|""|"Cathay Pacific CX555"|""|"Birmingham"|"20150710"|"1400"|""|""|"20150710134004"|"AA00061"|""|389|1
+"S006369"|"Y"|""|"Air New Zealand"|""|"London Heathrow T1"|"20150713"|"0500"|""|""|"20150713102058"|"AA00061"|""|391|1
+"S006369"|"N"|""|"KLM Royal Dutch"|""|"france"|"20150902"|"23:40"|""|""|"20150713142916"|"AA00032"|""|394|1
+"S006369"|"N"|""|"Air France"|""|"London"|"20150903"|"5:00"|""|""|"20150713142911"|"AA00032"|""|394|2
+"S006369"|"N"|""|"Air France"|""|"London"|"20150903"|"5:00"|""|""|"20150713142923"|"AA00032"|""|394|2
+"S006369"|"N"|""|"Air France"|"100"|"London"|"20150903"|"5:00"|"sch/guardian cfm booking will be made"|"airport t3"|"20150713143009"|"AA00032"|""|394|2
+"S006369"|"N"|""|"Cathay Pacific"|""|"London Heathrow T1"|"20150903"|"0500"|""|""|"20150713114021"|"AA00061"|""|393|1
+"S006369"|"Y"|""|"British Airways"|""|"Manchester T1"|"20150713"|"1200"|""|""|"20150713102349"|"AA00061"|""|392|2
+"S031924"|"Y"|"Others"|""|""|""|"20150714"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714123006"|"AA00032"|""|395|1
+"S031924"|"Y"|"Others"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714123023"|"AA00032"|""|395|1
+"S032467"|"N"|""|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123318"|"AA00032"|""|400|1
+"S032757"|"N"|""|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123233"|"AA00032"|""|398|1
+"S032467"|"Y"|""|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123441"|"AA00032"|""|400|1
+"S031980"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123640"|"AA00032"|""|397|1
+"S032757"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123544"|"AA00032"|""|398|1
+"S030634"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123735"|"AA00032"|""|399|1
+"S032467"|"Y"|"School"|"British Airways"|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123801"|"AA00032"|""|400|1
+"S033048"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123359"|"AA00032"|""|402|1
+"S032054"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714123905"|"AA00032"|""|403|1
+"S032149"|"Y"|"WHG"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714124135"|"AA00032"|""|405|1
+"S030942"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124159"|"AA00032"|""|406|1
+"S032937"|"Y"|"Quest"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124231"|"AA00032"|""|407|1
+"S032984"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124448"|"AA00032"|""|410|1
+"S008482"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124506"|"AA00032"|""|411|1
+"S031673"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124528"|"AA00032"|""|412|1
+"S032774"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124549"|"AA00032"|""|413|1
+"S032554"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714124617"|"AA00032"|""|414|1
+"S032006"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714125007"|"AA00032"|""|418|1
+"S031016"|"Y"|"Quest"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714125102"|"AA00032"|""|419|1
+"S032754"|"Y"|"School"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|""|"20150714125129"|"AA00032"|""|420|1
+"S030542"|"Y"|"WHG"|""|""|""|"20150902"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714125242"|"AA00032"|""|422|1
+"S031879"|"Y"|"Quest"|""|""|""|"20150714"|""|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150714130206"|"AA00032"|""|439|1
+"S031879"|"Y"|"Quest"|"British Airways BA28"|""|"London Heathrow T1"|"20150902"|"0535"|"sch/guardian cfm booking will be made"|"Guardianship Company"|"20150722152921"|"AA00032"|""|439|1
+"S031771"|"Y"|"School"|""|""|""|"20150714"|""|"sch/guardian cfm booking will be made"|""|"20150714125356"|"AA00032"|""|425|1
+"S030555"|"Y"|""|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20150828"|"0620"|""|""|"20150722153415"|"AA00032"|""|444|1
+"S031981"|"N"|""|""|""|"London Heathrow T3"|"20150726"|"0900"|"sch/guardian cfm booking will be made"|"Mr Paul Fletcher
+07846188651
+College contact number: 02920493121"|"20150722154228"|"AA00032"|""|446|1
+"S031981"|"N"|""|"Air France AF1680"|""|"London Heathrow T4"|"20150726"|"0750"|"sch/guardian cfm booking will be made"|"Mr Paul Fletcher
+07846188651
+College contact number: 02920493121"|"20150722154449"|"AA00032"|"School's organised 
+26.July.2015
+Heathrow T3
+9am"|446|1
+"S032824"|"Y"|"School"|""|""|""|"20150714"|""|"sch/guardian cfm booking will be made"|""|"20150714130223"|"AA00032"|""|440|1
+"S031728"|"Y"|"School"|"Virgin Atlantic VS207"|""|"London Heathrow T3"|"20150902"|"0525"|"sch/guardian cfm booking will be made"|""|"20150731182003"|"AA00064"|""|448|1
+"S032937"|"Y"|"Quest"|""|""|""|"20150714"|""|"sch/guardian cfm booking will be made"|""|"20150714130542"|"AA00032"|""|407|1
+"S006369"|"N"|""|"British Airways"|""|"London Heathrow T5"|"20150901"|"0525"|""|""|"20150811151529"|"AA00065"|"will change flight"|450|1
+"S006369"|"N"|""|"British Airways"|"500"|"London Heathrow T5"|"20150901"|"0525"|"confirmation emailed family"|"TESTING"|"20150812150621"|"AA00065"|"will change flight"|450|1
+"S007208"|"N"|""|"British Airways"|""|"London Heathrow T5"|"20150905"|"0520"|""|""|"20150904125244"|"AA00003"|"will change flight to Manchester"|452|1
+"S007208"|"Y"|""|"British Airways"|""|"Manchester T1"|"20150905"|"1040"|""|""|"20150904125311"|"AA00003"|""|452|2
+"S006369"|"N"|""|"British Airways"|""|"London Heathrow T5"|"20151015"|"0520"|""|""|"20151015174303"|"AA00003"|"will change flight"|454|1
+"S006369"|"N"|""|"British Airways"|""|"Manchester T1"|"20151015"|"1030"|""|""|"20151015174321"|"AA00003"|""|454|2
+"S034025"|"Y"|""|"British Airways"|""|"London Heathrow T5"|"20160904"|"0535"|""|""|"20160718103140"|""|"BA0028"|455|1
+"S034025"|"Y"|""|"BA0028"|""|"London Heathrow T5"|"20160904"|"0535"|""|""|"20160718105917"|"AA00007"|"BA0028"|455|1
+"S031764"|"Y"|""|"British Airways"|""|"Manchester T3"|"20160911"|"09:05"|""|""|"20160719102410"|"AA00065"|"Parents request 3seats for transportation"|459|1
+"S031764"|"N"|""|""|""|""|"20160719"|""|""|""|"20160719102414"|"AA00065"|""|459|2
+"S033930"|"N"|""|"British Airways BA0032"|""|"London Heathrow T5"|"20160826"|"04:50"|""|""|"20160720122635"|"AA00065"|""|464|1
+"S033930"|"Y"|""|"British Airways 1414"|""|""|"20160826"|"08:30"|""|""|"20160720122823"|"AA00065"|"Arrival location (Airport) : BELFAST - GEORGE BEST CITY APT"|464|2
+"S033930"|"N"|""|"British Airways BA0032"|""|"London Heathrow T5"|"20160826"|"04:50"|""|""|"20160720130954"|"AA00065"|""|464|1
+"S033930"|"Y"|""|"British Airways 1414"|""|"Belfast George Best City Airport"|"20160826"|"08:30"|""|""|"20160720131007"|"AA00065"|""|464|2
+"S030444"|"Y"|""|"British Airways BA32"|""|"London Heathrow T5"|"20160903"|"0450"|""|""|"20160718131154"|"AA00066"|""|456|1
+"S030444"|"Y"|"School"|"British Airways BA32"|""|"London Heathrow T5"|"20160903"|"0450"|""|"Andrew would like to take the coach from Heathrow (Route L)  which will be leaving from Terminal 3 at 9am on Saturday 3rd September."|"20160730115418"|"AA00066"|""|456|1
+"S034041"|"Y"|""|"British Airways BA32"|""|"London Heathrow T5"|"20160904"|"0450"|""|""|"20160812103917"|"AA00066"|""|468|1
+"S034041"|"Y"|""|"British Airways BA 32"|""|"London Heathrow T5"|"20160904"|"0450"|""|""|"20160812104005"|"AA00066"|""|468|1
+"S034041"|"Y"|"School"|"British Airways BA 32"|"GBP55"|"London Heathrow T5"|"20160904"|"0450"|"details confirmed"|"Mrs Lynette Harris will meet Luca from his flight. She will be at the arrivals meeting point holding a Bromsgrove school board.  
+
+The emergency contact number is 07584 315977."|"20160812173648"|"AA00066"|""|468|1
+"S034041"|"Y"|"School"|"British Airways BA 32"|"GBP55"|"London Heathrow T5"|"20160904"|"0450"|"details confirmed"|"Mrs Lynette Harris will meet Luca from his flight. She will be at the arrivals meeting point holding a Bromsgrove school board.  
+
+The emergency contact number is 07584 315977.
+
+The cost of the transfer will go onto Luca's school bill."|"20160812173730"|"AA00066"|""|468|1
+"S034041"|"Y"|"School"|"British Airways BA 32"|"GBP55"|"London Heathrow T5"|"20160904"|"0450"|"details confirmed"|"Mrs Lynette Harris will meet Luca from his flight. She will be at the arrivals meeting point holding a Bromsgrove school board.  
+
+The emergency contact number is 07584 315977.
+
+The cost of the transfer will go onto Luca's school bill."|"20160812173739"|"AA00066"|""|468|1
+"S034041"|"Y"|"School"|"British Airways BA 32"|"GBP55"|"London Heathrow T5"|"20160904"|"0450"|"details confirmed"|"Mrs Lynette Harris will meet Luca from his flight. She will be at the arrivals meeting point holding a Bromsgrove school board.  
+
+The emergency contact number is 07584 315977.
+
+The cost of the transfer will go onto Luca's school bill."|"20160812173755"|"AA00066"|""|468|1
+"S012650"|"Y"|""|"Emirate EK0007"|""|"London Heathrow T3"|"20160904"|"0705"|""|""|"20160813104943"|"AA00066"|""|469|1
+"S012650"|"N"|""|"Emirate EK0383"|""|"Dubai INTL Terminal 3"|"20160903"|"2315"|""|""|"20160813115242"|"AA00066"|""|469|1
+"S031363"|"Y"|""|"Cathay Pacific CX0255"|""|"London Heathrow T3"|"20160830"|"0620"|""|""|"20160719171438"|"AA00066"|""|462|1
+"S031363"|"Y"|"School"|"Cathay Pacific CX0255"|""|"London Heathrow T3"|"20160830"|"0620"|"details confirmed"|"3 seats are reserved for the family on the school coach collecting the boys at 8:00am on Friday 2nd September from Terminal 3 at Heathrow."|"20160823101933"|"AA00066"|""|462|1
+"S030444"|"Y"|"School"|"British Airways BA32"|""|"London Heathrow T5"|"20160903"|"0450"|""|"Andrew will take the coach from Heathrow (Route L)  which will be leaving from Terminal 3 at 9am on Saturday 3rd September."|"20160730115437"|"AA00066"|""|456|1
+"S034239"|"Y"|""|"Virgin Atlantic VS207"|""|"London Heathrow T3"|"20160831"|"0530"|""|""|"20160808115601"|"AA00066"|""|467|1
+"S036495"|"Y"|""|"British Airways"|""|"London Heathrow T5"|"20180904"|"04:50"|""|""|"20180720145705"|"AA00080"|"BA032"|485|1
+"S034239"|"Y"|""|"Virgin Atlantic VS207"|""|"London Heathrow T3"|"20160831"|"0530"|""|"a place has been reserved on the school transfer service for Cheuk Lam Rachel from London Heathrow Terminal 3 on 31 August and the emergency contact details will be confirmed shortly"|"20160824174642"|"AA00066"|""|467|1
+"S033130"|"Y"|""|"Cathay Pacific CX0912"|""|"Hong Kong International Terminal 1"|"20160903"|"1045"|""|""|"20160826173309"|"AA00066"|""|472|1
+"S033130"|"N"|""|"Cathay Pacific CX0912"|""|"Hong Kong International Terminal 1"|"20160903"|"1045"|""|""|"20160826173350"|"AA00066"|""|473|1
+"S033130"|"N"|""|"Cathay Pacific CX0912"|""|"Hong Kong International Terminal 1"|"20160903"|"1045"|"details confirmed"|"Whg confirmed they have arranged Streamline taxis 01273 202020 to pick up Jeremy from Gatwick Airport on 4th September to take him to Lancing College.  The Driver will be waiting at arrivals with a Whitehouse Board with Jeremy's name on it.  As soon as they have the Drivers name and mobile number they will pass this information to us.
+
+The payment for this trip will be deducted from the lodgment held by Head Office."|"20160826181028"|"AA00066"|""|473|1
+"S033563"|"N"|""|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20160904"|"0620"|""|""|"20160819181905"|"AA00066"|""|471|1
+"S033295"|"N"|""|"Cathay Pacific CX357"|""|"Manchester INTL Terminal 2"|"20160905"|"0650"|""|""|"20160830144407"|"AA00066"|""|474|1
+"S033295"|"N"|""|"Cathay Pacific CX357"|""|"Manchester INTL Terminal 2"|"20160905"|"0650"|"confirmation emailed family"|""|"20160830164021"|"AA00066"|""|474|1
+"S033295"|"N"|""|"Cathay Pacific CX357"|""|"Manchester INTL Terminal 2"|"20160905"|"0650"|""|"Emmet will be met at Ronaldsway airport by Mrs Wendy Lang, Housemother of Colbourne House. Her  mobile number is +4407624 493608. She will also be collecting other students from Arrivals in the minivan with the KWC logo."|"20160830151355"|"AA00066"|""|474|1
+"S033295"|"N"|""|"Cathay Pacific CX357"|""|"Manchester INTL Terminal 2"|"20160905"|"0650"|"confirmation emailed family"|"Emmet will be met at Ronaldsway airport by Mrs Wendy Lang, Housemother of Colbourne House. Her  mobile number is +4407624 493608. She will also be collecting other students from Arrivals in the minivan with the KWC logo."|"20160830163957"|"AA00066"|""|474|1
+"S033295"|"N"|""|"Cathay Pacific CX357"|""|"Manchester INTL Terminal 2"|"20160905"|"0650"|"confirmation emailed family"|"Emmet will be met at Ronaldsway airport by Mrs Wendy Lang, Housemother of Colbourne House. Her  mobile number is +4407624 493608. She will also be collecting other students from Arrivals in the minivan with the KWC logo."|"20160830164010"|"AA00066"|""|474|1
+"S033295"|"N"|""|"Cathay Pacific CX357"|""|"Manchester INTL Terminal 2"|"20160905"|"0650"|"confirmation emailed family"|"Emmet will be met at Ronaldsway airport by Mrs Wendy Lang, Housemother of Colbourne House. Her  mobile number is +4407624 493608. She will also be collecting other students from Arrivals in the minivan with the KWC logo."|"20160830164030"|"AA00066"|""|474|1
+"S033563"|"Y"|""|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20160904"|"0620"|""|""|"20160827102810"|"AA00066"|""|471|1
+"S033563"|"Y"|"Quest"|"Cathay Pacific CX255"|""|"London Heathrow T3"|"20160904"|"0620"|"confirmation emailed family"|"Start	Sunday 04/09/2016 06:20	
+Details	collection LHR (T3) flight CX255 and take to the host family.	
+Taxi	JMC Monmouth Ltd 01600 890998	
+
+End	Tuesday 06/09/2016 18:00	
+Details	collection from host family and take to school.	
+Taxi	JMC Monmouth Ltd 01600 890998	
+
+Host Family	BRINKWORTH Sam	
+Address	12 Lakenheath 
+Kingsway	
+	Gloucester	
+	Glous GL2 2DX	
+Phone	01452 446068	
+Host Mobile	07583 381414	
+Host Payment"|"20160903101511"|"AA00066"|""|471|1
+"S033040"|"Y"|""|"BA 32 + BA1382"|""|""|"20170904"|""|""|""|"20170722150141"|"AA00072"|""|478|1
+"S033040"|"Y"|""|"BA 32 + BA1382"|""|"Manchester T2"|"20170904"|""|""|""|"20170722152430"|"AA00072"|""|478|1
+"S031202"|"N"|""|"CX 251"|""|"Heathrow T3"|"20170828"|""|"confirmation emailed family"|"Bromsgrove staff will be waiting at the arrivals meeting point with a sign.   Student need to look out for the board as they enter arrival hall."|"20170805152525"|"AA00073"|"Elvis will arrive two days earlier and stay with guardian.  Will go back to Heathrow to join the school coach on 31 August, Heathrow T3 at 8.30am"|481|1
+"S031202"|"Y"|""|"CX 251"|""|"Heathrow T3"|"20170828"|""|"confirmation emailed family"|"Bromsgrove staff will be waiting at the arrivals meeting point with a sign.   Student need to look out for the board as they enter arrival hall."|"20170805152746"|"AA00073"|"Elvis will arrive two days earlier and stay with guardian.  Will go back to Heathrow to join the school coach on 31 August, Heathrow T3 at 8.30am"|481|1
+"S031202"|"Y"|""|""|""|"Heathrow T3"|"20170831"|"8.30"|"confirmation emailed family"|"Bromsgrove staff will be waiting at the arrivals meeting point with a sign.   Student need to look out for the board as they enter arrival hall."|"20170805152832"|"AA00073"|"Elvis will arrive two days earlier and stay with guardian.  Will go back to Heathrow to join the school coach on 31 August, Heathrow T3 at 8.30am"|481|1
+"S011680"|"N"|""|"BA28"|""|"Heathrow T5"|"20170831"|"0535"|"confirmation emailed family"|"Bromsgrove staff will be waiting at the arrivals meeting point with a sign.   Student need to look out for the board as they enter arrival hall."|"20170805151937"|"AA00073"|""|480|1
+"S031202"|"Y"|""|""|""|"Heathrow T3"|"20170831"|"8.30"|"confirmation emailed family"|"Bromsgrove staff will be waiting at the arrivals meeting point with a sign.   Student need to look out for the board as they enter arrival hall."|"20170805152850"|"AA00073"|"Elvis will arrive two days earlier and stay with guardian.  Will go back to Heathrow to join the school coach on 31 August, Heathrow T3 at 8.30am"|481|1
+"S031202"|"Y"|""|""|""|"Heathrow T3"|"20170831"|"8.30"|"confirmation emailed family"|"20170821: mum called to cancel airport pickup service as they have friend taking Elvis to school. 
+Bromsgrove staff will be waiting at the arrivals meeting point with a sign.   Student need to look out for the board as they enter arrival hall."|"20170821152500"|"AA00007"|"20170821: mum called to cancel airport pickup service as they have friend taking Elvis to school. 
+Elvis will arrive two days earlier and stay with guardian.  Will go back to Heathrow to join the school coach on 31 August, Heathrow T3 at 8.30am"|481|1
+"S036670"|"N"|""|"Cathay Pacific"|""|"London Heathrow T3"|"20180906"|"6:20am"|""|""|"20180716170827"|"AA00061"|""|483|1
+"S036670"|"Y"|""|"Cathay Pacific"|""|"London Heathrow T3"|"20180906"|"6:20am"|""|""|"20180720114906"|"AA00080"|""|483|1
+"S035959"|"N"|""|"Cathay Pacific"|""|"London Heathrow T3"|"20180830"|"05:40"|""|""|"20180720145857"|"AA00080"|"CX0251"|486|1
+"S035959"|"Y"|""|"Cathay Pacific"|""|"London Heathrow T3"|"20180830"|"05:40"|""|""|"20180720150158"|"AA00080"|"CX0251"|486|1
+"S036553"|"Y"|""|"Cathay Pacific"|""|"London Heathrow T3"|"20180903"|"15:15"|""|""|"20180720144502"|"AA00080"|"CX257"|484|1
+"S036806"|"Y"|""|"British Airways"|""|"London Heathrow T2"|"20180912"|"04:50"|""|""|"20180720150043"|"AA00080"|"BA032"|487|1
+"S036553"|"Y"|"Others"|"Cathay Pacific"|""|"London Heathrow T3"|"20180903"|"15:15"|"request made"|""|"20180721170528"|"AA00080"|"CX257"|484|1
+"S036806"|"Y"|"School"|"British Airways"|""|"London Heathrow T2"|"20180912"|"04:50"|"request made"|""|"20180721170617"|"AA00080"|"BA0032"|487|1
+"S036806"|"Y"|"School"|"British Airways"|""|"London Heathrow T5"|"20180912"|"04:50"|"request made"|""|"20180725120938"|"AA00080"|"BA0032"|487|1
+"S035399"|"Y"|""|""|""|""|"20180725"|""|""|""|"20180725121319"|"AA00080"|"TBC"|489|1
+"S035399"|"Y"|""|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"itin requested"|""|"20180727155805"|"AA00080"|"EK029"|489|1
+"S036150"|"Y"|""|"Cathay Pacific"|""|"Manchester T2"|"20180829"|"06:55"|""|""|"20180720150143"|"AA00080"|"CX0219"|488|1
+"S035399"|"Y"|""|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"itin received"|""|"20180731144232"|"AA00080"|"EK029"|489|1
+"S036670"|"Y"|""|"Cathay Pacific"|""|"London Heathrow T3"|"20180906"|"6:20am"|""|""|"20180720115040"|"AA00080"|"CX 255"|483|1
+"S036670"|"Y"|""|"Cathay Pacific"|""|"London Heathrow T3"|"20180905"|"5:40am"|""|""|"20180801161823"|"AA00080"|"CX 251"|483|1
+"S036670"|"Y"|"School"|"Cathay Pacific"|""|"London Heathrow T3"|"20180905"|"5:40am"|"request made"|""|"20180801162108"|"AA00080"|"CX 251"|483|1
+"S035399"|"Y"|"WHG"|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"request made"|""|"20180801145647"|"AA00080"|"EK029"|489|1
+"S036150"|"Y"|"Quest"|"Cathay Pacific"|""|"Manchester T2"|"20180829"|"06:55"|"booking made & awt contact details"|"Meeting Point: Manchester T2
+Pickup Person: Taxi driver who will hold the the name board in T2's arrival hall
+Contact No: (01202) 88 22 99 (during office hours) & emergency contact 07545 502255 (out of office hours)
+
+Remarks: stay in the host family from 29/8/18 – 01/09/18, the cost is £160"|"20180731144648"|"AA00080"|"CX0219"|488|1
+"S036806"|"Y"|"School"|"British Airways"|""|"London Heathrow T5"|"20180912"|"04:50"|"sch/guardian cfm booking will be made"|"book a taxi for Chun Hei, sent P taxi request form for completion"|"20180725121207"|"AA00080"|"BA032"|487|1
+"S036806"|"Y"|"School"|"British Airways"|""|"London Heathrow T5"|"20180912"|"04:50"|"details confirmed"|"Pickup person: Amber cars - Mario, 01604 232666 & quote order no: 001
+Meeting person: Arrivals area at 05:45
+Payment method: cash fare"|"20180803115016"|"AA00080"|"BA032"|487|1
+"S036495"|"Y"|"School"|"British Airways"|"27.2 GBP per person (School bus)"|"London Heathrow T5"|"20180904"|"04:50"|"confirmation emailed family"|"Mr Steve Page, Transport Manager, 07866 836324
+Meeting Point: London Heathrow T3
+
+Remarks: Chi Lok's father request for pickup service sending him back to London, the school can arrange a taxi, wait for P's response if he is happy with the arrangement"|"20180725120914"|"AA00080"|"BA032
+Chi Lok's father will accompany with him"|485|1
+"S036495"|"Y"|"School"|"British Airways"|"27.2 GBP per person (School bus) + £170 approx. (taxi fare)"|"London Heathrow T5"|"20180904"|"04:50"|"confirmation emailed family"|"Mr Steve Page, Transport Manager, 07866 836324
+Meeting Point: London Heathrow T3
+
+Remarks: 
+Chi Lok's father request for pickup service sending him back to London, the school will arrange a taxi for him
+Taxi driver: Ady Warne from Warne Cars
+Meeting Point: front of the college
+Contact no: 07946 088130 - Ady's number
+Transport cost per person: £170 approx. (Added to the School Bill)"|"20180804104224"|"AA00080"|"BA032
+Chi Lok's father will accompany with him"|485|1
+"S035399"|"Y"|"WHG"|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"request made"|"Remarks: Angus cannot return to the school until 4/9, so he has to stay with host family during 30/8 - 4/9"|"20180801173812"|"AA00080"|"EK029"|489|1
+"S035399"|"Y"|"WHG"|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"booking made & awt contact details"|"Pickup Person: Mr Ken WILLIAMS (TBC)
+Contact No: + 44 (0) 7770 807408 (Ken's mobile) / + 44 (0) 1785 716666 (Wings office number)
+Meeting Point: Virgin Limo Desk (Heathrow T3) 
+Cost: TBC
+Payment method: TBC
+
+Remarks:
+ Angus cannot return to the school until 4/9, so he has to stay with host family during 30/8 - 4/9
+The Host Family: Mr and Mrs Tomlinson, 2 Highlands, Stafford, ST17 9RE and Mrs Tomlinson’s mobile number is +44 (0) 7884 341 700.
+cost: TBC"|"20180804144234"|"AA00080"|"EK029"|489|1
+"S036670"|"Y"|"School"|"Cathay Pacific"|""|"London Heathrow T3"|"20180905"|"5:40am"|"request made"|""|"20180801162125"|"AA00080"|"CX 251"|483|1
+"S035399"|"Y"|"WHG"|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"booking made & awt contact details"|"Pickup Person: Mr Ken WILLIAMS from Wings Airport Transfer (TBC)
+Contact No: + 44 (0) 7770 807408 (Ken's mobile) / + 44 (0) 1785 716666 (Wings office number)
+Meeting Point: Virgin Limo Desk (Heathrow T3) 
+Cost: TBC
+Payment method: TBC
+
+Remarks:
+ Angus cannot return to the school until 4/9, so he has to stay with host family during 30/8 - 4/9
+The Host Family: Mr and Mrs Tomlinson, 2 Highlands, Stafford, ST17 9RE and Mrs Tomlinson’s mobile number is +44 (0) 7884 341 700.
+cost: TBC"|"20180804144308"|"AA00080"|"EK029"|489|1
+"S036553"|"Y"|"Quest"|"Cathay Pacific"|""|"London Heathrow T3"|"20180903"|"15:15"|"request made"|""|"20180725120354"|"AA00080"|"CX257"|484|1
+"S036150"|"Y"|"Quest"|"Cathay Pacific"|""|"Manchester T2"|"20180829"|"06:55"|"booking made & awt contact details"|"Meeting Point: Manchester T2
+Pickup Person: Taxi driver who will hold the the name board in T2's arrival hall
+Contact No: (01202) 88 22 99 (during office hours) & emergency contact 07545 502255 (out of office hours)
+
+Remarks: stay with host family during 29/8 - 1/9, cost of host family is £160 from 29/8/18 – 01/09/18
+
+Remarks: stay in the host family from 29/8/18 – 01/09/18, the cost is £160"|"20180801173914"|"AA00080"|"CX0219"|488|1
+"S035399"|"Y"|"WHG"|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"booking made & awt contact details"|"Pickup Person: Mr Ken WILLIAMS from Wings Airport Transfer
+Contact No: + 44 (0) 7770 807408 (Ken's mobile) / + 44 (0) 1785 716666 (Wings office number)
+Meeting Point: Virgin Limo Desk (Heathrow T3) 
+Cost: TBC
+Payment method: TBC
+
+Remarks:
+ Angus cannot return to the school until 4/9, so he has to stay with host family during 30/8 - 4/9
+The Host Family: Mr and Mrs Tomlinson, 2 Highlands, Stafford, ST17 9RE and Mrs Tomlinson’s mobile number is +44 (0) 7884 341 700.
+cost: TBC"|"20180808173339"|"AA00080"|"EK029"|489|1
+"S036495"|"Y"|"School"|"British Airways"|"27.2 GBP per person (School bus) + £170 approx. (taxi fare)"|"London Heathrow T5"|"20180904"|"04:50"|"confirmation emailed family"|"Mr Steve Page, Transport Manager, 07866 836324
+Meeting Point: London Heathrow T3
+
+Remarks: 
+Chi Lok's father request for pickup service sending him back to London, the school will arrange a taxi for him
+Taxi driver: Ady Warne from Warne Cars
+Meeting Point: front of the college
+Contact no: 07946 088130 - Ady's number
+Transport cost per person: £170 approx. (Added to the School Bill)"|"20180804104253"|"AA00080"|"BA032
+Chi Lok's father will accompany with him"|485|1
+"S036806"|"Y"|"School"|"British Airways"|"80GBP"|"London Heathrow T5"|"20180912"|"04:50"|"confirmation emailed family"|"Pickup person: Amber cars - Mario, 01604 232666 & quote order no: 001
+Meeting person: Arrivals area at 05:45
+Payment method: cash fare"|"20180803182804"|"AA00080"|"BA032"|487|1
+"S035399"|"Y"|"WHG"|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"booking made & awt contact details"|"Pickup Person: Mr Ken WILLIAMS from Wings Airport Transfer
+Contact No: + 44 (0) 7770 807408 (Ken's mobile) / + 44 (0) 1785 716666 (Wings office number)
+Meeting Point: Virgin Limo Desk (Heathrow T3) 
+Cost: TBC
+Payment method: TBC
+
+Remarks:
+ Angus cannot return to the school until 4/9, so he has to stay with host family during 30/8 - 4/9
+The Host Family: Mr and Mrs Tomlinson, 2 Highlands, Stafford, ST17 9RE and Mrs Tomlinson’s mobile number is +44 (0) 7884 341 700.
+cost: TBC"|"20180813171215"|"AA00080"|"EK029
+Angus will travel alone"|489|1
+"S035399"|"Y"|"WHG"|"Emirate"|""|"London Heathrow T3"|"20180830"|"14:25"|"booking made & awt contact details"|"Pickup Person: Mr Ken WILLIAMS from Wings Airport Transfer
+Contact No: + 44 (0) 7770 807408 (Ken's mobile) / + 44 (0) 1785 716666 (Wings office number)
+Meeting Point: Virgin Limo Desk (Heathrow T3) 
+Cost:  £180 plus VAT plus parking fee (probably £11.20)
+Payment method: TBC
+
+Remarks:
+ Angus cannot return to the school until 4/9, so he has to stay with host family during 30/8 - 4/9
+The Host Family: Mr and Mrs Tomlinson, 2 Highlands, Stafford, ST17 9RE and Mrs Tomlinson’s mobile number is +44 (0) 7884 341 700.
+cost: TBC"|"20180816171922"|"AA00080"|"EK029
+Angus will travel alone"|489|1
+"S036966"|"Y"|"School"|""|""|""|"20180904"|""|""|""|"20180804144416"|"AA00080"|"TBC"|490|1
+"S035551"|"Y"|""|""|""|""|"20180817"|""|""|""|"20180817145513"|"AA00080"|"P contacts with school and Mrs Neale will handle it"|491|1
+"S035959"|"N"|""|"Cathay Pacific"|""|"London Heathrow T3"|"20180830"|"05:40"|""|""|"20180721141709"|"AA00080"|"CX0251"|486|1
+"S035399"|"Y"|"WHG"|"Emirate"|"Taxi: £228 + Host family: 225"|"London Heathrow T3"|"20180830"|"14:25"|"booking made & awt contact details"|"Pickup Person: Mr Ken WILLIAMS from Wings Airport Transfer
+Contact No: + 44 (0) 7770 807408 (Ken's mobile) / + 44 (0) 1785 716666 (Wings office number)
+Meeting Point: Virgin Limo Desk (Heathrow T3) 
+Cost:  £180 plus VAT (£36) plus parking fee (probably £11.20)
+Payment method: Added to the bill
+
+Remarks:
+ Angus cannot return to the school until 4/9, so he has to stay with host family during 30/8 - 4/9
+The Host Family: Mr and Mrs Tomlinson, 2 Highlands, Stafford, ST17 9RE and Mrs Tomlinson’s mobile number is +44 (0) 7884 341 700.
+cost:  £61 for the first night then £41 for each subsequent night, including all meals."|"20180817105113"|"AA00080"|"EK029
+Angus will travel alone"|489|1
+"S035399"|"Y"|"WHG"|"Emirate"|"Taxi: £228 + Host family: 225"|"London Heathrow T3"|"20180830"|"14:25"|"booking made & awt contact details"|"Pickup Person: Mr Ken WILLIAMS from Wings Airport Transfer
+Contact No: + 44 (0) 7770 807408 (Ken's mobile) / + 44 (0) 1785 716666 (Wings office number)
+Meeting Point: Virgin Limo Desk (Heathrow T3) 
+Cost:  £180 plus VAT (£36) plus parking fee (probably £11.20)
+Payment method: Added to the bill
+
+Remarks:
+ Angus cannot return to the school until 4/9, so he has to stay with host family during 30/8 - 4/9
+The Host Family: Mr and Mrs Tomlinson, 2 Highlands, Stafford, ST17 9RE and Mrs Tomlinson’s mobile number is +44 (0) 7884 341 700.
+cost:  £61 for the first night then £41 for each subsequent night, including all meals.
+Ruth will take Angus to the school on 4th SEP"|"20180818102133"|"AA00080"|"EK029
+Angus will travel alone"|489|1
+"S036966"|"N"|""|""|""|""|"20180904"|""|""|""|"20180817145404"|"AA00080"|"TBC"|490|1
+"S036966"|"Y"|""|""|""|""|"20180904"|""|""|""|"20180821102935"|"AA00080"|"TBC"|490|1
+"S036150"|"Y"|"Quest"|"Cathay Pacific"|""|"Manchester T2"|"20180829"|"06:55"|"booking made & awt contact details"|"Meeting Point: Manchester T2
+Pickup Person: Taxi driver who will hold the the name board in T2's arrival hall
+Contact No: (01202) 88 22 99 (during office hours) & emergency contact 07545 502255 (out of office hours)
+
+Remarks: stay with host family during 29/8 - 1/9, cost of host family is £160 from 29/8/18 – 01/09/18
+
+Remarks: stay in the host family from 29/8/18 – 01/09/18, the cost is £160"|"20180813171139"|"AA00080"|"CX0219
+Athena will travel alone"|488|1
+"S036553"|"Y"|"Quest"|"Cathay Pacific"|""|"London Heathrow T3"|"20180903"|"15:15"|"request made"|"Remarks:
+Yingle will need to stay at a host family for one night accomodation on 3/9"|"20180813171046"|"AA00080"|"CX257
+
+Yingle will travel alone"|484|1
+"S036553"|"Y"|"Quest"|"Cathay Pacific"|""|"London Heathrow T3"|"20180903"|"15:15"|"family acknowledged confirmation"|"Remarks:
+Yingle will need to stay at a host family for one night accomodation on 3/9
+
+Quest send confirmation by themselves"|"20180822171247"|"AA00080"|"CX257
+
+Yingle will travel alone"|484|1
+"S036150"|"Y"|"Quest"|"Cathay Pacific"|""|"Manchester T2"|"20180829"|"06:55"|"booking made & awt contact details"|"Meeting Point: Manchester T2
+Pickup Person: Taxi driver who will hold the the name board in T2's arrival hall
+Contact No: (01202) 88 22 99 (during office hours) & emergency contact 07545 502255 (out of office hours)
+Cost: Manchester airport to host family -- approximately £88.50 (Single occupancy) 
+
+Remarks: stay with host family during 29/8 - 1/9, cost of host family is £160 from 29/8/18 – 01/09/18
+taxi cost - host family to Shrewsbury school -- approximately £70.80 (Single occupancy)"|"20180822113949"|"AA00080"|"CX0219
+Athena will travel alone"|488|1
+"S036966"|"Y"|"School"|""|""|""|"20180904"|""|"itin requested"|""|"20180821102956"|"AA00080"|"TBC"|490|1

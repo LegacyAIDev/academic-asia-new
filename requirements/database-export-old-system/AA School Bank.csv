@@ -1,0 +1,529 @@
+"school_id"|"banktype"|"currency"|"bankname"|"bankacc"|"bankaddress"|"ibankacc"|"swift"|"sortcode"|"ibanno"|"remarks"|"lastupdate"|"staffid"|"billingname"
+576|"Registration Fee"|"GBP"|"Barclays Bank"|"63689018"|"1 Churchill Place, London, E145HP"|"Bright Scholar (BCS) Management Limited"|"BARCGB22"|"20-17-27"|"GB96BARC20172763689018"|"Payments should be made using the following reference: PUPIL SURNAME, PUPIL FORENAME"|"20201125103348"|"AA00078"|""
+209|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"04070236"|""|"Guildford College of F and HE"|""|"30-93-74"|""|""|"20130525"|""|"Guildford College Group"
+412|"Course"|"GBP"|"HSBC"|"71599682"|"8 Victoria Street, London, SW1H 0NJ"|"Royal Hospital School"|"MIDGBL22"|"40-07-13"|"GB40MIDL40071371599682"|"Please quote your child's name so that payment can be allocated correctly."|"20140411151527"|"AA00044"|"Royal Hospital School"
+576|"Course"|"GBP"|"Barclays Bank PLC"|"23410617"|"Kettering Branch, 8 Market Place, Kettering, Northants, NN16 0AX"|"United Church Schools Trust School Fees Account"|"BARCGB22"|"20-45-77"|"GB61BARC 2045 7790 5765 06"|""|"20160405153924"|"AA00044"|"Bournemouth Collegiate School"
+652|"Course"|"GBP"|"Barclays Bank Plc"|"50223050"|"PO Box 95, 1 North End, Croydon CR9 1RN"|"Cambridge Tutors Educational Trust Ltd"|"BARCGB22"|"20-24-61"|"GB07BARC20246150223050"|"*For payments made directly to school bank account, please ensure parents give the student's name as a reference*"|"20141121183553"|"AA00032"|"Cambridge Tutors College"
+552|"Course"|"GBP"|"The Royal Bank of Scotland PLC"|"23121304"|"London City Office, 62/63 Threadneedle Street, London EC2R 8LA"|"Thornton College"|"-"|"16-00-15"|"GB03RBOS16001523121304"|""|"20200725175234"|"AA00078"|"Thornton College"
+375|"Course"|"GBP"|"-"|"-"|"-"|"-"|"-"|"-"|"-"|""|"20141002231405"|""|"Queen Elizabeth’s Academy Trust"
+59|"Course"|"GBP"|"National Westminster Bank Plc"|"59013869"|"High Street, Cranbrook, Kent, TN17 3EJ"|"Bethany School Limited"|"NWBKGB2L"|"60-06-18"|"GB61NWBK60061859013869"|"20191228: Sterling cheque / banker's draft made payable to Bethany School"|"20191228144952"|"AA00078"|"Bethany School"
+43|"Course"|"GBP"|"National Westminster Bank Plc"|"74037609"|"Barnard Castle Branch, 28 Market Place, Barnard Castle, Co Durham, DL12 8PT"|"Barnard Castle School"|"NWBKGB2L"|"51-61-33"|"GB74NWBK51613374037609"|""|"20130525"|""|"Barnard Castle School"
+49|"Course"|"GBP"|"Co-operative Bank"|"65060072"|"London City Office, 80 Cornhill, London, EC3V 3NJ"|"The Bedford Charity R/C No. 204817"|"CPBKGB22"|"08-02-28"|"GB62CPBK08022865060072"|"When making a payment by bank transfer, please include your account reference and the pupil's name."|"20130525"|""|"Bedford Preparatory School"
+30011|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00407305"|"PO Box 1000, BX1 1LT"|"Duff Miller and Company (London Tutors) Ltd"|"LOYDGB21027"|"30-95-74"|"GB13-LOYD-3095-7400-4073-05"|""|"20141217182759"|"AA00032"|"Astrum Colleges - Duff Miller"
+480|"Course"|"GBP"|"National Westminster Bank Plc"|"08823669"|"PO Box 306, 11 The Parade, Canterbury, Kent, CT1 2DT"|"St. Edmund's School"|"NWBKGB2L"|"60-04-27"|"GB03NWBK60042708823669"|""|"20200314173815"|"AA00078"|"St Edmund's School"
+377|"Course"|"GBP"|"Barclays Bank PLC"|"13049779"|"25 James Street, Harrogate, HG1 1QX"|"Queen Margaret's School York Ltd"|"BARCGB22"|"20-03-53"|"GB98BARC20035313049779"|""|"20180112105837"|"AA00078"|""
+681|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00197303"|"Corn Street, PO Box 1000, Bristol, BX1 1LT,"|"Hartpury College"|"LOYDGB21017"|"30-00-01"|"GB88LOYD30000100197303"|""|"20160615111451"|"AA00044"|"Hartpury College"
+68|"Course"|"GBP"|"National Westminster Bank Plc"|"18015298"|"91-93 Harborough Road, Kingsthorpe, Northampton, NN2 7FD"|"Bosworth Independent College"|"NWBKGB2L"|"54-10-53"|"GB80NWBK54105318015298"|""|"20130525"|""|"Bosworth Independent College"
+62|"Course"|"GBP"|"Lloyds Bank"|"29311168"|"37 Market Place, Warminster, Wiltshire, BA12 9BD, England"|"Bishopstrow College Limited"|"LOYDGB21294"|"30 99 13"|"GB72LOYD30991329311168"|"Advice to payee:[name of student and invoice number]"|"20210317103127"|"AA00078"|""
+76|"Course"|"GBP"|"National Westminster Bank Plc"|"20622597"|"Brentwood High Street Branch, Po Box 86, 46 High Street, CM14 4AN"|"Brentwood School"|""|"60-03-25"|"GB07NWBK60032520622597"|"Student FULL Name"|"20130525"|""|"Brentwood School"
+3|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00101252"|"112 High Street, Bromsgrove, Worcestershire, England B61 8EZ"|"Bromsgrove School"|"LOYDGB21178"|"30-91-36"|"GB45LOYD30913600101252"|""|"20130525"|""|"Bromsgrove School Enterprises Ltd"
+88|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"62990460"|""|""|"LOYDGB21299"|"30-99-78"|"GB91LOYD30997862990460"|""|"20130525"|""|"Burford School"
+201|"Course"|"GBP"|"-"|"42802180"|"-"|"Gosfield School"|"-"|"60-09-29"|"-"|"20180621: Cheques made payable to Gosfield School Ltd; Reference: Pupil's name"|"20180621112505"|"AA00078"|""
+101|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00122109"|"1, Queen Street, Cardiff, CF10 2AF, UK"|"Cardiff Sixth Form College"|"LOYDGB21143"|"30-91-63"|"GB15LOYD30916300122109"|""|"20130525"|""|"Cardiff Sixth Form College"
+102|"Course"|"GBP"|"National Westminster Bank Plc"|"10041443"|"Main Street, Kirkby Lonsdale, Via Carnforth, Lancashire"|"Casterton School"|"NWBKGB2L"|"01-04-81"|"GB62NWBK01048110041443"|""|"20130525"|""|"Casterton School"
+497|"Registration Fee"|"GBP"|"Lloyds Bank plc"|"37246460"|"Bracknell"|"St Mary’s School Ascot"|"LOYDGB21653"|"30 63 54"|"GB71 LOYD 3063 5437 2464 60"|""|"20210112120604"|"AA00078"|""
+340|"Course"|"GBP"|"HSBC"|"81174312"|"114 High Street, Stourbeidge, DY8 1DZ"|"Old Swinford Hospital"|"MIDLGB2111T"|"40-43-17"|"GB02MIDL40431781174312"|""|"20151214103207"|"AA00007"|"Old Swinford Hospital"
+110|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00119897"|"130 High Street, Cheltenham, Gloucestershire, GL50 1EW"|"Cheltenham College"|"LOYDGB 21054"|"30-91-87"|"GB73LOYD30918700119897"|""|"20130525"|""|"Cheltenham College"
+214|"Course"|"GBP"|"Barclays Bank Plc"|"30489506"|"Banbury, Oxfordshire, OX16 8PS"|"Harrogate Ladies' College Ltd"|"BARCGB22"|"20-03-84"|"GB07BARC20038430489506"|""|"20130525"|""|"Harrogate Ladies College"
+528|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00126230"|"130 High Street, Cheltenham, Gloucestershire, GL50 1EW"|"The Cheltenham Ladies' College"|"LOYDGB21054"|"30-91-87"|"GB93LOYD30918700126230"|""|"20130525"|""|"The Cheltenham Ladies' College"
+545|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00060406"|"Carfax, Oxford"|"The Royal Masonic School for Girls"|"LOYDGB21023"|"30-96-35"|"GB31LOYD30963500060406"|""|"20201017160550"|"AA00078"|"The Royal Masonic School"
+100|"Course"|"GBP"|"Barclays Bank Plc"|"10257311"|"32 Bridge Street, Banbury, Oxfordshire OX16 8PS"|"Canford School Ltd"|"BARCGB22"|"20-03-84"|"GB95BARC20038410257311"|"Please identify it clearly with your child's name and initials.
+Please ensure the payment is free of any additional bank or transfer charges, which should be
+paid separately.
+Please quote Student's name as a reference for our Finance Department to recognise the transfer when it comes in, and could you also please ensure that bank charges for the transfer are not deducted from the full GBP200. (This happens quite a lot and causes our Finance people a bit of bother!)"|"20140712113454"|"AA00044"|"Canford School"
+345|"Course"|"GBP"|"Barclays Bank Plc"|"10679259"|"Mortlock House, PO Box 885, Histon, CB4 9DE"|"The Corporation of Oundle School"|"BARCGB22"|"20-67-45"|"GB91BARC20674510679259"|"Please make sure you quote your child's name so that we know the payment is from you.
+
+[20Sep14] Amended the address, which before was:  Po Box 422, 1 Church Street, Peterborough, PE1 1QR"|"20230816154730"|"AA00078"|"Oundle School"
+128|"Course"|"GBP"|"National Westminster Bank Plc"|"97650579"|"Po Box 12258, 1 Princess Street, London, EC2R 8PA"|"Cobham Hall"|"NWBKGB2L"|"60-00-01"|"GB59NWBK60000197650579"|""|"20130525"|""|"Cobham Hall School"
+189|"Course"|"GBP"|"Royal Bank of Scotland"|"00153767"|"27 Park Row, Leeds, LS1 5QB, UK"|"Fulneck School"|"RBOS GB 2L"|"16-23-37"|"GB07 RBOS1623 3700 1537 67"|""|"20230630162652"|"AA00078"|""
+529|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"01748064"|"48 Belle Vue Terrace, Malvern, Worcestershire, WR14 4QG"|"The Downs Malvern College Prep School"|"LOYDGB21139"|"30-95-41"|"GB20LOYD30954101748064"|""|"20130525"|""|"The Downs, Malvern College Preparatory School"
+30021|"Course"|"GBP"|"Danske Bank"|"30047333"|"-"|"Rockport School Ltd."|"DABAGB2B"|"95-06-11"|"GB29DABA95061130047333"|""|"20150217102611"|"AA00044"|""
+154|"Course"|"GBP"|"Barclays Bank Plc"|"00334693"|"117 Dulwich Village, London SE21 7BL"|"Dulwich College Main Account"|"BARCGB22"|"20-66-51"|"GB56BARC20665100334693"|""|"20130525"|""|"Dulwich College"
+159|"Course"|"GBP"|"National Westminster Bank Plc"|"40086992"|"96 Terminus Road, Eastbourne, BN21 3AA"|"Eastbourne College (Incorporated)"|"NWBKGB2L"|"52-41-00"|"GB39NWBK52410040086992"|""|"20130525"|""|"Eastbourne College"
+167|"Course"|"GBP"|"Handelsbanken"|"64993592"|"3 Thomas More Square, London, E1W 1WY"|"Ellesmere College Ltd"|"HANDGB22"|"40-51-62"|"GB29HAND40516264993592"|"It is important that you include your child's name as the reference in all transactions, as we use this to allocate your payment to the correct account."|"20130525"|""|"Ellesmere College"
+12|"Course"|"GBP"|"HSBC Bank plc"|"81504363"|"100 High Street, Tonbridge, Kent. TN9 1AN"|"Tonbridge School"|"HBUKGB4159V"|"40-44-20"|"GB25HBUK40442081504363"|"Please ensure that you include your son's name on the bank transfer."|"20200924153125"|"AA00078"|"Tonbridge School"
+556|"Course"|"GBP"|"Lloyds Bank"|"00331873"|"-"|"Trinity School Teignmouth"|"LOYD GB 21 078"|"30-96-06"|"GB18 LOYD 3096 0600 3318 73"|""|"20140411163948"|"AA00044"|""
+302|"Registration Fee"|"GBP"|"National Westminster Bank Plc"|"08171610"|"Market Place, Loughborough, Leicestershire, LE11 3NZ"|"Loughborough Schools Foundation"|"NWBKGB2L"|"60-14-10"|"GB86 NWBK 6014 1008 1716 10"|"For Registration fee and Deposit"|"20201215171405"|"AA00078"|""
+18|"Registration Fee"|"GBP"|"The National Westminster Bank"|"05509491"|"2 Hendford, Yeovil, Somerset, BA20 1TN"|"-"|"NWBKGB2L"|"60-19-12"|"GB77NWBK60191205509491"|""|"20210615163321"|"AA00078"|""
+180|"Course"|"GBP"|"Barclays Bank Plc"|"10393363"|"Braintree Business Centre, Bank Street, Essex, CM7 7UQ"|"Felsted School"|"BARCGB22"|"20-97-40"|"7BARC20974010393363"|"Payment of registration fees and deposits can be made to Felsted School by cheque or bank transfer. If you are making a transfer, please send a copy of the paying-in slip to Claire Laskey, Admissions Officer"|"20130525"|""|"Felsted School"
+262|"Course"|"GBP"|"NatWest"|"70884811"|"49 North Street, Taunton, Somerset, TA1 1NB"|"King's College Scholars Account"|"NWBKGB2L"|"608006"|"GB06 NWBK 608006 70884811"|""|"20200108144320"|"AA00078"|"see King's College, Taunton"
+57|"Course"|"GBP"|"Coutts & Co Commercial Banking"|"00794821"|"440 Strand, London, WC2R 0QS"|"Benenden School (Kent) Ltd"|"COUTGB22"|"18-00-02"|"GB77COUT18000200794821"|""|"20180710151842"|"AA00078"|""
+196|"Course"|"GBP"|"Barclays Bank Plc"|"00941018"|"128 High Street, Cheltenham, Gloucestershire, England GL50 1EL"|"Gloucestershire College"|"BARCGB22"|"20-20-15"|"GB75BARC20201500941018"|""|"20130525"|""|"Gloscat College"
+197|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00469257"|"38 Blue Boar Row, Salisbury, Wilts, SP1 1DB"|"The Godolphin School"|"LOYDGB21063"|"30-97-41"|"GB50LOYD30974100469257"|"All banking charges in connection with transfers to be paid by the person sending the funds. Please quote as a reference either the invoice number or the school pupil code which is usually the first three letters of the pupil's surname plus three numbers, this code is generated by the school. In the absence of either invoice number or pupil code please use the full name of the pupil as the reference"|"20130525"|""|"Godolphin School"
+198|"Course"|"GBP"|"National Westminster Bank Plc"|"61477672"|"33, High Street, High Wycombe Buckinghamshire HP11 2AJ"|"The Godstowe Preparatory School Company Limited"|"NWBKGB2L"|"60-11-01"|"GB86NWBK60110161477672"|"Corporate Account:08453088972"|"20130525"|""|"Godstowe Preparatory School"
+690|"Course"|"GBP"|"Royal Bank of Scotland plc"|"23111414"|"62/63 Threadneedle Street London, EC2R 8LA"|"Atlantic College"|"RBOSGB2L"|"16-00-15"|"GB89 RBOS 1600 1523 1114 14"|""|"20150414111057"|"AA00044"|""
+30056|"Course"|"GBP"|"Lloyds Bank"|"00732006"|"-"|"King's High Fees Account"|"LOYDGB21285"|"30-99-15"|"GB12LOYD30991500732006"|""|"20201027145701"|"AA00078"|""
+286|"Course"|"GBP"|"Lloyds TSB"|"01896528"|"75 Cheap Street, Sherborne, Dorset, DT9 3BA"|"Leweston School Trust"|"LOYDGB21208"|"30-99-98"|"GB46LOYD30999801896528"|""|"20170105104442"|"AA00044"|"Leweston School"
+6|"Course"|"GBP"|"National Westminster Bank Plc"|"37898787"|"315 Station Road, Harrow, Middlesex, HA1 2AD"|"Harrow School General Fund"|"NWBKGB2L"|"60-10-10"|"GB39NWBK60101037898787"|"Please quote code No: 8810 add pupil surname. It is likely that bank charges will be made so they should be added on to the amount required by Harrow School."|"20130525"|""|"Harrow School"
+257|"Deposit"|"GBP"|"Barclays Bank plc"|"20550884"|"41 High Street, St Neots, Cambs, PE19 1AS"|"Kimbolton School"|"BARCGB22"|"20-74-99"|"GB05 BARC 2074 9920 5508 84"|"NB. Please ensure that your child's name is entered in the reference field to enable us to identify the correct pupil.
+
+Please remember to enclose a copy of your child's birth certificate and passport with your acceptance paperwork."|"20240228184507"|"AA00078"|""
+234|"Course"|"GBP"|"Barclays Bank Plc"|"20796743"|""|"Hurstpierpoint College"|""|"20-65-82"|"B11BARC20658220796743"|""|"20130525"|""|"Hurstpierpoint College"
+271|"Course"|"GBP"|"Barclays Bank PL"|"90041084"|"Barclays Bank PLC, 9-11 St Andrews Street, Cambridge, United Kingdom, CB2 3AX"|"Kingsley Education Limited Re Kingsley School"|"BARCGB22"|"20-17-68"|"GB42BARC20176890041084"|"20200428: For payment reference please give full name."|"20200428093540"|"AA00078"|"Kingsley School"
+248|"Course"|"GBP"|"National Westminster Bank Plc"|"32106211"|"Tavistock Branch, Bedford Square, Tavistock, Devon, PL19 0AQ"|"Mount Kelly Foundation"|"NWBKGB2L"|"60-21-49"|"GB56NWBK60214932106211"|"Please quote your name"|"20141002231343"|""|"Mount Kelly"
+250|"Course"|"GBP"|"HSBC"|"70010081"|"58 High Street, Winchester, Hants, SO23 9BZ"|"Kent College Canterbury"|"MIDLGB2110E"|"40-02-06"|"GB67MIDL40020670010081"|""|"20130525"|""|"Kent College "
+133|"Course"|"GBP"|"Natwest"|"30077273"|"135 Bishopsgate London, EC2M 3UR - United Kingdom"|"Cranbrook School Academy Trust"|"NWBKGB2L"|"60-06-18"|"GB04NWBK60061830077273"|""|"20190124183103"|"AA00076"|""
+257|"Course"|"GBP"|"Barclays Bank Plc"|"10551066"|"Barclays Business Centre, 41 High Street, St Neots Branch, Huntingdon, Cambs, PE19 1AS"|"Kimbolton School Account"|""|"20-74-81"|""|"Trans. Code: 78. NB. Please ensure that the following reference will be recorded against the transaction to enable us to allocate the cash to your account upon receipt. Quote ref: xxxxxxx(first four letters of surname followed by NP)"|"20130525"|""|"Kimbolton School"
+185|"Course"|"GBP"|"Barclays Bank Plc"|"00111635"|"Suffolk Coastal Group, Market Hill, Framlingham, Suffolk"|"Albert Memorial College Main Account"|"BARCGB22"|"20-98-15"|"GB10BARC20981500111635"|""|"20191123152854"|"AA00078"|"Framlingham College"
+46|"Course"|"GBP"|"Barclays Bank plc"|"30880469"|"Wokingham Branch, Bracknell Group, PO Box 61, Bracknell, Berkshire, RG12 1GJ, England"|"Reddam House (Berkshire) Ltd"|"BARC GB 22"|"20-71-29"|"GB88BARC20712930880469"|""|"20230516185018"|"AA00078"|""
+264|"Course"|"GBP"|"HSBC"|"61362062"|"1 Middle Street, Yeovil, Somerset, BA20 1LR"|"King's School, Bruton"|"HBUKGB4B"|"40-47-28"|"GB81HBUK40472861362062"|""|"20190521175402"|"AA00078"|"King's School Bruton"
+265|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00119176"|"Ely Branch, Minster Place, Ely, Cambridgeshire, CB7 4EN"|"The King’s School, Ely"|"LOYDGB21265"|"30-93-05"|"GB94LOYD30930500119176"|""|"20130525"|""|"King's School Ely"
+269|"Course"|"GBP"|"HSBC"|"41358170"|"58 High Street, Winchester, Hants, SO23 9BZ"|"Kings' School HCC"|"MIDLGB2113K"|"40-46-39"|"GB71MIDL40463941358170"|""|"20130525"|""|"Kings' School Winchester"
+532|"Course"|"GBP"|"Barclays, London Corporate Banking"|"50651591"|"1 Churchill Place, London, E14 5HP"|"The King's School, Canterbury"|"BARCGB22"|"20-00-00"|"GB13BARC20000050651591"|"20220304:
+
+Reference: (surname of pupil)..../ JKS / Reg (Please ensure the latter part of this reference is included)
+
+Reference:  …(surname of pupil)…/JKS/Deposit (please ensure the latter part of this reference is included)
+
+20190924: Old address: London Corporate Banking, 54 Lombard Street, London EC3V 9EX"|"20220304151249"|"AA00078"|"Junior King's School (The)"
+241|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00221563"|"Lloyds Chambers, Lloyds Avenue, Ipswich IP1 3HJ"|"Ipswich School No 1 Account"|"LOYDGB21046"|"30-94-55"|"GB52LOYD30945500221563"|"20200123: Please include pupil's full name and year entry (e.g. “September 20_ _”) in the payment details"|"20200123112817"|"AA00078"|"Ipswich School"
+285|"Course"|"GBP"|"Barclays Bank Plc"|"00575313"|"Basingstoke and Reading Business Centre PO Box6193 Basingstoke RG21 3RX"|"Leighton Park Trust"|"BARCGB22"|"20-71-03"|"GB88BARC20710300575313"|"Bank transfer or credit card + GBP 5 handling charge"|"20130525"|""|"Leighton Park School"
+398|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00234948"|"14 Castle Street, Cirencester, Gloucestershire GL7 1QJ"|"-"|"LOYDGB21102"|"30-92-06"|"GB84LOYD30920600234948"|""|"20230411153838"|"AA00078"|"Rendcomb College"
+39|"Course"|"GBP"|"National Westminster Bank Plc"|"47114207"|"54 Market Street, Ashby de la Zouch, Leicestershire, LE65 1BB"|"Ashby School"|"NWBK GB 2L"|"60-01-20"|"GB76 NWBK 6001 2047 1142 07"|"Cheques to be made payable to ""Ashby School""."|"20150128142356"|"AA00032"|"Ashby School"
+290|"Course"|"GBP"|"Royal Bank of Scotland"|"39129700"|"The Cross, Paosley, PA1 1DB"|"GENWISE LIMITED"|"BOFSGB21130"|"80-91-27"|"GB13BOFS80912700391297"|""|"20130525"|""|"Lime House School"
+291|"Course"|"GBP"|"Barclays Bank Plc"|"90576506"|"Barclays Bank, 8 Market Place, Kettering, Northants"|"""Lincoln Minster"" or ""LMS"""|"BARCGB22"|"20-45-77"|"GB61BARC20457790576506"|""|"20130525"|""|"Lincoln Minster School"
+291|"Registration Fee"|"GBP"|"Barclays Bank Plc"|"30035688"|"Barclays Bank, 8 Market Place, Kettering, Northants"|"""Lincoln Minster"" or ""LMS"""|"BARCGB22"|"20-45-77"|"GB51BARC20457730035688"|""|"20130525"|""|"Lincoln Minster School"
+293|"Course"|"GBP"|"HSBC"|"11520571"|"15 Lammas Street, Carmarthen, SA31 3AQ"|"Llandovery College"|"MIDLGB2139J"|"40-16-23"|"GB69MIDL40162311520571"|"It is vital and extremely important that the pupil's name is on all financial transfer documents to enable us to check against the relevant pupil's financial paperwork"|"20130525"|""|"Llandovery College"
+623|"Course"|"GBP"|"Royal Bank of Scotland"|"00194137"|"Helensburgh Branch, 2 Colquhoun Square, Helensburgh, G84 8SL, Scotland"|"Lomond School Ltd"|"RBOSGB2L"|"83-23-03"|"GB16RBOS83230300194137"|""|"20130525"|""|"Lomond School"
+299|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"01427483"|""|"Lord Wandsworth College"|"LOYDGB21227"|"30-93-32"|"GB28LOYD30933201427483"|"If you are paying by bank transfer please, ensure that you include the pupil's name as a reference with your payment."|"20130525"|""|"Lord Wandsworth College"
+41|"Registration Fee"|"GBP"|"Lloyds Bank"|"44762868"|"8-11 Cambridge Crescent, Harrogate, HG1 1PQ"|"Ashville College"|"LOYDGB21214"|"30-93-91"|"GB29LOYD30939144762868"|"20191113: bank transfers account"|"20191113113759"|"AA00078"|""
+509|"Course"|"GBP"|"Barclays Bank"|"10774014"|"-"|"Stover School Association T/A Stover School"|"BUKBGB22XXX"|"20-60-88"|"GB88BUKB20608810774014"|""|"20180428144924"|"AA00078"|"Stover School"
+300|"Course"|"GBP"|"Clydesdale Bank plc"|"50011318"|"140 High Street, Musselburgh EH21 7DZ."|""|"CLYDGB2S"|"82-70-09"|"GB51CLYD82700950011318"|"Please note that all bank transfers should state clearly in the reference the name of the pupil. All payments to overseas banks must have INTERNATIONAL BANK ACCOUNT NOS (IBANS) & BANK IDENTIFER CODES (BICS) .These are normally provided on invoices where they give their bank details but if not they should be asked to provide them."|"20130525"|""|"Loretto School"
+30059|"Course"|"GBP"|"HSBC"|"10012637"|"HSBC City Of London 401160, 60 Queen Victoria Street, London, EC4N 4TR"|"Fine Arts College Ltd"|"MIDLGB22"|"40-11-60"|"GB87MIDL40116010012637"|"20191112: Bank details for BACS payment"|"20191112120047"|"AA00078"|""
+51|"Course"|"GBP"|"Co-operative Bank"|"65060072"|"London City Office, 80 Cornhill, London EC3V 3NJ"|"The Harpur Trust"|"CPBKGB22"|"08-02-28"|"."|""|"20141218172137"|"AA00032"|"Bedford School Study Centre (BSSC)"
+278|"Course"|"GBP"|"Barclays Bank PLC"|"10424668"|"38 Market Street, Lancaster, LA1 1HS"|"LRGS Boarding Account"|"BARCGB22"|"20-47-61"|"GB50 BARC 2047 6110 4246 68"|""|"20170531105952"|"AA00065"|""
+413|"Course"|"GBP"|"Barclays Bank"|"00775142"|"1 North End, Croydon, Surrey, CR9 1RN"|"Russell School Trust"|"BARCGB22"|"20-24-87"|"GB53BARC20248700775142"|"[3Apr14] include the reference shown on school invoice on the reverse"|"20181115123057"|"AA00078"|"Russell School Enterprises Ltd"
+318|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00081813"|"Somerset"|"Millfield"|"LOYDGB21241"|"30-98-28"|"GB21LOYD30982800081813"|""|"20130525"|""|"Millfield School"
+450|"Course"|"GBP"|"Barclays Bank Plc"|"40794104"|"Barclays Corporate, Level 27, 1 Churchill Place, London E14 5HP"|"St Bede’s School Trust Sussex"|"BARCGB22"|"20-06-05"|"GB15BARC20060540794104"|""|"20171209112716"|"AA00078"|"Bede's Junior School"
+328|"Course"|"GBP"|"National Westminster Bank Plc"|"33489750"|"5 Market Place, Chesterfield, S40 1TJ"|"Mount St Mary's College"|"NWBKGB2L"|"60-40-09"|"GB48NWBK60400933489750"|""|"20210126171251"|""|"The Bursary, Mount St. Mary's College, College Road, Spinkhill, Sheffield, S21 3YL"
+327|"Course"|"GBP"|"HSBC"|"61263315"|"13 Parliament Street York, YO1 8XS"|"The Mount School (York)"|"MIDLGB2109Y"|"40-47-31"|"GB09MIDL40473161263315"|""|"20130525"|""|"Mount School"
+30015|"Course"|"GBP"|"Lloyds TSB Bank, plc"|"00119897"|"Cheltenham, High Street"|"Cheltenham College"|"LOYDGB2L"|"30-91-87"|"GB73 LOYD 3091 9700 1198 97"|"BIC Number: LOYDGB 21054"|"20210512165708"|"AA00078"|""
+602|"Course"|"GBP"|"Lloyds TSB"|"51279460"|"PO Box 3, Queen Square Wolverhampton WV1 1TF"|"-"|"LOYDGB21114"|"30-99-83"|"GB09 LOYD 3099 8351 2794 60"|"Please give your bank the invoice number together with the student’s name and course dates so that we can trace the payment, then inform us by faxing proof of payment, adding £9 bank transfer fees (charged to us by the bank)."|"20140626115505"|"AA00044"|""
+339|"Course"|"GBP"|"National Westminster Bank Plc"|"80929621"|""|"Ockbrook School"|""|"60-12-01"|""|""|"20130525"|""|"Ockbrook School"
+62|"Course"|"GBP"|"HSBC"|"2374110"|"PO Box 160, Guildford, Surrey GU1 3YU"|"Bishopstrow College"|"MIDLGB2104L"|"40-22-26"|"GB36MIDL40222602374110"|"Advice to Payee: [Name of student]"|"20160211180403"|"AA00044"|"Bishopstrow College"
+344|"Course"|"GBP"|"National Westminster Bank Plc"|"76957837"|"17 Church Street, Oswestry, SY11 2SX"|"Oswestry School"|"NWBKGB2L"|"60-16-04"|"GB14NWBK60160476957837"|""|"20130525"|""|"Oswestry School"
+514|"Course"|"GBP"|"Barclays Bank PLC"|"30885509"|"PO Box 326, Cambridge, CB4 3UT, England"|"Studio Language Courses (Cambridge) Ltd."|"BARCGB22"|"20-17-35"|"GB25 BARC 2017 3530 8855 09"|""|"20141227172137"|"AA00032"|"Studio Cambridge"
+351|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00006987"|"1 Market Place, Reading, Berkshire, RG1 2EQ"|"Padworth College Trust Ltd"|"GB21011"|"30-96-96"|"GB19LOYD30969600006987"|""|"20130525"|""|"Padworth College"
+539|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"32950168"|"9 High Street, Yeovil, Somerset. BA20 1RN"|"The Park School (Yeovil) Ltd"|""|"30-99-98"|"GB75LOYD30999832950168"|""|"20130525"|""|"The Park School"
+362|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"05035527"|"8 Royal Parade, Plymouth, Devon PL1 1HB"|"Plymouth College"|"LOYDGB21082"|"30-96-68"|"GB77LOYD30966805035527"|""|"20130525"|""|"Plymouth College"
+306|"Course"|"GBP"|"HSBC"|"32613778"|"6 Broad Street, Worcester WR1 2EJ"|"Malvern St James"|"HBUKGB4109U"|"40-47-17"|"GB50 HBUK 40471732613778"|""|"20181109103900"|"AA00078"|"Malvern St James"
+370|"Course"|"GBP"|"National Westminster Bank Plc"|"62035274"|"Godalming Branch, 77 High Street, Godalming, Surrey, GU7 1AR"|"Prior's Field School Trust Ltd"|"NWBKGB2L"|"60-09-04"|"GB70NWBK60090462035274"|"Please state the pupil's name as a reference and pay relevant charges for transfer."|"20130525"|""|"Prior's Field School"
+208|"Course"|"GBP"|"Barclays Bank Plc"|"60426717"|"Holt Branch, 17 Market Place, Fakenham, Norfolk, NR2I 9BE"|"Gresham's School Fees Account"|"BARCGB22"|"20-30-81"|"GB33BARC20308160426717"|"Please ensure all transfers use the pupil's name as a reference"|"20230105173821"|""|"Gresham’s School Enterprises Limited"
+381|"Course"|"GBP"|"HSBC"|"20019968"|"The Peak, 333 Vauxhall Bridge Road, London SW1V 1EJ"|"Queenswood School Ltd"|"MIDLGB2110E"|"40-02-06"|"GB40MIDL40020620019968"|"[4Oct14] Previous bank address: Victoria Street, Westminster, London SW1H 0NJ"|"20141004115431"|"AA00032"|"Queenswood"
+367|"Course"|"GBP"|"Barclays Bank Plc"|"80736627"|"4-5 Southgate Street, Bath, BA1 1AQ"|"Prior Park College"|"BARCGB22"|"20-47-06"|"GB52BARC20470680736627"|""|"20180921114901"|"AA00078"|"Prior Park College"
+394|"Course"|"GBP"|"Allied Irish Bank"|"00453104"|"201/203, The Broadway, Wimbledon,London,SW19 1FF"|"Reed's School"|"AIBKGB2L"|"23-84-81"|"GB39AIBK23848100453104"|""|"20130525"|""|"Reed's School "
+404|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00305862"|"Commercial Street, Halifax, HX1 1BB"|"Trustees of Wheelwrights' Charities"|"LOYDGB21118"|"30-93-76"|"GB03LOYD30937600305862"|""|"20130525"|""|"Rishworth School"
+130|"Course"|"GBP"|"Barclays Bank Plc"|"20157287"|"44-46 Castle Street, Shrewsbury, Shropshire, SY1 2BU"|"The Bell Concord Educational Trust Ltd"|"BARCGB 22"|"20-78-01"|"GB94BARC20780120157287"|"Please quote the name of student
+
+20210825: Credit card payment method:
+Payments can be made using the following link: http://concordcollegeuk.com/about-concord/general/general-payments/"|"20240625120617"|"AA00078"|"Concord College"
+544|"Course"|"GBP"|"National Westminster Bank Plc"|"24061085"|"PO Box 6037,186 Brompton Rd, London SW3 1SJ"|"GDST Fees Account"|""|"60-04-04"|""|""|"20130525"|""|"Royal High School"
+30043|"Course"|"GBP"|"Bank of China"|"90009819"|"-"|"The National Mathematics and Science College Ltd"|"BKCHGB2U"|"-"|"GB90 BKCH 4050 3790 0098 19"|"Payment can be made by bank transfer or by using Flywire: natmatsci-ber.flywire.com
+Reference: Student's name"|"20210119101353"|"AA00078"|""
+414|"Deposit"|"GBP"|"Northern Bank"|"11125508"|"5-6 Market Street, Dungannon, Co Tyrone, N. Ireland"|"Dungannon Royal School"|""|"95-03-02"|"GB85DABA95030211125508"|"All fee should be posted to the bursar but not transfer thru local bank"|"20130525"|""|"Royal School"
+416|"Course"|"GBP"|"Barclays Bank Plc"|"00850934"|"PO Box 5, Wolverhampton, WV1 1DS"|"The Royal Wolverhampton School"|"BARCGB22"|"20-97-90"|"GB49BARC20979000850934"|""|"20130525"|""|"The Royal Wolverhampton School"
+422|"Course"|"GBP"|"NatWest Bank PLC"|"13128973"|"2 Abergele Road, Colwyn Bay, LL29 7NR"|"Rydal Penrhos School"|"NWBKGB2L"|"52-21-43"|"GB17 NWBK 522143 13128973"|""|"20130821180351"|"AA00025"|"Rydal Penrhos Senior School"
+424|"Course"|"GBP"|"Barclays Bank Plc"|"10771775"|"Oxford East Branch"|"Rye St Antony School"|"BARCGB22"|"20-65-21"|"GB44BARC20652110771775"|""|"20130525"|""|"Rye St. Antony School"
+423|"Course"|"GBP"|"HSBC"|"51438123"|""|"Ryde School"|"MIDLGB22"|"40-39-17"|"GB11MIDL40391751438123"|"Please ensure that your child's name is quoted as a reference"|"20130525"|""|"Ryde School"
+482|"Course"|"GBP"|"HSBC"|"32424592"|"18 London Street, Norwich, NR2 1LG"|"Saint Felix schoolbank"|"MIDLGB2108M"|"40-35-09"|"GB19MIDL40350932424592"|""|"20130525"|""|"Saint Felix School"
+430|"Course"|"GBP"|"Barclays Bank Plc"|"50300640"|"Main Street, Sedbergh, Cumbria, LA10 5BW"|"Sedbergh School"|"BARCGB22"|"20-45-28"|"GB45BARC20452850300640"|""|"20130525"|""|"Sedbergh School"
+431|"Course"|"GBP"|"National Westminster Bank Plc"|"25848070"|"37 High Street, Sevenoaks, TN13 1LA"|"Sevenoaks School"|""|"60-19-02"|"GB30NWBK60190225848070"|"Bank transfers should also quote the name of the prospective pupil. Please ensure that the amount actually received by the School is the required amount once all bank charges have been deducted."|"20130525"|""|"Sevenoaks School"
+433|"Course"|"GBP"|"Lloyds TSB"|"49337868"|"-"|"Shaftesbury School Barton Hill House"|"LOYDGB21063"|"30-97-41"|"GB44LOYD30974149337868"|""|"20130823173053"|"AA00025"|"Shaftesbury School"
+591|"Course"|"GBP"|"HSBC"|"90010251"|"-"|"Woodhouse Grove School"|"MIDLGB2110E"|"40-02-06"|"GB06MIDL40020690010251"|""|"20151126165942"|"AA00044"|""
+437|"Course"|"GBP"|"Royal Bank of Scotland"|"21215158"|"London City Office, 62/63 Threadneedle Street, London EC2R 8LA"|"Sherborne Preparatory School"|"RBOSGB2L"|"15-10-00"|"GB46RBOS15100021215158"|"Please ensure the child's details are clearly shown on the transaction so that we know who to allocate the money to."|"20130525"|""|"Sherborne Preparatory School"
+71|"Course"|"GBP"|"National Westminster Bank Plc"|"33043299"|"Leatherhead Branch, 1 Bridge Street, Leatherhead, Surrey, KT22 8BT"|"Box Hill School Trust Ltd"|"NWBKGB2L"|"60-12-36"|"GB49NWBK60123633043299"|""|"20170724183809"|"AA00007"|"Box Hill School"
+441|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00639248"|"13 Woodborough Road, Winscombe, North Somerset, BS25 1AB"|"Sidcot School"|"LOYDGB2L"|"30-91-84"|"GB75LOYD30918400639248"|""|"20130525"|""|"Sidcot School"
+58|"Registration Fee"|"GBP"|"National Westminster Bank Plc"|"06607578"|"NatWest, 199 High Street, Berkhamsted HP4 1AW"|"Berkhamsted Schools Group"|"NWBKGB2L"|"60-02-21"|"GB64 NWBK 6002 2106 6075 78"|"Please use one of the codes below, based on the part of School your child is joining, followed by a hyphen and your child's name as a reference.
+
+PP- Pre-Prep   P- Prep   B- Boys   G- Girls   S- Sixth   For example: S-JaneSmith"|"20240109161149"|"AA00078"|"Berkhamsted School, 6 Chesham Road, Berkhamsted, Hertfordshire HP4 3AA"
+506|"Course"|"GBP"|"HSBC"|"21832980"|"94 East Street, Chichester, West Sussex, PO19 1HD"|"Steyning Grammar School"|""|"40-17-16"|"GB89MIDL40171621832980"|"If choose to pay by bank transfer, parents have to pay the service charge at both sides. Parents can pay the school fee monthly (10 instalment)"|"20130525"|""|"Steyning Grammar School"
+30016|"Course"|"EUR"|"Volksbank Wien"|"462-00286-006"|"Operngasse 8, 1010 Vienna, Austria"|"AMADEUS VIENNA"|"VBWIATW1"|"43000"|"AT464300046200286006"|""|"20140430154629"|"AA00044"|""
+508|"Course"|"GBP"|"National Westminster Bank Plc"|"22595813"|"York Street, Clitheroe, Lancashire, BB7 2DN"|"Stonyhurst"|"NWBKGB2L"|"01-02-14"|"GB16NWBK01021422595813"|"Please always quote your account reference or name"|"20130525"|""|"Stonyhurst College"
+30011|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00407402"|"PO Box 1000, BX1 1LT"|"Chelsea Independent College Ltd"|"LOYDGB21027"|"30-95-74"|"GB13-LOYD-3095-7400-4074-02"|""|"20141217182908"|"AA00032"|"Astrum Colleges - Chelsea Independent College"
+511|"Course"|"GBP"|"Clydesdale Bank plc"|"90535061"|"St John's Street Branch, 23 South Methven Street, Perth, PH1 5PQ"|"Strathallan School"|"CLYDGB21711"|"82-67-11"|"GB58CLYD82671190535061"|""|"20130525"|""|"Strathallan School"
+473|"Course"|"GBP"|"National Westminster Bank Plc"|"77322924"|"Whitehaven Branch, P. O. Box 12, 71 Lowther Street, Whitehaven , Cumbria CA28 7AG"|"St. Bees School"|"NWBKGB2L"|"01-09-54"|"GB27NWBK01095477322924"|""|"20130525"|""|"St Bees School"
+454|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00015303"|"147 High Street, Guildford, Surrey, GU1 3AG"|"St. Catherine's School"|"LLOYDSGB21022"|"30-93-74"|"GB36LOYD30937400015303"|""|"20130525"|""|"St. Catherine's School"
+479|"Course"|"GBP"|"National Westminster Bank Plc"|"28607031"|"Po Box 14, 104 Fore Street, Hertford, SG14 1YY"|"St Edmund's College"|"NWBKGB2L"|"60-10-39"|"GB61NWBK60103928607031"|""|"20130525"|""|"St. Edmund's College"
+510|"Course"|"GBP"|"Barclays Bank"|"90849375"|"Banbury"|"Stowe School Ltd"|"BARCGB22"|"20 03 84"|"GB41BARC20038490849375"|"Please quote your child’s name as the payment reference"|"20131015094426"|"AA00025"|""
+415|"Others"|"GBP"|"First Trust Bank"|"50290248"|"First Trust Bank, English Street, Armagh, BT61 7LD"|"The Royal School Armagh"|"FTBKGB2B"|"93-81-65"|"GB98 FTBK 9381 6550 2902 48"|"For Pocket Money - No.2 Revenue A/C"|"20170812113403"|"AA00032"|""
+426|"Course"|"GBP"|"Barclays Bank Plc"|"90542725"|"Po Box 6, Portsmouth, PO6 3DH"|"Saint Michael's College (Tenbury) Limited"|"_"|"20-69-34"|"GB72BARC20693490542725"|""|"20141231102056"|""|"King's Saint Michael's College"
+16|"Registration Fee"|"GBP"|"Barclays"|"33012697"|"-"|"Epsom College"|"BARCGB22"|"20-00-00"|"GB36 BARC 200000 33012697"|"Please ensure the applicant's name is quoted as the reference."|"20231206112827"|"AA00078"|""
+457|"Course"|"GBP"|"HSBC"|"81379259"|"118 Commercial Road, Portsmouth, PO1 1EP"|"St John's College"|"MIDLGB2149V"|"40-37-15"|"GB82MIDL40371581379259"|""|"20130525"|""|"St John's College"
+587|"Course"|"GBP"|"Barclays Bank plc"|"10616664"|"Barclays Bank PLC, Barclays Corporate Banking, 90/92 High Street, Crawley, West Sussex, RH10 1BP, UK."|"The Malden Trust Ltd"|"BARCGB22"|"20 – 12 – 75"|"GB05 BARC 2012 7510 6166 64"|"P.S. Remember to include any transfer fee with the remittance"|"20170801103126"|"AA00032"|""
+494|"Course"|"GBP"|"Barclays Bank Plc"|"40621676"|""|"St Margaret's School"|"BARCGB22"|"20-91-79"|"GB79BARC20917940621676"|""|"20130525"|""|"St Margaret's Enterprises"
+668|"Course"|"GBP"|"Bank of China"|"4514 311 0188 1607 399"|"Ningbo Branch, No.139 Yaohang Street, Haishu District, Ningbo City, Zhejiang Province, 315000, PRC"|"Cook Stephen John"|""|""|""|""|"20130525"|""|"St. Martha's Senior School"
+462|"Course"|"GBP"|"HSBC"|"51480154"|"2 Market Place, Chippenham, Wiltshire, SN1 3HE"|"St Mary's School, Calne"|"MIDLGB21250"|"40-17-17"|"GB80MIDL40171751480154"|"All payments must be made in pounds sterling and parents are advised to allow an additional sum to cover transfer charges, which will be levied by the transferring bank. To do this, please request that your bank pays all charges at source. Please include the surname as a reference on the bank transfer details in order for us to identify payments on our bank statements. "|"20130525"|""|"St Mary's School Calne"
+302|"Course"|"GBP"|"National Westminster Bank Plc"|"08164312"|"Market Place, Loughborough, Leicestershire, LE11 3NZ"|"Loughborough Schools Foundation"|"NWBKGB2L"|"60-14-10"|"GB28NWBK60141008164312"|""|"20190326113633"|"AA00076"|"Loughborough Grammar"
+464|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"01346165"|"32 High Street, Shaftesbury, Dorset SP7 8JJ"|"St Mary's School Shaftesbury trust"|"LOYDGB21284"|"30-93-45"|"GB09LOYD30934501346165"|"""If you do use this method of payment, it will also be most helpful if you would include your daughter's name in the remittance details. Please ensure that your bank is aware that charges are for the remitter's account and not deducted from the payment
+"""|"20130525"|""|"St Mary's School Shaftesbury"
+631|"Course"|"GBP"|"Bank of Scotland"|"100136733"|"One Kingsway, Cardiff, CF10 3YB"|"St. Michael's School"|"BOFSGB21BWS"|"12-23-11"|"GB73BOFS12231100136733"|""|"20130525"|""|"St Michael's School"
+409|"Course"|"GBP"|"National Westminster Bank Plc"|"05008204"|"National Westminster Bank, Church St, Fleetwood, Lancs"|"The Corporation of Rossall School"|"NWBKGB2L"|"60-08-26"|"GB65NWBK60082605008204"|""|"20240131180622"|"AA00078"|"Rossall School"
+517|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00339205"|"104 Terminus Road, Eastbourne, East Sussex BN21 3AH"|"Sussex Downs College"|"LOYDGB21092"|"30-92-86"|"GB16LOYD30928600339205"|""|"20130525"|""|"Sussex Downs College"
+168|"Course"|"GBP"|"Barclays Bank Plc"|"30354104"|"."|"Elstree School Clients Premium Account"|"BARCGB22"|"20-59-22"|"GB72 BARC 2059 1430 3541 04"|"20180518: Cheque made payable to Elstree School Ltd"|"20180518154936"|"AA00078"|""
+419|"Course"|"GBP"|"Barclays Bank Plc"|"43933296"|"Leicester, Leicestershire, LE87 2BB, United Kingdom"|"Ruthin School Charity"|"BARCGB22"|"20-25-84"|"GB13BARC20258443933296"|""|"20201111173205"|"AA00078"|""
+30020|"Course"|"GBP"|"Lloyds TSB Bank plc"|"00088500"|"University of Cambridge Branch, PO Box 1000, BX1 1LT"|"St. Andrew’s Tutorial Services Ltd trading as Select English Ltd"|"LOYDGB21018"|"30-91-56"|"GB06LOYD30915600088500"|""|"20141121135326"|"AA00032"|"St. Andrew’s Tutorial Services Ltd trading as Select English Ltd"
+557|"Course"|"GBP"|"Barclays Bank Plc"|"40901075"|"14 King Streetm Truro, TR1 2RB"|"Truro High School"|"BARCGB22"|"20-87-94"|"GB31BARC20879440901075"|""|"20130525"|""|"Truro High School For Girls"
+558|"Course"|"GBP"|"HSBC"|"50010200"|""|"Methodist Colleges & schoolbank, Truro School"|"MIDLGB22"|"40-02-06"|"GB85MIDL40020650010200"|"Please use the pupil's name as a reference so that the school can cross check payment"|"20130525"|""|"Truro School"
+465|"Course"|"GBP"|"Lloyds Bank"|"00653408"|"University of Cambridge, 3 Sidney Street, Cambridge, CB2 3BU, UK"|"St Mary's School, Cambridge"|"LOYDGB21035"|"30-13-55"|"GB03LOYD30135500653408"|"Please ensure the applicants name is quoted as the reference, so that we can match up the payment with the application"|"20240123150319"|"AA00078"|"St Mary’s School Enterprises Ltd"
+570|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00106231"|"Warminster Branch, 37 Market Place, Warminster,Wiltshire, BA12 9BD"|"Warminster School"|"LOYDGB21294"|"30-99-13"|"GB98LOYD30991300106231"|"To help us to identify the payment in our bank, please reference the payment with the student's name. We would also be grateful if you could send an email to gwebb@warminsterschool.org.uk to let us know the date the payment is made and the account number the money has transferred from."|"20130525"|""|"Warminster School"
+572|"Course"|"GBP"|"HSBC"|"30853801"|"9 Rose Lane, Canterbury CT1 2JP"|""|"MIDL2122W"|"40-15-02"|"GB28MIDL40150230853801"|""|"20130525"|""|"Wellesley House School"
+493|"Course"|"GBP"|"National Westminster Bank Plc"|"60837829"|"19 High Street, Heathfield, East Sussex TN21 8PL, UK"|"Mayfield School Limited"|"NWBKGB2L"|"60-10-30"|"GB30NWBK 60103060837829"|"Electronic bank transfer details"|"20221215111423"|"AA00078"|"Mayfield School Services Ltd"
+575|"Course"|"GBP"|"National Westminster Bank Plc"|"52176657"|"7 High Street, Wells, Somerest, BA5 2AD"|"Wells Cathedral School"|"NWBKGB2L"|"60-23-06"|"GB78NWBK60230652176657"|""|"20130525"|""|"Wells Cathedral School"
+101|"Registration Fee"|"GBP"|"HSBC Bank plc"|"80437581"|"HSBC, 60 Queen Victoria St, London, EC4N 4TR"|"CSFC Ltd"|"HBUKGB4B"|"40-11-60"|"GB79HBUK40116080437581"|"Please put the invoice number as the reference"|"20240625174702"|"AA00078"|""
+581|"Course"|"GBP"|"National Westminster Bank Plc"|"80962254"|"105 High Street, Winchester, SO23 9AW"|"Hampshire County Council"|""|"55-81-26"|"GB61NWBK55812680962254"|""|"20130525"|""|"Westgate School"
+325|"Course"|"GBP"|"Barclays"|"60793280"|"44/46 Castle Street, Shrewsbury, SY1 2BU"|"Moreton Hall Educational Trust Ltd"|"BARCGB22"|"20 78 01"|"GB36BARC20780160793280"|"Please use student's name or number for payment reference"|"20200707173458"|"AA00078"|""
+607|"Course"|"GBP"|"Barclays Bank Plc"|"30951927"|"PO Box 1, 32 Bridge Street, Banbury, Oxon, OX16 8PS"|"Westonbirt School"|"BARCGB22"|"20-03-84"|"GB92BARC20038430951927"|""|"20130525"|""|"Westonbirt School"
+590|"Course"|"GBP"|"Barclays Bank Plc"|"30793329"|"4 Church Street, Woodbridge, Suffolk, IP12 1DJ"|"Woodbridge School"|"BARCGB22"|"20-98-07"|"GB13BARC20980730793329"|""|"20130525"|""|"Woodbridge School"
+592|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00592896"|"1 Pride Hill, SHREWSBURY, England, SY1 1DG"|"Woodard schoolbank (Nottinghamshire) Limited- Worksop Scholars"|"LOYDBG21301"|"30-97-62"|"GB06LOYD30976200592896"|""|"20130525"|""|"Woodard Schools (Nottinghamshire) Enterprises Ltd"
+595|"Course"|"GBP"|"Barclays Bank Plc"|"90988553"|"Barclays Business Centre, 32 Bridge Street, Banbury, Oxfordshire OX16 8PS"|"Wrekin College (Wellington) Company Limited"|""|"20-03-84"|""|""|"20130525"|""|"Wrekin College"
+595|"Registration Fee"|"GBP"|"Barclays Bank Plc"|"20988251"|"Barclays Business Centre, 32 Bridge Street, Banbury, Oxfordshire OX16 8PS"|"Wrekin College (Wellington) Company Limited"|""|"20-03-84"|""|""|"20130525"|""|"Wrekin College"
+596|"All"|"GBP"|"Barclays Bank Plc"|"50957313"|"Summertown Branch, 211-213 Banbury Road, Oxford OX2 7HH"|"Wychwood School Ltd"|"BARCGB22"|"20-65-18"|"GB85BARC20651850957313"|""|"20130829180948"|"AA00025"|"Wychwood School"
+597|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00441758"|"12 Rowcroft, Stroud, Gloucestershire, GL5 3BD"|"Wycliffe College No 2 Account"|"LOYDGB2L"|"30-98-29"|"GB77LOYD30982900441758"|""|"20130525"|""|"Wycliffe College "
+599|"Course"|"GBP"|"National Westminster Bank Plc"|"85331309"|"5 Market Place, wymondham, Norfolk, NR18 0YY"|"Wymondham College"|"NWBKGB2L"|"60-24-52"|"GB54NWBK60245285331309"|"No invoice is issued for the deposit - please ask that the students full name is quoted as the payment reference. Please quote student's full name as a reference"|"20130525"|""|"Wymondham College"
+593|"Course"|"GBP"|"HSBC"|"22126532"|"9 The Boulevard,Crawley,West Sussex,RH10 1UT"|"Worth School"|"HBUKGB4167F"|"40-18-22"|"GB63HBUK40182222126532"|"20180505: Bank transfer account"|"20180505100552"|"AA00078"|"Worth School"
+689|"Course"|"GBP"|"National Westminster Bank Plc"|"06041159"|"52 High Street, Sidmouth, Devon EX10 8LJ"|"Sidmouth International School"|"NWBKGB2L"|"55-50-06"|"GB76NWBK55500606041159"|""|"20130525"|""|"Sidmouth International School"
+691|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"51279460"|"Po Box 3, Queen Square, Wolverhampton, Wet Midlands, WV1 1RF"|"Abbey College"|"LOYDGB21114"|"30-99-83"|"GB09LOYD30998351279460"|""|"20130525"|""|"Abbey College in London"
+693|"Course"|"GBP"|"Barclays Bank Plc"|"83797031"|"66 Market Place, Chippenham, Wiltshire SN15 3JA"|"Ashwicke Hall School Ltd"|"BARCGB22"|"20-84-58"|"GB43BARC20845883797031"|""|"20130525"|""|"SABIS International School UK"
+638|"Course"|"GBP"|"National Westminster"|"57036373"|"Bournemouth Branch"|"White House Guardianships"|"NWBKGB2L"|"51-81-20"|"GB86NWBK5181205703 6373"|""|"20130823150820"|"AA00025"|"White House Guardianships"
+316|"Course"|"GBP"|"National Westminster Bank plc"|"05105625"|"55 The Broadway, Mill Hill, London, NW7 3WF, England"|"Mill Hill School"|"NWBKGB2L"|"60-14-27"|"GB10NWBK60142705105625"|"[22May14] Clearly stating the pupil’s full name, school number (if known) and reason for payment. Please inform school when making payment by this method."|"20140522172023"|"AA00044"|""
+47|"Course"|"GBP"|"Natwest"|"66414059"|"-"|"Bedales School"|"NWBKGB2L"|"60-16-26"|"GB16NWBK60162666414059"|""|"20131023175637"|"AA00025"|""
+16|"Course"|"GBP"|"Allied Irish Bank"|"00415012"|"201/203 The Broadway, Wimbledon, London, SW19 1FF"|"Epsom College"|"AIBKGB 2L"|"23-84-81"|"GB32AIBK23848100415012"|"Examination Fee : GBP 20. To ensure that the funds reach the correct account, it is very important that the candidate's name is quoted as a reference"|"20200915172714"|"AA00078"|"Epsom College"
+125|"Course"|"GBP"|"HSBC"|"92487918"|"62 George White Street, Cabot Circus Bristol, BS1 3BA"|"Clifton College"|"HBUKGB4B"|"40-14-13"|"GB06HBUK40141392487918"|"Please ensure that you clearly include the pupil's name in the transaction Reference field so that we can trace and indentify the transaction on receipt.
+
+Please then forward a copy of your bank transfer to: fees@cliftoncollege.com"|"20240214160036"|"AA00078"|"Clifton College"
+561|"Course"|"GBP"|"National Westminster Bank Plc"|"10216731"|"Birmingham City Centre Office, 1 St Philip's Place, Birmingham, B3 2PP"|"UCB"|"NWBKGB2L"|"60-02-35"|"GB40NWBK60023510216731"|"Please ask your bank to quote the student's name and what the payment is for (i.e. tuition fees pre-payment)"|"20130525"|""|"University College Birmingham"
+603|"Course"|"GBP"|"Bank of Scotland"|"22305878"|"PO Box 412, 62-63 Threaneedle Street, London, EC2R 8LA"|"Abbey College Cambridge"|"RBOSGB2L"|"15-10-00"|"GB97RBOS15100022305878"|""|"20130525"|""|"Abbey College Cambridge"
+383|"Course"|"GBP"|"Lloyds Bank"|"29008968"|"84 Victoria Road, Ferndown, Dorset, BH22 9JB, United Kingdom"|"Quest Guardians Limited"|"LOYDGB21270"|"30 93 25"|"GB53LOYD30932529008968"|""|"20140709133300"|"AA00044"|""
+530|"Course"|"GBP"|"Lloyds TSB Bank plc"|"01748064"|"Belle Vue Terrace, Malvern, Worcestershire"|"The Downs Malvern College Prep School"|"LOYDGB211139"|"30-95-41"|"GB20 LOYD 3095 4101 7480 64"|""|"20200808113913"|"AA00078"|""
+53|"Course"|"GBP"|"Barclays Bank PLC"|"73176630"|"-"|"Beechwood School Limited"|"BARCGB22"|"20-40-89"|"GB70 BARC 2040897316630"|"Please put child's name as reference on the payment."|"20210220101904"|"AA00078"|""
+635|"Course"|"GBP"|"National Westminster Bank Plc"|"39218635"|"PO Box 12258, 1 Princes Street, London EC2R 8PA"|"London South Bank University"|"NWBKGB2"|"60-00-01"|"GB33NWBK60000139218635"|"Reference: Surname of student, student number and reason for transfer - for example: John Smith, 12345678, Tuition fees payment. Payments from with the UK should be made using our sort code and account number for payments"|"20130525"|""|"London South Bank University"
+649|"Course"|"GBP"|"Barclays Bank Plc"|"43302687"|""|"Sedbergh School Developments Limited"|"BARCGB22"|"20-45-28"|"GB28BARC20452843302687"|""|"20130525"|""|"Sedbergh International Summer School"
+554|"Course"|"GBP"|"Royal Bank of Scotland"|"11927778"|"Long Eaton branch"|"Trent College Ltd"|"RBOSGB2L"|"16-24-21"|"GB14RBOS16242111927778"|"Reference: Please quote the student’s full name when sending payment"|"20140301110137"|"AA00039"|"Trent College"
+94|"Course"|"GBP"|"Barclays Bank PLC"|"90170941"|"9-11 St Andrews Street, Cambridge, CB2 3AA"|"Cambridge Centre for Sixth-Form Studies"|"BARCGB22"|"20-17-19"|"GB43 BARC2017 1990 1709 41"|""|"20180615141631"|"AA00078"|""
+490|"Course"|"GBP"|"Barclays Bank Plc"|"80773018"|"Sidmouth Branch, 40 High Street, Sidmouth, EX10 8EB"|"St John's School Trust (Sidmouth) Ltd"|""|"20-30-47"|"GB53BARC20304780773018"|""|"20130525"|""|"St. John's School"
+258|"Course"|"GBP"|"Royal Bank of Scotland"|"23109401"|"Threadneedle Street  LONDON EC2R 8LA"|"KING EDWARD’S SCHOOL WITLEY"|"RBOSGB2L"|"16-00-15"|"GB23RBOS16001523109401"|"Please ensure you use the pupil's full name as your reference"|"20210904145617"|"AA00078"|""
+502|"Course"|"GBP"|"National Westminster Bank Plc"|"08802106"|"Canterbury City Centre Branch 11 The Parade, Canterbury, Kent CT1 2SQ"|"Stafford House School of English Ltd"|"NWBKGB2L"|"60-04-27"|"GB10NWBK60042708802106"|""|"20130525"|""|"Stafford House College"
+23|"Course"|"GBP"|"Barclays Bank Plc"|"60501751"|"Knightsbridge Business Centre, PO Box 32014, London, NW1 2ZG"|"Abacus College Limited"|"BARCGB22"|"20-06-05"|"GB44BARC20060560501751"|""|"20130525"|""|"Abacus College"
+502|"Course"|"GBP"|"National Westminster Bank Plc"|"90780329"|"Canterbury City Centre Branch 11 The Parade, Canterbury, Kent CT1 2SQ"|"Stafford House School of English Ltd"|"NWBKGB2L"|"60-04-27"|"GB46NWBK60042790780329"|"Please use this bank account with immediate effect for enrolments to CATS Canterbury"|"20130525"|""|"Stafford House College"
+503|"Course"|"GBP"|"Barclays Bank Plc"|"60827932"|"46-49 Broad Street, Stamford, Lincolnshire, PE9 1PZ"|"Stamford High School"|"BARCGB22"|"20-81-20"|"GB65BARC20812060827932"|"Reference: name of pupil"|"20130525"|""|"Stamford High School"
+513|"Course"|"GBP"|"HSBC"|"21406647"|"61 High Street, Staines, Surrey TW18 4QW"|"Strode's College"|""|"40-43-04"|"GB47MIDL40430421406647"|""|"20130525"|""|"Strode's College"
+61|"Course"|"GBP"|"Lloyds TSB Bank plc"|"00006131"|"Bishop's Stortford Branch, 20 North Street, Bishop's Stortford, CM23 2LN"|"Bishop's Stortford College"|"LOYDGB2L"|"30-90-84"|"GB 83 LOYD 30 90 84 00006131"|""|"20191123095118"|"AA00078"|"Bishops Stortford College"
+550|"Course"|"GBP"|"Barclays Bank Plc"|"60856053"|"139/142 North Street, Brighton, East Sussex, BN1 1RU"|"The Towers Convent School"|"BARCGB22"|"20-12-75"|"GB22BARC20127560856053"|""|"20130525"|""|"Towers Convent School (The)"
+103|"Course"|"GBP"|"HSBC"|"30113050"|"60 Queen Victoria Street, London, EC4N 4TR"|"Caterham School Limited"|"MIDLGB22"|"40-11-60"|"GB93HBUK40116030113050"|"20181205: Acceptance fee payable to ""Caterham School Limited"""|"20201014110718"|"AA00078"|""
+440|"Course"|"GBP"|"Allied Irish Bank"|"26774108"|""|"Sibford School Ltd Current Account"|"AIBKGB2L"|"23-85-85"|"GB53AIBK23858526774108"|""|"20130525"|""|"Sibford School"
+452|"Course"|"GBP"|"Barclays Bank Plc"|"60178691"|"Knightsbridge Business Centre, PO Box 32014, London, NW1 2ZG"|"St Bede's International Summer School"|"BARCGB22"|"20-06-05"|"GB36BARC20060560178691"|"We have opened a separate bank account for Students’ Pocket Money. Parents wishing to send Pocket Money in advance, should use our new Pocket Money Payment Portal via https://www.stbedessummerschool.org/onlinebooking_makepocketmoneypayment.asp 
+
+1. Please state the student's full name or the invoice number as the reference. 2. Make sure you pay all bank charges so that St Bede's receives the full amount."|"20130530173027"|"AA00025"|"Bede's International Summer Schools"
+471|"Course"|"GBP"|"National Westminster Bank Plc"|"57964270"|"Eastbourne Town Centre Branch, 96 Terminus Road, Eastbourne, BN21 3LX"|"St Andrew's School Trust (Eastbourne) Ltd"|"NWBKGB2L"|"52-41-00"|"GB83NWBK52410057964270"|""|"20130525"|""|"St. Andrew's School"
+488|"Course"|"GBP"|"HSBC"|"91363344"|"69 Pall Mall, London, SW1Y 5EY"|"St John's Beaumont"|"MIDLGB22"|"40-05-20"|""|""|"20130525"|""|"St. John's Beaumont"
+489|"Course"|"GBP"|"HSBC"|"90724521"|"18 North Street, Leatherhead, Surrey KT22 7AR"|"St. John's School Leatherhead"|""|"40-27-07"|""|""|"20130525"|""|"St. John's School, Leatherhead"
+321|"Course"|"GBP"|"National Westminster Bank Plc"|"57158320"|"15 High Street, Bath, BA1 5AH"|"Monkton Combe School"|"NWBKGB2L"|"56-00-34"|"GB40NWBK56003457158320"|""|"20130525"|""|"Monkton Combe Junior School"
+336|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"02291006"|"6 Park Row, Leeds LS1 1NX"|"Notre Dame 6th Form College"|"LOYDGB21007"|"30-00-05"|"GB40LOYD30000502291006"|""|"20130525"|""|"Notre Dame Catholic Sixth Form College"
+341|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"02532104"|"1 Market Place, Reading, Berkshire, RG1 2EQ"|"The Oratory School"|"LOYDGB21011"|"30-96-96"|"GB56LOYD30969602532104"|""|"20130525"|""|"Oratory Prep school"
+342|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"02532104"|"1 Market Place, Reading, Berkshire, RG1 2EQ"|"The Oratory School"|"LOYDGB21011"|"30-96-96"|"GB56LOYD30969602532104"|""|"20130525"|""|"Oratory School"
+628|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"03235008"|"82 High Street, Lewes, East Sussex, BN7 1XW"|"St. George's England Ltd"|"LOYDGB21103"|"30-95-01"|"GB42LOYD30950103235008"|"Bank transfer:
+- Please make sure the STUDENT'S NAME is clearly marked on the bank transfer.
+- Please make sure you pay ALL the transfer charges so that the college receives the full amount of the payment due.
+Cheque: 
+- A cheque in UK £ Sterling please make payable to St George’s England"|"20150127161530"|"AA00032"|"Buckswood St George's England"
+395|"Course"|"GBP"|"Barclays Bank Plc"|"30726508"|"PO Box 544, 54 Lombard Street, London EC3V 9 EX"|"Regents Business School London Ltd"|""|"20-65-82"|""|""|"20130525"|""|"Regents Business School"
+411|"Course"|"GBP"|"HSBC"|"30713805"|"Poultry & Princes Street, London EC2P 2BX"|"Royal Alexandra and Albert School"|"MIDLGB2141W"|"40-05-30"|"GB33MIDL40053030713805"|""|"20130525"|""|"Royal Alexandra And Albert School"
+247|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00548066"|"106 High Street, Scunthorpe, DN15 6HG"|"John Leggott College"|"LOYDGB21263"|"30-97-44"|"GB34LOYD30974400548066"|""|"20130525"|""|"John Leggott College"
+256|"Course"|"GBP"|"Bank of Scotland"|"00476958"|"10-16 King Edward Street, Perth, Scotland, PH1 5UT"|"Kilgraston School"|"BOFSGB21129"|"80-91-28"|"GB78BOFS80912800476958"|""|"20130525"|""|"Kilgraston School"
+15|"Course"|"GBP"|"Barclays Bank"|"80809381"|"Croydon Business Centre, The Croydon Group, PO Box 95, 1 North End, Croydon, Surrey CR9 1RN, UK"|"Woldingham School"|"BARCGB22"|"20-24-87"|"GB84 BARC 202487 80809381"|""|"20180427165149"|"AA00078"|"Woldingham School"
+292|"Course"|"GBP"|"National Westminster Bank Plc"|"21635072"|"Bristol City Office, Po Box No 238, 32 Corn Street, BS1 1HQ"|"LIVING LEARNING ENGLISH LTD"|"NWBKGB2L"|"56-00-05"|"GB63NWBK56000521635072"|"(All bank charges must be paid by the student's own bank), Please quote the invoice number with all payments"|"20130525"|""|"Living Learning English"
+470|"Course"|"GBP"|"Lloyds Bank Plc"|"01617078"|"University of Cambridge Branch, England CB2 3HQ"|"St. Andrew's Tutorial Services Ltd."|"LOYDGB2L"|"LOYDGB21018"|"GB57LOYD30915601617078"|"20210303: By enclosing a sterling cheque or bank draft made payable to 'St. Andrew's Tutorial Services Ltd'"|"20210303100841"|"AA00078"|""
+155|"Course"|"GBP"|"Barclays Bank Plc"|"00355194"|"6/7 Market Place"|"Durham School"|"BARCGB22"|"20-27-41"|"GB49BARC20274100355194"|""|"20130525"|""|"Durham School"
+172|"Course"|"GBP"|"Barclays Bank Plc"|"80008893"|"46 North Street, Taunton, Somerset, TA1 1LZ"|"Etherton Education Ltd."|"BARCGB22"|"20-85-26"|"GB44BARC20852680008893"|"Payment Message: Please put the STUDENT'S NAME. This is very important!"|"20130525"|""|"Etherton Education"
+478|"Course"|"GBP"|"Barclays Bank Plc"|"60785881"|"Plymouth"|"St Dunstan's Abbey School"|""|"20-68-10"|""|""|"20130525"|""|"St. Dunstan's Abbey School -The Plymouth College Junior School"
+87|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"02740507"|"82 High Street, Lewes, East Sussex, BN7 1XW"|"Buckswood School Limited"|"LOYDGB21103"|"30-95-01"|"GB04LOYD30950102740507"|""|"20130525"|""|"Buckswood School"
+670|"Course"|"GBP"|"Barclays Bank PLC"|"73100030"|"27 Soho Square, London W1D 3QR"|"Discovery Summer Ltd"|"BARCGB22"|"20 78 98"|"GB16 BARC 2078 9873 1000 30"|""|"20140718172328"|"AA00044"|""
+680|"Course"|"GBP"|"HSBC Bank plc"|"11076698"|"60 Queen Victoria Street, London, EC4N 4TR, UK."|"Earlscliffe"|"HBUKGB4B"|"40-11-60"|"GB34HBUK40116011076698"|"Please make sure the student's name is clearly marked on the bank transfer"|"20200522163847"|"AA00078"|""
+42|"Course"|"GBP"|"National Westminster Bank Plc"|"51437813"|"Harrow Town Centre Branch,315 Station Road,Harrow,Middlesex,HA1 2AD"|"HSEL Client Account"|"NWBKGB2L"|"60-10-10"|"GB52NWBK60101051437813"|""|"20130525"|""|"BABSSCo (Harrow School Enterprises Ltd)"
+44|"Course"|"GBP"|"Barclays Bank Plc"|"50881767"|"Knightsbridge Corporate Centre London"|"Bath Academy"|"BARCGB22"|"20-06-05"|"GB93BARC20060550881767"|""|"20130525"|""|"Bath Academy"
+48|"Course"|"GBP"|"Co-operative Bank"|"65060072"|"London City Office, 80 Cornhill, London, EC3V 3NJ"|"Bedford Charity The Harpur Trust"|""|"08-02-28"|"GB62CPBK08022865060072"|""|"20130525"|""|"Bedford Girls' School"
+72|"Course"|"GBP"|"Allied Irish Bank"|"55000064"|"9/10 Angel Court, London EC2R 7AB"|"Bradfield College"|"AIBKGB2L"|"23-84-82"|"GB41AIBK23848255000064"|""|"20130525"|""|"Bradfield College"
+107|"Course"|"GBP"|"Allied Irish Bank"|"1302 7585"|"9 Waterloo Road, Wolverhampton, WV1 4NB"|"Chase Grammar School Ltd"|"AIBKGB2L"|"23-85-85"|"GB30AIBK23858513027585"|"Please make sure you write the student's name on the transfer document so that fees can be allocated to the correct account."|"20131015103858"|"AA00025"|"Chase Grammar School"
+30018|"Course"|"GBP"|"Barclays Bank"|"Barclays Bank plc"|"99 Hatton Garden London, EC1N 8DN England, UK"|"International School of Creative Arts"|"BARCGB22"|"20-41-41"|"GB38BARC20414120055115"|""|"20141215110055"|"AA00032"|"International School of Creative Arts"
+84|"Course"|"GBP"|"HSBC"|"01514962"|"1 Middle Street, Yeovil, Somerset, BA20 1LR"|"Bruton School for Girls"|"MIDLGB2165H"|"40-47-28"|"GB57MIDL40472801514962"|""|"20130525"|""|"Bruton School For Girls"
+92|"Course"|"GBP"|"National Westminster Bank Plc"|"59812796"|"23 Market Street, Cambridge, CB2 3PU"|"Cambridge Arts & Sciences Limited"|"NWBKGB2L"|"60-04-23"|"GB42NWBK60042359812796"|"Bank transfer to the following account. An additional GBP 12 must be transferred with the fees to cover bank charges"|"20130525"|""|"Cambridge Arts And Sciences (CATS)"
+24|"Course"|"GBP"|"Co-operative Bank"|"70742686"|"42 Greengate Street, Stafford, ST16 2BU"|"Abbotsholme School"|"CPBKGB22"|"08-90-08"|"GB76CPBK08900870742686"|""|"20130525"|""|"Abbotsholme School"
+30|"Course"|"GBP"|"HSBC"|"11709232"|"33 High Street, Shrewsbury, Shropshire, SY1 1SL"|"Adcote School Educational Trust Limited"|"MIDLGB2154T"|"40-41-30"|"GB02MIDL40413011709232"|""|"20130525"|""|"Adcote School For Girls"
+31|"Course"|"GBP"|"HSBC"|"31307568"|"21 King's Mall, King's Street, Hammersmith, London, W6 0QF"|"Albemarle Education Limited"|"MIDLGB22"|"40-03-21"|"GB29 MIDL40032131307568"|""|"20130525"|""|"Albemarle College"
+187|"Course"|"GBP"|"HSBC"|"01511270"|"33 The Borough, Farnham Surrey GU9 7NJ"|"Frensham Heights Educational Trust Ltd"|"HBUKGB4112U"|"40-21-05"|"GB80HBUK40210501511270"|""|"20180608114908"|"AA00078"|"Frensham Heights"
+35|"Course"|"GBP"|"Barclays Bank"|"03744795"|"1-3 Parliament Street, York, YO1 1XD, UK"|"St Laurence Education Trust"|"BARCGB22"|"20-99-15"|"GB49 BARC 2099 1503 7447 95"|"20191126: This account is for parents not using a UK bank account."|"20191126094633"|"AA00078"|""
+467|"Course"|"GBP"|"Barclays Bank Plc"|"90542725"|"Po Box 6, Portsmouth, PO6 3DH"|""|""|"20-69-34"|"GB72BARC20693490542725"|""|"20130525"|""|"St. Michael's College"
+40|"Course"|"GBP"|"Barclays Bank"|"70307807"|"Market Place Town, Leicester, Leicestershire, UK,  LE87 2BB"|"United Church Schools Trust"|"BARCGB22"|"20-46-50"|"GB54BARC20465070307807"|"Please include the PUPIL NAME on the transfer reference"|"20230616134746"|"AA00078"|"Ashford School"
+650|"Course"|"GBP"|"National Westminster Bank Plc"|"77912438"|"Kensington Royal Garden Branch, Po Box 2341, 55 Kensignton High Street , London W8 5ZG"|""|"NWBKGB2L"|"50-30-10"|"GB40NWBK50301077912438"|"There will be a charge of ￡10 for each such transfer"|"20130525"|""|"Project International"
+30002|"Course"|"CH"|"UBS S.A."|"255-101628.01D"|"Avenue su Casino 41, 1820 Montreux, Switzerland"|""|"UBSWCHZH 80A"|"-"|"CH370025525510162801D"|""|"20130606151249"|"AA00025"|"Surval Montreux"
+211|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00095828"|"18 Monnow Street, Monmouth NP25 3XH"|"Monmouth School for Girls"|"LOYDGB21493"|"30-95-71"|"GB54LOYD30957100095828"|"[17May14] Cheque- Payment with either ‘Haberdashers’ Monmouth School for Girls’ or ‘HMSG’ is acceptable by the bank. School usually finds it easier for parents to just write ‘HMSG’"|"20201016180644"|"AA00078"|"Monmouth School Enterprises Ltd, Almshouse Street, Monmouth, NP25 3XP"
+261|"Course"|"GBP"|"NatWest"|"70884811"|"49 North Street, Taunton, Somerset, TA1 1NB"|"King's College Scholars Account"|"NWBKGB2L"|"60-80-06"|"GB06 NWBK 608006 70884811"|"20151230: Billing name was WST Enterprises Ltd, changed to King’s Schools Taunton Ltd
+20160122: send all invoices to Anya Rowley, Finance Manager, King's College and King's Hall School, t:  01823 328106, e: afrowley@kings-taunton.co.uk"|"20200108144642"|"AA00078"|"King’s Schools Taunton Ltd"
+303|"Course"|"GBP"|"National Westminster Bank Plc"|"67743811"|"5 Broad Street, Wokingham, RG40 1AX"|"Luckley House School"|"NWBKGB2L"|"60-24-21"|"GB61NWBK60242167743811"|""|"20131120104635"|"AA00025"|"Luckley House School"
+504|"Course"|"GBP"|"Barclays Bank"|"50830763"|"46-49 Broad Street, Stamford, Lincolnshire, PE9 1PZ"|"Stamford School"|"BARCGB22"|"208120"|"GB79 BARC 20812050830763"|"The pupil’s name MUST also be added otherwise our Finance Department will be unable to trace the transaction.
+
+pupil’s name MUST be displayed on all documents."|"20131128094310"|"AA00025"|""
+543|"Course"|"GBP"|"HSBC"|"22477017"|"1 Corn Market, High Wycombe, Bucks HP11 2AY"|"Royal Grammar School"|"MIDLGB2104S"|"40 24 17"|"GB47MIDL40241722477017"|""|"20131203094635"|"AA00025"|""
+259|"Course"|"GBP"|"HSBC PLC"|"12795388"|"PO Box 20, HSBC House, Ridgeway Street, Douglas, IM99 1AU"|"King William's College"|"MIDLBG22"|"40-19-38"|"GB61MIDL40193812795388"|"BIC: MIDLIM21XXX"|"20150109181406"|"AA00032"|"King William's College"
+547|"Course"|"GBP"|"Barclays Bank plc"|"93367665"|"Farnham, Surrey"|"The Royal School Haslemere"|"BARCGB22"|"20-31-06"|"GB80 BARC 2031 0693 3676 65"|"Use your student’s name for reference"|"20131210104057"|"AA00025"|""
+577|"Course"|"GBP"|"National Westminster Bank Plc"|"06112870"|"26 Broad Street, South Molton, Devon EX36 3AJ"|"West Buckland School"|"NWBKGB2L"|"55 50 29"|"GB41NWBK5550 2906112870"|"Please ask the family to ensure their family name is in the reference, so we know who the deposit is from."|"20131211163719"|"AA00025"|""
+642|"Summer"|"GBP"|"-"|"-"|"-"|"-"|"-"|"-"|"-"|""|"20140220095302"|"AA00025"|""
+496|"Course"|"GBP"|"National Westminster Bank Plc"|"22595813"|"York Street, Clitheroe, Lancashire, BB7 2DN"|"Stonyhurst"|"NWBKGB2L"|"01 02 14"|"GB16NWBK01021422595813"|"PLEASE ALWAYS QUOTE YOUR ACCOUNT REFERENCE OR NAME"|"20140722114727"|"AA00044"|""
+322|"Course"|"GBP"|"National Westminster Bank Plc"|"57158320"|"Old Bank Branch, 15 High Street, Bath, BA1 5AH"|"Monkton Combe School"|"NWBKGB2L"|"56-00-34"|"GB40NWBK56003457158320"|""|"20210803121918"|"AA00078"|"Monkton Combe School"
+21|"Course"|"GBP"|"National Westminster Bank Plc"|"04275977"|"Churchill Square, 56 Churchill Square, Brighton BN1 2ES"|"Brighton College"|"NWBKGB2L"|"01-01-23"|"GB66NWBK01012304275977"|"To assist us with tracing your payment, when making a bank transfer, please use the child's full name and date of birth as the ‘Transaction Reference or Payment Details'."|"20140307095426"|""|"Brighton College"
+213|"Registration Fee"|"GBP"|"Barclays Bank Plc"|"20470929"|"8 Market Place, Kettering, Northants, NN16 0AX"|"United Church schoolbank Trust Hampshire Collegiate"|"BARCGB22"|"20-45-77"|"GB12BARC20457720470929"|"Reg Fees and Deposit only"|"20140109163904"|"AA00025"|"Hampshire Collegiate School"
+213|"Course"|"GBP"|"Barclays Bank Plc"|"90576506"|"8 Market Place, Kettering, Northants, NN16 0AX"|"UCS TRUST"|"BARCGB22"|"20-45-77"|"GB61 BARC 2045 7790 5765 06"|"*******SCHOOL FEES ONLY******
+The bank details is different from paying the reg fee and deposit."|"20140109163945"|"AA00025"|""
+218|"Course"|"GBP"|"Barclays Bank plc"|"-"|"-"|"Heathfield School"|"BARCGB88"|"-"|"GB88BARC20028760459690"|"Payment may be made by Flywire – www.flywire.com/pay/heathfieldschool
+
+Or
+
+Beneficiary bank: Barclays Bank plc
+Swift: BARCGB88
+Beneificiary: Heathfield School
+IBAN: GB88BARC20028760459690"|"20191218095658"|"AA00078"|""
+611|"Course"|"GBP"|"Barclays Bank Plc"|"20800759"|"Oxford City Office, PO Box 333, 54 Cornmarket Street, Oxford, OX1 3HB"|"St Edward's School"|"BARCGB22"|"20-65-26"|"GB 83 BARC 2065 2620 8007 59"|""|"20240406174610"|"AA00078"|"St. Edward's School"
+30009|"Course"|"GBP"|"Barclays Bank"|"63736660"|"1 CHURCHILL PLACE Leicestershire, LE87 2BB"|"DLD Belgravia"|"BARC GB22"|"20-00-00"|"GB42 BARC 2000 0063 736660"|""|"20140121095743"|"AA00025"|""
+389|"Course"|"GBP"|"National Westminster Bank"|"52707865"|"Market Place, Loughborough, LE11 3NZ"|"Ratcliffe College"|"NWBKGB2L"|"60-14-10"|"GB34NWBK60141052707865"|"20180427: If paying fees direct to the School's bank account, please put the pupil’s account number in the reference field on the paying-in slip."|"20230404114333"|"AA00078"|"Ratcliffe Enterprises"
+574|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"66197260"|"31 Fore Street, Taunton, Somerset, TA1 1HN"|"Wellington School"|"LOYDGB21113"|"30-98-45"|"GB17 LOYD 3098 4566 1972 60"|"Please use the name of your son/daughter as the bank reference."|"20180505172856"|"AA00078"|"Wellington School"
+124|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00045001"|"Blandford Branch, Market Place, Blandford Forum, Dorset, DT11 7EE"|"Clayesmore School Ltd"|"LOYDGB21343"|"30-90-92"|"GB97LOYD30909200045001"|"Please contact the Finance department regarding any queries dayles@clayesmore.com or billing@clayesmore.com. Tel +44 (0) 1747 813207."|"20240409182025"|"AA00078"|"Clayesmore School"
+507|"Course"|"GBP"|"Lloyds Banking Group"|"59597468"|"-"|"NACE Educational Services Limited – Stonar School"|"LOYDGB2L"|"30-96-96"|"GB09LOYD30969659597468"|""|"20140128095358"|"AA00025"|""
+641|"Course"|"GBP"|"LloydsTSB"|"59806160"|"-"|"Montague Place W1 Ltd"|"LOYDGB21217"|"30-96-91"|"GB29LOYD30969159806160"|""|"20140204120425"|"AA00025"|""
+260|"Course"|"GBP"|"Barclays Bank plc"|"00581011"|"1 Bank Court, Hemel Hempstead, Herts, HP1 1BX"|"Kingham Hill School"|"BARCGB22"|"20-39-07"|"GB13BARC20390700581011"|""|"20140215162241"|"AA00025"|""
+101|"Summer"|"GBP"|"Lloyd TSB"|"41362860"|"514 Cowbridge Road East, Victoria Park, Cardiff, CF5 1BL"|"Ayass Ltd"|"LOYDGB21454"|"30-98-94"|"GB43LOYD30989441362860"|"For Summer Course"|"20140220095332"|"AA00025"|""
+30011|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00406805"|"PO Box 1000, BX1 1LT"|"Lansdowne Tutors Ltd"|"LOYDGB21027"|"30-95-74"|"GB30-LOYD-3095-7400-4068-05"|""|"20150331191023"|""|"Astrum Colleges - Lansdowne College"
+30003|"Course"|"GBP"|"Lloyds"|"00493859"|"High Street, Exeter, Devon, United Kingdom"|"Exeter College"|"LOYDGB21073"|"30-93-14"|"GB82 LOYD 3093 1400 4938 59"|""|"20150413122605"|"AA00044"|""
+30030|"Course"|"GBP"|"Bank of Scotland"|"00170860"|"300 Lawnmarket, Royal Mile, Edinburgh, EH1 2PH"|"West London College"|"BOFSGB21248"|"12-12-68"|"GB36BOFS12126800170860"|""|"20150423145743"|"AA00044"|""
+273|"Course"|"GBP"|"Barclays Bank"|"00997269"|"."|"Kingswood School Trustee Limited"|"BARCGB22"|"20 05 38"|"GB29BARC20053800997269"|"Bank transfer account"|"20180706141247"|"AA00078"|""
+694|"Course"|"GBP"|"Barclays Bank plc"|"93284301"|"9-11 St Andrews Street, Cambridge CB2 3AA, UK"|"Bell Educational Services Ltd"|"BARCGB22"|"20-17-19"|"GB08BARC20171993284301"|"[24Mar14] A copy of the bank transfer documents must be included with booking form. Please quote the student’s full name on all bank transfer documents."|"20140324133610"|"AA00044"|""
+686|"Course"|"GBP"|"Barclays Corporate Banking"|"60274054"|"PO Box 165, Crawley, RH10 1YX"|"Collyer’s College Account"|"BARCGB22"|"20-42-58"|"GB06 BARC 2042 5860 2740 54"|""|"20140324182418"|"AA00044"|""
+33|"Course"|"GBP"|"Barclays Bank PLC"|"70937533"|"One Churchill Place, London, E14 5HP"|"Aldro School Educational Trust Limited"|"BARCGB22"|"20-00-00"|"GB70 BARC 2000 0070 9375 33"|""|"20140401160519"|"AA00044"|""
+30210|"Deposit"|"GBP"|"Handelsbanken"|"69052797"|"3 Thomas More Square, London, E1W 1WY"|"Cranleigh School"|"HANDGB22"|"40-51-62"|"GB48HAND40516269052797"|"As a reference please use your child's name and state deposit on the transaction"|"20240516123311"|"AA00078"|""
+435|"Course"|"GBP"|"Lloyds Bank PLC"|"01884627"|"75 Cheap Street, Sherborne, Dorset   DT9 3BD"|"SHERBORNE SCHOOL"|"LOYDGB2L"|"30-99-98"|"GB12 LOYD 3099 9801 8846 27"|"Recognised Credit Card (VISA, MASTERCARD, AMEX).  
+Please note there is a 4% surcharge if paying by credit card.
+
+***PLEASE QUOTE THE STUDENT’S NAME ON ALL PAYMENTS***"|"20180425170846"|"AA00078"|"Sherborne International"
+526|"Course"|"GBP"|"."|"."|"."|"."|"."|"."|"."|"Payment can be made either online, by credit/debit card or by bank transfer."|"20141216155423"|"AA00032"|"Thames Valley Summer Schools"
+544|"Registration Fee"|"GBP"|"National Westminster Bank"|"24060518"|"Knightsbridge Branch, PO Box  6037, Brompton Road, London  SW3 1XJ"|"Royal High School Bath"|"NWBKGB2L"|"60-04-04"|"GB80 NWBK 6004  0424 0605 18"|""|"20161025103249"|"AA00044"|""
+312|"Course"|"GBP"|"NatWest"|"61049360"|"64 High Street, New Malden, Surrey, KT3 4HB"|"Marymount International School"|"NWBK GB2L"|"60-15-03"|"GB10 NWBK 6015 0361 0493 60"|"[4Apr14] Please mark the student name and / or student account code clearly on the bank transfer."|"20140404110917"|"AA00044"|""
+459|"Course"|"GBP"|"St Joseph’s College Ltd."|"90782378"|"."|"St Joseph’s College Ltd."|"."|"20-44-51"|"."|""|"20150112164151"|"AA00032"|"St Joseph’s College Ltd."
+384|"Registration Fee"|"GBP"|"Natwest"|"49403362"|"-"|"Radley College"|"NWBKGB2L"|"60-01-01"|"GB67NWBK60010149403362"|"20231013: We changed the account details this year so that all admissions and entry fees are paid into the same account, hence the difference on your system.
+
+
+
+20180220: This account is for electronic/BACS transfer"|"20240703125838"|"AA00078"|""
+673|"Registration Fee"|"GBP"|"-"|"-"|"-"|"-"|"-"|"-"|"-"|"Fees can be paid online using the following details:
+Account name: Moyles Court School
+Sort code: 12-23-11
+Account number: 10013668
+IBAN: GB78 BOFS 1223 1110 0136 68
+SWIFTBIC: BOFSGB21BWS
+Ref: Pupil’s name"|"20180118121540"|"AA00078"|""
+288|"Course"|"GBP"|"Metro Bank PLC"|"29275718"|"2‐24 Farnham Road, Slough SL1 3TA"|"LVS Ascot"|"MYMBGB2L"|"23‐05‐80"|"GB69 MYMB 2305 8029 2757 18"|""|"20180824095714"|"AA00078"|""
+4|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00144268"|"49 High Street, Godalming, Surrey GU7 1AT"|"Charterhouse"|"LOYDGB21195"|"30-93-49"|"GB54LOYD30934900144268"|"When make bank transfer, the bank account name is ""Charterhouse"". 
+Payment by cheque and bankers draft should be made payable to ""GBC General"""|"20151210184248"|"AA00007"|"Charterhouse"
+18|"Others"|"GBP"|"National Westminster Bank Plc"|"05509483"|"Cheap Street, Sherborne, Dorset, DT9 3BH"|"Sherborne School for Girls"|"NWBKGB2L"|"60-19-12"|"GB02NWBK60191205509483"|"[9Oct15] for deposit and fees
+
+Please make sure pupils full name is listed as a reference when transferring the money."|"20151009115357"|"AA00044"|"Sherborne School for Girls"
+30025|"Course"|"GBP"|"."|"."|"."|"."|"."|"."|"."|"Billing address: 
+
+Ross Moss
+
+Experio Life Ltd
+---------------------------
+rob@experiolife.com
+T. +44 (0) 203 553 5700
+F. +44 (0) 203 553 5701
+---------------------------
+Admin Office
+PO Box 55, The Street, Furneux Pelham
+Herts. SG9 0LJ
+UK"|"20151031103221"|""|"Admin Office, PO Box 55, The Street, Furneux Pelham,  Herts. SG9 0LJ"
+85|"Registration Fee"|"GBP"|"HSBC Bank plc"|"61218093"|"-"|"Bryanston School Inc"|"-"|"40 12 18"|"GB13MIDL40121861218093"|""|"20160115115842"|"AA00044"|""
+323|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00095828"|"18 Monnow Street, Monmouth NP25 3XH"|"Monmouth School"|"LOYDGB21493"|"30-95-71"|"GB54LOYD30957100095828"|"Quoting the pupils name as reference"|"20210415150514"|""|"Monmouth School Enterprises Ltd, Almshouse Street, Monmouth, NP25 3XP"
+524|"Course"|"GBP"|"HSBC"|"81781235"|"17 North Street, Taunton, Somerset TA1 1NA"|"Taunton School (TSI)"|"MIDLGB2112B"|"40-44-04"|"GB15MIDL40440481781235"|""|"20191218162832"|"AA00007"|"Taunton School"
+320|"Course"|"GBP"|"National Westminster Bank Plc"|"57977259"|"Address 96 Terminus Road, Eastbourne, East Sussex, BN21 3AA"|"Moira House School"|"NWBKGB2L"|"52-41-00"|"GB35NWBK52410057977259"|"[28Jan16]Cheque-Full payment in advance of the start of term. The pupil’s name must be written on the back of the cheque."|"20160128153224"|"AA00044"|"Moira House School"
+30035|"Course"|"GBP"|"Svenska Handelsbanken"|"87597180"|"7th Floor Seacourt Tower, West Way, Oxford, OX2 0JJ"|"TUDOR HALL SCHOOL"|"HANDGB22"|"40-51-62"|"GB90HAND40516287597180"|"Cheque enclosed / Paid by BACs (please include your daughters’ name as a reference)"|"20160212184137"|"AA00044"|""
+52|"Course"|"GBP"|"Santander UK plc"|"10612392"|"2 Triton Square, Regent's Place, London, NW1 3AN, United Kingdom"|"Bedstone Educational Limited"|"ABBYGB2L"|"09-02-22"|"GB70 ABBY 0902 2210 6123 92"|"All accounts are due to be paid on or before the first day of term, unless pre-arranged by monthly installment. First day of term is 7 Sept. 2017."|"20170801105942"|"AA00032"|""
+598|"Course"|"GBP"|"Lloyds TSB Bank plc"|"00172263"|"31 White Hart Street,HIGH WYCOMBE, Buckinghamshire, HP11 2HL, England"|"Wycombe Abbey"|"LOYDGB21010"|"30-94-28"|"GB94LOYD30942800172263"|""|"20160421101140"|"AA00044"|""
+534|"Course"|"GBP"|"Svenska Handelsbanken AB (publ)"|"69165142"|"Byron House, Cambridge Business Park, Cowley Roa, Cambridge CB4 0UZ"|"The Leys School"|"HANDGB22"|"40-51-62"|"GB20HAND40516269165142"|"Please ensure that the following information is included in the transfer of money to this account:
+- The name of the pupil
+- The name of the parent making the transfer
+- The name and sort code of the bank making the transfer
+(It is not possible for us to accept any payment by credit card or by Eurocheque.)"|"20221025102553"|"AA00078"|"The Leys School"
+533|"Course"|"GBP"|"Barclays Bank Plc"|"50651591"|"London Corporate Banking, 1 Churchill Place, London E14 5HP"|"The King’s School, Canterbury"|"BARCGB22"|"20-00-00"|"GB13BARC20000050651591"|"Reference: Pupil's name/ Year of entry
+
+20210127: If families do not want to pay wisepay, they can pay deposit by bank transfer with the bank details above."|"20210127101623"|"AA00078"|"King's School"
+674|"Course"|"GBP"|"-"|"-"|"-"|"-"|"-"|"-"|"-"|"Do not give to parent: Finance Office, The Priory Federation of Academies, c/o The Priory City of Lincoln Academy, Skellingthorpe Road,  Lincoln,  LN6 0EP"|"20170601194041"|""|"Finance Office, The Priory Federation of Academies, c/o The Priory City of Lincoln Academy,"
+472|"Registration Fee"|"GBP"|"Barclays Bank Plc"|"40794104"|"Barclays Corporate, Level 27, 1 Churchill Place, London, E14 5HP, UK"|"St Bede's School Trust Sussex"|"BARCGB22"|"20-06-05"|"GB15BARC20060540794104"|""|"20201015153235"|"AA00078"|""
+415|"Deposit"|"GBP"|"First Trust Bank"|"50290750"|"First Trust Bank, English Street, Armagh, BT61 7LD"|"The Royal School Armagh"|"FTBKGB2B"|"93-81-65"|"GB27 FTBK 9381 6550 2907 50"|"For Refundable Deposits/Application Fees - Current CR Interest a/c"|"20170812112822"|"AA00032"|""
+30017|"Others"|"GBP"|"Santander UK PLC"|"01433059"|"Santander UK PLC, Bridle Road, Bootle, Merseyside, L30 4GB, UK"|"Gabbitas Educational Consultants Ltd."|"ABBYGB2LXXX"|"09-07-20"|"GB67ABBY09072001433059"|"Please use your invoice number or surname as a reference for any bank transfers. Please also make sure that you pay any bank charges, so that we receive full payment of our invoice."|"20170801111927"|"AA00032"|""
+415|"Course"|"GBP"|"First Trust Bank"|"50290081"|"First Trust Bank, English Street, Armagh, BT61 7LD"|"The Royal School Armagh"|"FTBKGB2B"|"93-81-65"|"GB48 FTBK 9381 6550 2900 81"|"School Fees for existing pupils - No. 1 Revenue a/c"|"20170812113208"|"AA00032"|""
+483|"Course"|"GBP"|"Barclays Bank Plc"|"20774782"|"17 High Street, Ascot SL5 7DZ"|"St George’s School Ascot Trust Ltd"|"BARCGB22"|"20-02-53"|"GB08BARC20025320774782"|"[25Aug2017]
+  Cheque - Made payable to ‘St George’s School Ascot Trust Limited’ and sent for the attention of the Bursary
+  Bank Transfer - Please use your daughter's name as a reference for the payment.
+  Payment by Credit Card(incur 2% charge) - Contact Finance Manager, Mrs Liz Foster on +44 1344 629922
+  Online payment - Please refer to the file 2017-18_PaymentOptionDetails.pdf under document section for the payment link."|"20170825151311"|"AA00032"|"St George's School - Ascot"
+37|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"01697259"|"99-101 South Road, Haywards Heath, West Sussex, R16 4ND"|"Ardingly College Ltd, Scholars Account"|"LOYDGB21173"|"30-18-30"|"GB03LOYD301830016972 59"|""|"20180512164855"|"AA00078"|"Ardingly College (Junior School)"
+500|"Course"|"GBP"|"National Westminster Bank Plc"|"73326119"|"Winchester, Old Branch, 105 High Street, Winchester, Hampshire, SO23 9AW, England"|"St Swithuns School Winchester"|"NWBKGB2L"|"55-81-26"|"GB72NWBK55812673326119"|"Please note: For all overseas applicants – all bank charges/fees levied on the transfer must be paid at source."|"20231201154221"|"AA00078"|"St. Swithun's School"
+49|"Course"|"GBP"|"HSBC"|"92732971"|"12 All Hallows, Bedford, MK40 1LJ"|"The Harpur Trust"|"MIDLGB2102H"|"40-10-02"|"GB60MIDL40100292732971"|"[12Sep17] Please quote in your transfer instructions:
+1.	The name and initials of your son
+2.	Your own name and initials
+3.	That the transfer is in connection with Bedford School
+
+Please send a copy of your bank instructions with the relevant paperwork without this we will not confirm receipt of the payment."|"20170912183216"|"AA00075"|""
+438|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"01884627"|"75 Cheao Street, Sherborne, Dorset, DT9 3BD"|"Sherborne School Domus"|"LOYDGB21208"|"30-99-98"|"GB12LOYD30999801884627"|"Please include the bank reference 'SSReg' followed by your son's Surname (e.g. SSRegSmith)"|"20170925155841"|"AA00079"|"Sherborne School"
+30024|"Course"|"GBP"|"Barclays Bank"|"33029468"|"Putney Branch, 60 Putney High Street, London SW15 1SF, UK"|"CCCG Invoicing Account"|"BARCGB22"|"20-91-68"|"GB90 BARC 2090 6933 0294 68"|""|"20180727155422"|"AA00078"|""
+192|"Course"|"GBP"|"Barclays Bank Plc"|"30890340"|"Settle Branch, P.O. Box No. 1, 49 High Street, Skipton, BD23 1DH"|"Giggleswick School"|"BARCGB22"|"20-78-91"|"GB93BARC20789130890340"|"Please always quote either the pupil name or an invoice number"|"20171222095932"|"AA00078"|"Giggleswick School"
+528|"Registration Fee"|"GBP"|"Lloyds Bank plc"|"00911302"|"130 High Street, Cheltenham, Gloucestershire, GL50 1EW, United Kingdom"|"Cheltenham Ladies’ College Registry Account"|"LOYDGB21054"|"30-91-87"|"GB74LOYD30918700911302"|"20170926:
+Please reference registration fee payment in the following format:
+‘your daughter’s family name and first name / CLC registration fee’"|"20180710153513"|"AA00078"|""
+182|"Course"|"GBP"|"Bank of Scotland"|"00542378"|"43 Comely Bank, Edinburgh, EH4 1AF"|"Fettes College"|"BOFSGB2S"|"80-11-05"|"GB79BOFS80110500542378"|"The preferred method of payment is by direct funds transfer into the College bank account (UK
+BACS payment via internet banking or international funds transfer). If making a direct funds
+transfer please make sure that the pupil reference number is quoted (2 alpha 4 numeric).
+• A cheque can be made payable to Fettes College quoting the pupil reference number on the back
+of the cheque and sent to: Accounts Department, Fettes College, Carrington Road, Edinburgh,
+EH4 1QX, UK.
+• By monthly direct debit through School Fee Plan. Further information regarding the scheme
+which involves a consumer credit agreement and an online application form are available at
+https://www.myschoolfeeplan.com/fettescollege-eh4."|"20170913194724"|"AA00075"|""
+368|"Course"|"GBP"|"Barclays Bank plc"|"40013463"|"10–14 High Street, Old Town, Swindon, SN1 3EP"|"Prior Park Prep"|"BARCGB22"|"20–05–06"|"GB07BARC20050640013463"|"Bank Details for Prior Park College are on the reverse of the Registration Form if paying by bank transfer"|"20170914174125"|"AA00075"|""
+159|"Course"|"GBP"|"Lloyds Bank"|"00058400"|"."|"Eastbourne College (Incorporated)"|"LOYDGB21092"|"30 92 86"|"GB37LOYD30928600058400"|"20170926:
+Fees can be paid by cheque payable to
+Eastbourne College Ltd or by electronic bank
+transfer using the details below. For bank
+transfers, please clearly state the invoice
+number and child’s name as the transaction
+reference to assist the Accounts Department
+with identification.
+
+Bank name: Lloyds Bank
+Account Name: Eastbourne College (Incorporated)
+Account Number: 00058400
+Sort Code: 30 92 86
+Swift Code: LOYDGB21092
+IBAN Number: GB37LOYD30928600058400"|"20171206120619"|"AA00078"|""
+200|"Course"|"GBP"|"."|"."|"."|"."|"."|"."|"."|""|"20171222123647"|""|"Gordonstoun Trading Limited"
+597|"Course"|"GBP"|"-"|"-"|"-"|"-"|"-"|"-"|"-"|"20180214: For deposit payment please note that it must be paid via bank transfer. The School are no longer able to accept cheques or bankers drafts as methods of payment."|"20180214113300"|"AA00078"|""
+13|"Course"|"GBP"|"Lloyds Bank"|"00734106"|"12 Swan Street, Warwick, Warwickshire, CV34 4BJ"|"Warwick School Fees Account"|"LOYDGB21285"|"30-99-15"|"GB57 LOYD 3099 1500 7341 06"|"Please ensure the parents put the boys name on the transfer. Please allow GBP 20 as the bank charges in the UK."|"20231031104825"|"AA00078"|"Warwick School"
+585|"Registration Fee"|"GBP"|"National Westminster Bank plc"|"00302023"|"Winchester, Old Bank Branch, 105 High Street, Winchester Hampshire, SO23 9AW, U.K."|"Winchester College"|"NWBKGB2L"|"55-81-26"|"GB49NWBK55812600302023"|"The importance of ensuring that any payment includes such information as “Registration Fee (reg fee)” or “Entrance Fee (ent fee)” cannot be stressed strongly enough. Your son’s name and year of entry, and, if possible, the boarding house for which he is entered (if any) should also be included.
+The College gets dozens of receipts paid into its bank account each month and if these details are not included, it is not always possible to identify what the payment is for."|"20180116142705"|"AA00078"|""
+29|"Course"|"GBP"|"-"|"13652660"|"-"|"HAFT t/a AGS Boarding"|"LOYDGB21541"|"30 96 02"|"GB43 LOYD 3096 0213 6526 60"|""|"20210119212459"|""|"Haberdashers' Adams"
+115|"Course"|"GBP"|"Lloyds TSB"|"00026567"|"Brecon"|"Christ College No 1 Account"|"LOYDGB21559"|"30-91-16"|"GB97 LOYD 3091 1600 0265 67"|"1)	Payment by direct transfer into Christ College’s bank account
+This is the method that the School would like to encourage all parents to use.  Bank details are as follows:
+Bank 			Lloyds  
+Branch 			Brecon
+Sort Code		30 91 16
+Account Name		Christ College No 1 Account
+Account Number	                00026567
+IBAN Number		GB97 LOYD 3091 1600 0265 67
+SWIFT/BIC Number	LOYD GB21559
+
+It is essential to quote pupil number as the reference
+
+2)	Payment in Travellers Cheques 
+The cheques should be made payable to ‘Christ College, Brecon’.
+
+3)	Payment by Bankers Draft/Cheque
+The draft/cheque should be payable to ‘Christ College, Brecon’."|"20180221161824"|"AA00078"|"Christ's College Brecon"
+251|"Course"|"GBP"|"HSBC"|"90010103"|"HSBC Bank, Central Hall, Westminster, London SW1P 3AS"|"Kent College Pembury"|"MIDLGB2110E"|"40-02-06"|"GB25MIDL40020690010103"|"[3Apr14] Clearly quoting your NAME and REFERENCE. Payment by PC Banking over the Internet should be made similarly"|"20180402154029"|""|"Kent College, Pembury"
+149|"Course"|"GBP"|"Lloyds Bank plc"|"00136439"|"5 Bridge Street, Newbury, Berkshire RG14 5BQ"|"Downe House School Income Account"|"LOYDGB21041"|"30-95-89"|"GB61LOYD30958900136439"|"20180518: Please reference payment in the following format: ‘[your daughter’s name] registration fee’
+
+For sterling cheque, payment made payable to Downe House School"|"20180518122341"|"AA00078"|""
+136|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"03331173"|"38 Market Place, Devizes Wiltshire, SN10 1JD"|"Dauntsey's"|"LOYDGB21202"|"30-92-63"|"GB87LOYD30926303331173"|"Please quote your child's name (surname followed by first name)
+
+Please inform your bank that you will pay all bank transfer charges (if relevant)"|"20240214160712"|"AA00078"|"Dauntsey's School"
+676|"Course"|"GBP"|"HSBC UK"|"60020931"|"38-40 South Road, Haywards Heath, RH16 4LU"|"Newells School Trust Ltd"|"HBUK GB 4194 V"|"40-11-65"|"GB 13 HBUK 40 11 65 60020931"|""|"20240710104555"|"AA00078"|"Handcross Park School"
+522|"Course"|"GBP"|"HSBC"|"81781235"|"17 North Street, Taunton, Somerset TA1 1NA"|"Taunton School Collection Account"|"HBUKGB4112B"|"40-44-04"|"GB52HBUK40440481781235"|"Account for bank transfer: Taunton School Collection Account
+Cheques should be made payable to Taunton School
+
+Please quote invoice number and student reference with all payments. Please note the School do not accept cash"|"20180425160727"|"AA00078"|"Taunton International Study Centre"
+30052|"Course"|"GBP"|"Lloyds Bank"|"00734106"|"-"|"Warwick School Fees Account"|"LOYDGB21285"|"30-99-15"|"GB57LOYD30991500734106"|""|"20181212095204"|"AA00078"|""
+412|"Course"|"GBP"|"Barclays Bank plc"|"33923894"|"1 Churchill Place, Canary Wharf, London, E14 5HP"|"."|"BARCGB22"|"20-65-68"|"GB50 BARC 2065 6833 9238 94"|"International payments for fees, deposits and incidental expenses can be made via www.royalhospitalschool.peertransfer.com which enables parents and guardians to:
+
+-choose from many convenient payment options
+-save on bank fees and exchange rates
+-receive peace of mind with 24/7 multilingual customer support
+-track payments from start to finish."|"20180720150040"|"AA00078"|""
+634|"Course"|"GBP"|"The Co-operative Bank"|"68461429"|"Po Box 82, 118-120 Colmore Row, Brimingham, B3 3BA"|"Lucton School"|"CPBKGB22"|"08-90-01"|"GB65CPBK08900168461429"|""|"20180801101049"|"AA00078"|"Lucton School"
+688|"Course"|"GBP"|"Barclays"|"30683892"|"."|"Packwood Haugh School Limited"|"BUKBGB22"|"20 77 85"|"GB85 BUKB 2077 8530 6838 92"|""|"20180815175055"|"AA00078"|""
+17|"Course"|"GBP"|"Natwest"|"11645881"|"-"|"The Thinking Schools Academy Trust"|"-"|"60-17-36"|"-"|"Confirmed with CRGS, the bank account is now changed for boarding fees invoice"|"20230816170838"|"AA00078"|""
+150|"Course"|"GBP"|"Barclays Bank Plc"|"90330965"|"37 Milsom Street, Bath, BA1 1DA"|"Downside Abbey Trustees Registered"|"BARCGB22"|"20-05-06"|"GB44BARC20050690330965"|""|"20180925093630"|"AA00078"|"Downside School"
+150|"Registration Fee"|"GBP"|"Barclays Bank"|"90330965."|"-"|"Downside School"|"BARCGB22"|"20-47-06"|"GB59 BARC 2047 0690 3309 65"|""|"20180925093659"|"AA00078"|""
+2|"Course"|"GBP"|"Barclays Bank"|"33129640"|"Barclays Bank, 1 Churchill Place, Canary Wharf, London E14 5HP"|"Badminton School Limited"|"BARCGB22"|"20-00-00"|"GB22 BARC 2000 0033 1296 40"|"This account is for Reg fees, Deposits, and School Fees."|"20181221152258"|"AA00007"|""
+50|"Course"|"GBP"|"HSBC"|"92732971"|"12 All Hallows, Bedford, MK40 1LJ"|"The Harpur Trust"|"HBUKGB4102H"|"40-10-02"|"GB97HBUK40100292732971"|""|"20230418112900"|"AA00078"|"Bedford School"
+549|"Course"|"GBP"|"Lloyds Bank plc"|"34647068"|"University of Cambridge, 3 Sydney Street, CB2 3HG"|"The Stephen Perse Foundation"|"LOYD GB 21035"|"30-13-55"|"GB24LOYD30135534647068"|"Please use your CHILD’S NAME as the reference."|"20240402144222"|"AA00078"|""
+274|"Course"|"GBP"|"Barclays Bank"|"00997269"|"Southgate, Bath BA1 1AQ"|"Kingswood School Trustee Limited"|"BARCGB22"|"20-05-38"|"GB29 BARC 2005 3800 997 269"|"Reference: Student name must be stated here (to identify the fee with the correct application)"|"20211029105144"|"AA00078"|"Kingswood School"
+20|"Course"|"GBP"|"Lloyds TSB Bank Plc"|"00070500"|"City Office, London, United Kingdom"|"City of London Freemen's School Fees Account"|"LOYDGB2LCTY"|"30-00-02"|"GB04LOYD30000200070500"|"[09May2019] Please ensure your child's full name is included in the transaction reference."|"20190509112248"|"AA00032"|"City of London Freemen's School"
+468|"Course"|"GBP"|"Yorkshire Bank"|"25301968"|"Coney Street, York, YO1 9NQ"|"St Peter's School"|"YORKGB21994"|"05 09 94"|"GB21YORK05099425301968"|"Please quote your child's full name in the reference"|"20190523110638"|"AA00078"|""
+139|"Course"|"GBP"|"HSBC Bank plc"|"10292443"|"109 Bath Road, Cheltenham, GL53 7RA"|"The Dean Close Foundation"|"HBUKGB4B"|"40 17 09"|"GB16HBUK40170910292443"|""|"20190523170236"|"AA00078"|"Billing Address: Dean Close School, Shelburne Road, Cheltenham, Glos, GL51 6HE"
+140|"Course"|"GBP"|"HSBC"|"10292443"|"HSBC Bank plc, Montpellier, 109 Bath Road, Cheltenham, Gloucestershire GL53 7RA"|"The Dean Close Foundation"|"HBUKGB4B"|"40 17 09"|"GB16HBUK40170910292443"|""|"20190523175009"|"AA00078"|"Dean Close School"
+67|"Course"|"GBP"|"Co-operative Bank"|"70138504"|"41 Vicar Lane, Leeds, LS1 6DS"|"Bootham School"|"CPBKGB22"|"08-90-72"|"GB18CPBK08907270138504"|""|"20221025110101"|"AA00078"|"Bootham School"
+183|"Course"|"GBP"|"HSBC"|"62324369"|"-"|"-"|"MIDLGB2114U"|"40-25-31"|"GB22MIDL40253162324369"|""|"20190525161954"|"AA00078"|""
+30027|"Course"|"GBP"|"HSBC"|"41310550"|"2 Queen’s Road, Aberdeen, AB15 4ZT"|"Albyn School Limited"|"MIDLGB22"|"40-01-25"|"GB19MIDL40012541310550"|""|"20190528103001"|"AA00078"|""
+330|"Course"|"GBP"|"National Westminster Bank Plc"|"17604052"|"Chelmsford Branch, 4-5 High Street, Chelmsford, Essex, CM1 1FZ"|"New Hall School Trust"|"NWBKGB2L"|"60-05-13"|"GB88NWBK60051317604052"|"Please quote pupil name and Account Reference (found on the invoice Remittance Advice) on all transactions"|"20240713123853"|"AA00078"|"New Hall School Enterprises Ltd"
+380|"Course"|"GBP"|"HSBC"|"40010146"|"22 Victoria Street, Westminster, London, SW1H 0NJ"|"Queen's College, Taunton"|"MIDLGB22"|"40-02-06"|"GB06MIDL40020640010146"|""|"20190530142752"|""|"Queen's College, email: billing@queenscollege.org.uk"
+7|"Course"|"GBP"|"Barclays Bank Plc"|"70480924"|"1 Churchill Place, London Lon, E14 5HP GB"|"Headington School Oxford Ltd"|"BARCGB22"|"20-65-26"|"GB31BARC20652670480924"|"Please use the following format for the reference accompanying the online payment:
+Daughter’s surname Daughter’s Christian name
+
+LONDON ADDRESS:
+Barclays Bank Plc
+1 Churchill Place
+London Lon E14 5HP GB
+
+LEICESTER ADDRESS:
+Leicester, United Kingdom, LE87 2BB"|"20220930110641"|"AA00078"|"Headington School Oxford Ltd"
+551|"Others"|"GBP"|"Lloyds Bank Plc"|"59367260"|"1 Pride Hill, Shrewsbury, Shropshire, SY1 1DG, United Kingdom"|"Thomas Adams School - Boarding House"|"LOYDGB21B83"|"30-97-62"|"GB53LOYD30976259367260"|"20200306: This account is for all monies to be paid into the expenses account. Please quote the student’s name as the reference on the payment."|"20200306123751"|"AA00078"|""
+551|"Course"|"GBP"|"Lloyds Bank Plc"|"58364760"|"1 Pride Hill, Shrewsbury, Shropshire, SY1 1DG, United Kingdom"|"Thomas Adams School"|"LOYDGB21B83"|"30-97-62"|"GB91LOYD30976258364760"|"20200306: This account is for termly fees. Please quote the student’s name as the reference on the payment"|"20200306123803"|"AA00078"|""
+148|"Course"|"GBP"|"NatWest"|"24886734"|"43 Cornmarket Street, Oxford OX1 3HA"|"d’Overbroeck’s Ltd"|"NWBKGB2L"|"54-21-23"|"GB42NWBK54212324886734"|""|"20200626165658"|"AA00078"|""
+268|"Course"|"GBP"|"National Westminster Bank Plc"|"55110592"|"Chatham Branch"|"."|"NWBKGB2L"|"60-17-36"|"GB90NWBK60173655110592"|"Reference: PUPIL NAME"|"20200704170017"|"AA00078"|"Roffa Limited"
+373|"Course"|"GBP"|"Natwest Bank"|"8081 0012"|"169 Victoria Street SW1E 5BT"|"UWGCF QAS Fees"|"NWBKGB2L"|"51-50-14"|"GB30NWBK51501480810012"|"Please give the name of the girl on all correspondence."|"20200707175626"|"AA00078"|""
+11|"Registration Fee"|"GBP"|"Barclays Bank Plc"|"10979880"|"Barclays Bank PLC, 44-46 Castle Street, Shrewsbury, SY1 2BU"|"Shrewsbury School"|"BARC GB22"|"20-78-01"|"GB91 BARC 2078 0110 9798 80"|"20231202: This is also the account for deposit as well
+
+20210915: Please note we have recently changed our Bank Details to Barclays Bank.
+
+Any registration fees recently transferred to us using our old Bank Details (Handlesbanken) will still come through, but we prefer for the new Registration Forms to be used from today."|"20231202162335"|"AA00078"|""
+4|"Registration Fee"|"GBP"|"Lloyds Bank Plc"|"00144365"|"49 High Street, Godalming, Surrey, GU7 1AT, UK"|"GBC Fees"|"LOYDGB21195"|"30-93-49"|"GB54 LOYD 3093 4900 1443 65"|"For bank transfer of reg fee and deposit. Please state clearly the child's surname for reference purposes"|"20231005145052"|"AA00078"|""
+89|"Course"|"GBP"|"Barclays Bank Plc"|"90225762"|"90-92 High Street, Crawley, West Sussex, RH10 1BP"|"Burgess Hill School for Girls No 4 Account"|"BARCGB22"|"20-49-84"|"GB02 BARC 2049 8490 2257 62"|"When making a direct payment, please quote the student’s name in the reference field. Please allow for bank charges when making your payment."|"20221108114559"|"AA00078"|"Burgess Hill School For Girls"
+134|"Course"|"GBP"|"HSBC"|"80010030"|"HSBC, The Peak, 333 Vauxhall Bridge Road, Victoria, London, SW1V 1EJ, UK"|"Culford School"|"HBUKGB4110E"|"40-02-06"|"GB11 HBUK 4002 068 0010 030"|""|"20220413134615"|"AA00078"|"Culford School"
+78|"Course"|"GBP"|"Barclays Bank Plc"|"60208426"|"Solent and Dorset Business Centre, PO BOX 612, Ocean Way, Ocean Village, Southampton, SO14 6ZP"|"Brockenhurst College"|"BARCGB22"|"20-53-79"|"GB34BARC20535360208426"|"Please include reference such as students name for processing purposes. Please ensure that the amount you pay includes all charges for transmission, both in your own country and in the UK. (GBP 20 bank charges) (26.02.09)
+
+invoice can be emailed to  finance@wess.ac.uk"|"20220812001151"|""|"Billing Address: Brockenhurst College, Lyndhurst Road, Brockenhurst, Hampshire, SO42 7ZE"
+687|"Course"|"GBP"|"National Westminster Bank"|"31105149"|"1 High Street, Croydon, CR9 1PD"|"Whitgift School"|"NWBKGB2L"|"56-00-46"|"GB42NWBK56004631105149"|"20180508: Ref. P5003W (plus candidate’s name)"|"20220719145231"|""|"Address to: Whitgift School, c/o John Whitgift Foundation, North End, Croydon, CR9 1SS"
+177|"Course"|"GBP"|"Barclays Bank Plc"|"80320307"|"One Churchill Place, Canary Wharf, London E14 5HP"|"Farlington School Limited"|"BARCGB22"|"20-58-69"|"GB94BARC20586980320307"|""|"20221014152346"|"AA00078"|""
+655|"Course"|"GBP"|"Barclays Bank Plc"|"50449849"|"2 Carfax, Horsham, RH12 1DN"|"Christs Hospital School"|"BARCGB22"|"20-42-66"|"GB57BARC20425850449849"|""|"20220929164640"|"AA00095"|"Christ's Hospital"
+313|"Registration Fee"|"GBP"|"The Bank of Scotland"|"00469605"|"St Andrew's Square, Edinburgh"|"Accounts Office, Merchiston Castle School"|"BOFSGB21012"|"80-11-00"|"GB92BOFS80110000469605"|"When making payments, please ask your bank to include your (or your son’s) name in the documentation, so that we will know which account to credit."|"20240214160926"|"AA00078"|""
+456|"Course"|"GBP"|"The Royal Bank of Scotland"|"00255105"|"142/144 Princes Street, Edinburgh, EH2 4EQ"|"St George's School for Girls"|"RBOSGB2L"|"83-51-00"|"GB42RBOS83510000255105"|""|"20221025122204"|"AA00078"|"St. George's School For Girls, Edinburgh"
+573|"Registration Fee"|"GBP"|"Barclays Bank"|"23163083"|"Leicester, Leicestershire, UNITED KINGDOM, LE87 2BB"|"The Wellington College"|"BARCGB22"|"20-97-74"|"GB 07 BARC 2097 7423 1630 83"|"This is the bank transfer account for the non-refundable Registration Fee.
+
+Parents who live overseas do not have a UK Postal Code and can experience problems in making the payment by credit card.
+
+Please quote student's name as reference."|"20230614155114"|"AA00078"|""
+501|"Registration Fee"|"GBP"|"Lloyds Bank Plc"|"81412362"|"N/A"|"Effingham Schools Trust"|"LOYDGB21W09"|"77-30-05"|"GB86LOYD77300581412362"|"20210904: The info is for making payment by bank transfer for reg fee and deposits
+Please ensure you quote the student's full name as the reference"|"20210904143737"|"AA00078"|""
+492|"Course"|"GBP"|"Barclays Bank Plc"|"30719617"|"Leicester, Leicestershire, LE87 2BB, UK"|"The Corporation of St. Lawrence College"|"BARCGB22"|"20-18-00"|"GB84BARC20180030719617"|"Bank transfer
+Cheque payable to St Lawrence College
+Debit and Credit card also accepted (1.25% surcharge)"|"20210814103802"|"AA00078"|"St. Lawrence College"
+9|"Course"|"GBP"|"Barclays Bank Plc"|"60797049"|"1 Churchill Place, Canary Wharf, London, E14 5HP"|"Lancing College"|"BARCGB22"|"20-65-82"|"GB31BARC20658260797049"|"Please use your child's name as a reference"|"20240822125028"|""|"Lancing College (plinvoices@lancing.org.uk)"
+10|"Course"|"GBP"|"National Westminster Bank Plc"|"53541243"|"Castle Square, Brighton, BN1 1ES"|"Roedean School"|"NWBKGB2L"|"60-30-09"|"GB46NWBK60300953541243"|"Please ask for the student's full name to be added to the bank transfer/remittance advice document, this will make it easier for us to identify the payment when it arrives in the Roedean bank account."|"20221126111637"|"AA00078"|"Roedean School"
+455|"Course"|"GBP"|"Barclays Bank Plc"|"20395730"|"Barclays Bank Stevenage, North Herts Group, 5-6 High Street, Hitchin, Herts.  SG5 1BJ UK"|"St. Francis’ College Trust"|"BUKBGB22"|"20-41-12"|"GB94BUKB20411220395730"|"Please put the student last name and student first name on the bank form."|"20211217134936"|"AA00078"|"St. Francis' College"
+399|"Registration Fee"|"GBP"|"National Westminster Bank"|"05858275"|"National Westminster Bank, Crompton House, Derwent Street, Derby, DE1 2ED"|"Repton Preparatory School"|"NW BK GB 2L"|"60 12 01"|"GB07 NWBK 6012 0105 8582 75"|""|"20220119111311"|"AA00078"|""
+65|"Course"|"GBP"|"HSBC UK Bank Plc"|"20031518"|"Southwest Corporate Banking Centre, Stratus House, Emperor Way, Exeter Business Park, Exeter, Devon, EX1 3QS, England"|"Blundell's School"|"HBUKGB4BXXX"|"40-27-56"|"GB53HBUK40275620031518"|"Please put the student's name as a reference when you make a transfer"|"20220521165628"|"AA00078"|""
+304|"Course"|"GBP"|"Lloyds Bank Plc"|"00005122"|"48 Belle Vue Terrace, Malvern, Worcestershire, WR14 4QG"|"Malvern College"|"LOYDGB21139"|"30-95-41"|"GB98LOYD30954100005122"|""|"20231219172820"|"AA00078"|"Malvern College"
+418|"Registration Fee"|"GBP"|"National Westminster Bank - Rugby Branch"|"49415689"|"-"|"Governing Body of Rugby School"|"NWBKGB2L"|"54-41-00"|"GB92NWBK54410049415689"|"Please quote the pupil's name as a reference"|"20231025101953"|"AA00078"|""
+518|"Course"|"GBP"|"National Westminster Bank"|"80810047"|"PO Box 1357, 169 Victoria Street, London, SW1E 5BT, UK"|"United Westminster and Greycoat Foundation"|"NWBKGB2L"|"51 50 14"|"GB55 NWBK 515014 8081 0047"|""|"20241005103505"|"AA00127"|""
+113|"Registration Fee"|"GBP"|"HSBC"|"00232157"|"20-21 Electric Parade, George Lane, London E18 2LX"|"Chigwell School"|"MIDLGB22"|"40-47-15"|"GB12MIDL40471500232157"|"For overseas payments only:   Swift: MIDLGB22   IBAN: GB12MIDL40471500232157 
+
+Pay by card online (please enter the student name as the pupil code) 
+https://www.chigwell-school.org/pay-fees"|"20241105142014"|"AA00127"|""
+22|"Course"|"GBP"|"National Westminster Bank Plc"|"44547307"|"7 High Street, Melton Mowbray, LE13 0TT, 11 Western Boulevard, Bede Island, Leicester, LE2 7EJ"|"Uppingham School General Fund"|"NWBKGB2L"|"01-06-34"|"GB98NWBK01063444547307"|"Please remember to include as much detail as possible in the narrative section to ensure that the correct pupil account is credited (for example: Account Ref: SMITH/7023).
+
+Account Name: Uppingham School General Fund"|"20231202162931"|"AA00078"|"Uppingham School"
+1|"Course"|"GBP"|"National Westminster Bank Plc"|"61580430"|"11 Market Place, Abingdon, Oxon, OX14 3HH"|"Abingdon School"|"NWBKGB2L"|"60-01-01"|"GB52NWBK60010161580430"|"Please allow GBP 15 as bank charges for TT
+All charges must be paid by the sender"|"20240225235418"|""|"Abingdon School (to: invoices@abingdon.org.uk in a PDF Format Only.)"
+337|"Registration Fee"|"GBP"|"Barclays Bank"|"43608042"|"10 High Street, Oakham, LE15 6AN"|"Oakham School General Fund"|"BARCGB22"|"20-63-74"|"GB90BARC20637443608042"|"Please give your child's name as reference"|"20240612110607"|"AA00078"|""
+36|"Course"|"GBP"|"Lloyds Bank Plc"|"01697259"|"99-101 South Road, Haywards Heath, West Sussex, R16 4ND"|"Ardingly College Current Account"|"LOYDGB21173"|"30-18-30"|"GB03LOYD30183001697259"|"20231202: Please send a copy of your bank transaction to the Finance Department at fees@ardingly.com
+
+[6 Apr18] Please make cheques payable to Ardingly College Ltd. (NB. It is expected that payment by cheque will begin to be phased out by 2020 and replaced with bank transfer arrangements.)
+
+When paying by bank transfer please quote the student’s name."|"20240719115737"|"AA00078"|"Ardingly Projects Ltd"
