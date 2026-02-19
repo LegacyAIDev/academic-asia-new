@@ -1,0 +1,2764 @@
+{
+  "summary": {
+    "total_skipped": 551,
+    "missing_school": 550,
+    "missing_type": 1
+  },
+  "skipped_records": [
+    {
+      "school_id": "457",
+      "info_type": "Others",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "School Results Information",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Skype Account",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "339",
+      "info_type": "Sibling Discount",
+      "reason": "school 339 not found"
+    },
+    {
+      "school_id": "339",
+      "info_type": "Early Payment Discount",
+      "reason": "school 339 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Uniform",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Uniform",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Uniform",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Uniform",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Uniform",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Uniform",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Scholarship Info",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Travel Info",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Uniform",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Uniform",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Uniform",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Term Break Arrangement",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "90",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 90 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "51",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 51 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "481",
+      "info_type": "Sibling Discount",
+      "reason": "school 481 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "EFL",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Scholarship Info",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Insurance",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Extras",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "550",
+      "info_type": "Sibling Discount",
+      "reason": "school 550 not found"
+    },
+    {
+      "school_id": "266",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 266 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Sibling Discount",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "626",
+      "info_type": "Sibling Discount",
+      "reason": "school 626 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Sibling Discount",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Accommodation Remark",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "639",
+      "info_type": "Sibling Discount",
+      "reason": "school 639 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Scholarship Info",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Scholarship Info",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Scholarship Info",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Scholarship Info",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Scholarship Info",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Scholarship Info",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Scholarship Info",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "Accommodation",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Scholarship Info",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Accommodation Remark",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Scholarship Info",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Scholarship Info",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Parent/Student Comment",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Scholarship Info",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "239",
+      "info_type": "Parent/Student Comment",
+      "reason": "school 239 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Parent/Student Comment",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "96",
+      "info_type": "Parent/Student Comment",
+      "reason": "school 96 not found"
+    },
+    {
+      "school_id": "334",
+      "info_type": "Parent/Student Comment",
+      "reason": "school 334 not found"
+    },
+    {
+      "school_id": "467",
+      "info_type": "Parent/Student Comment",
+      "reason": "school 467 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Parent/Student Comment",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "238",
+      "info_type": "Parent/Student Comment",
+      "reason": "school 238 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "238",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 238 not found"
+    },
+    {
+      "school_id": "239",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 239 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Name Tape",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Name Tape",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Music Tuition",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "51",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 51 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Music Tuition",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Music Tuition",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Music Tuition",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Music Tuition",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "266",
+      "info_type": "Music Tuition",
+      "reason": "school 266 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "51",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 51 not found"
+    },
+    {
+      "school_id": "23",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 23 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "272",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 272 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "604",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 604 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "514",
+      "info_type": "Others",
+      "reason": "school 514 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "90",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 90 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "669",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 669 not found"
+    },
+    {
+      "school_id": "282",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 282 not found"
+    },
+    {
+      "school_id": "272",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 272 not found"
+    },
+    {
+      "school_id": "256",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 256 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "589",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 589 not found"
+    },
+    {
+      "school_id": "550",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 550 not found"
+    },
+    {
+      "school_id": "406",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 406 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "334",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 334 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Accommodation Remark",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "242",
+      "info_type": "Long Weekend",
+      "reason": "school 242 not found"
+    },
+    {
+      "school_id": "282",
+      "info_type": "Accommodation Remark",
+      "reason": "school 282 not found"
+    },
+    {
+      "school_id": "395",
+      "info_type": "Accommodation Remark",
+      "reason": "school 395 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "Video",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Accommodation Remark",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Accommodation Remark",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "23",
+      "info_type": "Accommodation Remark",
+      "reason": "school 23 not found"
+    },
+    {
+      "school_id": "92",
+      "info_type": "Accommodation Remark",
+      "reason": "school 92 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Pocket Money",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "No. of Chinese Student",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Music Tuition",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "326",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 326 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Music Instrument",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "604",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 604 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Others",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "242",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 242 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "478",
+      "info_type": "Others",
+      "reason": "school 478 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Music Tuition",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Others",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "467",
+      "info_type": "Others",
+      "reason": "school 467 not found"
+    },
+    {
+      "school_id": "589",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 589 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Term Begins Arrangement",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "EFL",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "514",
+      "info_type": "Extras",
+      "reason": "school 514 not found"
+    },
+    {
+      "school_id": "669",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 669 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "90",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 90 not found"
+    },
+    {
+      "school_id": "256",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 256 not found"
+    },
+    {
+      "school_id": "272",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 272 not found"
+    },
+    {
+      "school_id": "282",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 282 not found"
+    },
+    {
+      "school_id": "326",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 326 not found"
+    },
+    {
+      "school_id": "334",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 334 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "406",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 406 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "550",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 550 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "Extras",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "Facilities",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "426",
+      "info_type": "Others",
+      "reason": "school 426 not found"
+    },
+    {
+      "school_id": "604",
+      "info_type": "Long Weekend",
+      "reason": "school 604 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Long Weekend",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Long Weekend",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Long Weekend",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "358",
+      "info_type": "Long Weekend",
+      "reason": "school 358 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Long Weekend",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Long Weekend",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "669",
+      "info_type": "Long Weekend",
+      "reason": "school 669 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Long Weekend",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "90",
+      "info_type": "Long Weekend",
+      "reason": "school 90 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Long Weekend",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Long Weekend",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "256",
+      "info_type": "Long Weekend",
+      "reason": "school 256 not found"
+    },
+    {
+      "school_id": "272",
+      "info_type": "Long Weekend",
+      "reason": "school 272 not found"
+    },
+    {
+      "school_id": "282",
+      "info_type": "Long Weekend",
+      "reason": "school 282 not found"
+    },
+    {
+      "school_id": "326",
+      "info_type": "Long Weekend",
+      "reason": "school 326 not found"
+    },
+    {
+      "school_id": "334",
+      "info_type": "Long Weekend",
+      "reason": "school 334 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Long Weekend",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "51",
+      "info_type": "Long Weekend",
+      "reason": "school 51 not found"
+    },
+    {
+      "school_id": "550",
+      "info_type": "Others",
+      "reason": "school 550 not found"
+    },
+    {
+      "school_id": "406",
+      "info_type": "Long Weekend",
+      "reason": "school 406 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Long Weekend",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Long Weekend",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "589",
+      "info_type": "Long Weekend",
+      "reason": "school 589 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Long Weekend",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Long Weekend",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Long Weekend",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Long Weekend",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "23",
+      "info_type": "Long Weekend",
+      "reason": "school 23 not found"
+    },
+    {
+      "school_id": "646",
+      "info_type": "Long Weekend",
+      "reason": "school 646 not found"
+    },
+    {
+      "school_id": "691",
+      "info_type": "Long Weekend",
+      "reason": "school 691 not found"
+    },
+    {
+      "school_id": "30023",
+      "info_type": "Accommodation",
+      "reason": "school 30023 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Long Weekend",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "358",
+      "info_type": "Long Weekend",
+      "reason": "school 358 not found"
+    },
+    {
+      "school_id": "546",
+      "info_type": "Long Weekend",
+      "reason": "school 546 not found"
+    },
+    {
+      "school_id": "550",
+      "info_type": "Long Weekend",
+      "reason": "school 550 not found"
+    },
+    {
+      "school_id": "30023",
+      "info_type": "Admissions Info",
+      "reason": "school 30023 not found"
+    },
+    {
+      "school_id": "30023",
+      "info_type": "Accommodation Remark",
+      "reason": "school 30023 not found"
+    },
+    {
+      "school_id": "30023",
+      "info_type": "Travel Info",
+      "reason": "school 30023 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Long Weekend",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Others",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Joining Pack",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Accommodation Remark",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Others",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Others",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "473",
+      "info_type": "Scholarship Info",
+      "reason": "school 473 not found"
+    },
+    {
+      "school_id": "339",
+      "info_type": "Others",
+      "reason": "school 339 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "IT related",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Joining Pack",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "473",
+      "info_type": "Hotel/B&B",
+      "reason": "school 473 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Insurance",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Others",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Sibling Discount",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Holiday Arrangement",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "School Area",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Others",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Leavers' Destination",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Music Tuition",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "EFL Cost",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Hotel/B&B",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Admissions Info",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "92",
+      "info_type": "Hotel/B&B",
+      "reason": "school 92 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Hotel/B&B",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "272",
+      "info_type": "Accommodation Remark",
+      "reason": "school 272 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Hotel/B&B",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Hotel/B&B",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "266",
+      "info_type": "Others",
+      "reason": "school 266 not found"
+    },
+    {
+      "school_id": "272",
+      "info_type": "Others",
+      "reason": "school 272 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Hotel/B&B",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "School Web Agent Login",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Hotel/B&B",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Hotel/B&B",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "HK Parent Contact",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "238",
+      "info_type": "Others",
+      "reason": "school 238 not found"
+    },
+    {
+      "school_id": "239",
+      "info_type": "Others",
+      "reason": "school 239 not found"
+    },
+    {
+      "school_id": "238",
+      "info_type": "Accommodation Remark",
+      "reason": "school 238 not found"
+    },
+    {
+      "school_id": "239",
+      "info_type": "Accommodation Remark",
+      "reason": "school 239 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Others",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Extras",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "227",
+      "info_type": "Others",
+      "reason": "school 227 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Extras",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "604",
+      "info_type": "Scholarship Info",
+      "reason": "school 604 not found"
+    },
+    {
+      "school_id": "216",
+      "info_type": "Others",
+      "reason": "school 216 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Others",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Hotel/B&B",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "205",
+      "info_type": "Extras",
+      "reason": "school 205 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Extras",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Guardianship",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Scholarship Info",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "EFL Cost",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Early Payment Discount",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "282",
+      "info_type": "EFL Cost",
+      "reason": "school 282 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Hotel/B&B",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "HK Parent Contact",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "HK Parent Contact",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "HK Parent Contact",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "406",
+      "info_type": "Guardianship",
+      "reason": "school 406 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Half Term Arrangement",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Half Term Arrangement",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "334",
+      "info_type": "HK Parent Contact",
+      "reason": "school 334 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Others",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "114",
+      "info_type": "Others",
+      "reason": "school 114 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Guardianship",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Guardianship",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "147",
+      "info_type": "Guardianship",
+      "reason": "school 147 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "EFL Cost",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Extras",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Guardianship",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Guardianship",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Extras",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Guardianship",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "EFL Cost",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "80",
+      "info_type": "EFL Cost",
+      "reason": "school 80 not found"
+    },
+    {
+      "school_id": "90",
+      "info_type": "Others",
+      "reason": "school 90 not found"
+    },
+    {
+      "school_id": "96",
+      "info_type": "Others",
+      "reason": "school 96 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Extras",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Others",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Guardianship",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Guardianship",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "280",
+      "info_type": "Teacher/Pupil Ratio",
+      "reason": "school 280 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Guardianship",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "Others",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "EFL Cost",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Extras",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Others",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "339",
+      "info_type": "EFL Cost",
+      "reason": "school 339 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "EFL Cost",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "332",
+      "info_type": "EFL Cost",
+      "reason": "school 332 not found"
+    },
+    {
+      "school_id": "242",
+      "info_type": "EFL Cost",
+      "reason": "school 242 not found"
+    },
+    {
+      "school_id": "51",
+      "info_type": "Others",
+      "reason": "school 51 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Others",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "EFL Cost",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Extras",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "EFL Cost",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "EFL Cost",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "EFL Cost",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "EFL Cost",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "205",
+      "info_type": "EFL Cost",
+      "reason": "school 205 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "EFL Cost",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "EFL Cost",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "621",
+      "info_type": "EFL Cost",
+      "reason": "school 621 not found"
+    },
+    {
+      "school_id": "691",
+      "info_type": "Travel Info",
+      "reason": "school 691 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Others",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "EFL Cost",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "80",
+      "info_type": "EFL Cost",
+      "reason": "school 80 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "EFL Cost",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "EFL Cost",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "EFL Cost",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "90",
+      "info_type": "EFL Cost",
+      "reason": "school 90 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "EFL Cost",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "EFL Cost",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Scholarship Info",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "639",
+      "info_type": "Others",
+      "reason": "school 639 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "EFL Cost",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "EFL Cost",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "282",
+      "info_type": "EFL Cost",
+      "reason": "school 282 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "EFL Cost",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "118",
+      "info_type": "Accommodation",
+      "reason": "school 118 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "School Results Information",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "339",
+      "info_type": "EFL Cost",
+      "reason": "school 339 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "EFL Cost",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "546",
+      "info_type": "EFL Cost",
+      "reason": "school 546 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Airport Pickup",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Early Payment Discount",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Sibling Discount",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "550",
+      "info_type": "EFL Cost",
+      "reason": "school 550 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Early Payment Discount",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Pocket Money",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Others",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "205",
+      "info_type": "EFL Cost",
+      "reason": "school 205 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "EFL Cost",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Guardianship",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Consultant Comment",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Consultant Comment",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "426",
+      "info_type": "Consultant Comment",
+      "reason": "school 426 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Consultant Comment",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Others",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "51",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 51 not found"
+    },
+    {
+      "school_id": "23",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 23 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "473",
+      "info_type": "Music Tuition",
+      "reason": "school 473 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "529",
+      "info_type": "Accommodation",
+      "reason": "school 529 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "473",
+      "info_type": "Insurance",
+      "reason": "school 473 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Discounts",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "118",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 118 not found"
+    },
+    {
+      "school_id": "242",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 242 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "219",
+      "info_type": "Accommodation",
+      "reason": "school 219 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Accommodation Remark",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Airport Pickup",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Airport Pickup Remark",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "118",
+      "info_type": "Airport Pickup",
+      "reason": "school 118 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Uniform",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Sibling Discount",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "604",
+      "info_type": "Airport Pickup",
+      "reason": "school 604 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Airport Pickup",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Airport Pickup",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Airport Pickup",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "23",
+      "info_type": "Airport Pickup",
+      "reason": "school 23 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "EFL",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Airport Pickup",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "51",
+      "info_type": "Airport Pickup",
+      "reason": "school 51 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Airport Pickup",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Airport Pickup",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Airport Pickup",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Airport Pickup",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "92",
+      "info_type": "Airport Pickup",
+      "reason": "school 92 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Airport Pickup",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Airport Pickup",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Airport Pickup",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "URN",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Airport Pickup",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Airport Pickup",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "339",
+      "info_type": "Airport Pickup",
+      "reason": "school 339 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Accommodation",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "272",
+      "info_type": "Accommodation",
+      "reason": "school 272 not found"
+    },
+    {
+      "school_id": "396",
+      "info_type": "Accommodation",
+      "reason": "school 396 not found"
+    },
+    {
+      "school_id": "30002",
+      "info_type": "Accommodation",
+      "reason": "school 30002 not found"
+    },
+    {
+      "school_id": "280",
+      "info_type": "Accommodation",
+      "reason": "school 280 not found"
+    },
+    {
+      "school_id": "294",
+      "info_type": "Accommodation",
+      "reason": "school 294 not found"
+    },
+    {
+      "school_id": "646",
+      "info_type": "Accommodation",
+      "reason": "school 646 not found"
+    },
+    {
+      "school_id": "23",
+      "info_type": "Accommodation",
+      "reason": "school 23 not found"
+    },
+    {
+      "school_id": "691",
+      "info_type": "Accommodation",
+      "reason": "school 691 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Accommodation",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "604",
+      "info_type": "Accommodation",
+      "reason": "school 604 not found"
+    },
+    {
+      "school_id": "606",
+      "info_type": "Accommodation",
+      "reason": "school 606 not found"
+    },
+    {
+      "school_id": "624",
+      "info_type": "Accommodation",
+      "reason": "school 624 not found"
+    },
+    {
+      "school_id": "625",
+      "info_type": "Accommodation",
+      "reason": "school 625 not found"
+    },
+    {
+      "school_id": "640",
+      "info_type": "Accommodation",
+      "reason": "school 640 not found"
+    },
+    {
+      "school_id": "693",
+      "info_type": "Accommodation",
+      "reason": "school 693 not found"
+    },
+    {
+      "school_id": "678",
+      "info_type": "Accommodation",
+      "reason": "school 678 not found"
+    },
+    {
+      "school_id": "505",
+      "info_type": "Accommodation",
+      "reason": "school 505 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Accommodation",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "541",
+      "info_type": "Accommodation",
+      "reason": "school 541 not found"
+    },
+    {
+      "school_id": "542",
+      "info_type": "Accommodation",
+      "reason": "school 542 not found"
+    },
+    {
+      "school_id": "546",
+      "info_type": "Accommodation",
+      "reason": "school 546 not found"
+    },
+    {
+      "school_id": "548",
+      "info_type": "Accommodation",
+      "reason": "school 548 not found"
+    },
+    {
+      "school_id": "550",
+      "info_type": "Accommodation",
+      "reason": "school 550 not found"
+    },
+    {
+      "school_id": "580",
+      "info_type": "Accommodation",
+      "reason": "school 580 not found"
+    },
+    {
+      "school_id": "589",
+      "info_type": "Accommodation",
+      "reason": "school 589 not found"
+    },
+    {
+      "school_id": "600",
+      "info_type": "Accommodation",
+      "reason": "school 600 not found"
+    },
+    {
+      "school_id": "425",
+      "info_type": "Accommodation",
+      "reason": "school 425 not found"
+    },
+    {
+      "school_id": "426",
+      "info_type": "Accommodation",
+      "reason": "school 426 not found"
+    },
+    {
+      "school_id": "461",
+      "info_type": "Accommodation",
+      "reason": "school 461 not found"
+    },
+    {
+      "school_id": "466",
+      "info_type": "Accommodation",
+      "reason": "school 466 not found"
+    },
+    {
+      "school_id": "467",
+      "info_type": "Accommodation",
+      "reason": "school 467 not found"
+    },
+    {
+      "school_id": "473",
+      "info_type": "Accommodation",
+      "reason": "school 473 not found"
+    },
+    {
+      "school_id": "478",
+      "info_type": "Accommodation",
+      "reason": "school 478 not found"
+    },
+    {
+      "school_id": "481",
+      "info_type": "Accommodation",
+      "reason": "school 481 not found"
+    },
+    {
+      "school_id": "487",
+      "info_type": "Accommodation",
+      "reason": "school 487 not found"
+    },
+    {
+      "school_id": "490",
+      "info_type": "Accommodation",
+      "reason": "school 490 not found"
+    },
+    {
+      "school_id": "491",
+      "info_type": "Accommodation",
+      "reason": "school 491 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Accommodation",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "326",
+      "info_type": "Accommodation",
+      "reason": "school 326 not found"
+    },
+    {
+      "school_id": "332",
+      "info_type": "Accommodation",
+      "reason": "school 332 not found"
+    },
+    {
+      "school_id": "333",
+      "info_type": "Accommodation",
+      "reason": "school 333 not found"
+    },
+    {
+      "school_id": "334",
+      "info_type": "Accommodation",
+      "reason": "school 334 not found"
+    },
+    {
+      "school_id": "335",
+      "info_type": "Accommodation",
+      "reason": "school 335 not found"
+    },
+    {
+      "school_id": "339",
+      "info_type": "Accommodation",
+      "reason": "school 339 not found"
+    },
+    {
+      "school_id": "358",
+      "info_type": "Accommodation",
+      "reason": "school 358 not found"
+    },
+    {
+      "school_id": "366",
+      "info_type": "Accommodation",
+      "reason": "school 366 not found"
+    },
+    {
+      "school_id": "369",
+      "info_type": "Accommodation",
+      "reason": "school 369 not found"
+    },
+    {
+      "school_id": "382",
+      "info_type": "Accommodation",
+      "reason": "school 382 not found"
+    },
+    {
+      "school_id": "385",
+      "info_type": "Accommodation",
+      "reason": "school 385 not found"
+    },
+    {
+      "school_id": "388",
+      "info_type": "Accommodation",
+      "reason": "school 388 not found"
+    },
+    {
+      "school_id": "392",
+      "info_type": "Accommodation",
+      "reason": "school 392 not found"
+    },
+    {
+      "school_id": "406",
+      "info_type": "Accommodation",
+      "reason": "school 406 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Accommodation",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "226",
+      "info_type": "Accommodation",
+      "reason": "school 226 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Accommodation",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "232",
+      "info_type": "Accommodation",
+      "reason": "school 232 not found"
+    },
+    {
+      "school_id": "233",
+      "info_type": "Accommodation",
+      "reason": "school 233 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "1-Year GCSE Programme",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "267",
+      "info_type": "Accommodation",
+      "reason": "school 267 not found"
+    },
+    {
+      "school_id": "282",
+      "info_type": "Accommodation",
+      "reason": "school 282 not found"
+    },
+    {
+      "school_id": "308",
+      "info_type": "Accommodation",
+      "reason": "school 308 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Accommodation",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "109",
+      "info_type": "Accommodation",
+      "reason": "school 109 not found"
+    },
+    {
+      "school_id": "114",
+      "info_type": "Accommodation",
+      "reason": "school 114 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "Info from Webinar",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "163",
+      "info_type": "Accommodation",
+      "reason": "school 163 not found"
+    },
+    {
+      "school_id": "165",
+      "info_type": "Accommodation",
+      "reason": "school 165 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "BNO Applicant Fees",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Accommodation",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "202",
+      "info_type": "Accommodation",
+      "reason": "school 202 not found"
+    },
+    {
+      "school_id": "205",
+      "info_type": "Accommodation",
+      "reason": "school 205 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Agent Handbook",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "34",
+      "info_type": "Accommodation",
+      "reason": "school 34 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "BNO Applicants Fees",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "Accommodation",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Accommodation",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "80",
+      "info_type": "Accommodation",
+      "reason": "school 80 not found"
+    },
+    {
+      "school_id": "83",
+      "info_type": "Accommodation",
+      "reason": "school 83 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Accommodation",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "92",
+      "info_type": "Accommodation",
+      "reason": "school 92 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Accommodation",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Airport Pickup",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Video",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Admissions Info",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "188",
+      "info_type": "Admissions Info",
+      "reason": "school 188 not found"
+    },
+    {
+      "school_id": "282",
+      "info_type": "Admissions Info",
+      "reason": "school 282 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Admissions Info",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Admissions Info",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "66",
+      "info_type": "Admissions Info",
+      "reason": "school 66 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Admissions Info",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Admissions Info",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "220",
+      "info_type": "Admissions Info",
+      "reason": "school 220 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Admissions Info",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Admissions Info",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "102",
+      "info_type": "Admissions Info",
+      "reason": "school 102 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "Admissions Info",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Admissions Info",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "238",
+      "info_type": "Admissions Info",
+      "reason": "school 238 not found"
+    },
+    {
+      "school_id": "622",
+      "info_type": "Admissions Info",
+      "reason": "school 622 not found"
+    },
+    {
+      "school_id": "230",
+      "info_type": "Admissions Info",
+      "reason": "school 230 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Admissions Info",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "478",
+      "info_type": "Admissions Info",
+      "reason": "school 478 not found"
+    },
+    {
+      "school_id": "550",
+      "info_type": "Admissions Info",
+      "reason": "school 550 not found"
+    },
+    {
+      "school_id": "393",
+      "info_type": "Admissions Info",
+      "reason": "school 393 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Admissions Info",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Admissions Info",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Admissions Info",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Admissions Info",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "635",
+      "info_type": "Admissions Info",
+      "reason": "school 635 not found"
+    },
+    {
+      "school_id": "238",
+      "info_type": "Admissions Info",
+      "reason": "school 238 not found"
+    },
+    {
+      "school_id": "239",
+      "info_type": "Admissions Info",
+      "reason": "school 239 not found"
+    },
+    {
+      "school_id": "48",
+      "info_type": "Admissions Info",
+      "reason": "school 48 not found"
+    },
+    {
+      "school_id": "25",
+      "info_type": "Admissions Info",
+      "reason": "school 25 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Admissions Info",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "604",
+      "info_type": "Affiliated Prep School",
+      "reason": "school 604 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Airport Pickup",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "EFL Cost",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Skype Account",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "51",
+      "info_type": "Skype Account",
+      "reason": "school 51 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Sibling Discount",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "EFL Cost",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Music Tuition",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Music Instrument",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "EFL Cost",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "320",
+      "info_type": "Sibling Discount",
+      "reason": "school 320 not found"
+    },
+    {
+      "school_id": "52",
+      "info_type": "ACL",
+      "reason": "school 52 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "ACL Code",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "ACL Code",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "339",
+      "info_type": "ACL Code",
+      "reason": "school 339 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "ACL Code",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "ACL code",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "ACL",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "updates note",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Airport Pickup",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "84",
+      "info_type": "ACL",
+      "reason": "school 84 not found"
+    },
+    {
+      "school_id": "621",
+      "info_type": "Airport Transfer",
+      "reason": "school 621 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Long Weekend Arrangement",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "621",
+      "info_type": "Shopping trips",
+      "reason": "school 621 not found"
+    },
+    {
+      "school_id": "621",
+      "info_type": "Accommodation Remark",
+      "reason": "school 621 not found"
+    },
+    {
+      "school_id": "539",
+      "info_type": "Accommodation",
+      "reason": "school 539 not found"
+    },
+    {
+      "school_id": "55",
+      "info_type": "Leavers' Destination",
+      "reason": "school 55 not found"
+    },
+    {
+      "school_id": "30202",
+      "info_type": "null",
+      "reason": "missing info_type"
+    },
+    {
+      "school_id": "62",
+      "info_type": "Coronavirus arrangements",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "Online form link",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Accommodation",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Accommodation",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "256",
+      "info_type": "Accommodation",
+      "reason": "school 256 not found"
+    },
+    {
+      "school_id": "457",
+      "info_type": "Accommodation",
+      "reason": "school 457 not found"
+    },
+    {
+      "school_id": "464",
+      "info_type": "Accommodation",
+      "reason": "school 464 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Exeats",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Chinese population",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "62",
+      "info_type": "ACL",
+      "reason": "school 62 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Holiday camp",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "211",
+      "info_type": "Boarding arrangement",
+      "reason": "school 211 not found"
+    },
+    {
+      "school_id": "323",
+      "info_type": "Boarding arrangement",
+      "reason": "school 323 not found"
+    },
+    {
+      "school_id": "503",
+      "info_type": "ACL",
+      "reason": "school 503 not found"
+    },
+    {
+      "school_id": "256",
+      "info_type": "Nationality Mix",
+      "reason": "school 256 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "ACL",
+      "reason": "school 351 not found"
+    },
+    {
+      "school_id": "351",
+      "info_type": "Accommodation",
+      "reason": "school 351 not found"
+    }
+  ]
+}

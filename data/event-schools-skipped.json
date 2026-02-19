@@ -1,0 +1,5866 @@
+{
+  "summary": {
+    "total_skipped": 976,
+    "missing_event_only": 2,
+    "missing_school_only": 962,
+    "missing_both": 12
+  },
+  "skipped_records": [
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "1",
+      "school_id": "1",
+      "reason": "event event_1 not found, school 1 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "1",
+      "school_id": "12",
+      "reason": "event event_1 not found, school 12 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "1",
+      "school_id": "4",
+      "reason": "event event_1 not found, school 4 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "1",
+      "school_id": "6",
+      "reason": "event event_1 not found, school 6 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "2",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "4",
+      "school_id": "250",
+      "reason": "event event_4 not found, school 250 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "4",
+      "school_id": "450",
+      "reason": "event event_4 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "4",
+      "school_id": "362",
+      "reason": "event event_4 not found, school 362 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "5",
+      "school_id": "6",
+      "reason": "event event_5 not found, school 6 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "8",
+      "school_id": "345",
+      "reason": "school 345 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "6",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "9",
+      "school_id": "264",
+      "reason": "event event_9 not found, school 264 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "11",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "11",
+      "school_id": "438",
+      "reason": "school 438 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "11",
+      "school_id": "435",
+      "reason": "school 435 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "12",
+      "school_id": "686",
+      "reason": "school 686 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "16",
+      "school_id": "686",
+      "reason": "school 686 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "17",
+      "school_id": "377",
+      "reason": "school 377 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "18",
+      "school_id": "383",
+      "reason": "school 383 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "20",
+      "school_id": "431",
+      "reason": "school 431 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "19",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "24",
+      "school_id": "78",
+      "reason": "school 78 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "23",
+      "school_id": "15",
+      "reason": "school 15 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "26",
+      "school_id": "591",
+      "reason": "school 591 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "31",
+      "school_id": "599",
+      "reason": "school 599 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "30",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "27",
+      "school_id": "570",
+      "reason": "school 570 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "35",
+      "school_id": "89",
+      "reason": "school 89 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "37",
+      "school_id": "534",
+      "reason": "school 534 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "39",
+      "school_id": "214",
+      "reason": "school 214 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "38",
+      "school_id": "285",
+      "reason": "school 285 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "43",
+      "school_id": "383",
+      "reason": "school 383 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "51",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "49",
+      "school_id": "328",
+      "reason": "school 328 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "47",
+      "school_id": "607",
+      "reason": "school 607 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "50",
+      "school_id": "528",
+      "reason": "school 528 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "48",
+      "school_id": "431",
+      "reason": "school 431 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "52",
+      "school_id": "686",
+      "reason": "school 686 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "53",
+      "school_id": "544",
+      "reason": "school 544 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "59",
+      "school_id": "431",
+      "reason": "school 431 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "54",
+      "school_id": "362",
+      "reason": "school 362 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "57",
+      "school_id": "585",
+      "reason": "school 585 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "58",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "56",
+      "school_id": "199",
+      "reason": "event event_56 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "62",
+      "school_id": "383",
+      "reason": "school 383 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "64",
+      "school_id": "12",
+      "reason": "event event_64 not found, school 12 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "77",
+      "school_id": "686",
+      "reason": "school 686 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "79",
+      "school_id": "1",
+      "reason": "event event_79 not found, school 1 not found"
+    },
+    {
+      "source": "AA_Event_School.csv",
+      "event_id": "79",
+      "school_id": "2",
+      "reason": "event event_79 not found, school 2 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "49",
+      "reason": "school 49 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "250",
+      "reason": "school 250 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "313",
+      "reason": "school 313 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "322",
+      "reason": "school 322 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "597",
+      "reason": "school 597 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "59",
+      "reason": "school 59 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "1",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "53",
+      "reason": "school 53 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "196",
+      "reason": "school 196 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "214",
+      "reason": "school 214 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "248",
+      "reason": "school 248 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "643",
+      "reason": "school 643 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "394",
+      "reason": "school 394 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "2",
+      "school_id": "641",
+      "reason": "school 641 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "55",
+      "reason": "school 55 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "214",
+      "reason": "school 214 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "597",
+      "reason": "school 597 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "53",
+      "reason": "school 53 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "185",
+      "reason": "school 185 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "389",
+      "reason": "school 389 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "4",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "140",
+      "reason": "school 140 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "59",
+      "reason": "school 59 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "59",
+      "reason": "school 59 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "430",
+      "reason": "school 430 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "211",
+      "reason": "school 211 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "362",
+      "reason": "school 362 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "200",
+      "reason": "school 200 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "250",
+      "reason": "school 250 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "200",
+      "reason": "school 200 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "322",
+      "reason": "school 322 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "271",
+      "reason": "school 271 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "303",
+      "reason": "school 303 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "248",
+      "reason": "school 248 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "611",
+      "reason": "school 611 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "607",
+      "reason": "school 607 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "328",
+      "reason": "school 328 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "3",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "394",
+      "reason": "school 394 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "631",
+      "reason": "school 631 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "641",
+      "reason": "school 641 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "593",
+      "reason": "school 593 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "5",
+      "school_id": "483",
+      "reason": "school 483 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "55",
+      "reason": "school 55 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "686",
+      "reason": "school 686 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "362",
+      "reason": "school 362 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "373",
+      "reason": "school 373 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "389",
+      "reason": "school 389 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "394",
+      "reason": "school 394 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "59",
+      "reason": "school 59 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "185",
+      "reason": "school 185 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "313",
+      "reason": "school 313 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "140",
+      "reason": "school 140 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "373",
+      "reason": "school 373 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "53",
+      "reason": "school 53 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "504",
+      "reason": "school 504 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "34",
+      "reason": "school 34 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "53",
+      "reason": "school 53 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "591",
+      "reason": "school 591 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "211",
+      "reason": "school 211 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "250",
+      "reason": "school 250 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "322",
+      "reason": "school 322 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "328",
+      "reason": "school 328 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "430",
+      "reason": "school 430 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "362",
+      "reason": "school 362 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "611",
+      "reason": "school 611 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "483",
+      "reason": "school 483 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "6",
+      "school_id": "593",
+      "reason": "school 593 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "457",
+      "reason": "school 457 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "631",
+      "reason": "school 631 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "303",
+      "reason": "school 303 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "570",
+      "reason": "school 570 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "7",
+      "school_id": "597",
+      "reason": "school 597 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "9",
+      "school_id": "328",
+      "reason": "school 328 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "250",
+      "reason": "school 250 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "493",
+      "reason": "school 493 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "394",
+      "reason": "school 394 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "549",
+      "reason": "school 549 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "8",
+      "school_id": "593",
+      "reason": "school 593 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "597",
+      "reason": "school 597 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "133",
+      "reason": "school 133 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "250",
+      "reason": "school 250 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "504",
+      "reason": "school 504 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "322",
+      "reason": "school 322 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "11",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "549",
+      "reason": "school 549 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "10",
+      "school_id": "593",
+      "reason": "school 593 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "16",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "438",
+      "reason": "school 438 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "211",
+      "reason": "school 211 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "185",
+      "reason": "school 185 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "17",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "200",
+      "reason": "school 200 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "256",
+      "reason": "school 256 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "593",
+      "reason": "school 593 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "504",
+      "reason": "school 504 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "362",
+      "reason": "school 362 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "389",
+      "reason": "school 389 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "457",
+      "reason": "school 457 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "570",
+      "reason": "school 570 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "430",
+      "reason": "school 430 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "631",
+      "reason": "school 631 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "342",
+      "reason": "school 342 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "200",
+      "reason": "school 200 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "545",
+      "reason": "school 545 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "480",
+      "reason": "school 480 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "504",
+      "reason": "school 504 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "570",
+      "reason": "school 570 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "570",
+      "reason": "school 570 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "53",
+      "reason": "school 53 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "591",
+      "reason": "school 591 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "322",
+      "reason": "school 322 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "545",
+      "reason": "school 545 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "133",
+      "reason": "school 133 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "480",
+      "reason": "school 480 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "128",
+      "reason": "school 128 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "185",
+      "reason": "school 185 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "53",
+      "reason": "school 53 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "389",
+      "reason": "school 389 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "20",
+      "reason": "school 20 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "133",
+      "reason": "school 133 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "200",
+      "reason": "school 200 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "133",
+      "reason": "school 133 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "494",
+      "reason": "school 494 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "14",
+      "school_id": "342",
+      "reason": "school 342 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "504",
+      "reason": "school 504 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "200",
+      "reason": "school 200 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "322",
+      "reason": "school 322 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "518",
+      "reason": "school 518 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "211",
+      "reason": "school 211 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "20",
+      "reason": "school 20 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "133",
+      "reason": "school 133 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "591",
+      "reason": "school 591 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "20",
+      "reason": "school 20 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "133",
+      "reason": "school 133 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "549",
+      "reason": "school 549 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "590",
+      "reason": "school 590 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "30198",
+      "reason": "school 30198 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "49",
+      "reason": "school 49 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "19",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "545",
+      "reason": "school 545 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "549",
+      "reason": "school 549 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "483",
+      "reason": "school 483 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "211",
+      "reason": "school 211 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "483",
+      "reason": "school 483 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "250",
+      "reason": "school 250 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "322",
+      "reason": "school 322 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "200",
+      "reason": "school 200 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "373",
+      "reason": "school 373 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "211",
+      "reason": "school 211 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "475",
+      "reason": "school 475 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "549",
+      "reason": "school 549 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "483",
+      "reason": "school 483 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "323",
+      "reason": "school 323 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "13",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "593",
+      "reason": "school 593 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "12",
+      "school_id": "30015",
+      "reason": "school 30015 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "570",
+      "reason": "school 570 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "15",
+      "school_id": "133",
+      "reason": "school 133 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "20",
+      "school_id": "504",
+      "reason": "school 504 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "389",
+      "reason": "school 389 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "480",
+      "reason": "school 480 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "518",
+      "reason": "school 518 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "21",
+      "school_id": "494",
+      "reason": "school 494 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "211",
+      "reason": "school 211 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "373",
+      "reason": "school 373 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "200",
+      "reason": "school 200 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "313",
+      "reason": "school 313 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "545",
+      "reason": "school 545 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "58",
+      "reason": "school 58 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "480",
+      "reason": "school 480 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "20",
+      "reason": "school 20 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "22",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "544",
+      "reason": "school 544 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "549",
+      "reason": "school 549 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "24",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "41",
+      "reason": "school 41 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "23",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "30203",
+      "reason": "school 30203 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "62",
+      "reason": "school 62 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "544",
+      "reason": "school 544 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "430",
+      "reason": "school 430 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "593",
+      "reason": "school 593 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "599",
+      "reason": "school 599 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "313",
+      "reason": "school 313 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "337",
+      "reason": "school 337 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "545",
+      "reason": "school 545 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "344",
+      "reason": "school 344 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "389",
+      "reason": "school 389 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "483",
+      "reason": "school 483 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "549",
+      "reason": "school 549 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "25",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "258",
+      "reason": "school 258 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "30159",
+      "reason": "school 30159 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "271",
+      "reason": "school 271 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "351",
+      "reason": "school 351 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "362",
+      "reason": "school 362 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "62",
+      "reason": "school 62 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "460",
+      "reason": "school 460 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "98",
+      "reason": "school 98 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "631",
+      "reason": "school 631 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "98",
+      "reason": "school 98 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "518",
+      "reason": "school 518 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "570",
+      "reason": "school 570 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "26",
+      "school_id": "607",
+      "reason": "school 607 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "130",
+      "reason": "school 130 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "30198",
+      "reason": "school 30198 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "304",
+      "reason": "school 304 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "351",
+      "reason": "school 351 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "631",
+      "reason": "school 631 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "518",
+      "reason": "school 518 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "28",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "655",
+      "reason": "school 655 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "30203",
+      "reason": "school 30203 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "250",
+      "reason": "school 250 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "304",
+      "reason": "school 304 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "493",
+      "reason": "school 493 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "373",
+      "reason": "school 373 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "380",
+      "reason": "school 380 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "389",
+      "reason": "school 389 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "10",
+      "reason": "school 10 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "544",
+      "reason": "school 544 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "545",
+      "reason": "school 545 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "423",
+      "reason": "school 423 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "430",
+      "reason": "school 430 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "438",
+      "reason": "school 438 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "441",
+      "reason": "school 441 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "27",
+      "school_id": "593",
+      "reason": "school 593 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "36",
+      "reason": "school 36 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "50",
+      "reason": "school 50 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "130",
+      "reason": "school 130 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "154",
+      "reason": "school 154 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "304",
+      "reason": "school 304 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "454",
+      "reason": "school 454 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "438",
+      "reason": "school 438 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "676",
+      "reason": "school 676 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "10",
+      "reason": "school 10 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "611",
+      "reason": "school 611 not found"
+    },
+    {
+      "source": "AA_Expo_School.csv",
+      "event_id": "30",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "19",
+      "school_id": "534",
+      "reason": "school 534 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "3",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "5",
+      "school_id": "293",
+      "reason": "event indinterview_5 not found, school 293 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "6",
+      "school_id": "517",
+      "reason": "school 517 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "8",
+      "school_id": "339",
+      "reason": "school 339 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "9",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "10",
+      "school_id": "52",
+      "reason": "school 52 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "11",
+      "school_id": "554",
+      "reason": "school 554 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "12",
+      "school_id": "575",
+      "reason": "school 575 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "13",
+      "school_id": "196",
+      "reason": "school 196 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "14",
+      "school_id": "517",
+      "reason": "school 517 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "16",
+      "school_id": "245",
+      "reason": "school 245 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "17",
+      "school_id": "340",
+      "reason": "school 340 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "18",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "20",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "21",
+      "school_id": "53",
+      "reason": "school 53 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "22",
+      "school_id": "599",
+      "reason": "school 599 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "23",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "25",
+      "school_id": "20",
+      "reason": "school 20 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "26",
+      "school_id": "503",
+      "reason": "school 503 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "26",
+      "school_id": "504",
+      "reason": "school 504 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "27",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "44",
+      "school_id": "517",
+      "reason": "school 517 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "45",
+      "school_id": "196",
+      "reason": "school 196 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "30",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "31",
+      "school_id": "185",
+      "reason": "school 185 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "32",
+      "school_id": "430",
+      "reason": "school 430 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "33",
+      "school_id": "245",
+      "reason": "school 245 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "34",
+      "school_id": "575",
+      "reason": "school 575 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "35",
+      "school_id": "457",
+      "reason": "school 457 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "37",
+      "school_id": "557",
+      "reason": "school 557 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "38",
+      "school_id": "78",
+      "reason": "school 78 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "39",
+      "school_id": "271",
+      "reason": "school 271 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "40",
+      "school_id": "245",
+      "reason": "school 245 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "41",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "42",
+      "school_id": "435",
+      "reason": "school 435 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "43",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "46",
+      "school_id": "245",
+      "reason": "school 245 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "47",
+      "school_id": "475",
+      "reason": "school 475 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "48",
+      "school_id": "597",
+      "reason": "school 597 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "49",
+      "school_id": "681",
+      "reason": "school 681 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "50",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "52",
+      "school_id": "318",
+      "reason": "school 318 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "53",
+      "school_id": "599",
+      "reason": "school 599 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "54",
+      "school_id": "517",
+      "reason": "school 517 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "55",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "57",
+      "school_id": "20",
+      "reason": "school 20 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "58",
+      "school_id": "504",
+      "reason": "school 504 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "56",
+      "school_id": "313",
+      "reason": "school 313 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "58",
+      "school_id": "503",
+      "reason": "school 503 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "59",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "60",
+      "school_id": "345",
+      "reason": "school 345 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "61",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "62",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "63",
+      "school_id": "534",
+      "reason": "school 534 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "64",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "69",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "70",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "65",
+      "school_id": "245",
+      "reason": "school 245 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "66",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "67",
+      "school_id": "340",
+      "reason": "school 340 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "71",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "72",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "74",
+      "school_id": "245",
+      "reason": "school 245 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "75",
+      "school_id": "340",
+      "reason": "school 340 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "77",
+      "school_id": "196",
+      "reason": "school 196 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "76",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "78",
+      "school_id": "517",
+      "reason": "school 517 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "79",
+      "school_id": "68",
+      "reason": "school 68 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "80",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "81",
+      "school_id": "599",
+      "reason": "school 599 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "82",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "83",
+      "school_id": "20",
+      "reason": "school 20 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "84",
+      "school_id": "534",
+      "reason": "school 534 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "85",
+      "school_id": "318",
+      "reason": "school 318 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "86",
+      "school_id": "575",
+      "reason": "school 575 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "87",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "88",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "89",
+      "school_id": "438",
+      "reason": "school 438 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "90",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "91",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "92",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "93",
+      "school_id": "577",
+      "reason": "school 577 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "94",
+      "school_id": "185",
+      "reason": "school 185 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "96",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "98",
+      "school_id": "383",
+      "reason": "school 383 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "100",
+      "school_id": "557",
+      "reason": "school 557 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "101",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "102",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "106",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "107",
+      "school_id": "599",
+      "reason": "school 599 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "104",
+      "school_id": "245",
+      "reason": "school 245 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "105",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "108",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "109",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "110",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "111",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "112",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "113",
+      "school_id": "30011",
+      "reason": "school 30011 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "114",
+      "school_id": "340",
+      "reason": "school 340 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "115",
+      "school_id": "318",
+      "reason": "school 318 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "117",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "118",
+      "school_id": "575",
+      "reason": "school 575 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "120",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "120",
+      "school_id": "435",
+      "reason": "school 435 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "120",
+      "school_id": "438",
+      "reason": "school 438 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "121",
+      "school_id": "534",
+      "reason": "school 534 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "122",
+      "school_id": "686",
+      "reason": "school 686 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "123",
+      "school_id": "508",
+      "reason": "school 508 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "124",
+      "school_id": "20",
+      "reason": "school 20 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "125",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "126",
+      "school_id": "306",
+      "reason": "school 306 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "129",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "132",
+      "school_id": "599",
+      "reason": "school 599 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "133",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "134",
+      "school_id": "534",
+      "reason": "school 534 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "135",
+      "school_id": "318",
+      "reason": "school 318 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "136",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "138",
+      "school_id": "575",
+      "reason": "school 575 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "139",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "144",
+      "school_id": "78",
+      "reason": "school 78 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "148",
+      "school_id": "599",
+      "reason": "school 599 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "145",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "146",
+      "school_id": "534",
+      "reason": "school 534 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "147",
+      "school_id": "318",
+      "reason": "school 318 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "149",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "154",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "150",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "153",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "151",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "155",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "156",
+      "school_id": "383",
+      "reason": "school 383 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "158",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "159",
+      "school_id": "676",
+      "reason": "school 676 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "160",
+      "school_id": "274",
+      "reason": "school 274 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "161",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "162",
+      "school_id": "413",
+      "reason": "school 413 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "165",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "164",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "166",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "168",
+      "school_id": "676",
+      "reason": "school 676 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "170",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "169",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "173",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "171",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "174",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "172",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "175",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "197",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "176",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "179",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "177",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "180",
+      "school_id": "687",
+      "reason": "school 687 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "178",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "182",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "181",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "184",
+      "school_id": "676",
+      "reason": "school 676 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "185",
+      "school_id": "638",
+      "reason": "school 638 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "186",
+      "school_id": "534",
+      "reason": "school 534 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "187",
+      "school_id": "10",
+      "reason": "school 10 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "188",
+      "school_id": "493",
+      "reason": "school 493 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "189",
+      "school_id": "611",
+      "reason": "school 611 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "192",
+      "school_id": "18",
+      "reason": "school 18 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "190",
+      "school_id": "140",
+      "reason": "school 140 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "191",
+      "school_id": "110",
+      "reason": "school 110 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "193",
+      "school_id": "322",
+      "reason": "school 322 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "195",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "199",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "200",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "201",
+      "school_id": "101",
+      "reason": "school 101 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "202",
+      "school_id": "130",
+      "reason": "school 130 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "203",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "206",
+      "school_id": "15",
+      "reason": "school 15 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "207",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "209",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "204",
+      "school_id": "130",
+      "reason": "school 130 not found"
+    },
+    {
+      "source": "AA_II_School.csv",
+      "event_id": "208",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "5",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "5",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "5",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "5",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "5",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "5",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "5",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "5",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "6",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "6",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "6",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "6",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "6",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "6",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "6",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "6",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "7",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "7",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "7",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "7",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "7",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "7",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "7",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "7",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "9",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "9",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "9",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "8",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "9",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "9",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "9",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "9",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "10",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "10",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "12",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "10",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "10",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "11",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "12",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "10",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "10",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "10",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "11",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "11",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "11",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "11",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "11",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "11",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "12",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "12",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "12",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "12",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "12",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "13",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "15",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "15",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "14",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "16",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "18",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "17",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "17",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "17",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "17",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "17",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "18",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "18",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "18",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "18",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_MA_School.csv",
+      "event_id": "18",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "16",
+      "reason": "school 16 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "4",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "5",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "16",
+      "reason": "school 16 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "6",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "10",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "11",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "12",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "16",
+      "reason": "school 16 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "7",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "21",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "16",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "15",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "13",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "16",
+      "reason": "school 16 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "16",
+      "reason": "school 16 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "16",
+      "reason": "school 16 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "8",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "9",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "22",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "24",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "24",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "24",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "14",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "24",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "24",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "24",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "18",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "17",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "24",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "19",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "34",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "35",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "20",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "33",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "36",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "1",
+      "reason": "school 1 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "611",
+      "reason": "school 611 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "21",
+      "reason": "school 21 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "26",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "37",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "23",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "25",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "11",
+      "reason": "school 11 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "2",
+      "reason": "school 2 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "3",
+      "reason": "school 3 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "4",
+      "reason": "school 4 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "6",
+      "reason": "school 6 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "7",
+      "reason": "school 7 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "22",
+      "reason": "school 22 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "533",
+      "reason": "school 533 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "611",
+      "reason": "school 611 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "13",
+      "reason": "school 13 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "9",
+      "reason": "school 9 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "103",
+      "reason": "school 103 not found"
+    },
+    {
+      "source": "AA_TS_School.csv",
+      "event_id": "27",
+      "school_id": "12",
+      "reason": "school 12 not found"
+    }
+  ]
+}
