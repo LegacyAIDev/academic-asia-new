@@ -27,10 +27,27 @@ import {
   ClipboardList,
   MessageSquare,
   School,
+  BookOpen,
+  Shield,
+  CalendarDays,
+  Plane,
+  FileCheck,
   Plus,
 } from "lucide-react"
 import { getStudentById, getStudentContacts, getContactReferenceData } from "@/lib/supabase/queries/students"
+import { getStudentApplications, getApplicationReferenceData } from "@/lib/supabase/queries/student-applications"
+import { getStudentEducation, getEducationReferenceData } from "@/lib/supabase/queries/student-education"
+import { getStudentVisas, getVisaReferenceData } from "@/lib/supabase/queries/student-visas"
+import { getStudentEventApplications, getEventAppReferenceData } from "@/lib/supabase/queries/student-event-applications"
+import { getStudentTravel, getTravelReferenceData } from "@/lib/supabase/queries/student-travel"
+import { getStudentExamResults, getExamResultReferenceData } from "@/lib/supabase/queries/student-exam-results"
 import { StudentContactsSection } from "./student-contacts"
+import { StudentApplicationsSection } from "./student-applications"
+import { StudentEducationSection } from "./student-education"
+import { StudentVisasSection } from "./student-visas"
+import { StudentEventApplicationsSection } from "./student-event-applications"
+import { StudentTravelSection } from "./student-travel"
+import { StudentExamResultsSection } from "./student-exam-results"
 import { DeleteStudentDialog } from "./delete-student-dialog"
 
 // Status badge styling based on status code
@@ -55,11 +72,23 @@ type StudentDetailPageParams = { params: Promise<{ id: string }> }
 export default async function StudentDetailPage({ params }: StudentDetailPageParams) {
   const { id } = await params
 
-  // Fetch student, contacts, and reference data in parallel
-  const [student, contacts, contactReferenceData] = await Promise.all([
+  // Fetch student, contacts, applications, and reference data in parallel
+  const [student, contacts, contactReferenceData, applications, appReferenceData, educationEntries, eduReferenceData, visas, visaReferenceData, eventApplications, eventAppReferenceData, travelRecords, travelReferenceData, examResults, examResultReferenceData] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
     getContactReferenceData(),
+    getStudentApplications(id),
+    getApplicationReferenceData(),
+    getStudentEducation(id),
+    getEducationReferenceData(),
+    getStudentVisas(id),
+    getVisaReferenceData(id),
+    getStudentEventApplications(id),
+    getEventAppReferenceData(),
+    getStudentTravel(id),
+    getTravelReferenceData(),
+    getStudentExamResults(id),
+    getExamResultReferenceData(),
   ])
 
   if (!student) {
@@ -238,9 +267,41 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
                 <MessageSquare className="h-4 w-4" />
                 Add Note
               </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" disabled>
-                <School className="h-4 w-4" />
-                New Application
+              <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                <a href="#applications">
+                  <School className="h-4 w-4" />
+                  New Application
+                </a>
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                <a href="#education">
+                  <BookOpen className="h-4 w-4" />
+                  New Education
+                </a>
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                <a href="#visas">
+                  <Shield className="h-4 w-4" />
+                  New Visa
+                </a>
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                <a href="#event-applications">
+                  <CalendarDays className="h-4 w-4" />
+                  New Event App
+                </a>
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                <a href="#travel">
+                  <Plane className="h-4 w-4" />
+                  New Travel
+                </a>
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                <a href="#exam-results">
+                  <FileCheck className="h-4 w-4" />
+                  New Exam Result
+                </a>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2" disabled>
                 <FileText className="h-4 w-4" />
@@ -367,6 +428,60 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
             </CardContent>
           </Card>
         )}
+
+        {/* School Applications Section */}
+        <div id="applications">
+          <StudentApplicationsSection
+            studentId={id}
+            applications={applications}
+            referenceData={appReferenceData}
+          />
+        </div>
+
+        {/* Education Section */}
+        <div id="education">
+          <StudentEducationSection
+            studentId={id}
+            educationEntries={educationEntries}
+            referenceData={eduReferenceData}
+          />
+        </div>
+
+        {/* Visa Section */}
+        <div id="visas">
+          <StudentVisasSection
+            studentId={id}
+            visas={visas}
+            referenceData={visaReferenceData}
+          />
+        </div>
+
+        {/* Event Applications Section */}
+        <div id="event-applications">
+          <StudentEventApplicationsSection
+            studentId={id}
+            applications={eventApplications}
+            referenceData={eventAppReferenceData}
+          />
+        </div>
+
+        {/* Travel Section */}
+        <div id="travel">
+          <StudentTravelSection
+            studentId={id}
+            travelRecords={travelRecords}
+            referenceData={travelReferenceData}
+          />
+        </div>
+
+        {/* Exam Results Section */}
+        <div id="exam-results">
+          <StudentExamResultsSection
+            studentId={id}
+            examResults={examResults}
+            referenceData={examResultReferenceData}
+          />
+        </div>
 
         {/* Contacts Section */}
         <StudentContactsSection
