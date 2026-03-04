@@ -36,6 +36,10 @@ import {
   XCircle,
   Info,
   Calendar,
+  Banknote,
+  ClipboardCheck,
+  Trophy,
+  StickyNote,
 } from "lucide-react"
 import { getSchoolById } from "@/lib/supabase/queries/schools"
 import {
@@ -43,8 +47,16 @@ import {
   getDistinctInfoTypes,
   getSchoolSupInfoCount,
 } from "@/lib/supabase/queries/school-supplementary-info"
+import { getSchoolFees, getFeeReferenceData, getSchoolFeeCount } from "@/lib/supabase/queries/school-fees"
+import { getSchoolEntranceExams, getEntranceExamReferenceData, getSchoolEntranceExamCount } from "@/lib/supabase/queries/school-entrance-exams"
+import { getSchoolAcademicResults, getAcademicResultReferenceData, getSchoolAcademicResultCount } from "@/lib/supabase/queries/school-academic-results"
+import { getSchoolNotes, getNoteReferenceData, getSchoolNoteCount } from "@/lib/supabase/queries/school-notes"
 import { DeleteSchoolDialog } from "./delete-school-dialog"
 import { SupInfoDialog, EditSupInfoButton, DeleteSupInfoButton } from "./sup-info-dialog"
+import { SchoolFeesSection } from "./school-fees"
+import { SchoolEntranceExamsSection } from "./school-entrance-exams"
+import { SchoolAcademicResultsSection } from "./school-academic-results"
+import { SchoolNotesSection } from "./school-notes"
 
 type SchoolDetailPageParams = {
   params: Promise<{ id: string }>
@@ -55,11 +67,40 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
   const { id } = await params
   const { tab = "basic", supPage = "1" } = await searchParams
 
-  const [school, supInfoResult, infoTypes, supInfoCount] = await Promise.all([
+  const [
+    school,
+    supInfoResult,
+    infoTypes,
+    supInfoCount,
+    fees,
+    feeRefData,
+    feeCount,
+    entranceExams,
+    entranceExamRefData,
+    entranceExamCount,
+    academicResults,
+    academicResultRefData,
+    academicResultCount,
+    notes,
+    noteRefData,
+    noteCount,
+  ] = await Promise.all([
     getSchoolById(id),
     getSchoolSupplementaryInfo({ schoolId: id, page: parseInt(supPage), pageSize: 25 }),
     getDistinctInfoTypes(),
     getSchoolSupInfoCount(id),
+    getSchoolFees(id),
+    getFeeReferenceData(),
+    getSchoolFeeCount(id),
+    getSchoolEntranceExams(id),
+    getEntranceExamReferenceData(),
+    getSchoolEntranceExamCount(id),
+    getSchoolAcademicResults(id),
+    getAcademicResultReferenceData(),
+    getSchoolAcademicResultCount(id),
+    getSchoolNotes(id),
+    getNoteReferenceData(),
+    getSchoolNoteCount(id),
   ])
 
   if (!school) {
@@ -162,6 +203,42 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
               Supplementary Info
               <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
                 {supInfoCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="fees" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=fees`}>
+              <Banknote className="h-4 w-4" />
+              Fees
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {feeCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="entrance-exams" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=entrance-exams`}>
+              <ClipboardCheck className="h-4 w-4" />
+              Entrance Exams
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {entranceExamCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="academic-results" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=academic-results`}>
+              <Trophy className="h-4 w-4" />
+              Academic Results
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {academicResultCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="notes" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=notes`}>
+              <StickyNote className="h-4 w-4" />
+              Notes
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {noteCount}
               </Badge>
             </Link>
           </TabsTrigger>
@@ -514,6 +591,26 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Fees Tab */}
+        <TabsContent value="fees" className="space-y-6">
+          <SchoolFeesSection schoolId={id} fees={fees} referenceData={feeRefData} />
+        </TabsContent>
+
+        {/* Entrance Exams Tab */}
+        <TabsContent value="entrance-exams" className="space-y-6">
+          <SchoolEntranceExamsSection schoolId={id} exams={entranceExams} referenceData={entranceExamRefData} />
+        </TabsContent>
+
+        {/* Academic Results Tab */}
+        <TabsContent value="academic-results" className="space-y-6">
+          <SchoolAcademicResultsSection schoolId={id} results={academicResults} referenceData={academicResultRefData} />
+        </TabsContent>
+
+        {/* Notes Tab */}
+        <TabsContent value="notes" className="space-y-6">
+          <SchoolNotesSection schoolId={id} notes={notes} referenceData={noteRefData} />
         </TabsContent>
       </Tabs>
     </div>
