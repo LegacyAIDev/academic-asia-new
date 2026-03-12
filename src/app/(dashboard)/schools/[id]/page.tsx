@@ -40,6 +40,9 @@ import {
   ClipboardCheck,
   Trophy,
   StickyNote,
+  Landmark,
+  Contact,
+  CalendarSearch,
 } from "lucide-react"
 import { getSchoolById } from "@/lib/supabase/queries/schools"
 import {
@@ -51,12 +54,20 @@ import { getSchoolFees, getFeeReferenceData, getSchoolFeeCount } from "@/lib/sup
 import { getSchoolEntranceExams, getEntranceExamReferenceData, getSchoolEntranceExamCount } from "@/lib/supabase/queries/school-entrance-exams"
 import { getSchoolAcademicResults, getAcademicResultReferenceData, getSchoolAcademicResultCount } from "@/lib/supabase/queries/school-academic-results"
 import { getSchoolNotes, getNoteReferenceData, getSchoolNoteCount } from "@/lib/supabase/queries/school-notes"
+import { getSchoolCourses, getCourseReferenceData, getSchoolCourseCount } from "@/lib/supabase/queries/school-courses"
+import { getSchoolBankDetails, getBankReferenceData, getSchoolBankDetailCount } from "@/lib/supabase/queries/school-bank-details"
+import { getSchoolContacts, getSchoolContactCount } from "@/lib/supabase/queries/school-contacts"
+import { getSchoolVisits, getSchoolVisitCount } from "@/lib/supabase/queries/school-visits"
 import { DeleteSchoolDialog } from "./delete-school-dialog"
 import { SupInfoDialog, EditSupInfoButton, DeleteSupInfoButton } from "./sup-info-dialog"
 import { SchoolFeesSection } from "./school-fees"
 import { SchoolEntranceExamsSection } from "./school-entrance-exams"
 import { SchoolAcademicResultsSection } from "./school-academic-results"
 import { SchoolNotesSection } from "./school-notes"
+import { SchoolCoursesSection } from "./school-courses"
+import { SchoolBankDetailsSection } from "./school-bank-details"
+import { SchoolContactsSection } from "./school-contacts"
+import { SchoolVisitsSection } from "./school-visits"
 
 type SchoolDetailPageParams = {
   params: Promise<{ id: string }>
@@ -84,6 +95,16 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
     notes,
     noteRefData,
     noteCount,
+    schoolCourses,
+    courseRefData,
+    courseCount,
+    bankDetails,
+    bankRefData,
+    bankDetailCount,
+    schoolContacts,
+    schoolContactCount,
+    schoolVisits,
+    schoolVisitCount,
   ] = await Promise.all([
     getSchoolById(id),
     getSchoolSupplementaryInfo({ schoolId: id, page: parseInt(supPage), pageSize: 25 }),
@@ -101,6 +122,16 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
     getSchoolNotes(id),
     getNoteReferenceData(),
     getSchoolNoteCount(id),
+    getSchoolCourses(id),
+    getCourseReferenceData(),
+    getSchoolCourseCount(id),
+    getSchoolBankDetails(id),
+    getBankReferenceData(),
+    getSchoolBankDetailCount(id),
+    getSchoolContacts(id),
+    getSchoolContactCount(id),
+    getSchoolVisits(id),
+    getSchoolVisitCount(id),
   ])
 
   if (!school) {
@@ -190,7 +221,10 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
 
       {/* Tabs */}
       <Tabs defaultValue={tab} className="space-y-6">
-        <TabsList className="bg-muted/50">
+        <div className="relative">
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 opacity-0 transition-opacity peer-first:opacity-0" />
+          <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
+            <TabsList className="bg-muted/50 w-max">
           <TabsTrigger value="basic" className="gap-2" asChild>
             <Link href={`/schools/${id}?tab=basic`}>
               <Building2 className="h-4 w-4" />
@@ -242,7 +276,45 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
               </Badge>
             </Link>
           </TabsTrigger>
+          <TabsTrigger value="courses" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=courses`}>
+              <GraduationCap className="h-4 w-4" />
+              Courses
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {courseCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="bank-details" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=bank-details`}>
+              <Landmark className="h-4 w-4" />
+              Bank Details
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {bankDetailCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="contacts" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=contacts`}>
+              <Contact className="h-4 w-4" />
+              Contacts
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {schoolContactCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="visits" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=visits`}>
+              <CalendarSearch className="h-4 w-4" />
+              Visits
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {schoolVisitCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
         </TabsList>
+          </div>
+        </div>
 
         {/* Basic Info Tab */}
         <TabsContent value="basic" className="space-y-6">
@@ -619,6 +691,26 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
         {/* Notes Tab */}
         <TabsContent value="notes" className="space-y-6">
           <SchoolNotesSection schoolId={id} notes={notes} referenceData={noteRefData} />
+        </TabsContent>
+
+        {/* Courses Tab */}
+        <TabsContent value="courses" className="space-y-6">
+          <SchoolCoursesSection schoolId={id} courses={schoolCourses} referenceData={courseRefData} />
+        </TabsContent>
+
+        {/* Bank Details Tab */}
+        <TabsContent value="bank-details" className="space-y-6">
+          <SchoolBankDetailsSection schoolId={id} bankDetails={bankDetails} referenceData={bankRefData} />
+        </TabsContent>
+
+        {/* Contacts Tab */}
+        <TabsContent value="contacts" className="space-y-6">
+          <SchoolContactsSection schoolId={id} contacts={schoolContacts} />
+        </TabsContent>
+
+        {/* Visits Tab */}
+        <TabsContent value="visits" className="space-y-6">
+          <SchoolVisitsSection schoolId={id} visits={schoolVisits} />
         </TabsContent>
       </Tabs>
     </div>

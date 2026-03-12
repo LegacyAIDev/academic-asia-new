@@ -22,8 +22,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -36,29 +34,24 @@ import {
   Loader2,
   Pencil,
   Trash2,
-  Banknote,
-  DollarSign,
+  Contact,
+  Phone,
+  MapPin,
   MessageSquare,
   Check,
-  ChevronsUpDown,
 } from "lucide-react"
 import {
-  createSchoolFee,
-  updateSchoolFee,
-  deleteSchoolFee,
-  type CreateSchoolFeeInput,
-} from "@/lib/supabase/actions/school-fees"
-import type { SchoolFeeWithJoins } from "@/lib/supabase/queries/school-fees"
+  createSchoolContact,
+  updateSchoolContact,
+  deleteSchoolContact,
+  type CreateSchoolContactInput,
+} from "@/lib/supabase/actions/school-contacts"
+import type { SchoolContactWithJoins } from "@/lib/supabase/queries/school-contacts"
 
-type FeeTypeItem = { id: number; code: string; label: string }
-
-export type FeeReferenceData = { feeTypes: FeeTypeItem[] }
-
-type FeeDialogProps = {
+type ContactDialogProps = {
   schoolId: string
-  referenceData: FeeReferenceData
   mode: "create" | "edit"
-  fee?: SchoolFeeWithJoins
+  contact?: SchoolContactWithJoins
   trigger?: React.ReactNode
 }
 
@@ -112,34 +105,10 @@ function FormField({
   )
 }
 
-export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDialogProps) {
+export function SchoolContactDialog({ schoolId, mode, contact, trigger }: ContactDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
-
-  const yearLevelOptions = ["All", ...Array.from({ length: 13 }, (_, i) => `Year ${i + 1}`)]
-  const initialYearLevels = fee?.year_levels ? fee.year_levels.split(",").map(s => s.trim()) : []
-  const [selectedYearLevels, setSelectedYearLevels] = useState<string[]>(initialYearLevels)
-
-  const toggleYearLevel = (level: string) => {
-    if (level === "All") {
-      setSelectedYearLevels(prev => prev.includes("All") ? [] : ["All"])
-    } else {
-      setSelectedYearLevels(prev => {
-        const without = prev.filter(l => l !== "All")
-        return without.includes(level) ? without.filter(l => l !== level) : [...without, level]
-      })
-    }
-  }
-
-  const { feeTypes } = referenceData
-
-  const currentYear = new Date().getFullYear()
-  const financialYearOptions = Array.from({ length: 7 }, (_, i) => {
-    const y = currentYear - 3 + i
-    return `${y}-${(y + 1).toString().slice(-2)}`
-  })
-  const defaultFinancialYear = `${currentYear + 1}-${(currentYear + 2).toString().slice(-2)}`
 
   const handleOpenChange = (value: boolean) => {
     setOpen(value)
@@ -151,21 +120,31 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
     setError(null)
     const formData = new FormData(e.currentTarget)
 
-    const input: Omit<CreateSchoolFeeInput, "school_id"> = {
-      financial_year: formData.get("financial_year") as string,
-      fee_type_id: parseInt(formData.get("fee_type_id") as string, 10),
-      description: formData.get("description") as string,
-      amount: parseFloat(formData.get("amount") as string),
-      year_levels: selectedYearLevels.length > 0 ? selectedYearLevels.join(",") : null,
+    const input: Omit<CreateSchoolContactInput, "school_id"> = {
+      title: (formData.get("title") as string) || null,
+      first_name: (formData.get("first_name") as string) || null,
+      surname: (formData.get("surname") as string) || null,
+      position: (formData.get("position") as string) || null,
+      gender: (formData.get("gender") as string) || null,
+      telephone: (formData.get("telephone") as string) || null,
+      mobile: (formData.get("mobile") as string) || null,
+      fax: (formData.get("fax") as string) || null,
+      email_1: (formData.get("email_1") as string) || null,
+      email_2: (formData.get("email_2") as string) || null,
+      email_3: (formData.get("email_3") as string) || null,
+      address_1: (formData.get("address_1") as string) || null,
+      address_2: (formData.get("address_2") as string) || null,
+      priority: formData.get("priority") ? parseInt(formData.get("priority") as string, 10) : null,
+      responsible: (formData.get("responsible") as string) || null,
       remarks: (formData.get("remarks") as string) || null,
     }
 
     startTransition(async () => {
       let result
       if (mode === "create") {
-        result = await createSchoolFee({ ...input, school_id: schoolId } as CreateSchoolFeeInput)
-      } else if (fee?.id) {
-        result = await updateSchoolFee(fee.id, schoolId, input)
+        result = await createSchoolContact({ ...input, school_id: schoolId } as CreateSchoolContactInput)
+      } else if (contact?.id) {
+        result = await updateSchoolContact(contact.id, schoolId, input)
       }
       if (result?.success) setOpen(false)
       else setError(result?.error ?? "An error occurred")
@@ -181,11 +160,11 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
         {trigger ?? (
           <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
             <Plus className="h-4 w-4" />
-            New Fee
+            Add Contact
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:!max-w-[560px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
+      <DialogContent className="sm:!max-w-[640px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
         <div className="relative overflow-hidden border-b border-border/50">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-60" />
@@ -193,15 +172,15 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
               <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25">
-                <Banknote className="h-5 w-5" />
+                <Contact className="h-5 w-5" />
               </div>
             </div>
             <DialogHeader className="flex-1 space-y-1">
               <DialogTitle className="text-xl font-semibold tracking-tight">
-                {mode === "create" ? "New Fee" : "Edit Fee"}
+                {mode === "create" ? "Add Contact" : "Edit Contact"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground">
-                {mode === "create" ? "Add a new fee for this school" : "Update fee details"}
+                {mode === "create" ? "Add a contact person for this school" : "Update contact details"}
               </p>
             </DialogHeader>
             <button onClick={() => setOpen(false)} className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors">
@@ -220,71 +199,94 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
               </div>
             )}
 
-            <FormSection icon={Banknote} title="Fee Details" accentColor="primary">
-              <FormField label="Financial Year *">
-                <Select name="financial_year" defaultValue={fee?.financial_year ?? defaultFinancialYear} required>
-                  <SelectTrigger className={selectTriggerStyles}>
-                    <SelectValue placeholder="Select year" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    {financialYearOptions.map((year) => (
-                      <SelectItem key={year} value={year}>{year}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormField>
-              <FormField label="Fee Type *">
-                <Select name="fee_type_id" defaultValue={fee?.fee_type_id?.toString() ?? ""} required>
-                  <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder="Select fee type" /></SelectTrigger>
-                  <SelectContent>
-                    {feeTypes.map((ft) => (<SelectItem key={ft.id} value={ft.id.toString()}>{ft.label}</SelectItem>))}
-                  </SelectContent>
-                </Select>
-              </FormField>
-              <FormField label="Description *">
-                <Input name="description" className={inputStyles} defaultValue={fee?.description ?? ""} placeholder="e.g. Year 12" required />
+            <FormSection icon={Contact} title="Person Details" accentColor="primary">
+              <div className="grid grid-cols-3 gap-4">
+                <FormField label="Title">
+                  <Select name="title" defaultValue={contact?.title ?? ""}>
+                    <SelectTrigger className={selectTriggerStyles}>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      <SelectItem value="Mr">Mr</SelectItem>
+                      <SelectItem value="Mrs">Mrs</SelectItem>
+                      <SelectItem value="Ms">Ms</SelectItem>
+                      <SelectItem value="Miss">Miss</SelectItem>
+                      <SelectItem value="Dr">Dr</SelectItem>
+                      <SelectItem value="Prof">Prof</SelectItem>
+                      <SelectItem value="Rev">Rev</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                <FormField label="First Name">
+                  <Input name="first_name" className={inputStyles} defaultValue={contact?.first_name ?? ""} placeholder="First name" />
+                </FormField>
+                <FormField label="Surname">
+                  <Input name="surname" className={inputStyles} defaultValue={contact?.surname ?? ""} placeholder="Surname" />
+                </FormField>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <FormField label="Gender">
+                  <Select name="gender" defaultValue={contact?.gender ?? ""}>
+                    <SelectTrigger className={selectTriggerStyles}>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      <SelectItem value="M">Male</SelectItem>
+                      <SelectItem value="F">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                <FormField label="Position">
+                  <Input name="position" className={inputStyles} defaultValue={contact?.position ?? ""} placeholder="e.g. Head of Admissions" />
+                </FormField>
+                <FormField label="Priority">
+                  <Input name="priority" type="number" min={1} max={99} className={inputStyles} defaultValue={contact?.priority ?? ""} placeholder="1 = highest" />
+                </FormField>
+              </div>
+              <FormField label="Responsible For">
+                <Input name="responsible" className={inputStyles} defaultValue={contact?.responsible ?? ""} placeholder="Area of responsibility" />
               </FormField>
             </FormSection>
 
-            <FormSection icon={DollarSign} title="Amount & Payment" accentColor="teal">
-              <FormField label="Years">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" type="button" className={`${inputStyles} w-full justify-between font-normal`}>
-                      <span className="truncate">
-                        {selectedYearLevels.length === 0
-                          ? "Select years"
-                          : selectedYearLevels.join(", ")}
-                      </span>
-                      <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                    <div className="max-h-[240px] overflow-y-auto p-2 space-y-1">
-                      {yearLevelOptions.map((level) => (
-                        <label
-                          key={level}
-                          className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm cursor-pointer hover:bg-muted transition-colors"
-                        >
-                          <Checkbox
-                            checked={selectedYearLevels.includes(level)}
-                            onCheckedChange={() => toggleYearLevel(level)}
-                          />
-                          {level}
-                        </label>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
+            <FormSection icon={Phone} title="Contact Information" accentColor="teal">
+              <div className="grid grid-cols-3 gap-4">
+                <FormField label="Telephone">
+                  <Input name="telephone" className={inputStyles} defaultValue={contact?.telephone ?? ""} placeholder="Phone number" />
+                </FormField>
+                <FormField label="Mobile">
+                  <Input name="mobile" className={inputStyles} defaultValue={contact?.mobile ?? ""} placeholder="Mobile number" />
+                </FormField>
+                <FormField label="Fax">
+                  <Input name="fax" className={inputStyles} defaultValue={contact?.fax ?? ""} placeholder="Fax number" />
+                </FormField>
+              </div>
+              <div className="grid grid-cols-1 gap-4">
+                <FormField label="Email (Primary)">
+                  <Input name="email_1" type="email" className={inputStyles} defaultValue={contact?.email_1 ?? ""} placeholder="primary@email.com" />
+                </FormField>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField label="Email (Secondary)">
+                  <Input name="email_2" type="email" className={inputStyles} defaultValue={contact?.email_2 ?? ""} placeholder="secondary@email.com" />
+                </FormField>
+                <FormField label="Email (Other)">
+                  <Input name="email_3" type="email" className={inputStyles} defaultValue={contact?.email_3 ?? ""} placeholder="other@email.com" />
+                </FormField>
+              </div>
+            </FormSection>
+
+            <FormSection icon={MapPin} title="Address" accentColor="amber">
+              <FormField label="Address Line 1">
+                <Input name="address_1" className={inputStyles} defaultValue={contact?.address_1 ?? ""} placeholder="Street address" />
               </FormField>
-              <FormField label="Amount in GBP per annum*">
-                <Input name="amount" type="number" step="0.01" min="0" className={inputStyles} defaultValue={fee?.amount ?? ""} placeholder="e.g. 1500.00" required />
+              <FormField label="Address Line 2">
+                <Input name="address_2" className={inputStyles} defaultValue={contact?.address_2 ?? ""} placeholder="Additional address" />
               </FormField>
             </FormSection>
 
             <FormSection icon={MessageSquare} title="Remarks" accentColor="rose">
               <FormField label="Remarks">
-                <Textarea name="remarks" rows={4} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={fee?.remarks ?? ""} placeholder="Additional notes about this fee..." />
+                <Textarea name="remarks" rows={3} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={contact?.remarks ?? ""} placeholder="Additional notes..." />
               </FormField>
             </FormSection>
           </div>
@@ -293,7 +295,7 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
             <div className="flex items-center justify-end gap-3">
               <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isPending} className="text-muted-foreground hover:text-foreground">Cancel</Button>
               <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all duration-200">
-                {isPending ? (<><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>) : (<>{mode === "create" ? <Plus className="h-4 w-4" /> : <Check className="h-4 w-4" />}{mode === "create" ? "Create Fee" : "Save Changes"}</>)}
+                {isPending ? (<><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>) : (<>{mode === "create" ? <Plus className="h-4 w-4" /> : <Check className="h-4 w-4" />}{mode === "create" ? "Add Contact" : "Save Changes"}</>)}
               </Button>
             </div>
           </div>
@@ -303,15 +305,15 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
   )
 }
 
-export function EditFeeButton({ fee, schoolId, referenceData }: { fee: SchoolFeeWithJoins; schoolId: string; referenceData: FeeReferenceData }) {
+export function EditSchoolContactButton({ contact, schoolId }: { contact: SchoolContactWithJoins; schoolId: string }) {
   return (
-    <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="edit" fee={fee}
+    <SchoolContactDialog schoolId={schoolId} mode="edit" contact={contact}
       trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )
 }
 
-export function DeleteFeeButton({ feeId, schoolId, label }: { feeId: string; schoolId: string; label: string }) {
+export function DeleteSchoolContactButton({ contactId, schoolId, label }: { contactId: string; schoolId: string; label: string }) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -319,9 +321,9 @@ export function DeleteFeeButton({ feeId, schoolId, label }: { feeId: string; sch
   const handleDelete = () => {
     setError(null)
     startTransition(async () => {
-      const result = await deleteSchoolFee(feeId, schoolId)
+      const result = await deleteSchoolContact(contactId, schoolId)
       if (result.success) setOpen(false)
-      else setError(result.error ?? "Failed to delete fee")
+      else setError(result.error ?? "Failed to delete")
     })
   }
 
@@ -335,7 +337,7 @@ export function DeleteFeeButton({ feeId, schoolId, label }: { feeId: string; sch
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-destructive/10"><Trash2 className="h-5 w-5 text-destructive" /></div>
             <div className="space-y-1.5">
-              <AlertDialogTitle className="text-lg">Delete Fee</AlertDialogTitle>
+              <AlertDialogTitle className="text-lg">Delete Contact</AlertDialogTitle>
               <AlertDialogDescription>Are you sure you want to delete <strong className="text-foreground">{label}</strong>? This action cannot be undone.</AlertDialogDescription>
             </div>
           </div>

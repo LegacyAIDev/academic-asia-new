@@ -22,12 +22,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -36,30 +36,45 @@ import {
   Loader2,
   Pencil,
   Trash2,
-  Banknote,
-  DollarSign,
+  GraduationCap,
+  BookOpen,
   MessageSquare,
   Check,
-  ChevronsUpDown,
 } from "lucide-react"
 import {
-  createSchoolFee,
-  updateSchoolFee,
-  deleteSchoolFee,
-  type CreateSchoolFeeInput,
-} from "@/lib/supabase/actions/school-fees"
-import type { SchoolFeeWithJoins } from "@/lib/supabase/queries/school-fees"
+  createSchoolCourse,
+  updateSchoolCourse,
+  deleteSchoolCourse,
+  type CreateSchoolCourseInput,
+} from "@/lib/supabase/actions/school-courses"
+import type { SchoolCourseWithJoins, CourseItem } from "@/lib/supabase/queries/school-courses"
 
-type FeeTypeItem = { id: number; code: string; label: string }
+export type CourseReferenceData = { courses: CourseItem[] }
 
-export type FeeReferenceData = { feeTypes: FeeTypeItem[] }
-
-type FeeDialogProps = {
+type CourseDialogProps = {
   schoolId: string
-  referenceData: FeeReferenceData
+  referenceData: CourseReferenceData
   mode: "create" | "edit"
-  fee?: SchoolFeeWithJoins
+  course?: SchoolCourseWithJoins
   trigger?: React.ReactNode
+}
+
+/** Category labels for grouped course dropdown */
+const categoryLabels: Record<string, string> = {
+  early_years: "Early Years",
+  primary: "Primary",
+  secondary: "Secondary",
+  sixth_form: "Sixth Form",
+  gcse: "GCSE",
+  a_level: "A-Level",
+  pre_al: "Pre A-Level",
+  ib: "IB",
+  foundation: "Foundation",
+  english: "English",
+  vocational: "Vocational",
+  other: "Other",
+  summer: "Summer",
+  level: "Level",
 }
 
 function FormSection({
@@ -112,34 +127,27 @@ function FormField({
   )
 }
 
-export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDialogProps) {
+export function CourseDialog({ schoolId, referenceData, mode, course, trigger }: CourseDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  const yearLevelOptions = ["All", ...Array.from({ length: 13 }, (_, i) => `Year ${i + 1}`)]
-  const initialYearLevels = fee?.year_levels ? fee.year_levels.split(",").map(s => s.trim()) : []
-  const [selectedYearLevels, setSelectedYearLevels] = useState<string[]>(initialYearLevels)
-
-  const toggleYearLevel = (level: string) => {
-    if (level === "All") {
-      setSelectedYearLevels(prev => prev.includes("All") ? [] : ["All"])
-    } else {
-      setSelectedYearLevels(prev => {
-        const without = prev.filter(l => l !== "All")
-        return without.includes(level) ? without.filter(l => l !== level) : [...without, level]
-      })
-    }
-  }
-
-  const { feeTypes } = referenceData
+  const { courses } = referenceData
 
   const currentYear = new Date().getFullYear()
-  const financialYearOptions = Array.from({ length: 7 }, (_, i) => {
+  const schoolYearOptions = Array.from({ length: 7 }, (_, i) => {
     const y = currentYear - 3 + i
     return `${y}-${(y + 1).toString().slice(-2)}`
   })
-  const defaultFinancialYear = `${currentYear + 1}-${(currentYear + 2).toString().slice(-2)}`
+  const defaultSchoolYear = `${currentYear + 1}-${(currentYear + 2).toString().slice(-2)}`
+
+  /** Group courses by category for the dropdown */
+  const groupedCourses = courses.reduce((acc, c) => {
+    const cat = c.category || "other"
+    if (!acc[cat]) acc[cat] = []
+    acc[cat].push(c)
+    return acc
+  }, {} as Record<string, CourseItem[]>)
 
   const handleOpenChange = (value: boolean) => {
     setOpen(value)
@@ -151,21 +159,26 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
     setError(null)
     const formData = new FormData(e.currentTarget)
 
-    const input: Omit<CreateSchoolFeeInput, "school_id"> = {
-      financial_year: formData.get("financial_year") as string,
-      fee_type_id: parseInt(formData.get("fee_type_id") as string, 10),
-      description: formData.get("description") as string,
-      amount: parseFloat(formData.get("amount") as string),
-      year_levels: selectedYearLevels.length > 0 ? selectedYearLevels.join(",") : null,
+    const courseId = formData.get("course_id")
+    if (!courseId) {
+      setError("Course is required")
+      return
+    }
+
+    const input: Omit<CreateSchoolCourseInput, "school_id"> = {
+      course_id: parseInt(courseId as string, 10),
+      school_year: (formData.get("school_year") as string) || null,
+      description: (formData.get("description") as string) || null,
+      subject: (formData.get("subject") as string) || null,
       remarks: (formData.get("remarks") as string) || null,
     }
 
     startTransition(async () => {
       let result
       if (mode === "create") {
-        result = await createSchoolFee({ ...input, school_id: schoolId } as CreateSchoolFeeInput)
-      } else if (fee?.id) {
-        result = await updateSchoolFee(fee.id, schoolId, input)
+        result = await createSchoolCourse({ ...input, school_id: schoolId } as CreateSchoolCourseInput)
+      } else if (course?.id) {
+        result = await updateSchoolCourse(course.id, schoolId, input)
       }
       if (result?.success) setOpen(false)
       else setError(result?.error ?? "An error occurred")
@@ -181,7 +194,7 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
         {trigger ?? (
           <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
             <Plus className="h-4 w-4" />
-            New Fee
+            Add Course
           </Button>
         )}
       </DialogTrigger>
@@ -193,15 +206,15 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
               <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25">
-                <Banknote className="h-5 w-5" />
+                <GraduationCap className="h-5 w-5" />
               </div>
             </div>
             <DialogHeader className="flex-1 space-y-1">
               <DialogTitle className="text-xl font-semibold tracking-tight">
-                {mode === "create" ? "New Fee" : "Edit Fee"}
+                {mode === "create" ? "Add Course" : "Edit Course"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground">
-                {mode === "create" ? "Add a new fee for this school" : "Update fee details"}
+                {mode === "create" ? "Add a course offered by this school" : "Update course details"}
               </p>
             </DialogHeader>
             <button onClick={() => setOpen(false)} className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors">
@@ -220,71 +233,52 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
               </div>
             )}
 
-            <FormSection icon={Banknote} title="Fee Details" accentColor="primary">
-              <FormField label="Financial Year *">
-                <Select name="financial_year" defaultValue={fee?.financial_year ?? defaultFinancialYear} required>
+            <FormSection icon={GraduationCap} title="Course Selection" accentColor="primary">
+              <FormField label="Course *">
+                <Select name="course_id" defaultValue={course?.course_id?.toString() ?? ""} required>
+                  <SelectTrigger className={selectTriggerStyles}>
+                    <SelectValue placeholder="Select a course" />
+                  </SelectTrigger>
+                  <SelectContent position="popper" className="max-h-[300px]">
+                    {Object.entries(groupedCourses).map(([category, items]) => (
+                      <SelectGroup key={category}>
+                        <SelectLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          {categoryLabels[category] || category}
+                        </SelectLabel>
+                        {items.map((c) => (
+                          <SelectItem key={c.id} value={c.id.toString()}>{c.label}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+              <FormField label="School Year">
+                <Select name="school_year" defaultValue={course?.school_year ?? defaultSchoolYear}>
                   <SelectTrigger className={selectTriggerStyles}>
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent position="popper">
-                    {financialYearOptions.map((year) => (
+                    {schoolYearOptions.map((year) => (
                       <SelectItem key={year} value={year}>{year}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </FormField>
-              <FormField label="Fee Type *">
-                <Select name="fee_type_id" defaultValue={fee?.fee_type_id?.toString() ?? ""} required>
-                  <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder="Select fee type" /></SelectTrigger>
-                  <SelectContent>
-                    {feeTypes.map((ft) => (<SelectItem key={ft.id} value={ft.id.toString()}>{ft.label}</SelectItem>))}
-                  </SelectContent>
-                </Select>
-              </FormField>
-              <FormField label="Description *">
-                <Input name="description" className={inputStyles} defaultValue={fee?.description ?? ""} placeholder="e.g. Year 12" required />
-              </FormField>
             </FormSection>
 
-            <FormSection icon={DollarSign} title="Amount & Payment" accentColor="teal">
-              <FormField label="Years">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" type="button" className={`${inputStyles} w-full justify-between font-normal`}>
-                      <span className="truncate">
-                        {selectedYearLevels.length === 0
-                          ? "Select years"
-                          : selectedYearLevels.join(", ")}
-                      </span>
-                      <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                    <div className="max-h-[240px] overflow-y-auto p-2 space-y-1">
-                      {yearLevelOptions.map((level) => (
-                        <label
-                          key={level}
-                          className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm cursor-pointer hover:bg-muted transition-colors"
-                        >
-                          <Checkbox
-                            checked={selectedYearLevels.includes(level)}
-                            onCheckedChange={() => toggleYearLevel(level)}
-                          />
-                          {level}
-                        </label>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
+            <FormSection icon={BookOpen} title="Details" accentColor="teal">
+              <FormField label="Description">
+                <Input name="description" className={inputStyles} defaultValue={course?.description ?? ""} placeholder="Course description" />
               </FormField>
-              <FormField label="Amount in GBP per annum*">
-                <Input name="amount" type="number" step="0.01" min="0" className={inputStyles} defaultValue={fee?.amount ?? ""} placeholder="e.g. 1500.00" required />
+              <FormField label="Subject">
+                <Input name="subject" className={inputStyles} defaultValue={course?.subject ?? ""} placeholder="e.g. Mathematics, Science" />
               </FormField>
             </FormSection>
 
             <FormSection icon={MessageSquare} title="Remarks" accentColor="rose">
               <FormField label="Remarks">
-                <Textarea name="remarks" rows={4} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={fee?.remarks ?? ""} placeholder="Additional notes about this fee..." />
+                <Textarea name="remarks" rows={3} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={course?.remarks ?? ""} placeholder="Additional notes..." />
               </FormField>
             </FormSection>
           </div>
@@ -293,7 +287,7 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
             <div className="flex items-center justify-end gap-3">
               <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isPending} className="text-muted-foreground hover:text-foreground">Cancel</Button>
               <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all duration-200">
-                {isPending ? (<><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>) : (<>{mode === "create" ? <Plus className="h-4 w-4" /> : <Check className="h-4 w-4" />}{mode === "create" ? "Create Fee" : "Save Changes"}</>)}
+                {isPending ? (<><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>) : (<>{mode === "create" ? <Plus className="h-4 w-4" /> : <Check className="h-4 w-4" />}{mode === "create" ? "Add Course" : "Save Changes"}</>)}
               </Button>
             </div>
           </div>
@@ -303,15 +297,15 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
   )
 }
 
-export function EditFeeButton({ fee, schoolId, referenceData }: { fee: SchoolFeeWithJoins; schoolId: string; referenceData: FeeReferenceData }) {
+export function EditCourseButton({ course, schoolId, referenceData }: { course: SchoolCourseWithJoins; schoolId: string; referenceData: CourseReferenceData }) {
   return (
-    <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="edit" fee={fee}
+    <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="edit" course={course}
       trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )
 }
 
-export function DeleteFeeButton({ feeId, schoolId, label }: { feeId: string; schoolId: string; label: string }) {
+export function DeleteCourseButton({ courseId, schoolId, label }: { courseId: string; schoolId: string; label: string }) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -319,9 +313,9 @@ export function DeleteFeeButton({ feeId, schoolId, label }: { feeId: string; sch
   const handleDelete = () => {
     setError(null)
     startTransition(async () => {
-      const result = await deleteSchoolFee(feeId, schoolId)
+      const result = await deleteSchoolCourse(courseId, schoolId)
       if (result.success) setOpen(false)
-      else setError(result.error ?? "Failed to delete fee")
+      else setError(result.error ?? "Failed to delete course")
     })
   }
 
@@ -335,7 +329,7 @@ export function DeleteFeeButton({ feeId, schoolId, label }: { feeId: string; sch
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-destructive/10"><Trash2 className="h-5 w-5 text-destructive" /></div>
             <div className="space-y-1.5">
-              <AlertDialogTitle className="text-lg">Delete Fee</AlertDialogTitle>
+              <AlertDialogTitle className="text-lg">Delete Course</AlertDialogTitle>
               <AlertDialogDescription>Are you sure you want to delete <strong className="text-foreground">{label}</strong>? This action cannot be undone.</AlertDialogDescription>
             </div>
           </div>
