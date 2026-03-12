@@ -1,10 +1,18 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 
+export type SupInfoCategory = {
+  id: number
+  code: string
+  label: string
+}
+
 export type SchoolSupplementaryInfo = {
   id: string
   school_id: string
-  info_type: string
+  legacy_info_type: string | null
+  category_id: number | null
+  category: SupInfoCategory | null
   info: string | null
   school_year: string | null
   remarks: string | null
@@ -19,7 +27,7 @@ export type SchoolSupInfoListParams = {
   page?: number
   pageSize?: number
   search?: string
-  infoType?: string | null
+  categoryId?: number | null
   schoolYear?: string | null
 }
 
@@ -40,7 +48,7 @@ export async function getSchoolSupplementaryInfo(params: SchoolSupInfoListParams
     page = 1,
     pageSize = 25,
     search = '',
-    infoType,
+    categoryId,
     schoolYear
   } = params
 
@@ -53,7 +61,9 @@ export async function getSchoolSupplementaryInfo(params: SchoolSupInfoListParams
     .select(`
       id,
       school_id,
-      info_type,
+      legacy_info_type,
+      category_id,
+      category:school_sup_info_categories!school_supplementary_info_category_id_fkey(id, code, label),
       info,
       school_year,
       remarks,
@@ -66,12 +76,12 @@ export async function getSchoolSupplementaryInfo(params: SchoolSupInfoListParams
 
   // Apply search filter
   if (search) {
-    query = query.or(`info_type.ilike.%${search}%,info.ilike.%${search}%,school_year.ilike.%${search}%`)
+    query = query.or(`legacy_info_type.ilike.%${search}%,info.ilike.%${search}%,school_year.ilike.%${search}%`)
   }
 
-  // Apply info type filter
-  if (infoType) {
-    query = query.eq('info_type', infoType)
+  // Apply category filter
+  if (categoryId) {
+    query = query.eq('category_id', categoryId)
   }
 
   // Apply school year filter
@@ -79,9 +89,9 @@ export async function getSchoolSupplementaryInfo(params: SchoolSupInfoListParams
     query = query.eq('school_year', schoolYear)
   }
 
-  // Order by year descending, then info type
+  // Order by year descending, then category
   query = query.order('school_year', { ascending: false, nullsFirst: false })
-  query = query.order('info_type', { ascending: true })
+  query = query.order('category_id', { ascending: true })
 
   // Apply pagination
   query = query.range(offset, offset + pageSize - 1)
@@ -117,7 +127,9 @@ export async function getSchoolSupInfoById(id: string): Promise<SchoolSupplement
     .select(`
       id,
       school_id,
-      info_type,
+      legacy_info_type,
+      category_id,
+      category:school_sup_info_categories!school_supplementary_info_category_id_fkey(id, code, label),
       info,
       school_year,
       remarks,
@@ -138,24 +150,23 @@ export async function getSchoolSupInfoById(id: string): Promise<SchoolSupplement
 }
 
 /**
- * Get distinct info types for filtering - fetches ALL info types from the database
+ * Get all categories for the dropdown
  */
-export async function getDistinctInfoTypes(): Promise<string[]> {
+export async function getSupInfoCategories(): Promise<SupInfoCategory[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
   const { data, error } = await supabase
-    .from('school_supplementary_info')
-    .select('info_type')
+    .from('school_sup_info_categories')
+    .select('*')
+    .order('sort_order')
 
   if (error) {
-    console.error('Error fetching info types:', error)
+    console.error('Error fetching sup info categories:', error)
     return []
   }
 
-  // Get unique values sorted alphabetically
-  const uniqueTypes = [...new Set((data ?? []).map(d => d.info_type))].filter(Boolean).sort()
-  return uniqueTypes as string[]
+  return (data ?? []) as SupInfoCategory[]
 }
 
 /**
@@ -180,7 +191,6 @@ export async function getDistinctSchoolYears(schoolId?: string): Promise<string[
     return []
   }
 
-  // Get unique values, sort descending
   const uniqueYears = [...new Set((data ?? []).map(d => d.school_year))].filter(Boolean).sort().reverse()
   return uniqueYears as string[]
 }

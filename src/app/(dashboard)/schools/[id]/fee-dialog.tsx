@@ -116,6 +116,13 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
 
   const { feeTypes } = referenceData
 
+  const currentYear = new Date().getFullYear()
+  const financialYearOptions = Array.from({ length: 7 }, (_, i) => {
+    const y = currentYear - 3 + i
+    return `${y}-${(y + 1).toString().slice(-2)}`
+  })
+  const defaultFinancialYear = `${currentYear + 1}-${(currentYear + 2).toString().slice(-2)}`
+
   const handleOpenChange = (value: boolean) => {
     setOpen(value)
     if (value) setError(null)
@@ -199,7 +206,16 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
 
             <FormSection icon={Banknote} title="Fee Details" accentColor="primary">
               <FormField label="Financial Year *">
-                <Input name="financial_year" className={inputStyles} defaultValue={fee?.financial_year ?? ""} placeholder="e.g. 2024-25" required />
+                <Select name="financial_year" defaultValue={fee?.financial_year ?? defaultFinancialYear} required>
+                  <SelectTrigger className={selectTriggerStyles}>
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    {financialYearOptions.map((year) => (
+                      <SelectItem key={year} value={year}>{year}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormField>
               <FormField label="Fee Type *">
                 <Select name="fee_type_id" defaultValue={fee?.fee_type_id?.toString() ?? ""} required>

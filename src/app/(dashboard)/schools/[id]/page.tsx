@@ -44,7 +44,7 @@ import {
 import { getSchoolById } from "@/lib/supabase/queries/schools"
 import {
   getSchoolSupplementaryInfo,
-  getDistinctInfoTypes,
+  getSupInfoCategories,
   getSchoolSupInfoCount,
 } from "@/lib/supabase/queries/school-supplementary-info"
 import { getSchoolFees, getFeeReferenceData, getSchoolFeeCount } from "@/lib/supabase/queries/school-fees"
@@ -70,7 +70,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
   const [
     school,
     supInfoResult,
-    infoTypes,
+    supInfoCategories,
     supInfoCount,
     fees,
     feeRefData,
@@ -87,7 +87,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
   ] = await Promise.all([
     getSchoolById(id),
     getSchoolSupplementaryInfo({ schoolId: id, page: parseInt(supPage), pageSize: 25 }),
-    getDistinctInfoTypes(),
+    getSupInfoCategories(),
     getSchoolSupInfoCount(id),
     getSchoolFees(id),
     getFeeReferenceData(),
@@ -263,6 +263,10 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
                 <div className="space-y-1">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Gender Type</p>
                   <p className="text-sm font-medium">{school.gender_type?.label || "—"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Going Co-ed From</p>
+                  <p className="text-sm font-medium">{school.coed_from?.label || "—"}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Phase</p>
@@ -491,7 +495,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
                     {supInfoResult.totalCount} records
                   </Badge>
                 </CardTitle>
-                <SupInfoDialog schoolId={id} mode="create" infoTypes={infoTypes} />
+                <SupInfoDialog schoolId={id} mode="create" categories={supInfoCategories} />
               </div>
             </CardHeader>
             <CardContent>
@@ -504,7 +508,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
                   <p className="text-sm text-muted-foreground mb-4">
                     Add supplementary information for this school.
                   </p>
-                  <SupInfoDialog schoolId={id} mode="create" infoTypes={infoTypes} />
+                  <SupInfoDialog schoolId={id} mode="create" categories={supInfoCategories} />
                 </div>
               ) : (
                 <>
@@ -513,7 +517,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
                       <TableHeader>
                         <TableRow className="bg-muted/50">
                           <TableHead className="w-[100px]">Year</TableHead>
-                          <TableHead className="w-[180px]">Info Type</TableHead>
+                          <TableHead className="w-[180px]">Category</TableHead>
                           <TableHead>Information</TableHead>
                           <TableHead className="w-[80px] text-right">Actions</TableHead>
                         </TableRow>
@@ -529,7 +533,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
                             </TableCell>
                             <TableCell>
                               <Badge variant="outline" className="font-normal">
-                                {item.info_type}
+                                {item.category?.label ?? "—"}
                               </Badge>
                             </TableCell>
                             <TableCell>
@@ -542,12 +546,12 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
                                 <EditSupInfoButton
                                   supInfo={item}
                                   schoolId={id}
-                                  infoTypes={infoTypes}
+                                  categories={supInfoCategories}
                                 />
                                 <DeleteSupInfoButton
                                   supInfoId={item.id}
                                   schoolId={id}
-                                  infoType={item.info_type}
+                                  categoryLabel={item.category?.label ?? "Unknown"}
                                 />
                               </div>
                             </TableCell>

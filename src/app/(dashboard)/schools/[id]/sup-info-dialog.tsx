@@ -35,7 +35,6 @@ import {
   Pencil,
   Trash2,
   FileText,
-  Calendar,
   Check,
   Info,
 } from "lucide-react"
@@ -45,11 +44,14 @@ import {
   deleteSchoolSupInfo,
   type CreateSupInfoInput,
 } from "@/lib/supabase/actions/schools"
+import type { SupInfoCategory } from "@/lib/supabase/queries/school-supplementary-info"
 
 type SchoolSupplementaryInfo = {
   id: string
   school_id: string
-  info_type: string
+  legacy_info_type: string | null
+  category_id: number | null
+  category: SupInfoCategory | null
   info: string | null
   school_year: string | null
   remarks: string | null
@@ -61,7 +63,7 @@ type SupInfoDialogProps = {
   mode: "create" | "edit"
   supInfo?: SchoolSupplementaryInfo
   trigger?: React.ReactNode
-  infoTypes?: string[]
+  categories: SupInfoCategory[]
 }
 
 /** Floating card section for form grouping */
@@ -129,12 +131,18 @@ export function SupInfoDialog({
   mode,
   supInfo,
   trigger,
-  infoTypes = [],
+  categories,
 }: SupInfoDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
-  const [customInfoType, setCustomInfoType] = useState(false)
+
+  const currentYear = new Date().getFullYear()
+  const schoolYearOptions = Array.from({ length: 7 }, (_, i) => {
+    const y = currentYear - 3 + i
+    return `${y}-${(y + 1).toString().slice(-2)}`
+  })
+  const defaultSchoolYear = `${currentYear + 1}-${(currentYear + 2).toString().slice(-2)}`
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -142,18 +150,14 @@ export function SupInfoDialog({
 
     const formData = new FormData(e.currentTarget)
 
-    let infoType = formData.get("info_type") as string
-    if (infoType === "_custom") {
-      infoType = formData.get("info_type_custom") as string
-    }
-
-    if (!infoType?.trim()) {
-      setError("Info Type is required")
+    const categoryId = formData.get("category_id")
+    if (!categoryId) {
+      setError("Category is required")
       return
     }
 
     const input: Omit<CreateSupInfoInput, 'school_id'> = {
-      info_type: infoType.trim(),
+      category_id: parseInt(categoryId as string, 10),
       info: (formData.get("info") as string) || null,
       school_year: (formData.get("school_year") as string) || null,
       remarks: (formData.get("remarks") as string) || null,
@@ -169,7 +173,6 @@ export function SupInfoDialog({
 
       if (result?.success) {
         setOpen(false)
-        setCustomInfoType(false)
       } else {
         setError(result?.error ?? "An error occurred")
       }
@@ -179,14 +182,8 @@ export function SupInfoDialog({
   const inputStyles = "h-10 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
   const selectTriggerStyles = "h-10 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
 
-  // Check if current info_type is in the list or is custom
-  const isExistingType = supInfo?.info_type && infoTypes.includes(supInfo.info_type)
-  const defaultInfoType = supInfo?.info_type
-    ? (isExistingType ? supInfo.info_type : "_custom")
-    : ""
-
   return (
-    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setCustomInfoType(false) }}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
@@ -257,42 +254,31 @@ export function SupInfoDialog({
               {/* Classification Section */}
               <FormSection icon={Info} title="Classification" accentColor="primary">
                 <div className="grid grid-cols-2 gap-4">
-                  <FormField label="School Year" className="col-span-1">
-                    <Input
-                      name="school_year"
-                      className={inputStyles}
-                      defaultValue={supInfo?.school_year ?? ""}
-                      placeholder="e.g. 2024-25"
-                    />
-                  </FormField>
-                  <FormField label="Info Type" required className="col-span-1">
-                    <Select
-                      name="info_type"
-                      defaultValue={defaultInfoType}
-                      onValueChange={(v) => setCustomInfoType(v === "_custom")}
-                    >
+                  <FormField label="Category" required>
+                    <Select name="category_id" defaultValue={supInfo?.category_id?.toString() ?? ""}>
                       <SelectTrigger className={selectTriggerStyles}>
-                        <SelectValue placeholder="Select type" />
+                        <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent className="max-h-[300px]">
-                        {infoTypes.map((type) => (
-                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id.toString()}>{cat.label}</SelectItem>
                         ))}
-                        <SelectItem value="_custom">+ Custom Type</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormField>
+                  <FormField label="School Year">
+                    <Select name="school_year" defaultValue={supInfo?.school_year ?? defaultSchoolYear}>
+                      <SelectTrigger className={selectTriggerStyles}>
+                        <SelectValue placeholder="Select year" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        {schoolYearOptions.map((year) => (
+                          <SelectItem key={year} value={year}>{year}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormField>
                 </div>
-                {(customInfoType || (!isExistingType && supInfo?.info_type)) && (
-                  <FormField label="Custom Info Type" required>
-                    <Input
-                      name="info_type_custom"
-                      className={inputStyles}
-                      defaultValue={!isExistingType ? supInfo?.info_type ?? "" : ""}
-                      placeholder="Enter custom info type"
-                    />
-                  </FormField>
-                )}
               </FormSection>
 
               {/* Information Content Section */}
@@ -365,18 +351,18 @@ export function SupInfoDialog({
 export function EditSupInfoButton({
   supInfo,
   schoolId,
-  infoTypes = [],
+  categories,
 }: {
   supInfo: SchoolSupplementaryInfo
   schoolId: string
-  infoTypes?: string[]
+  categories: SupInfoCategory[]
 }) {
   return (
     <SupInfoDialog
       schoolId={schoolId}
       mode="edit"
       supInfo={supInfo}
-      infoTypes={infoTypes}
+      categories={categories}
       trigger={
         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
           <Pencil className="h-3.5 w-3.5" />
@@ -390,11 +376,11 @@ export function EditSupInfoButton({
 export function DeleteSupInfoButton({
   supInfoId,
   schoolId,
-  infoType,
+  categoryLabel,
 }: {
   supInfoId: string
   schoolId: string
-  infoType: string
+  categoryLabel: string
 }) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -431,7 +417,7 @@ export function DeleteSupInfoButton({
             <div className="space-y-1.5">
               <AlertDialogTitle className="text-lg">Delete Supplementary Info</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this <strong className="text-foreground">{infoType}</strong> record?
+                Are you sure you want to delete this <strong className="text-foreground">{categoryLabel}</strong> record?
                 This action cannot be undone.
               </AlertDialogDescription>
             </div>

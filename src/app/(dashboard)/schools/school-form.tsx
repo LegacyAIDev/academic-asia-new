@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { PhoneInput } from "@/components/ui/phone-input"
 import {
   Save,
   Building2,
@@ -43,6 +44,7 @@ export type SchoolFormProps = {
     institutionTypes: ReferenceItem[]
     phases: ReferenceItem[]
     religiousAffiliations: ReferenceItem[]
+    coedFromOptions: ReferenceItem[]
   }
 }
 
@@ -50,8 +52,12 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [genderTypeId, setGenderTypeId] = useState(school?.gender_type?.id?.toString() ?? "")
 
-  const { countries, genderTypes, institutionTypes, phases, religiousAffiliations } = referenceData
+  const { countries, genderTypes, institutionTypes, phases, religiousAffiliations, coedFromOptions } = referenceData
+
+  const selectedGenderCode = genderTypes.find(g => g.id.toString() === genderTypeId)?.code
+  const showCoedFrom = selectedGenderCode === "boys" || selectedGenderCode === "girls"
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -74,6 +80,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
       institution_type_id: formData.get("institution_type_id") ? parseInt(formData.get("institution_type_id") as string, 10) : null,
       phase_id: formData.get("phase_id") ? parseInt(formData.get("phase_id") as string, 10) : null,
       religious_affiliation_id: formData.get("religious_affiliation_id") ? parseInt(formData.get("religious_affiliation_id") as string, 10) : null,
+      coed_from_id: formData.get("coed_from_id") ? parseInt(formData.get("coed_from_id") as string, 10) : null,
       pupil_count: formData.get("pupil_count") ? parseInt(formData.get("pupil_count") as string, 10) : null,
       boarder_count: formData.get("boarder_count") ? parseInt(formData.get("boarder_count") as string, 10) : null,
       boarder_age_range: (formData.get("boarder_age_range") as string) || null,
@@ -138,10 +145,10 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
             />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-2">
+          <div className="flex gap-4 items-end">
+            <div className="space-y-2 w-48">
               <Label htmlFor="gender_type_id">Gender Type</Label>
-              <Select name="gender_type_id" defaultValue={school?.gender_type?.id?.toString() ?? ""}>
+              <Select name="gender_type_id" value={genderTypeId} onValueChange={setGenderTypeId}>
                 <SelectTrigger id="gender_type_id">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -154,6 +161,26 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
                 </SelectContent>
               </Select>
             </div>
+            {showCoedFrom && (
+              <div className="space-y-2 w-48">
+                <Label htmlFor="coed_from_id">Going Co-ed From</Label>
+                <Select name="coed_from_id" defaultValue={school?.coed_from?.id?.toString() ?? ""}>
+                  <SelectTrigger id="coed_from_id">
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {coedFromOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id.toString()}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="institution_type_id">Institution Type</Label>
               <Select name="institution_type_id" defaultValue={school?.institution_type?.id?.toString() ?? ""}>
@@ -248,22 +275,20 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="telephone">Telephone</Label>
-              <Input
-                id="telephone"
+              <PhoneInput
                 name="telephone"
-                type="tel"
-                placeholder="e.g. +44 1234 567890"
                 defaultValue={school?.telephone ?? ""}
+                defaultCountryCode="44"
+                placeholder="e.g. 1234 567890"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="fax">Fax</Label>
-              <Input
-                id="fax"
+              <PhoneInput
                 name="fax"
-                type="tel"
-                placeholder="e.g. +44 1234 567891"
                 defaultValue={school?.fax ?? ""}
+                defaultCountryCode="44"
+                placeholder="e.g. 1234 567891"
               />
             </div>
           </div>

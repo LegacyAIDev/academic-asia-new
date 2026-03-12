@@ -21,6 +21,7 @@ export type CreateSchoolInput = {
   institution_type_id?: number | null
   phase_id?: number | null
   religious_affiliation_id?: number | null
+  coed_from_id?: number | null
   pupil_count?: number | null
   boarder_count?: number | null
   boarder_age_range?: string | null
@@ -125,7 +126,7 @@ export async function deleteSchool(id: string): Promise<ActionResult> {
 
 export type CreateSupInfoInput = {
   school_id: string
-  info_type: string
+  category_id: number
   info?: string | null
   school_year?: string | null
   remarks?: string | null

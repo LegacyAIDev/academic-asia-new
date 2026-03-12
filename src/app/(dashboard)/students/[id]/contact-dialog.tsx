@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { PhoneInput } from "@/components/ui/phone-input"
 import {
   Plus,
   Loader2,
@@ -360,13 +361,13 @@ export function ContactDialog({
                 <FormSection icon={Phone} title="Contact Details" accentColor="teal">
                   <div className="grid grid-cols-3 gap-3">
                     <FormField label="Mobile">
-                      <Input name="mobile" type="tel" className={inputStyles} defaultValue={contact?.mobile ?? ""} placeholder="+852 9XXX XXXX" />
+                      <PhoneInput name="mobile" defaultValue={contact?.mobile ?? ""} defaultCountryCode="852" placeholder="9XXX XXXX" />
                     </FormField>
                     <FormField label="Telephone">
-                      <Input name="telephone" type="tel" className={inputStyles} defaultValue={contact?.telephone ?? ""} placeholder="+852 2XXX XXXX" />
+                      <PhoneInput name="telephone" defaultValue={contact?.telephone ?? ""} defaultCountryCode="852" placeholder="2XXX XXXX" />
                     </FormField>
                     <FormField label="Fax">
-                      <Input name="fax" type="tel" className={inputStyles} defaultValue={contact?.fax ?? ""} placeholder="Optional" />
+                      <PhoneInput name="fax" defaultValue={contact?.fax ?? ""} defaultCountryCode="852" placeholder="Optional" />
                     </FormField>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
@@ -392,10 +393,10 @@ export function ContactDialog({
                   </FormField>
                   <div className="grid grid-cols-2 gap-3">
                     <FormField label="Office Phone">
-                      <Input name="office_telephone" type="tel" className={inputStyles} defaultValue={contact?.office_telephone ?? ""} placeholder="+852 2XXX XXXX" />
+                      <PhoneInput name="office_telephone" defaultValue={contact?.office_telephone ?? ""} defaultCountryCode="852" placeholder="2XXX XXXX" />
                     </FormField>
                     <FormField label="Office Fax">
-                      <Input name="office_fax" type="tel" className={inputStyles} defaultValue={contact?.office_fax ?? ""} placeholder="Optional" />
+                      <PhoneInput name="office_fax" defaultValue={contact?.office_fax ?? ""} defaultCountryCode="852" placeholder="Optional" />
                     </FormField>
                   </div>
                 </FormSection>

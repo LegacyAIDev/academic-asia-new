@@ -158,6 +158,7 @@ export type SchoolWithJoins = {
   institution_type: { id: number; code: string; label: string } | null
   phase: { id: number; code: string; label: string } | null
   religious_affiliation: { id: number; code: string; label: string } | null
+  coed_from: { id: number; code: string; label: string } | null
 }
 
 /**
@@ -175,7 +176,8 @@ export async function getSchoolById(id: string): Promise<SchoolWithJoins | null>
       gender_type:school_gender_types!schools_gender_type_id_fkey(id, code, label),
       institution_type:school_institution_types!schools_institution_type_id_fkey(id, code, label),
       phase:school_phases!schools_phase_id_fkey(id, code, label),
-      religious_affiliation:school_religious_affiliations!schools_religious_affiliation_id_fkey(id, code, label)
+      religious_affiliation:school_religious_affiliations!schools_religious_affiliation_id_fkey(id, code, label),
+      coed_from:school_coed_from!schools_coed_from_id_fkey(id, code, label)
     `)
     .eq('id', id)
     .single()
@@ -228,12 +230,13 @@ export async function getSchoolReferenceData() {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  const [countries, genderTypes, institutionTypes, phases, religiousAffiliations] = await Promise.all([
+  const [countries, genderTypes, institutionTypes, phases, religiousAffiliations, coedFromOptions] = await Promise.all([
     supabase.from('countries').select('*').order('sort_order'),
     supabase.from('school_gender_types').select('*').order('sort_order'),
     supabase.from('school_institution_types').select('*').order('sort_order'),
     supabase.from('school_phases').select('*').order('sort_order'),
-    supabase.from('school_religious_affiliations').select('*').order('sort_order')
+    supabase.from('school_religious_affiliations').select('*').order('sort_order'),
+    supabase.from('school_coed_from').select('*').order('sort_order')
   ])
 
   return {
@@ -241,6 +244,7 @@ export async function getSchoolReferenceData() {
     genderTypes: genderTypes.data ?? [],
     institutionTypes: institutionTypes.data ?? [],
     phases: phases.data ?? [],
-    religiousAffiliations: religiousAffiliations.data ?? []
+    religiousAffiliations: religiousAffiliations.data ?? [],
+    coedFromOptions: coedFromOptions.data ?? []
   }
 }

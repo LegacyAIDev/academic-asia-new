@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { PhoneInput } from "@/components/ui/phone-input"
 import {
   Save,
   User,
@@ -252,22 +253,20 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
             </div>
             <div className="space-y-2">
               <Label htmlFor="mobile">Mobile Phone</Label>
-              <Input
-                id="mobile"
+              <PhoneInput
                 name="mobile"
-                type="tel"
-                placeholder="e.g. 9123 4567"
                 defaultValue={student?.mobile ?? ""}
+                defaultCountryCode="852"
+                placeholder="e.g. 9123 4567"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="telephone">Telephone</Label>
-              <Input
-                id="telephone"
+              <PhoneInput
                 name="telephone"
-                type="tel"
-                placeholder="e.g. 2577 8048"
                 defaultValue={student?.telephone ?? ""}
+                defaultCountryCode="852"
+                placeholder="e.g. 2577 8048"
               />
             </div>
           </div>
