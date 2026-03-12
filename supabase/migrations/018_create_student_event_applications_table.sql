@@ -36,6 +36,20 @@ create table public.student_event_applications (
     -- Status
                                                    status_id int references public.event_application_statuses(id) default 1,
 
+    -- Representative assignment
+                                                   representative_id uuid references public.event_representatives(id) on delete set null,
+
+    -- Scheduling
+                                                   preferred_time text,
+
+    -- Capacity events
+                                                   seats_requested int,
+                                                   seats_assigned int,
+
+    -- Music events
+                                                   piece text,
+                                                   composer text,
+
     -- Communication
                                                    email_sent boolean default false,
 
@@ -65,6 +79,7 @@ create index student_event_apps_student_id_idx on public.student_event_applicati
 create index student_event_apps_event_id_idx on public.student_event_applications(event_id);
 create index student_event_apps_status_id_idx on public.student_event_applications(status_id);
 create index student_event_apps_assigned_to_idx on public.student_event_applications(assigned_to);
+create index student_event_apps_representative_id_idx on public.student_event_applications(representative_id);
 
 -- Composite index for unique check
 create index student_event_apps_student_event_idx on public.student_event_applications(student_id, event_id);
@@ -101,4 +116,10 @@ create trigger student_event_apps_updated_at
 -- ============================================================================
 
 comment on table public.event_application_statuses is 'Status for student event applications';
-comment on table public.student_event_applications is 'Student registrations for events (Expos, Top Schools, etc.)';
+comment on table public.student_event_applications is 'Student registrations for events (Expos, Top Schools, Interviews, etc.)';
+comment on column public.student_event_applications.representative_id is 'Assigned representative for this student';
+comment on column public.student_event_applications.preferred_time is 'Student/parent preferred time slot';
+comment on column public.student_event_applications.seats_requested is 'Number of seats requested (capacity events)';
+comment on column public.student_event_applications.seats_assigned is 'Number of seats assigned (capacity events)';
+comment on column public.student_event_applications.piece is 'Music piece (music audition events)';
+comment on column public.student_event_applications.composer is 'Composer of music piece (music audition events)';

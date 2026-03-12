@@ -1,18 +1,18 @@
 /**
  * Data Migration Script: Import events from multiple legacy CSV files
- * 
+ *
  * Consolidates 5 legacy tables into one unified events table:
  * - AA_Event.csv → event_type: 'event'
  * - AA_Expo.csv → event_type: 'expo'
  * - AA_TS.csv → event_type: 'top_schools'
  * - AA_II.csv → event_type: 'interview'
  * - AA_MA.csv → event_type: 'music_audition'
- * 
+ *
  * Usage:
  *   npx tsx scripts/migrate-events.ts --dry-run         # Test without inserting
  *   npx tsx scripts/migrate-events.ts --dry-run --limit 10  # Preview 10 records per type
  *   npx tsx scripts/migrate-events.ts                   # Actually insert data
- * 
+ *
  * Requirements:
  *   npm install papaparse @supabase/supabase-js dotenv
  *   npm install -D @types/papaparse tsx
@@ -44,8 +44,8 @@ if (DRY_RUN) {
 // ============================================================================
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SECRET_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY 
-  || process.env.SUPABASE_SECRET_KEY!;
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+    || process.env.SUPABASE_SECRET_KEY!;
 
 const BATCH_SIZE = 100;
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -112,7 +112,38 @@ type LookupMap = Map<string, number>;
 type ProfileMap = Map<string, string>;
 
 const eventTypeMap: LookupMap = new Map();
+const categoryMap: LookupMap = new Map();        // 'engagement_guidance' -> id
+const deliveryModeMap: LookupMap = new Map();
+const visibilityMap: LookupMap = new Map();
+const schedulingModeMap: LookupMap = new Map();
 let profileMap: ProfileMap = new Map();
+
+// Map legacy table -> category code
+const LEGACY_TO_CATEGORY: Record<string, string> = {
+  event: 'engagement_guidance',
+  expo: 'engagement_guidance',
+  topschool: 'engagement_guidance',
+  indinterview: 'admission_assessment',
+  musicaudition: 'admission_assessment',
+};
+
+// Map legacy table -> scheduling mode code
+const LEGACY_TO_SCHEDULING: Record<string, string> = {
+  event: 'no_scheduling',
+  expo: 'no_scheduling',
+  topschool: 'no_scheduling',
+  indinterview: 'one_to_one',
+  musicaudition: 'one_to_one',
+};
+
+// Map legacy table -> visibility code
+const LEGACY_TO_VISIBILITY: Record<string, string> = {
+  event: 'public',
+  expo: 'public',
+  topschool: 'public',
+  indinterview: 'private',
+  musicaudition: 'private',
+};
 
 const unmappedValues: Record<string, Set<string>> = {
   profile: new Set(),
@@ -128,6 +159,22 @@ async function loadLookupTables(supabase: SupabaseClient) {
   const { data: eventTypes } = await supabase.from('event_types').select('id, code');
   eventTypes?.forEach(row => eventTypeMap.set(row.code, row.id));
   console.log(`   ✅ event_types: ${eventTypes?.length || 0} records`);
+
+  const { data: categories } = await supabase.from('event_categories').select('id, code');
+  categories?.forEach(row => categoryMap.set(row.code, row.id));
+  console.log(`   ✅ event_categories: ${categories?.length || 0} records`);
+
+  const { data: deliveryModes } = await supabase.from('delivery_modes').select('id, code');
+  deliveryModes?.forEach(row => deliveryModeMap.set(row.code, row.id));
+  console.log(`   ✅ delivery_modes: ${deliveryModes?.length || 0} records`);
+
+  const { data: visibilities } = await supabase.from('event_visibilities').select('id, code');
+  visibilities?.forEach(row => visibilityMap.set(row.code, row.id));
+  console.log(`   ✅ event_visibilities: ${visibilities?.length || 0} records`);
+
+  const { data: schedulingModes } = await supabase.from('scheduling_modes').select('id, code');
+  schedulingModes?.forEach(row => schedulingModeMap.set(row.code, row.id));
+  console.log(`   ✅ scheduling_modes: ${schedulingModes?.length || 0} records`);
 
   // Load profile mapping (legacy_id -> uuid)
   const { data: profiles } = await supabase.from('profiles').select('id, legacy_id').not('legacy_id', 'is', null);
@@ -155,45 +202,45 @@ function parseInt2(val: string | undefined): number | null {
 
 function parseDate(dateStr: string | undefined): string | null {
   if (!dateStr || dateStr.trim() === '') return null;
-  
+
   const trimmed = dateStr.trim();
-  
+
   // Format: YYYYMMDD
   if (trimmed.length === 8 && /^\d{8}$/.test(trimmed)) {
     const year = trimmed.substring(0, 4);
     const month = trimmed.substring(4, 6);
     const day = trimmed.substring(6, 8);
-    
+
     if (year === '0000' || month === '00' || day === '00') return null;
-    
+
     return `${year}-${month}-${day}`;
   }
-  
+
   return null;
 }
 
 function parseTime(timeStr: string | undefined): string | null {
   if (!timeStr || timeStr.trim() === '') return null;
-  
+
   const trimmed = timeStr.trim();
-  
+
   // Format: HHMMSS (6 digits)
   if (trimmed.length === 6 && /^\d{6}$/.test(trimmed)) {
     const hour = trimmed.substring(0, 2);
     const min = trimmed.substring(2, 4);
     const sec = trimmed.substring(4, 6);
-    
+
     return `${hour}:${min}:${sec}`;
   }
-  
+
   return null;
 }
 
 function parseTimestamp(dateStr: string | undefined): string | null {
   if (!dateStr || dateStr.trim() === '') return null;
-  
+
   const trimmed = dateStr.trim();
-  
+
   // Format: YYYYMMDDHHMMSS
   if (trimmed.length === 14 && /^\d{14}$/.test(trimmed)) {
     const year = trimmed.substring(0, 4);
@@ -202,12 +249,12 @@ function parseTimestamp(dateStr: string | undefined): string | null {
     const hour = trimmed.substring(8, 10);
     const min = trimmed.substring(10, 12);
     const sec = trimmed.substring(12, 14);
-    
+
     if (year === '0000' || month === '00' || day === '00') return null;
-    
+
     return `${year}-${month}-${day} ${hour}:${min}:${sec}`;
   }
-  
+
   return null;
 }
 
@@ -226,8 +273,12 @@ function lookupProfileId(legacyId: string | undefined): string | null {
 interface TransformedEvent {
   legacy_id: number | null;
   legacy_table: string;
+  category_id: number | null;
   event_type_id: number;
   name: string;
+  delivery_mode_id: number | null;
+  visibility_id: number | null;
+  scheduling_mode_id: number | null;
   start_date: string | null;
   end_date: string | null;
   start_time: string | null;
@@ -240,24 +291,28 @@ interface TransformedEvent {
 }
 
 function transformRow(
-  row: Record<string, string>,
-  source: typeof EVENT_SOURCES[0]
+    row: Record<string, string>,
+    source: typeof EVENT_SOURCES[0]
 ): TransformedEvent | null {
   const eventTypeId = eventTypeMap.get(source.eventTypeCode);
-  
+
   if (!eventTypeId) {
     console.error(`   ❌ Unknown event type: ${source.eventTypeCode}`);
     return null;
   }
-  
+
   const name = cleanString(row[source.nameField]);
   if (!name) return null;
-  
+
   return {
     legacy_id: parseInt2(row[source.idField]),
     legacy_table: source.legacyTable,
+    category_id: categoryMap.get(LEGACY_TO_CATEGORY[source.legacyTable]) || null,
     event_type_id: eventTypeId,
     name: name,
+    delivery_mode_id: deliveryModeMap.get('in_person') || null,
+    visibility_id: visibilityMap.get(LEGACY_TO_VISIBILITY[source.legacyTable]) || null,
+    scheduling_mode_id: schedulingModeMap.get(LEGACY_TO_SCHEDULING[source.legacyTable]) || null,
     start_date: parseDate(row[source.startDateField]),
     end_date: parseDate(row[source.endDateField]),
     start_time: parseTime(row['starttime']),
@@ -275,38 +330,38 @@ function transformRow(
 // ============================================================================
 
 async function processFile(
-  source: typeof EVENT_SOURCES[0]
+    source: typeof EVENT_SOURCES[0]
 ): Promise<TransformedEvent[]> {
   const filePath = path.join(DATA_DIR, source.file);
-  
+
   if (!fs.existsSync(filePath)) {
     console.warn(`   ⚠️  File not found: ${source.file}`);
     return [];
   }
-  
+
   const csvContent = fs.readFileSync(filePath, 'utf-8');
-  
+
   const { data, errors } = Papa.parse<Record<string, string>>(csvContent, {
     header: true,
     delimiter: '|',
     skipEmptyLines: true,
   });
-  
+
   if (errors.length > 0) {
     console.error(`   ❌ Parse errors in ${source.file}:`, errors.slice(0, 3));
   }
-  
+
   let events = data
-    .map(row => transformRow(row, source))
-    .filter((e): e is NonNullable<typeof e> => e !== null);
-  
+      .map(row => transformRow(row, source))
+      .filter((e): e is NonNullable<typeof e> => e !== null);
+
   // Apply limit per file if specified
   if (LIMIT && LIMIT > 0) {
     events = events.slice(0, LIMIT);
   }
-  
+
   console.log(`   📄 ${source.file}: ${events.length} records`);
-  
+
   return events;
 }
 
@@ -339,25 +394,25 @@ async function migrate() {
 
   // Process all source files
   console.log('📂 Processing source files...\n');
-  
+
   const allEvents: TransformedEvent[] = [];
-  
+
   for (const source of EVENT_SOURCES) {
     const events = await processFile(source);
     allEvents.push(...events);
   }
-  
+
   console.log(`\n✅ Total events to migrate: ${allEvents.length}\n`);
 
   // ============================================================================
   // DRY RUN: Preview
   // ============================================================================
-  
+
   if (DRY_RUN) {
     console.log('═'.repeat(60));
     console.log('📋 SAMPLE RECORDS BY TYPE');
     console.log('═'.repeat(60));
-    
+
     for (const source of EVENT_SOURCES) {
       const sample = allEvents.find(e => e.legacy_table === source.legacyTable);
       if (sample) {
@@ -370,7 +425,7 @@ async function migrate() {
     console.log('═'.repeat(60));
     console.log('📊 SUMMARY BY TYPE');
     console.log('═'.repeat(60));
-    
+
     for (const source of EVENT_SOURCES) {
       const count = allEvents.filter(e => e.legacy_table === source.legacyTable).length;
       console.log(`   ${source.eventTypeCode.padEnd(15)} ${count}`);
@@ -388,7 +443,7 @@ async function migrate() {
       total: allEvents.length,
       records: allEvents.slice(0, 50),
     }, null, 2));
-    
+
     console.log(`\n📁 Full preview written to: ${outputPath}`);
     console.log('\n🧪 DRY RUN COMPLETE - No data was inserted');
     console.log('   Run without --dry-run to insert data\n');
@@ -406,11 +461,11 @@ async function migrate() {
   for (let i = 0; i < allEvents.length; i += BATCH_SIZE) {
     const batch = allEvents.slice(i, i + BATCH_SIZE);
     const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
-    
+
     const { data: result, error } = await supabase
-      .from('events')
-      .insert(batch)
-      .select('id');
+        .from('events')
+        .insert(batch)
+        .select('id');
 
     if (error) {
       console.error(`\n❌ Batch ${batchNumber} failed:`, error.message);
@@ -439,12 +494,12 @@ async function migrate() {
     const count = allEvents.filter(e => e.legacy_table === source.legacyTable).length;
     console.log(`   ${source.eventTypeCode.padEnd(15)} ${count}`);
   }
-  
+
   // Write error report
   if (errorLog.length > 0) {
     const reportPath = path.join(DATA_DIR, 'events-migration-errors.json');
-    fs.writeFileSync(reportPath, JSON.stringify({ 
-      summary: { inserted, failed }, 
+    fs.writeFileSync(reportPath, JSON.stringify({
+      summary: { inserted, failed },
       errors: errorLog,
     }, null, 2));
     console.log(`\n📁 Error report: ${reportPath}`);

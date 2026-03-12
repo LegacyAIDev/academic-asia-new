@@ -1,8 +1,9 @@
 /**
- * Data Migration Script: Import event_interviewers from multiple legacy CSV files
- * 
+ * Data Migration Script: Import event_representatives from multiple legacy CSV files
+ *
  * Consolidates: AA_Expo_Interviewer, AA_II_Interviewer, AA_MA_Interviewer, AA_TS_Interviewer
- * 
+ * Target table: event_representatives (renamed from event_interviewers in migration 035)
+ *
  * Usage:
  *   npx tsx scripts/migrate-event-interviewers.ts --dry-run
  *   npx tsx scripts/migrate-event-interviewers.ts
@@ -45,10 +46,10 @@ async function loadLookupTables(supabase: SupabaseClient) {
   console.log('📚 Loading lookup tables...\n');
 
   const { data: events } = await supabase
-    .from('events')
-    .select('id, legacy_id, legacy_table')
-    .not('legacy_id', 'is', null)
-    .limit(10000);
+      .from('events')
+      .select('id, legacy_id, legacy_table')
+      .not('legacy_id', 'is', null)
+      .limit(10000);
   events?.forEach(row => {
     if (row.legacy_table && row.legacy_id) {
       eventMap.set(`${row.legacy_table}_${row.legacy_id}`, row.id);
@@ -57,20 +58,20 @@ async function loadLookupTables(supabase: SupabaseClient) {
   console.log(`   ✅ events: ${eventMap.size}`);
 
   const { data: schools } = await supabase
-    .from('schools')
-    .select('id, legacy_id')
-    .not('legacy_id', 'is', null)
-    .limit(10000);
+      .from('schools')
+      .select('id, legacy_id')
+      .not('legacy_id', 'is', null)
+      .limit(10000);
   schools?.forEach(row => {
     if (row.legacy_id) schoolMap.set(row.legacy_id, row.id);
   });
   console.log(`   ✅ schools: ${schoolMap.size}`);
 
   const { data: profiles } = await supabase
-    .from('profiles')
-    .select('id, legacy_id')
-    .not('legacy_id', 'is', null)
-    .limit(1000);
+      .from('profiles')
+      .select('id, legacy_id')
+      .not('legacy_id', 'is', null)
+      .limit(1000);
   profiles?.forEach(row => {
     if (row.legacy_id) profileMap.set(row.legacy_id, row.id);
   });
@@ -134,9 +135,9 @@ function transformRow(row: Record<string, string>, source: typeof SOURCES[0]): T
   const eventId = lookupEvent(source.legacyTable, row[source.idField]);
   const schoolId = lookupSchool(row['school_id']);
   const name = cleanString(row['name']);
-  
+
   if (!eventId || !schoolId || !name) return null;
-  
+
   return {
     event_id: eventId,
     school_id: schoolId,
@@ -156,19 +157,19 @@ async function processFile(source: typeof SOURCES[0]): Promise<TransformedRecord
     console.warn(`   ⚠️  File not found: ${source.file}`);
     return [];
   }
-  
+
   const csvContent = fs.readFileSync(filePath, 'utf-8');
   const { data } = Papa.parse<Record<string, string>>(csvContent, {
     header: true, delimiter: '|', skipEmptyLines: true,
   });
-  
+
   const records = data.map(row => transformRow(row, source)).filter((r): r is TransformedRecord => r !== null);
   console.log(`   📄 ${source.file}: ${records.length}/${data.length} valid`);
   return records;
 }
 
 async function migrate() {
-  console.log('👔 Starting event_interviewers migration...\n');
+  console.log('👔 Starting event_representatives migration...\n');
 
   if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
     console.error('❌ Missing Supabase credentials');
@@ -196,18 +197,18 @@ async function migrate() {
     console.log('📋 SAMPLE RECORD');
     console.log('═'.repeat(60));
     if (allRecords[0]) console.log(JSON.stringify(allRecords[0], null, 2));
-    
+
     console.log('\n📊 BY SOURCE:');
     for (const source of SOURCES) {
       const count = allRecords.filter(r => r.legacy_table === source.legacyTable).length;
       console.log(`   ${source.legacyTable.padEnd(15)} ${count}`);
     }
-    
+
     console.log('\n⚠️  Unmapped:');
     console.log(`   events: ${unmappedValues.events.size}`);
     console.log(`   schools: ${unmappedValues.schools.size}`);
     console.log(`   profiles: ${unmappedValues.profiles.size}`);
-    
+
     console.log('\n🧪 DRY RUN COMPLETE\n');
     return;
   }
@@ -215,7 +216,7 @@ async function migrate() {
   let inserted = 0, failed = 0;
   for (let i = 0; i < allRecords.length; i += BATCH_SIZE) {
     const batch = allRecords.slice(i, i + BATCH_SIZE);
-    const { data: result, error } = await supabase.from('event_interviewers').insert(batch).select('id');
+    const { data: result, error } = await supabase.from('event_representatives').insert(batch).select('id');
     if (error) {
       console.error(`\n❌ Batch ${Math.floor(i/BATCH_SIZE)+1}:`, error.message);
       failed += batch.length;

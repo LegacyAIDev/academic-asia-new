@@ -41,6 +41,9 @@ import { getStudentVisas, getVisaReferenceData } from "@/lib/supabase/queries/st
 import { getStudentEventApplications, getEventAppReferenceData } from "@/lib/supabase/queries/student-event-applications"
 import { getStudentTravel, getTravelReferenceData } from "@/lib/supabase/queries/student-travel"
 import { getStudentExamResults, getExamResultReferenceData } from "@/lib/supabase/queries/student-exam-results"
+import { getStudentBriefIntro, getBriefIntroReferenceData } from "@/lib/supabase/queries/student-brief-intro"
+import { getStudentLogBook } from "@/lib/supabase/queries/student-log-book"
+import { getStudentResume, getResumeReferenceData } from "@/lib/supabase/queries/student-resume"
 import { StudentContactsSection } from "./student-contacts"
 import { StudentApplicationsSection } from "./student-applications"
 import { StudentEducationSection } from "./student-education"
@@ -48,6 +51,9 @@ import { StudentVisasSection } from "./student-visas"
 import { StudentEventApplicationsSection } from "./student-event-applications"
 import { StudentTravelSection } from "./student-travel"
 import { StudentExamResultsSection } from "./student-exam-results"
+import { StudentBriefIntroSection } from "./student-brief-intro"
+import { StudentLogBookSection } from "./student-log-book"
+import { StudentResumeSection } from "./student-resume"
 import { DeleteStudentDialog } from "./delete-student-dialog"
 
 // Status badge styling based on status code
@@ -73,7 +79,18 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
   const { id } = await params
 
   // Fetch student, contacts, applications, and reference data in parallel
-  const [student, contacts, contactReferenceData, applications, appReferenceData, educationEntries, eduReferenceData, visas, visaReferenceData, eventApplications, eventAppReferenceData, travelRecords, travelReferenceData, examResults, examResultReferenceData] = await Promise.all([
+  const [
+    student, contacts, contactReferenceData,
+    applications, appReferenceData,
+    educationEntries, eduReferenceData,
+    visas, visaReferenceData,
+    eventApplications, eventAppReferenceData,
+    travelRecords, travelReferenceData,
+    examResults, examResultReferenceData,
+    briefIntro, briefIntroReferenceData,
+    logEntries,
+    resumeEntries, resumeReferenceData,
+  ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
     getContactReferenceData(),
@@ -89,6 +106,11 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     getTravelReferenceData(),
     getStudentExamResults(id),
     getExamResultReferenceData(),
+    getStudentBriefIntro(id),
+    getBriefIntroReferenceData(),
+    getStudentLogBook(id),
+    getStudentResume(id),
+    getResumeReferenceData(),
   ])
 
   if (!student) {
@@ -303,9 +325,17 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
                   New Exam Result
                 </a>
               </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" disabled>
-                <FileText className="h-4 w-4" />
-                Upload Document
+              <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                <a href="#resume">
+                  <FileText className="h-4 w-4" />
+                  New Resume
+                </a>
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                <a href="#log-book">
+                  <BookOpen className="h-4 w-4" />
+                  New Log Entry
+                </a>
               </Button>
             </CardContent>
           </Card>

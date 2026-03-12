@@ -414,7 +414,7 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="placement_id">Lead Temperature</Label>
+              <Label htmlFor="placement_id">Placement</Label>
               <Select name="placement_id" defaultValue={student?.placement?.id?.toString() ?? placements.find(p => p.code === 'cold')?.id?.toString() ?? ""}>
                 <SelectTrigger id="placement_id">
                   <SelectValue placeholder="Select lead temp" />
