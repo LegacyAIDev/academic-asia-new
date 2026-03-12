@@ -226,7 +226,7 @@ export function ContactDialog({
         )}
       </DialogTrigger>
       <DialogContent
-        className="sm:!max-w-[960px] max-h-[92vh] overflow-hidden p-0 gap-0 bg-background"
+        className="sm:!max-w-[960px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col"
         showCloseButton={false}
       >
         {/* Elegant Header */}
@@ -272,7 +272,7 @@ export function ContactDialog({
         </div>
 
         {/* Scrollable Form Area */}
-        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
           <div className="flex-1 overflow-y-auto px-6 py-5">
             {/* Error Message */}
             {error && (

@@ -9,8 +9,7 @@ export type SchoolFeeWithJoins = {
   description: string | null
   amount: string | null
   payable_to: string | null
-  start_date: string | null
-  end_date: string | null
+  year_levels: string | null
   remarks: string | null
   created_at: string | null
   updated_at: string | null
@@ -28,7 +27,7 @@ export async function getSchoolFees(schoolId: string): Promise<SchoolFeeWithJoin
     .from('school_fees')
     .select(`
       id, school_id, financial_year, fee_type_id, description,
-      amount, payable_to, start_date, end_date, remarks,
+      amount, payable_to, year_levels, remarks,
       created_at, updated_at,
       fee_type:fee_types!school_fees_fee_type_id_fkey(id, code, label)
     `)

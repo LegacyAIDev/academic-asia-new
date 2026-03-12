@@ -22,6 +22,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -38,6 +40,7 @@ import {
   DollarSign,
   MessageSquare,
   Check,
+  ChevronsUpDown,
 } from "lucide-react"
 import {
   createSchoolFee,
@@ -114,6 +117,21 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
+  const yearLevelOptions = ["All", ...Array.from({ length: 13 }, (_, i) => `Year ${i + 1}`)]
+  const initialYearLevels = fee?.year_levels ? fee.year_levels.split(",").map(s => s.trim()) : []
+  const [selectedYearLevels, setSelectedYearLevels] = useState<string[]>(initialYearLevels)
+
+  const toggleYearLevel = (level: string) => {
+    if (level === "All") {
+      setSelectedYearLevels(prev => prev.includes("All") ? [] : ["All"])
+    } else {
+      setSelectedYearLevels(prev => {
+        const without = prev.filter(l => l !== "All")
+        return without.includes(level) ? without.filter(l => l !== level) : [...without, level]
+      })
+    }
+  }
+
   const { feeTypes } = referenceData
 
   const currentYear = new Date().getFullYear()
@@ -139,8 +157,7 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
       description: formData.get("description") as string,
       amount: parseFloat(formData.get("amount") as string),
       payable_to: (formData.get("payable_to") as string) || null,
-      start_date: (formData.get("start_date") as string) || null,
-      end_date: (formData.get("end_date") as string) || null,
+      year_levels: selectedYearLevels.length > 0 ? selectedYearLevels.join(",") : null,
       remarks: (formData.get("remarks") as string) || null,
     }
 
@@ -169,7 +186,7 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:!max-w-[560px] max-h-[92vh] overflow-hidden p-0 gap-0 bg-background" showCloseButton={false}>
+      <DialogContent className="sm:!max-w-[560px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
         <div className="relative overflow-hidden border-b border-border/50">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-60" />
@@ -196,7 +213,7 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
           <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
             {error && (
               <div className="flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive animate-in slide-in-from-top-2 duration-300">
@@ -231,20 +248,42 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
             </FormSection>
 
             <FormSection icon={DollarSign} title="Amount & Payment" accentColor="teal">
-              <FormField label="Amount in GBP *">
+              <FormField label="Years">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" type="button" className={`${inputStyles} w-full justify-between font-normal`}>
+                      <span className="truncate">
+                        {selectedYearLevels.length === 0
+                          ? "Select years"
+                          : selectedYearLevels.join(", ")}
+                      </span>
+                      <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                    <div className="max-h-[240px] overflow-y-auto p-2 space-y-1">
+                      {yearLevelOptions.map((level) => (
+                        <label
+                          key={level}
+                          className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm cursor-pointer hover:bg-muted transition-colors"
+                        >
+                          <Checkbox
+                            checked={selectedYearLevels.includes(level)}
+                            onCheckedChange={() => toggleYearLevel(level)}
+                          />
+                          {level}
+                        </label>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </FormField>
+              <FormField label="Amount in GBP per annum*">
                 <Input name="amount" type="number" step="0.01" min="0" className={inputStyles} defaultValue={fee?.amount ?? ""} placeholder="e.g. 1500.00" required />
               </FormField>
               <FormField label="Payable To">
                 <Input name="payable_to" className={inputStyles} defaultValue={fee?.payable_to ?? ""} placeholder="Recipient name (optional)" />
               </FormField>
-              <div className="grid grid-cols-2 gap-3">
-                <FormField label="Start Date">
-                  <Input name="start_date" type="date" className={inputStyles} defaultValue={fee?.start_date ?? ""} />
-                </FormField>
-                <FormField label="End Date">
-                  <Input name="end_date" type="date" className={inputStyles} defaultValue={fee?.end_date ?? ""} />
-                </FormField>
-              </div>
             </FormSection>
 
             <FormSection icon={MessageSquare} title="Remarks" accentColor="rose">

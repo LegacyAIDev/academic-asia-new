@@ -287,9 +287,13 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Boarder Count</p>
                   <p className="text-sm font-medium">{school.boarder_count?.toLocaleString() || "—"}</p>
                 </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Boarding Age Range</p>
-                  <p className="text-sm font-medium">{school.boarder_age_range || "—"}</p>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Boarder Age Range</p>
+                  <p className="text-sm font-medium">
+                    {school.boarder_age_min != null || school.boarder_age_max != null
+                      ? `${school.boarder_age_min ?? "—"} - ${school.boarder_age_max ?? "—"}`
+                      : "—"}
+                  </p>
                 </div>
               </CardContent>
             </Card>

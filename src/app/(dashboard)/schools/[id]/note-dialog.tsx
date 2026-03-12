@@ -164,7 +164,7 @@ export function NoteDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:!max-w-[560px] max-h-[92vh] overflow-hidden p-0 gap-0 bg-background" showCloseButton={false}>
+      <DialogContent className="sm:!max-w-[560px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
         <div className="relative overflow-hidden border-b border-border/50">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-60" />
@@ -191,7 +191,7 @@ export function NoteDialog({
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
           <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
             {error && (
               <div className="flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive animate-in slide-in-from-top-2 duration-300">

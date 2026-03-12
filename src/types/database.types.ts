@@ -724,7 +724,9 @@ export type Database = {
           accepts_child_visa: boolean | null
           accepts_general_visa: boolean | null
           address: string | null
-          boarder_age_range: string | null
+          boarder_age_min: number | null
+          boarder_age_max: number | null
+          legacy_boarder_age_range: string | null
           boarder_count: number | null
           child_visa_age: number | null
           city: string | null
@@ -760,7 +762,9 @@ export type Database = {
           accepts_child_visa?: boolean | null
           accepts_general_visa?: boolean | null
           address?: string | null
-          boarder_age_range?: string | null
+          boarder_age_min?: number | null
+          boarder_age_max?: number | null
+          legacy_boarder_age_range?: string | null
           boarder_count?: number | null
           child_visa_age?: number | null
           city?: string | null
@@ -796,7 +800,9 @@ export type Database = {
           accepts_child_visa?: boolean | null
           accepts_general_visa?: boolean | null
           address?: string | null
-          boarder_age_range?: string | null
+          boarder_age_min?: number | null
+          boarder_age_max?: number | null
+          legacy_boarder_age_range?: string | null
           boarder_count?: number | null
           child_visa_age?: number | null
           city?: string | null

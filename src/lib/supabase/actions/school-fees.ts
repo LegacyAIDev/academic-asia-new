@@ -17,8 +17,7 @@ export type CreateSchoolFeeInput = {
   description?: string | null
   amount?: number | null
   payable_to?: string | null
-  start_date?: string | null
-  end_date?: string | null
+  year_levels?: string | null
   remarks?: string | null
 }
 

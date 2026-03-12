@@ -89,10 +89,9 @@ export function SchoolFeesSection({
                 <TableHead className="pl-6 min-w-[100px]">Year</TableHead>
                 <TableHead className="min-w-[120px]">Fee Type</TableHead>
                 <TableHead className="min-w-[120px]">Description</TableHead>
+                <TableHead className="min-w-[120px]">Years</TableHead>
                 <TableHead className="min-w-[100px] text-right">Amount</TableHead>
                 <TableHead className="min-w-[150px]">Payable To</TableHead>
-                <TableHead>Start</TableHead>
-                <TableHead>End</TableHead>
                 <TableHead className="pr-6 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -108,17 +107,14 @@ export function SchoolFeesSection({
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm">{fee.description || "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {fee.year_levels || "—"}
+                  </TableCell>
                   <TableCell className="text-sm text-right font-medium">
                     {formatAmount(fee.amount)}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {fee.payable_to || "—"}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(fee.start_date)}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(fee.end_date)}
                   </TableCell>
                   <TableCell className="pr-6">
                     <div className="flex items-center justify-end gap-1">

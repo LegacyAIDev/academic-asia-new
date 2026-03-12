@@ -24,7 +24,8 @@ export type CreateSchoolInput = {
   coed_from_id?: number | null
   pupil_count?: number | null
   boarder_count?: number | null
-  boarder_age_range?: string | null
+  boarder_age_min?: number | null
+  boarder_age_max?: number | null
   child_visa_age?: number | null
   accepts_child_visa?: boolean | null
   accepts_general_visa?: boolean | null

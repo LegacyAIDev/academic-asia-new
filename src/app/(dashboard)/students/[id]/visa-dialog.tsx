@@ -192,7 +192,7 @@ export function VisaDialog({
         )}
       </DialogTrigger>
       <DialogContent
-        className="sm:!max-w-[960px] max-h-[92vh] overflow-hidden p-0 gap-0 bg-background"
+        className="sm:!max-w-[960px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col"
         showCloseButton={false}
       >
         {/* Header */}
@@ -231,7 +231,7 @@ export function VisaDialog({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
           <div className="flex-1 overflow-y-auto px-6 py-5">
             {error && (
               <div className="mb-5 flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive animate-in slide-in-from-top-2 duration-300">

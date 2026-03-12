@@ -83,7 +83,8 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
       coed_from_id: formData.get("coed_from_id") ? parseInt(formData.get("coed_from_id") as string, 10) : null,
       pupil_count: formData.get("pupil_count") ? parseInt(formData.get("pupil_count") as string, 10) : null,
       boarder_count: formData.get("boarder_count") ? parseInt(formData.get("boarder_count") as string, 10) : null,
-      boarder_age_range: (formData.get("boarder_age_range") as string) || null,
+      boarder_age_min: formData.get("boarder_age_min") ? parseInt(formData.get("boarder_age_min") as string, 10) : null,
+      boarder_age_max: formData.get("boarder_age_max") ? parseInt(formData.get("boarder_age_max") as string, 10) : null,
       child_visa_age: formData.get("child_visa_age") ? parseInt(formData.get("child_visa_age") as string, 10) : null,
       accepts_child_visa: formData.get("accepts_child_visa") === "on",
       accepts_general_visa: formData.get("accepts_general_visa") === "on",
@@ -249,13 +250,28 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
                 defaultValue={school?.boarder_count ?? ""}
               />
             </div>
-            <div className="space-y-2 lg:col-span-2">
-              <Label htmlFor="boarder_age_range">Boarding Age Range</Label>
+            <div className="space-y-2">
+              <Label htmlFor="boarder_age_min">Boarder Age From</Label>
               <Input
-                id="boarder_age_range"
-                name="boarder_age_range"
-                placeholder="e.g. 11-18 (3-18)"
-                defaultValue={school?.boarder_age_range ?? ""}
+                id="boarder_age_min"
+                name="boarder_age_min"
+                type="number"
+                min="0"
+                max="25"
+                placeholder="e.g. 11"
+                defaultValue={school?.boarder_age_min ?? ""}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="boarder_age_max">Boarder Age To</Label>
+              <Input
+                id="boarder_age_max"
+                name="boarder_age_max"
+                type="number"
+                min="0"
+                max="25"
+                placeholder="e.g. 18"
+                defaultValue={school?.boarder_age_max ?? ""}
               />
             </div>
           </div>
