@@ -444,6 +444,15 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
           </Card>
         </div>
 
+        {/* Brief Introduction */}
+        <div id="brief-intro">
+          <StudentBriefIntroSection
+            studentId={id}
+            briefIntro={briefIntro}
+            referenceData={briefIntroReferenceData}
+          />
+        </div>
+
         {/* Remarks */}
         {student.remarks && (
           <Card className="border-0 shadow-sm">
@@ -474,6 +483,15 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
             studentId={id}
             educationEntries={educationEntries}
             referenceData={eduReferenceData}
+          />
+        </div>
+
+        {/* Resume Section */}
+        <div id="resume">
+          <StudentResumeSection
+            studentId={id}
+            resumeEntries={resumeEntries}
+            referenceData={resumeReferenceData}
           />
         </div>
 
@@ -510,6 +528,14 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
             studentId={id}
             examResults={examResults}
             referenceData={examResultReferenceData}
+          />
+        </div>
+
+        {/* Log Book Section */}
+        <div id="log-book">
+          <StudentLogBookSection
+            studentId={id}
+            logEntries={logEntries}
           />
         </div>
 
