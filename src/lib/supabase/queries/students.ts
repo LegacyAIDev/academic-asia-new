@@ -22,7 +22,8 @@ export type StudentListItem = {
   email: string | null
   mobile: string | null
   present_school: string | null
-  entry_year: string | null
+  entry_year: number | null
+  entry_month: number | null
   status: StudentStatus | null
   placement: PlacementStatus | null
   course: Course | null
@@ -69,6 +70,7 @@ export async function getStudentsList(params: StudentsListParams = {}): Promise<
       mobile,
       present_school,
       entry_year,
+      entry_month,
       status:student_statuses!students_status_id_fkey(id, code, label, color),
       placement:placement_statuses!students_placement_id_fkey(id, code, label, color),
       course:courses!students_course_id_fkey(id, code, label)
@@ -130,10 +132,10 @@ export type StudentWithJoins = {
   mobile: string | null
   telephone: string | null
   address_line_1: string | null
-  address_line_2: string | null
   chinese_address: string | null
   present_school: string | null
-  entry_year: string | null
+  entry_year: number | null
+  entry_month: number | null
   enrollment_date: string | null
   passport_type: string | null
   passport_number: string | null

@@ -377,13 +377,6 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
                   {student.address_line_1 || "—"}
                 </p>
               </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Address Line 2</p>
-                <p className="text-sm font-medium flex items-start gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-muted-foreground mt-0.5" />
-                  {student.address_line_2 || "—"}
-                </p>
-              </div>
               {student.chinese_address && (
                 <div className="space-y-1">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Chinese Address</p>
@@ -415,8 +408,8 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
                   <p className="text-sm font-medium">{student.course?.label || "—"}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Entry Year</p>
-                  <p className="text-sm font-medium">{student.entry_year?.slice(0, 4) || "—"}</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Entry</p>
+                  <p className="text-sm font-medium">{student.entry_year ? `${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][(student.entry_month ?? 1) - 1]} ${student.entry_year}` : "—"}</p>
                 </div>
               </div>
               <Separator />

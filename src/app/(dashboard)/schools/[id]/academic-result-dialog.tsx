@@ -62,6 +62,21 @@ type AcademicResultDialogProps = {
   trigger?: React.ReactNode
 }
 
+/** Grade dropdown options per exam type code */
+const GRADE_OPTIONS: Record<string, string[]> = {
+  a_level: ["A*", "A", "B", "C", "D", "E"],
+  gcse: ["A*", "A", "B", "C", "9", "8", "7", "6", "5", "4", "3"],
+  igcse: ["A*", "A", "B", "C", "9", "8", "7", "6", "5", "4"],
+  ib: ["HL 7", "HL 6", "HL 5", "HL 4", "HL 3", "SL 7", "SL 6", "SL 5", "SL 4", "SL 3"],
+  pre_u: ["Distinction", "Merit", "Pass", "D1", "D2", "D3", "M1", "M2", "M3"],
+  btec: ["D*", "D", "M", "P"],
+  higher: ["A", "B", "C"],
+  advanced_higher: ["A", "B", "C"],
+  national_5: ["A", "B", "C"],
+  s5_higher: ["A", "B", "C"],
+  s6_higher: ["A", "B", "C"],
+}
+
 function FormSection({
   icon: Icon,
   title,
@@ -122,8 +137,12 @@ export function AcademicResultDialog({
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [selectedExamType, setSelectedExamType] = useState<string>(result?.exam_type_id?.toString() ?? "")
 
   const { examTypes } = referenceData
+
+  const selectedType = examTypes.find((et) => et.id.toString() === selectedExamType)
+  const gradeOptions = selectedType ? (GRADE_OPTIONS[selectedType.code] ?? ["A*", "A", "B", "C"]) : []
 
   const handleOpenChange = (value: boolean) => {
     setOpen(value)
@@ -143,7 +162,8 @@ export function AcademicResultDialog({
       exam_type_id: formData.get("exam_type_id")
         ? parseInt(formData.get("exam_type_id") as string, 10)
         : null,
-      grade_range: (formData.get("grade_range") as string) || null,
+      grade_from: (formData.get("grade_from") as string) || null,
+      grade_to: (formData.get("grade_to") as string) || null,
       result_percentage: formData.get("result_percentage")
         ? parseFloat(formData.get("result_percentage") as string)
         : null,
@@ -217,7 +237,7 @@ export function AcademicResultDialog({
                   <Input name="exam_year" type="number" required min={1990} max={2100} className={inputStyles} defaultValue={result?.exam_year ?? ""} placeholder="e.g. 2024" />
                 </FormField>
                 <FormField label="Exam Type *">
-                  <Select name="exam_type_id" required defaultValue={result?.exam_type_id?.toString() ?? ""}>
+                  <Select name="exam_type_id" required defaultValue={result?.exam_type_id?.toString() ?? ""} onValueChange={setSelectedExamType}>
                     <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder="Select type" /></SelectTrigger>
                     <SelectContent>
                       {examTypes.map((et) => (<SelectItem key={et.id} value={et.id.toString()}>{et.label}</SelectItem>))}
@@ -228,11 +248,24 @@ export function AcademicResultDialog({
             </FormSection>
 
             <FormSection icon={BarChart3} title="Results" accentColor="teal">
-              <div className="grid grid-cols-2 gap-3">
-                <FormField label="Grade Range *">
-                  <Input name="grade_range" type="text" required className={inputStyles} defaultValue={result?.grade_range ?? ""} placeholder="e.g. A* - A" />
+              <div className="grid grid-cols-3 gap-3">
+                <FormField label="Grade From *">
+                  <Select key={`grade_from_${selectedExamType}`} name="grade_from" required defaultValue={result?.grade_from ?? ""}>
+                    <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder={gradeOptions.length ? "Select" : "Pick exam type"} /></SelectTrigger>
+                    <SelectContent position="popper">
+                      {gradeOptions.map((g) => (<SelectItem key={g} value={g}>{g}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
                 </FormField>
-                <FormField label="Result Percentage *">
+                <FormField label="Grade To">
+                  <Select key={`grade_to_${selectedExamType}`} name="grade_to" defaultValue={result?.grade_to ?? ""}>
+                    <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder="Optional" /></SelectTrigger>
+                    <SelectContent position="popper">
+                      {gradeOptions.map((g) => (<SelectItem key={g} value={g}>{g}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                <FormField label="Result % *">
                   <Input name="result_percentage" type="number" required min={0} max={100} step="0.01" className={inputStyles} defaultValue={result?.result_percentage ?? ""} placeholder="e.g. 87.50" />
                 </FormField>
               </div>

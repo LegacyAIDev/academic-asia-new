@@ -40,6 +40,7 @@ import {
   MessageSquare,
   Check,
 } from "lucide-react"
+import { getAcademicYearOptions } from "@/lib/utils"
 import type { SchoolEntranceExamWithJoins } from "@/lib/supabase/queries/school-entrance-exams"
 import {
   createSchoolEntranceExam,
@@ -124,6 +125,8 @@ export function EntranceExamDialog({
   const [error, setError] = useState<string | null>(null)
 
   const { examTypes } = referenceData
+
+  const { options: entryYearOptions, defaultYear: defaultEntryYear } = getAcademicYearOptions()
 
   const handleOpenChange = (value: boolean) => {
     setOpen(value)
@@ -216,10 +219,24 @@ export function EntranceExamDialog({
             <FormSection icon={BookOpen} title="Exam Details" accentColor="primary">
               <div className="grid grid-cols-2 gap-3">
                 <FormField label="Entry Year *">
-                  <Input name="entry_year" required className={inputStyles} defaultValue={exam?.entry_year ?? ""} placeholder="e.g. 2024-25" />
+                  <Select name="entry_year" required defaultValue={exam?.entry_year ?? defaultEntryYear}>
+                    <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder="Select year" /></SelectTrigger>
+                    <SelectContent position="popper">
+                      {entryYearOptions.map((yr) => (
+                        <SelectItem key={yr} value={yr}>{yr}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormField>
                 <FormField label="Year Level *">
-                  <Input name="year_level" required className={inputStyles} defaultValue={exam?.year_level ?? ""} placeholder="e.g. Year 12" />
+                  <Select name="year_level" required defaultValue={exam?.year_level ?? ""}>
+                    <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder="Select level" /></SelectTrigger>
+                    <SelectContent position="popper">
+                      {[...Array.from({ length: 13 }, (_, i) => `Year ${i + 1}`), "Foundation", "Summer"].map((lvl) => (
+                        <SelectItem key={lvl} value={lvl}>{lvl}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormField>
               </div>
               <FormField label="Exam Type *">

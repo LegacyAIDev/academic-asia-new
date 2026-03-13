@@ -18,12 +18,12 @@ export type CreateStudentInput = {
   mobile?: string | null
   telephone?: string | null
   address_line_1?: string | null
-  address_line_2?: string | null
   chinese_address?: string | null
   present_school?: string | null
   present_school_type_id?: number | null
   course_id?: number | null
-  entry_year?: string | null
+  entry_year?: number | null
+  entry_month?: number | null
   enrollment_date?: string | null
   lead_source_id?: number | null
   status_id?: number | null

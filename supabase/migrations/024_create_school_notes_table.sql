@@ -17,31 +17,17 @@ create table public.school_note_categories (
 );
 
 insert into public.school_note_categories (code, label, sort_order) values
-                                                                        -- Main categories
-                                                                        ('school', 'School', 1),
-                                                                        ('academic', 'Academic', 2),
-                                                                        ('al_subjects', 'AL Subjects', 3),
-                                                                        ('accommodation', 'Accommodation', 4),
-                                                                        ('sports', 'Sports', 5),
-                                                                        ('activities', 'Activities', 6),
-                                                                        ('music', 'Music', 7),
-                                                                        ('application_procedure', 'Application Procedure', 8),
-                                                                        ('aa_only', 'AA Only', 9),
-                                                                        -- Less common
-                                                                        ('scholarship', 'Scholarship', 10),
-                                                                        ('ukiset', 'UKiset', 11),
-                                                                        ('feature', 'Feature', 12),
-                                                                        ('isi', 'ISI', 13),
-                                                                        ('alumni', 'Alumni', 14),
-                                                                        ('competition', 'Competition', 15),
-                                                                        ('university_destination', 'University Destination', 16),
-                                                                        ('nationality_mix', 'Nationality Mix', 17),
-                                                                        ('portrait', 'Portrait', 18),
-                                                                        ('early_entry_scheme', 'Early Entry Scheme', 19),
-                                                                        ('visit', 'Visit', 20),
-                                                                        ('selected_school_list_remark_eng', 'Selected School List Remark (English)', 21),
-                                                                        ('selected_school_list_remark_chi', 'Selected School List Remark (Chinese)', 22),
-                                                                        ('others', 'Others', 99);
+    ('academic', 'Academic', 1),
+    ('accommodation', 'Accommodation', 2),
+    ('activities', 'Activities', 3),
+    ('application_procedure', 'Application Procedure', 4),
+    ('guardian', 'Guardian', 5),
+    ('music', 'Music', 6),
+    ('school', 'School', 7),
+    ('scholarship', 'Scholarship', 8),
+    ('sports', 'Sports', 9),
+    ('ukiset', 'UKiset', 10),
+    ('others', 'Other', 99);
 
 -- ============================================================================
 -- SCHOOL NOTES TABLE

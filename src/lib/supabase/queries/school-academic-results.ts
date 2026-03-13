@@ -6,7 +6,8 @@ export type SchoolAcademicResultWithJoins = {
   school_id: string
   exam_year: number | null
   exam_type_id: number | null
-  grade_range: string | null
+  grade_from: string | null
+  grade_to: string | null
   result_percentage: string | null
   remarks: string | null
   created_at: string | null
@@ -24,7 +25,7 @@ export async function getSchoolAcademicResults(schoolId: string): Promise<School
   const { data, error } = await supabase
     .from('school_academic_results')
     .select(`
-      id, school_id, exam_year, exam_type_id, grade_range,
+      id, school_id, exam_year, exam_type_id, grade_from, grade_to,
       result_percentage, remarks, created_at, updated_at,
       exam_type:academic_exam_types!school_academic_results_exam_type_id_fkey(id, code, label, country)
     `)

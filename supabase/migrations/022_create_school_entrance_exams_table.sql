@@ -17,6 +17,7 @@ create table public.entrance_exam_types (
 );
 
 insert into public.entrance_exam_types (code, label, sort_order) values
+                                                                     ('entrance', 'Entrance', 0),
                                                                      ('entrance_sep', 'Entrance Sep', 1),
                                                                      ('entrance_jan', 'Entrance Jan', 2),
                                                                      ('entrance_apr', 'Entrance Apr', 3),
@@ -26,7 +27,9 @@ insert into public.entrance_exam_types (code, label, sort_order) values
                                                                      ('setting', 'Setting', 7),
                                                                      ('sample', 'Sample', 8),
                                                                      ('summer', 'Summer', 9),
-                                                                     ('pre_ib_course', 'Pre-IB Course', 10);
+                                                                     ('pre_ib_course', 'Pre-IB Course', 10),
+                                                                     ('entrance_sep_weekly_boarding', 'Entrance Sep for Weekly Boarding', 11),
+                                                                     ('retest', 'Retest', 12);
 
 -- ============================================================================
 -- SCHOOL ENTRANCE EXAMS TABLE

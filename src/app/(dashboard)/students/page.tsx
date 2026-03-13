@@ -237,7 +237,7 @@ function StudentRow({ student }: { student: StudentListItem }) {
         <div>
           <p className="text-sm truncate max-w-[180px]">{student.present_school ?? '—'}</p>
           <p className="text-xs text-muted-foreground">
-            {student.course?.label ?? '—'} {student.entry_year ? `· ${student.entry_year.slice(0, 4)}` : ''}
+            {student.course?.label ?? '—'} {student.entry_year ? `· ${student.entry_year}` : ''}
           </p>
         </div>
       </TableCell>

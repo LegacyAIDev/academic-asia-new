@@ -44,6 +44,7 @@ import {
   deleteSchoolSupInfo,
   type CreateSupInfoInput,
 } from "@/lib/supabase/actions/schools"
+import { getAcademicYearOptions } from "@/lib/utils"
 import type { SupInfoCategory } from "@/lib/supabase/queries/school-supplementary-info"
 
 type SchoolSupplementaryInfo = {
@@ -137,12 +138,7 @@ export function SupInfoDialog({
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  const currentYear = new Date().getFullYear()
-  const schoolYearOptions = Array.from({ length: 7 }, (_, i) => {
-    const y = currentYear - 3 + i
-    return `${y}-${(y + 1).toString().slice(-2)}`
-  })
-  const defaultSchoolYear = `${currentYear + 1}-${(currentYear + 2).toString().slice(-2)}`
+  const { options: schoolYearOptions, defaultYear: defaultSchoolYear } = getAcademicYearOptions()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

@@ -6,7 +6,6 @@ export type SchoolNoteWithJoins = {
   school_id: string
   category_id: number | null
   detail: string | null
-  is_flagged: boolean | null
   created_at: string | null
   updated_at: string | null
   category: { id: number; code: string; label: string } | null
@@ -22,7 +21,7 @@ export async function getSchoolNotes(schoolId: string): Promise<SchoolNoteWithJo
   const { data, error } = await supabase
     .from('school_notes')
     .select(`
-      id, school_id, category_id, detail, is_flagged,
+      id, school_id, category_id, detail,
       created_at, updated_at,
       category:school_note_categories!school_notes_category_id_fkey(id, code, label)
     `)

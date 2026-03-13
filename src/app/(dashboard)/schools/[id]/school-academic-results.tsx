@@ -96,7 +96,11 @@ export function SchoolAcademicResultsSection({
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm font-medium">
-                      {result.grade_range || "—"}
+                      {result.grade_from
+                        ? result.grade_to
+                          ? `${result.grade_from} - ${result.grade_to}`
+                          : result.grade_from
+                        : "—"}
                     </TableCell>
                     <TableCell className="text-sm text-right font-semibold">
                       {result.result_percentage ? `${parseFloat(result.result_percentage)}%` : "—"}

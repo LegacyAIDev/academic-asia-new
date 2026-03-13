@@ -48,6 +48,7 @@ import {
   deleteSchoolFee,
   type CreateSchoolFeeInput,
 } from "@/lib/supabase/actions/school-fees"
+import { getAcademicYearOptions } from "@/lib/utils"
 import type { SchoolFeeWithJoins } from "@/lib/supabase/queries/school-fees"
 
 type FeeTypeItem = { id: number; code: string; label: string }
@@ -134,12 +135,7 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
 
   const { feeTypes } = referenceData
 
-  const currentYear = new Date().getFullYear()
-  const financialYearOptions = Array.from({ length: 7 }, (_, i) => {
-    const y = currentYear - 3 + i
-    return `${y}-${(y + 1).toString().slice(-2)}`
-  })
-  const defaultFinancialYear = `${currentYear + 1}-${(currentYear + 2).toString().slice(-2)}`
+  const { options: financialYearOptions, defaultYear: defaultFinancialYear } = getAcademicYearOptions()
 
   const handleOpenChange = (value: boolean) => {
     setOpen(value)

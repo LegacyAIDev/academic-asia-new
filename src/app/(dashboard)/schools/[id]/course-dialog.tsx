@@ -47,6 +47,7 @@ import {
   deleteSchoolCourse,
   type CreateSchoolCourseInput,
 } from "@/lib/supabase/actions/school-courses"
+import { getAcademicYearOptions } from "@/lib/utils"
 import type { SchoolCourseWithJoins, CourseItem } from "@/lib/supabase/queries/school-courses"
 
 export type CourseReferenceData = { courses: CourseItem[] }
@@ -134,12 +135,7 @@ export function CourseDialog({ schoolId, referenceData, mode, course, trigger }:
 
   const { courses } = referenceData
 
-  const currentYear = new Date().getFullYear()
-  const schoolYearOptions = Array.from({ length: 7 }, (_, i) => {
-    const y = currentYear - 3 + i
-    return `${y}-${(y + 1).toString().slice(-2)}`
-  })
-  const defaultSchoolYear = `${currentYear + 1}-${(currentYear + 2).toString().slice(-2)}`
+  const { options: schoolYearOptions, defaultYear: defaultSchoolYear } = getAcademicYearOptions()
 
   /** Group courses by category for the dropdown */
   const groupedCourses = courses.reduce((acc, c) => {

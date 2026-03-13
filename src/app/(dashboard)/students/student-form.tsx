@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useMemo } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -17,6 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { PhoneInput } from "@/components/ui/phone-input"
 import {
   Save,
@@ -25,6 +31,7 @@ import {
   GraduationCap,
   FileText,
   Loader2,
+  CalendarDays,
 } from "lucide-react"
 import { createStudent, updateStudent, type CreateStudentInput} from "@/lib/supabase/actions/students"
 import type { StudentWithJoins } from "@/lib/supabase/queries/students"
@@ -54,6 +61,10 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [dobOpen, setDobOpen] = useState(false)
+  const [dob, setDob] = useState<Date | undefined>(
+    student?.date_of_birth ? new Date(student.date_of_birth + "T00:00:00") : undefined
+  )
 
   const { statuses, placements, nationalities, courses, leadSources, schoolTypes } = referenceData
 
@@ -68,7 +79,7 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
       first_name: formData.get("first_name") as string,
       chinese_name: (formData.get("chinese_name") as string) || null,
       gender: (formData.get("gender") as string) || null,
-      date_of_birth: (formData.get("date_of_birth") as string) || null,
+      date_of_birth: dob ? dob.toISOString().split("T")[0] : null,
       nationality_id: formData.get("nationality_id") ? parseInt(formData.get("nationality_id") as string, 10) : null,
       passport_type: (formData.get("passport_type") as string) || null,
       passport_number: (formData.get("passport_number") as string) || null,
@@ -76,12 +87,12 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
       mobile: (formData.get("mobile") as string) || null,
       telephone: (formData.get("telephone") as string) || null,
       address_line_1: (formData.get("address_line_1") as string) || null,
-      address_line_2: (formData.get("address_line_2") as string) || null,
       chinese_address: (formData.get("chinese_address") as string) || null,
       present_school: (formData.get("present_school") as string) || null,
       present_school_type_id: formData.get("present_school_type_id") ? parseInt(formData.get("present_school_type_id") as string, 10) : null,
       course_id: formData.get("course_id") ? parseInt(formData.get("course_id") as string, 10) : null,
-      entry_year: (formData.get("entry_year") as string) || null,
+      entry_year: formData.get("entry_year") ? parseInt(formData.get("entry_year") as string, 10) : null,
+      entry_month: formData.get("entry_month") ? parseInt(formData.get("entry_month") as string, 10) : null,
       enrollment_date: (formData.get("enrollment_date") as string) || null,
       lead_source_id: formData.get("lead_source_id") ? parseInt(formData.get("lead_source_id") as string, 10) : null,
       status_id: formData.get("status_id") ? parseInt(formData.get("status_id") as string, 10) : null,
@@ -183,13 +194,32 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="date_of_birth">Date of Birth</Label>
-              <Input
-                id="date_of_birth"
-                name="date_of_birth"
-                type="date"
-                defaultValue={student?.date_of_birth ?? ""}
-              />
+              <Label>Date of Birth</Label>
+              <Popover open={dobOpen} onOpenChange={setDobOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start font-normal"
+                  >
+                    <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {dob ? dob.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : <span className="text-muted-foreground">Select date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dob}
+                    defaultMonth={dob}
+                    captionLayout="dropdown"
+                    fromYear={1990}
+                    toYear={new Date().getFullYear()}
+                    onSelect={(date) => {
+                      setDob(date)
+                      setDobOpen(false)
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-2">
               <Label htmlFor="nationality_id">Nationality</Label>
@@ -273,25 +303,14 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
 
           <Separator />
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="address_line_1">Address (Line 1)</Label>
-              <Input
-                id="address_line_1"
-                name="address_line_1"
-                placeholder="Street address"
-                defaultValue={student?.address_line_1 ?? ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="address_line_2">Address (Line 2)</Label>
-              <Input
-                id="address_line_2"
-                name="address_line_2"
-                placeholder="Flat/Unit, Building, City"
-                defaultValue={student?.address_line_2 ?? ""}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="address_line_1">Address</Label>
+            <Input
+              id="address_line_1"
+              name="address_line_1"
+              placeholder="e.g. Flat B, 15/F, 41 Conduit Road, Mid-Levels, Hong Kong"
+              defaultValue={student?.address_line_1 ?? ""}
+            />
           </div>
 
           <div className="space-y-2">
@@ -361,14 +380,29 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
             </div>
             <div className="space-y-2">
               <Label htmlFor="entry_year">Entry Year</Label>
-              <Input
-                id="entry_year"
-                name="entry_year"
-                placeholder="e.g. 2024"
-                pattern="\d{4}"
-                maxLength={4}
-                defaultValue={student?.entry_year?.slice(0, 4) ?? ""}
-              />
+              <Select name="entry_year" defaultValue={student?.entry_year?.toString() ?? ""}>
+                <SelectTrigger id="entry_year">
+                  <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[2026, 2027, 2028, 2029, 2030].map((y) => (
+                    <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="entry_month">Entry Month</Label>
+              <Select name="entry_month" defaultValue={student?.entry_month?.toString() ?? ""}>
+                <SelectTrigger id="entry_month">
+                  <SelectValue placeholder="Select month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
+                    <SelectItem key={i + 1} value={(i + 1).toString()}>{m}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="enrollment_date">Enrollment Date</Label>

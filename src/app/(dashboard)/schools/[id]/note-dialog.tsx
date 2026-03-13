@@ -136,7 +136,6 @@ export function NoteDialog({
         ? parseInt(formData.get("category_id") as string, 10)
         : null,
       detail: (formData.get("detail") as string) || null,
-      is_flagged: formData.get("is_flagged") === "true",
     }
 
     startTransition(async () => {
@@ -212,15 +211,6 @@ export function NoteDialog({
                         </span>
                       </SelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
-              </FormField>
-              <FormField label="Flagged">
-                <Select name="is_flagged" defaultValue={note?.is_flagged ? "true" : "false"}>
-                  <SelectTrigger className={selectTriggerStyles}><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="false">No</SelectItem>
-                    <SelectItem value="true">Yes</SelectItem>
                   </SelectContent>
                 </Select>
               </FormField>

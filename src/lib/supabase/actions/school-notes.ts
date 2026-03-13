@@ -14,7 +14,6 @@ export type CreateSchoolNoteInput = {
   school_id: string
   category_id?: number | null
   detail?: string | null
-  is_flagged?: boolean | null
 }
 
 /**

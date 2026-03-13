@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { StickyNote, Flag } from "lucide-react"
+import { StickyNote } from "lucide-react"
 import { NoteDialog, EditNoteButton, DeleteNoteButton } from "./note-dialog"
 import type { SchoolNoteWithJoins } from "@/lib/supabase/queries/school-notes"
 import type { NoteReferenceData } from "./note-dialog"
@@ -83,7 +83,6 @@ export function SchoolNotesSection({
               <TableRow className="hover:bg-transparent">
                 <TableHead className="pl-6 min-w-[150px]">Category</TableHead>
                 <TableHead>Detail</TableHead>
-                <TableHead className="min-w-[70px] text-center">Flagged</TableHead>
                 <TableHead className="pr-6 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -101,11 +100,6 @@ export function SchoolNotesSection({
                       <p className="text-muted-foreground line-clamp-2 max-w-[500px]">
                         {note.detail || "—"}
                       </p>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {note.is_flagged && (
-                        <Flag className="h-4 w-4 text-amber-500 mx-auto" />
-                      )}
                     </TableCell>
                     <TableCell className="pr-6">
                       <div className="flex items-center justify-end gap-1">

@@ -14,7 +14,8 @@ export type CreateSchoolAcademicResultInput = {
   school_id: string
   exam_year?: number | null
   exam_type_id?: number | null
-  grade_range?: string | null
+  grade_from?: string | null
+  grade_to?: string | null
   result_percentage?: number | null
   remarks?: string | null
 }

@@ -1593,7 +1593,7 @@ export type Database = {
         Row: {
           aa_news: boolean | null
           address_line_1: string | null
-          address_line_2: string | null
+          legacy_address_line_2: string | null
           airport_pickup: boolean | null
           chinese_address: string | null
           chinese_address_1: string | null
@@ -1606,7 +1606,8 @@ export type Database = {
           education_remarks: string | null
           email: string | null
           enrollment_date: string | null
-          entry_year: string | null
+          entry_month: number | null
+          entry_year: number | null
           exam_paper: string | null
           fax: string | null
           first_name: string
@@ -1617,6 +1618,7 @@ export type Database = {
           lead_source_4: string | null
           lead_source_5: string | null
           lead_source_id: number | null
+          legacy_entry_year: string | null
           legacy_last_update: string | null
           login_name: string | null
           mobile: string | null
@@ -1642,7 +1644,7 @@ export type Database = {
         Insert: {
           aa_news?: boolean | null
           address_line_1?: string | null
-          address_line_2?: string | null
+          legacy_address_line_2?: string | null
           airport_pickup?: boolean | null
           chinese_address?: string | null
           chinese_address_1?: string | null
@@ -1655,7 +1657,8 @@ export type Database = {
           education_remarks?: string | null
           email?: string | null
           enrollment_date?: string | null
-          entry_year?: string | null
+          entry_month?: number | null
+          entry_year?: number | null
           exam_paper?: string | null
           fax?: string | null
           first_name: string
@@ -1666,6 +1669,7 @@ export type Database = {
           lead_source_4?: string | null
           lead_source_5?: string | null
           lead_source_id?: number | null
+          legacy_entry_year?: string | null
           legacy_last_update?: string | null
           login_name?: string | null
           mobile?: string | null
@@ -1691,7 +1695,7 @@ export type Database = {
         Update: {
           aa_news?: boolean | null
           address_line_1?: string | null
-          address_line_2?: string | null
+          legacy_address_line_2?: string | null
           airport_pickup?: boolean | null
           chinese_address?: string | null
           chinese_address_1?: string | null
@@ -1704,7 +1708,8 @@ export type Database = {
           education_remarks?: string | null
           email?: string | null
           enrollment_date?: string | null
-          entry_year?: string | null
+          entry_month?: number | null
+          entry_year?: number | null
           exam_paper?: string | null
           fax?: string | null
           first_name?: string
@@ -1715,6 +1720,7 @@ export type Database = {
           lead_source_4?: string | null
           lead_source_5?: string | null
           lead_source_id?: number | null
+          legacy_entry_year?: string | null
           legacy_last_update?: string | null
           login_name?: string | null
           mobile?: string | null
