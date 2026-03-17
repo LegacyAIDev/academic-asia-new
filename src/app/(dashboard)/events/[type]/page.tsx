@@ -347,8 +347,8 @@ function getStatCardsForType(
   // Type-specific customizations
   if (typeCode === "interview" || typeCode === "music_audition") {
     baseStats[3] = {
-      label: "Interviewers",
-      value: stats.totalInterviewers.toLocaleString(),
+      label: "Representatives",
+      value: stats.totalRepresentatives.toLocaleString(),
       icon: Users,
       iconBg: "bg-purple-500/10",
       iconColor: "text-purple-600",

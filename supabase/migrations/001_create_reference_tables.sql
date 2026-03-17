@@ -195,107 +195,25 @@ create table public.courses (
 );
 
 insert into public.courses (code, label, category, sort_order) values
-                                                                   -- Early Years
-                                                                   ('nursery', 'Nursery', 'early_years', 1),
-                                                                   ('pre_kindergarten', 'Pre-Kindergarten', 'early_years', 2),
-                                                                   ('pre_prep', 'Pre-Prep', 'early_years', 3),
-                                                                   ('reception', 'Reception', 'early_years', 4),
-
-                                                                   -- Primary Years
-                                                                   ('year_1', 'Year 1', 'primary', 10),
-                                                                   ('year_2', 'Year 2', 'primary', 11),
-                                                                   ('year_3', 'Year 3', 'primary', 12),
-                                                                   ('year_4', 'Year 4', 'primary', 13),
-                                                                   ('year_5', 'Year 5', 'primary', 14),
-                                                                   ('year_6', 'Year 6', 'primary', 15),
-
-                                                                   -- Secondary Years
-                                                                   ('year_7', 'Year 7', 'secondary', 20),
-                                                                   ('year_8', 'Year 8', 'secondary', 21),
-                                                                   ('year_9', 'Year 9', 'secondary', 22),
-                                                                   ('year_9_scholarship', 'Year 9 - Scholarship', 'secondary', 23),
-                                                                   ('year_10', 'Year 10', 'secondary', 24),
-                                                                   ('year_11', 'Year 11', 'secondary', 25),
-
-                                                                   -- Sixth Form
-                                                                   ('year_12', 'Year 12', 'sixth_form', 30),
-                                                                   ('year_12_ib', 'Year 12_IB', 'sixth_form', 31),
-                                                                   ('year_13', 'Year 13', 'sixth_form', 32),
-
-                                                                   -- GCSE Programs
-                                                                   ('1_year_gcse', '1 Year GCSE', 'gcse', 40),
-                                                                   ('1_year_igcse', '1 Year IGCSE', 'gcse', 41),
-                                                                   ('1_year_igcse_gcse', '1 Year IGCSE/GCSE', 'gcse', 42),
-                                                                   ('2_year_igcse_gcse', '2 Years IGCSE/GCSE', 'gcse', 43),
-                                                                   ('3_year_gcse', '3-Year GCSE', 'gcse', 44),
-                                                                   ('pre_gcse', 'Pre-GCSE', 'gcse', 45),
-                                                                   ('gcse_pathway_discovery_y9', 'GCSE Pathway Discovery Year 9 Entry', 'gcse', 46),
-                                                                   ('gcse_academic_pathway_y10', 'GCSE Academic Pathway Year 10 Entry', 'gcse', 47),
-
-                                                                   -- A-Level Programs
-                                                                   ('1_year_al', '1 Year AL', 'a_level', 50),
-                                                                   ('18_months_al', '18 months AL', 'a_level', 51),
-                                                                   ('2_year_al', '2-Year AL', 'a_level', 52),
-                                                                   ('3_year_al', '3 Years AL', 'a_level', 53),
-                                                                   ('a_level', 'A Level', 'a_level', 54),
-                                                                   ('al_plus', 'AL plus+', 'a_level', 55),
-
-                                                                   -- Pre A-Level
-                                                                   ('pre_al', 'Pre-AL', 'pre_al', 60),
-                                                                   ('1_year_pre_al', '1-Year Pre-AL', 'pre_al', 61),
-                                                                   ('2_year_pre_al', '2-Year Pre-AL', 'pre_al', 62),
-                                                                   ('1_year_pre_sixth_form', '1 Year Pre-Sixth Form Programme', 'pre_al', 63),
-                                                                   ('pre_sixth_form_course', 'Pre-Sixth Form Course', 'pre_al', 64),
-                                                                   ('pre_6th_form', 'Pre-6th Form', 'pre_al', 65),
-
-                                                                   -- IB Programs
-                                                                   ('ib', 'IB', 'ib', 70),
-                                                                   ('pre_ib', 'Pre-IB', 'ib', 71),
-
-                                                                   -- Foundation Programs
-                                                                   ('foundation', 'Foundation', 'foundation', 80),
-                                                                   ('1_year_foundation', '1-Year Foundation', 'foundation', 81),
-                                                                   ('international_foundation', 'International Foundation', 'foundation', 82),
-                                                                   ('international_foundation_year', 'International Foundation Year', 'foundation', 83),
-                                                                   ('sixth_form_foundation', 'Sixth Form Foundation', 'foundation', 84),
-                                                                   ('sixth_form_foundation_year', 'Sixth Form Foundation Year', 'foundation', 85),
-                                                                   ('6th_form_foundation', '6th Form Foundation', 'foundation', 86),
-                                                                   ('pre_foundation', 'Pre-Foundation', 'foundation', 87),
-                                                                   ('foundation_degree', 'Foundation Degree', 'foundation', 88),
-                                                                   ('1_year_junior_foundation', '1-Year Junior Foundation Course', 'foundation', 89),
-
-                                                                   -- English Programs
-                                                                   ('english', 'English', 'english', 90),
-                                                                   ('english_course', 'English Course', 'english', 91),
-                                                                   ('english_for_education', 'English for Education', 'english', 92),
-                                                                   ('english_plus_multi_activities', 'English Plus Multi-Activities', 'english', 93),
-                                                                   ('english_preparation_pathways', 'English Preparation for Pathways (EPP)', 'english', 94),
-                                                                   ('english_language_prep', 'English Language Preparation Programme (ELPP)', 'english', 95),
-                                                                   ('pre_sessional_course', 'Pre-Sessional Course', 'english', 96),
-                                                                   ('ielts', 'IELTS', 'english', 97),
-                                                                   ('ielts_express', 'IELTS Express', 'english', 98),
-
-                                                                   -- Vocational / Other
-                                                                   ('btec', 'BTEC', 'vocational', 100),
-                                                                   ('access_fe', 'Access to Further Education', 'vocational', 101),
-                                                                   ('development_year', 'Development Year', 'other', 102),
-                                                                   ('academic_preparation', 'Academic Preparation Programme', 'other', 103),
-                                                                   ('accelerated_learning', 'Accelerated Learning Programme (BALP)', 'other', 104),
-
-                                                                   -- Summer Programs
-                                                                   ('summer', 'Summer', 'summer', 110),
-                                                                   ('summer_4', 'Summer-4', 'summer', 111),
-                                                                   ('summer_8', 'Summer-8', 'summer', 112),
-                                                                   ('easter', 'Easter', 'summer', 113),
-
-                                                                   -- Levels
-                                                                   ('level_4', 'Level 4', 'level', 120),
-                                                                   ('level_5', 'Level 5', 'level', 121),
-                                                                   ('level_6', 'Level 6', 'level', 122),
-                                                                   ('level_7', 'Level 7', 'level', 123),
-                                                                   ('level_8', 'Level 8', 'level', 124),
-                                                                   ('level_9', 'Level 9', 'level', 125),
-                                                                   ('level_10', 'Level 10', 'level', 126);
+    ('nursery', 'Nursery', 'early_years', 1),
+    ('pre_kindergarten', 'Pre-Kindergarten', 'early_years', 2),
+    ('pre_prep', 'Pre-Prep', 'early_years', 3),
+    ('reception', 'Reception', 'early_years', 4),
+    ('year_1', 'Year 1', 'primary', 5),
+    ('year_2', 'Year 2', 'primary', 6),
+    ('year_3', 'Year 3', 'primary', 7),
+    ('year_4', 'Year 4', 'primary', 8),
+    ('year_5', 'Year 5', 'primary', 9),
+    ('year_6', 'Year 6', 'primary', 10),
+    ('year_7', 'Year 7', 'secondary', 11),
+    ('year_8', 'Year 8', 'secondary', 12),
+    ('year_9', 'Year 9', 'secondary', 13),
+    ('year_10', 'Year 10', 'secondary', 14),
+    ('year_11', 'Year 11', 'secondary', 15),
+    ('year_12', 'Year 12', 'sixth_form', 16),
+    ('year_13', 'Year 13', 'sixth_form', 17),
+    ('foundation', 'Foundation', 'foundation', 18),
+    ('other', 'Other', 'other', 99);
 
 -- ============================================================================
 -- INDEXES

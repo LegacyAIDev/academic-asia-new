@@ -13,17 +13,15 @@ type ActionResult<T = void> = {
 export type CreateApplicationInput = {
   student_id: string
   school_id: string
-  course_id?: number | null
-  course_detail?: string | null
-  entry_year?: string | null
+  entry_year?: number | null
+  entry_month?: number | null
   course_start_month?: number | null
   course_start_year?: number | null
   status_id?: number | null
-  sub_status_id?: number | null
   mode_id?: number | null
   is_referral?: boolean | null
-  scholarship_amount?: number | null
   scholarship_detail?: string | null
+  scholarship_types?: string[] | null
   event_id?: string | null
   event_date?: string | null
   event_time?: string | null
@@ -32,6 +30,10 @@ export type CreateApplicationInput = {
   remarks_to_school?: string | null
   aa_remarks?: string | null
   registration_date?: string | null
+  visit_date?: string | null
+  visit_time?: string | null
+  school_contact?: string | null
+  visit_remarks?: string | null
 }
 
 /**

@@ -42,7 +42,6 @@ import { getStudentEventApplications, getEventAppReferenceData } from "@/lib/sup
 import { getStudentTravel, getTravelReferenceData } from "@/lib/supabase/queries/student-travel"
 import { getStudentExamResults, getExamResultReferenceData } from "@/lib/supabase/queries/student-exam-results"
 import { getStudentBriefIntro, getBriefIntroReferenceData } from "@/lib/supabase/queries/student-brief-intro"
-import { getStudentLogBook } from "@/lib/supabase/queries/student-log-book"
 import { getStudentResume, getResumeReferenceData } from "@/lib/supabase/queries/student-resume"
 import { StudentContactsSection } from "./student-contacts"
 import { StudentApplicationsSection } from "./student-applications"
@@ -52,7 +51,6 @@ import { StudentEventApplicationsSection } from "./student-event-applications"
 import { StudentTravelSection } from "./student-travel"
 import { StudentExamResultsSection } from "./student-exam-results"
 import { StudentBriefIntroSection } from "./student-brief-intro"
-import { StudentLogBookSection } from "./student-log-book"
 import { StudentResumeSection } from "./student-resume"
 import { DeleteStudentDialog } from "./delete-student-dialog"
 
@@ -88,7 +86,6 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     travelRecords, travelReferenceData,
     examResults, examResultReferenceData,
     briefIntro, briefIntroReferenceData,
-    logEntries,
     resumeEntries, resumeReferenceData,
   ] = await Promise.all([
     getStudentById(id),
@@ -108,7 +105,6 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     getExamResultReferenceData(),
     getStudentBriefIntro(id),
     getBriefIntroReferenceData(),
-    getStudentLogBook(id),
     getStudentResume(id),
     getResumeReferenceData(),
   ])
@@ -331,12 +327,6 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
                   New Resume
                 </a>
               </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <a href="#log-book">
-                  <BookOpen className="h-4 w-4" />
-                  New Log Entry
-                </a>
-              </Button>
             </CardContent>
           </Card>
         </div>
@@ -419,7 +409,11 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Lead Source</p>
-                <p className="text-sm font-medium">{student.lead_source?.label || "—"}</p>
+                <p className="text-sm font-medium capitalize">
+                  {student.lead_source_category
+                    ? `${student.lead_source_category.replace("_", " ")}${student.lead_source_referral_detail ? ` — ${student.lead_source_referral_detail}` : ""}${student.lead_source_event ? ` — ${student.lead_source_event.name}` : ""}`
+                    : "—"}
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exam Paper</p>
@@ -524,19 +518,13 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
           />
         </div>
 
-        {/* Log Book Section */}
-        <div id="log-book">
-          <StudentLogBookSection
-            studentId={id}
-            logEntries={logEntries}
-          />
-        </div>
 
         {/* Contacts Section */}
         <StudentContactsSection
           studentId={id}
           contacts={contacts}
           referenceData={contactReferenceData}
+          studentAddress={student.address_line_1}
         />
       </div>
     </div>

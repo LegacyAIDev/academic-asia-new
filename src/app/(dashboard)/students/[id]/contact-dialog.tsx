@@ -37,13 +37,12 @@ import {
   Trash2,
   User,
   Phone,
-  Mail,
-  Briefcase,
   MapPin,
   MessageSquare,
   UserPlus,
   Check,
   Heart,
+  Copy,
 } from "lucide-react"
 import {
   createStudentContact,
@@ -93,6 +92,7 @@ type ContactDialogProps = {
   mode: "create" | "edit"
   contact?: ContactWithRelations
   trigger?: React.ReactNode
+  studentAddress?: string | null
 }
 
 /** Floating card section for form grouping with visual indicator */
@@ -162,10 +162,12 @@ export function ContactDialog({
   mode,
   contact,
   trigger,
+  studentAddress,
 }: ContactDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [address, setAddress] = useState(contact?.address_1 ?? "")
 
   const { relationships, titles } = referenceData
 
@@ -185,13 +187,9 @@ export function ContactDialog({
       mobile: (formData.get("mobile") as string) || null,
       fax: (formData.get("fax") as string) || null,
       email_1: (formData.get("email_1") as string) || null,
-      email_2: (formData.get("email_2") as string) || null,
-      email_3: (formData.get("email_3") as string) || null,
-      address_1: (formData.get("address_1") as string) || null,
-      address_2: (formData.get("address_2") as string) || null,
+      address_1: address || null,
       occupation: (formData.get("occupation") as string) || null,
       office_telephone: (formData.get("office_telephone") as string) || null,
-      office_fax: (formData.get("office_fax") as string) || null,
       priority: formData.get("priority") ? parseInt(formData.get("priority") as string, 10) : null,
       remarks: (formData.get("remarks") as string) || null,
     }
@@ -216,7 +214,10 @@ export function ContactDialog({
   const selectTriggerStyles = "h-10 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => {
+      setOpen(v)
+      if (v) setAddress(contact?.address_1 ?? "")
+    }}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
@@ -226,7 +227,7 @@ export function ContactDialog({
         )}
       </DialogTrigger>
       <DialogContent
-        className="sm:!max-w-[960px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col"
+        className="sm:!max-w-[560px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col"
         showCloseButton={false}
       >
         {/* Elegant Header */}
@@ -286,142 +287,130 @@ export function ContactDialog({
               </div>
             )}
 
-            {/* Two Column Layout */}
-            <div className="grid lg:grid-cols-2 gap-5">
-              {/* Left Column */}
-              <div className="space-y-5">
-                {/* Relationship Section */}
-                <FormSection icon={Heart} title="Relationship" accentColor="rose">
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField label="Relationship *">
-                      <Select name="relationship_id" defaultValue={contact?.relationship_id?.toString() ?? ""}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {relationships.map((rel) => (
-                            <SelectItem key={rel.id} value={rel.id.toString()}>{rel.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-                    <FormField label="Priority">
-                      <Select name="priority" defaultValue={contact?.priority?.toString() ?? ""}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[1, 2, 3, 4, 5].map((p) => (
-                            <SelectItem key={p} value={p.toString()}>
-                              {p === 1 ? "1 — Primary" : p === 2 ? "2 — Secondary" : `${p}`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-                  </div>
-                </FormSection>
+            <div className="space-y-5">
+              <FormSection icon={Heart} title="Relationship" accentColor="rose">
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField label="Relationship *">
+                    <Select name="relationship_id" defaultValue={contact?.relationship_id?.toString() ?? ""}>
+                      <SelectTrigger className={selectTriggerStyles}>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {relationships.map((rel) => (
+                          <SelectItem key={rel.id} value={rel.id.toString()}>{rel.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormField>
+                  <FormField label="Priority">
+                    <Select name="priority" defaultValue={contact?.priority?.toString() ?? ""}>
+                      <SelectTrigger className={selectTriggerStyles}>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5].map((p) => (
+                          <SelectItem key={p} value={p.toString()}>
+                            {p === 1 ? "1 — Primary" : p === 2 ? "2 — Secondary" : `${p}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormField>
+                </div>
+              </FormSection>
 
-                {/* Personal Info Section */}
-                <FormSection icon={User} title="Personal Details" accentColor="primary">
-                  <div className="grid grid-cols-4 gap-3">
-                    <FormField label="Title">
-                      <Select name="title_id" defaultValue={contact?.title_id?.toString() ?? ""}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="—" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {titles.map((t) => (
-                            <SelectItem key={t.id} value={t.id.toString()}>{t.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-                    <FormField label="First Name">
-                      <Input name="first_name" className={inputStyles} defaultValue={contact?.first_name ?? ""} placeholder="John" />
-                    </FormField>
-                    <FormField label="Surname">
-                      <Input name="surname" className={inputStyles} defaultValue={contact?.surname ?? ""} placeholder="Smith" />
-                    </FormField>
-                    <FormField label="Gender">
-                      <Select name="gender" defaultValue={contact?.gender ?? ""}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="—" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="M">Male</SelectItem>
-                          <SelectItem value="F">Female</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-                  </div>
-                </FormSection>
-
-                {/* Contact Details Section */}
-                <FormSection icon={Phone} title="Contact Details" accentColor="teal">
-                  <div className="grid grid-cols-3 gap-3">
-                    <FormField label="Mobile">
-                      <PhoneInput name="mobile" defaultValue={contact?.mobile ?? ""} defaultCountryCode="852" placeholder="9XXX XXXX" />
-                    </FormField>
-                    <FormField label="Telephone">
-                      <PhoneInput name="telephone" defaultValue={contact?.telephone ?? ""} defaultCountryCode="852" placeholder="2XXX XXXX" />
-                    </FormField>
-                    <FormField label="Fax">
-                      <PhoneInput name="fax" defaultValue={contact?.fax ?? ""} defaultCountryCode="852" placeholder="Optional" />
-                    </FormField>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <FormField label="Email (Primary)">
-                      <Input name="email_1" type="email" className={inputStyles} defaultValue={contact?.email_1 ?? ""} placeholder="email@example.com" />
-                    </FormField>
-                    <FormField label="Email 2">
-                      <Input name="email_2" type="email" className={inputStyles} defaultValue={contact?.email_2 ?? ""} placeholder="Optional" />
-                    </FormField>
-                    <FormField label="Email 3">
-                      <Input name="email_3" type="email" className={inputStyles} defaultValue={contact?.email_3 ?? ""} placeholder="Optional" />
-                    </FormField>
-                  </div>
-                </FormSection>
-              </div>
-
-              {/* Right Column */}
-              <div className="space-y-5">
-                {/* Work Information Section */}
-                <FormSection icon={Briefcase} title="Work Information" accentColor="amber">
+              <FormSection icon={User} title="Personal Details" accentColor="primary">
+                <div className="grid grid-cols-3 gap-3">
+                  <FormField label="Title">
+                    <Select name="title_id" defaultValue={contact?.title_id?.toString() ?? ""}>
+                      <SelectTrigger className={selectTriggerStyles}>
+                        <SelectValue placeholder="—" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {titles.map((t) => (
+                          <SelectItem key={t.id} value={t.id.toString()}>{t.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormField>
+                  <FormField label="First Name">
+                    <Input name="first_name" className={inputStyles} defaultValue={contact?.first_name ?? ""} placeholder="John" />
+                  </FormField>
+                  <FormField label="Surname">
+                    <Input name="surname" className={inputStyles} defaultValue={contact?.surname ?? ""} placeholder="Smith" />
+                  </FormField>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField label="Gender">
+                    <Select name="gender" defaultValue={contact?.gender ?? ""}>
+                      <SelectTrigger className={selectTriggerStyles}>
+                        <SelectValue placeholder="—" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="M">Male</SelectItem>
+                        <SelectItem value="F">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormField>
                   <FormField label="Occupation">
-                    <Input name="occupation" className={inputStyles} defaultValue={contact?.occupation ?? ""} placeholder="e.g. Business Executive, Doctor, Engineer" />
+                    <Input name="occupation" className={inputStyles} defaultValue={contact?.occupation ?? ""} placeholder="e.g. Doctor, Engineer" />
                   </FormField>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField label="Office Phone">
-                      <PhoneInput name="office_telephone" defaultValue={contact?.office_telephone ?? ""} defaultCountryCode="852" placeholder="2XXX XXXX" />
-                    </FormField>
-                    <FormField label="Office Fax">
-                      <PhoneInput name="office_fax" defaultValue={contact?.office_fax ?? ""} defaultCountryCode="852" placeholder="Optional" />
-                    </FormField>
+                </div>
+              </FormSection>
+
+              <FormSection icon={Phone} title="Contact Details" accentColor="teal">
+                <FormField label="Mobile">
+                  <PhoneInput name="mobile" defaultValue={contact?.mobile ?? ""} defaultCountryCode="852" placeholder="9XXX XXXX" />
+                </FormField>
+                <FormField label="Telephone">
+                  <PhoneInput name="telephone" defaultValue={contact?.telephone ?? ""} defaultCountryCode="852" placeholder="2XXX XXXX" />
+                </FormField>
+                <FormField label="Office Phone">
+                  <PhoneInput name="office_telephone" defaultValue={contact?.office_telephone ?? ""} defaultCountryCode="852" placeholder="2XXX XXXX" />
+                </FormField>
+                <FormField label="Fax">
+                  <PhoneInput name="fax" defaultValue={contact?.fax ?? ""} defaultCountryCode="852" placeholder="Optional" />
+                </FormField>
+                <FormField label="Email">
+                  <Input name="email_1" type="email" className={inputStyles} defaultValue={contact?.email_1 ?? ""} placeholder="email@example.com" />
+                </FormField>
+              </FormSection>
+
+              <FormSection icon={MapPin} title="Address" accentColor="primary">
+                <FormField label="Address">
+                  <div className="flex gap-2">
+                    <Input
+                      name="address_1"
+                      className={`${inputStyles} flex-1`}
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="Street address, flat number, district, city"
+                    />
+                    {studentAddress && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-10 w-10 shrink-0"
+                        title="Copy from student"
+                        onClick={() => setAddress(studentAddress)}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
-                </FormSection>
+                </FormField>
+              </FormSection>
 
-                {/* Address Section */}
-                <FormSection icon={MapPin} title="Address" accentColor="primary">
-                  <FormField label="Address Line 1">
-                    <Input name="address_1" className={inputStyles} defaultValue={contact?.address_1 ?? ""} placeholder="Street address, flat number" />
-                  </FormField>
-                  <FormField label="Address Line 2">
-                    <Input name="address_2" className={inputStyles} defaultValue={contact?.address_2 ?? ""} placeholder="District, city, country" />
-                  </FormField>
-                </FormSection>
-
-                {/* Notes Section */}
-                <FormSection icon={MessageSquare} title="Additional Notes" accentColor="teal">
-                  <Textarea
-                    name="remarks"
-                    placeholder="Any important notes about this contact, special instructions, or additional information..."
-                    rows={4}
-                    className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                    defaultValue={contact?.remarks ?? ""}
-                  />
-                </FormSection>
-              </div>
+              <FormSection icon={MessageSquare} title="Remarks" accentColor="amber">
+                <Textarea
+                  name="remarks"
+                  placeholder="Additional notes about this contact..."
+                  rows={3}
+                  className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  defaultValue={contact?.remarks ?? ""}
+                />
+              </FormSection>
             </div>
           </div>
 
@@ -472,10 +461,12 @@ export function EditContactButton({
   contact,
   studentId,
   referenceData,
+  studentAddress,
 }: {
   contact: ContactWithRelations
   studentId: string
   referenceData: { relationships: ReferenceItem[]; titles: ReferenceItem[] }
+  studentAddress?: string | null
 }) {
   return (
     <ContactDialog
@@ -483,6 +474,7 @@ export function EditContactButton({
       referenceData={referenceData}
       mode="edit"
       contact={contact}
+      studentAddress={studentAddress}
       trigger={
         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
           <Pencil className="h-3.5 w-3.5" />

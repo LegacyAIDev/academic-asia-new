@@ -923,14 +923,12 @@ export type Database = {
         Row: {
           aa_remarks: string | null
           assigned_to: string | null
-          course_detail: string | null
-          course_id: number | null
           course_start_month: number | null
           course_start_year: number | null
           created_at: string | null
           entry_month: number | null
-          entry_year: string | null
-          entry_year_value: number | null
+          entry_year: number | null
+          legacy_entry_year: string | null
           event_date: string | null
           event_id: string | null
           event_time: string | null
@@ -960,14 +958,12 @@ export type Database = {
         Insert: {
           aa_remarks?: string | null
           assigned_to?: string | null
-          course_detail?: string | null
-          course_id?: number | null
           course_start_month?: number | null
           course_start_year?: number | null
           created_at?: string | null
           entry_month?: number | null
-          entry_year?: string | null
-          entry_year_value?: number | null
+          entry_year?: number | null
+          legacy_entry_year?: string | null
           event_date?: string | null
           event_id?: string | null
           event_time?: string | null
@@ -997,14 +993,12 @@ export type Database = {
         Update: {
           aa_remarks?: string | null
           assigned_to?: string | null
-          course_detail?: string | null
-          course_id?: number | null
           course_start_month?: number | null
           course_start_year?: number | null
           created_at?: string | null
           entry_month?: number | null
-          entry_year?: string | null
-          entry_year_value?: number | null
+          entry_year?: number | null
+          legacy_entry_year?: string | null
           event_date?: string | null
           event_id?: string | null
           event_time?: string | null

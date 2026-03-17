@@ -36,7 +36,7 @@ import {
 import {
   getEventById,
   getEventSchools,
-  getEventInterviewers,
+  getEventRepresentatives,
   URL_TO_TYPE_CODE,
   EVENT_TYPE_LABELS,
 } from "@/lib/supabase/queries/events"
@@ -56,10 +56,10 @@ export default async function EventDetailPage({ params }: EventDetailPageParams)
   }
 
   // Fetch event data and related records in parallel
-  const [event, schools, interviewers] = await Promise.all([
+  const [event, schools, representatives] = await Promise.all([
     getEventById(id),
     getEventSchools(id),
-    getEventInterviewers(id),
+    getEventRepresentatives(id),
   ])
 
   if (!event) {
@@ -180,9 +180,9 @@ export default async function EventDetailPage({ params }: EventDetailPageParams)
             <Building2 className="h-4 w-4" />
             Schools ({schools.length})
           </TabsTrigger>
-          <TabsTrigger value="interviewers" className="gap-2">
+          <TabsTrigger value="representatives" className="gap-2">
             <Users className="h-4 w-4" />
-            Interviewers ({interviewers.length})
+            Representatives ({representatives.length})
           </TabsTrigger>
         </TabsList>
 
@@ -227,8 +227,8 @@ export default async function EventDetailPage({ params }: EventDetailPageParams)
                   <Badge variant="secondary">{schools.length}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Interviewers</span>
-                  <Badge variant="secondary">{interviewers.length}</Badge>
+                  <span className="text-sm text-muted-foreground">Representatives</span>
+                  <Badge variant="secondary">{representatives.length}</Badge>
                 </div>
                 {event.duration_minutes && (
                   <div className="flex items-center justify-between">
@@ -369,47 +369,47 @@ export default async function EventDetailPage({ params }: EventDetailPageParams)
           </Card>
         </TabsContent>
 
-        {/* Interviewers Tab */}
-        <TabsContent value="interviewers" className="space-y-6">
+        {/* Representatives Tab */}
+        <TabsContent value="representatives" className="space-y-6">
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-4 flex flex-row items-center justify-between">
               <CardTitle className="text-base font-medium flex items-center gap-2">
                 <Users className="h-4 w-4 text-muted-foreground" />
-                School Interviewers
+                School Representatives
               </CardTitle>
               <Button size="sm" variant="outline" disabled>
-                Add Interviewer
+                Add Representative
               </Button>
             </CardHeader>
             <CardContent className="p-0">
-              {interviewers.length === 0 ? (
+              {representatives.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground">
-                  No interviewers added to this event yet.
+                  No representatives added to this event yet.
                 </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent bg-muted/20">
-                      <TableHead className="font-medium">Interviewer Name</TableHead>
+                      <TableHead className="font-medium">Representative Name</TableHead>
                       <TableHead className="font-medium">School</TableHead>
                       <TableHead className="font-medium">Remarks</TableHead>
                       <TableHead className="w-12"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {interviewers.map((interviewer) => (
-                      <TableRow key={interviewer.id}>
+                    {representatives.map((representative) => (
+                      <TableRow key={representative.id}>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">{interviewer.name}</span>
+                            <span className="font-medium">{representative.name}</span>
                           </div>
                         </TableCell>
                         <TableCell>
-                          {interviewer.school?.name ?? "—"}
+                          {representative.school?.name ?? "—"}
                         </TableCell>
                         <TableCell className="text-muted-foreground max-w-[200px] truncate">
-                          {interviewer.remarks ?? "—"}
+                          {representative.remarks ?? "—"}
                         </TableCell>
                         <TableCell>
                           <Button variant="ghost" size="icon" className="h-8 w-8" disabled>

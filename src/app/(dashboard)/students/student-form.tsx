@@ -52,8 +52,8 @@ export type StudentFormProps = {
     placements: ReferenceItem[]
     nationalities: ReferenceItem[]
     courses: ReferenceItem[]
-    leadSources: ReferenceItem[]
     schoolTypes: ReferenceItem[]
+    events: { id: string; name: string }[]
   }
 }
 
@@ -66,7 +66,8 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
     student?.date_of_birth ? new Date(student.date_of_birth + "T00:00:00") : undefined
   )
 
-  const { statuses, placements, nationalities, courses, leadSources, schoolTypes } = referenceData
+  const { statuses, placements, nationalities, courses, schoolTypes, events } = referenceData
+  const [leadCategory, setLeadCategory] = useState<string>(student?.lead_source_category ?? "")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -94,7 +95,9 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
       entry_year: formData.get("entry_year") ? parseInt(formData.get("entry_year") as string, 10) : null,
       entry_month: formData.get("entry_month") ? parseInt(formData.get("entry_month") as string, 10) : null,
       enrollment_date: (formData.get("enrollment_date") as string) || null,
-      lead_source_id: formData.get("lead_source_id") ? parseInt(formData.get("lead_source_id") as string, 10) : null,
+      lead_source_category: leadCategory || null,
+      lead_source_referral_detail: leadCategory === "referral" ? ((formData.get("lead_source_referral_detail") as string) || null) : null,
+      lead_source_event_id: leadCategory === "events" ? ((formData.get("lead_source_event_id") as string) || null) : null,
       status_id: formData.get("status_id") ? parseInt(formData.get("status_id") as string, 10) : null,
       placement_id: formData.get("placement_id") ? parseInt(formData.get("placement_id") as string, 10) : null,
       exam_paper: (formData.get("exam_paper") as string) || null,
@@ -414,20 +417,40 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lead_source_id">Lead Source</Label>
-              <Select name="lead_source_id" defaultValue={student?.lead_source?.id?.toString() ?? ""}>
-                <SelectTrigger id="lead_source_id">
+              <Label>Lead Source</Label>
+              <Select value={leadCategory} onValueChange={setLeadCategory}>
+                <SelectTrigger>
                   <SelectValue placeholder="How did they find us?" />
                 </SelectTrigger>
                 <SelectContent>
-                  {leadSources.map((source) => (
-                    <SelectItem key={source.id} value={source.id.toString()}>
-                      {source.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="walk_in">Walk In</SelectItem>
+                  <SelectItem value="referral">Referral</SelectItem>
+                  <SelectItem value="events">Events</SelectItem>
+                  <SelectItem value="direct">Direct</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            {leadCategory === "referral" && (
+              <div className="space-y-2">
+                <Label>Referral Detail</Label>
+                <Input name="lead_source_referral_detail" defaultValue={student?.lead_source_referral_detail ?? ""} placeholder="Who referred them?" />
+              </div>
+            )}
+            {leadCategory === "events" && (
+              <div className="space-y-2">
+                <Label>Event</Label>
+                <Select name="lead_source_event_id" defaultValue={student?.lead_source_event_id ?? ""}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select event" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {events.map((evt) => (
+                      <SelectItem key={evt.id} value={evt.id}>{evt.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

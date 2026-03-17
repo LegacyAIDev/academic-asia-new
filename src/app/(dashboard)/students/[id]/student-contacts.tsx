@@ -45,9 +45,10 @@ type StudentContactsSectionProps = {
     relationships: ReferenceItem[]
     titles: ReferenceItem[]
   }
+  studentAddress?: string | null
 }
 
-export function StudentContactsSection({ studentId, contacts, referenceData }: StudentContactsSectionProps) {
+export function StudentContactsSection({ studentId, contacts, referenceData, studentAddress }: StudentContactsSectionProps) {
   if (contacts.length === 0) {
     return (
       <Card className="border-0 shadow-sm">
@@ -61,6 +62,7 @@ export function StudentContactsSection({ studentId, contacts, referenceData }: S
               studentId={studentId}
               referenceData={referenceData}
               mode="create"
+              studentAddress={studentAddress}
             />
           </div>
         </CardHeader>
@@ -100,6 +102,7 @@ export function StudentContactsSection({ studentId, contacts, referenceData }: S
               contact={contact}
               studentId={studentId}
               referenceData={referenceData}
+              studentAddress={studentAddress}
             />
           ))}
         </div>
@@ -112,10 +115,12 @@ function ContactCard({
   contact,
   studentId,
   referenceData,
+  studentAddress,
 }: {
   contact: ContactWithRelations
   studentId: string
   referenceData: { relationships: ReferenceItem[]; titles: ReferenceItem[] }
+  studentAddress?: string | null
 }) {
   const title = contact.title?.label ?? ''
   const firstName = contact.first_name ?? ''
@@ -152,6 +157,7 @@ function ContactCard({
               contact={contact}
               studentId={studentId}
               referenceData={referenceData}
+              studentAddress={studentAddress}
             />
             <DeleteContactButton
               contactId={contact.id}

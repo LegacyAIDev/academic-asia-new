@@ -7,7 +7,15 @@ import { createClient } from '@/lib/supabase/server'
 export type CreateEventInput = {
   event_type_id: number
   name: string
+  category_id?: number | null
+  parent_event_id?: string | null
+  delivery_mode_id?: number | null
+  visibility_id?: number | null
+  scheduling_mode_id?: number | null
+  school_id?: string | null
   location?: string | null
+  online_link?: string | null
+  capacity?: number | null
   start_date?: string | null
   end_date?: string | null
   start_time?: string | null
@@ -36,7 +44,15 @@ export async function createEvent(input: CreateEventInput): Promise<ActionResult
       .insert({
         event_type_id: input.event_type_id,
         name: input.name,
+        category_id: input.category_id,
+        parent_event_id: input.parent_event_id,
+        delivery_mode_id: input.delivery_mode_id,
+        visibility_id: input.visibility_id,
+        scheduling_mode_id: input.scheduling_mode_id,
+        school_id: input.school_id,
         location: input.location,
+        online_link: input.online_link,
+        capacity: input.capacity,
         start_date: input.start_date,
         end_date: input.end_date,
         start_time: input.start_time,
@@ -102,7 +118,7 @@ export async function deleteEvent(id: string): Promise<ActionResult> {
     // First delete related records (cascading isn't always set up)
     await Promise.all([
       supabase.from('event_schools').delete().eq('event_id', id),
-      supabase.from('event_interviewers').delete().eq('event_id', id),
+      supabase.from('event_representatives').delete().eq('event_id', id),
       supabase.from('event_schedules').delete().eq('event_id', id),
       supabase.from('event_exams').delete().eq('event_id', id),
       supabase.from('event_results').delete().eq('event_id', id),
@@ -188,59 +204,59 @@ export async function removeEventSchool(eventSchoolId: string, eventId: string):
   }
 }
 
-// Event Interviewers CRUD
+// Event Representatives CRUD
 
-export type CreateEventInterviewerInput = {
+export type CreateEventRepresentativeInput = {
   event_id: string
   school_id: string
   name: string
   remarks?: string | null
 }
 
-export async function addEventInterviewer(input: CreateEventInterviewerInput): Promise<ActionResult<{ id: string }>> {
+export async function addEventRepresentative(input: CreateEventRepresentativeInput): Promise<ActionResult<{ id: string }>> {
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
     const { data, error } = await supabase
-      .from('event_interviewers')
+      .from('event_representatives')
       .insert(input)
       .select('id')
       .single()
 
     if (error) {
-      console.error('Error adding event interviewer:', error)
+      console.error('Error adding event representative:', error)
       return { success: false, error: error.message }
     }
 
     revalidatePath(`/events`)
     return { success: true, data: { id: data.id } }
   } catch (err) {
-    console.error('Error in addEventInterviewer:', err)
-    return { success: false, error: 'Failed to add interviewer' }
+    console.error('Error in addEventRepresentative:', err)
+    return { success: false, error: 'Failed to add representative' }
   }
 }
 
-export async function removeEventInterviewer(interviewerId: string, eventId: string): Promise<ActionResult> {
+export async function removeEventRepresentative(representativeId: string, eventId: string): Promise<ActionResult> {
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
     const { error } = await supabase
-      .from('event_interviewers')
+      .from('event_representatives')
       .delete()
-      .eq('id', interviewerId)
+      .eq('id', representativeId)
 
     if (error) {
-      console.error('Error removing interviewer:', error)
+      console.error('Error removing representative:', error)
       return { success: false, error: error.message }
     }
 
     revalidatePath(`/events`)
     return { success: true }
   } catch (err) {
-    console.error('Error in removeEventInterviewer:', err)
-    return { success: false, error: 'Failed to remove interviewer' }
+    console.error('Error in removeEventRepresentative:', err)
+    return { success: false, error: 'Failed to remove representative' }
   }
 }
 
@@ -251,7 +267,7 @@ export type CreateEventScheduleInput = {
   student_id: string
   schedule_date?: string | null
   timeslot?: number | null
-  interviewer_name?: string | null
+  representative_name?: string | null
   remarks?: string | null
 }
 

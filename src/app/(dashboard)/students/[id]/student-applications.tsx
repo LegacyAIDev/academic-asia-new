@@ -146,7 +146,6 @@ export function StudentApplicationsSection({
                 <TableHead className="pl-6 min-w-[180px]">School</TableHead>
                 <TableHead className="min-w-[120px]">Year Apply</TableHead>
                 <TableHead>C.S.D.</TableHead>
-                <TableHead className="min-w-[100px]">Course</TableHead>
                 <TableHead className="min-w-[150px]">Enrol Status</TableHead>
                 <TableHead>Referral</TableHead>
                 <TableHead>Mode</TableHead>
@@ -163,25 +162,16 @@ export function StudentApplicationsSection({
                 return (
                   <TableRow key={app.id} className={app.is_archived ? "opacity-60" : ""}>
                     <TableCell className="pl-6 font-medium">
-                      <div>
-                        <span className="text-sm">{app.school?.name ?? "—"}</span>
-                        {app.course_detail && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{app.course_detail}</p>
-                        )}
-                      </div>
+                      <span className="text-sm">{app.school?.name ?? "—"}</span>
                     </TableCell>
-                    <TableCell className="text-sm">{app.entry_year || "—"}</TableCell>
+                    <TableCell className="text-sm">{formatCSD(app.entry_month, app.entry_year)}</TableCell>
                     <TableCell className="text-sm">{formatCSD(app.course_start_month, app.course_start_year)}</TableCell>
-                    <TableCell className="text-sm">{app.course?.label ?? "—"}</TableCell>
                     <TableCell>
                       {app.status ? (
                         <Badge variant="outline" className={`${statusStyle} border text-xs font-medium whitespace-nowrap`}>
                           {app.status.label}
                         </Badge>
                       ) : "—"}
-                      {app.sub_status && (
-                        <p className="text-xs text-muted-foreground mt-1">{app.sub_status.label}</p>
-                      )}
                     </TableCell>
                     <TableCell className="text-sm">{app.is_referral ? "Yes" : "No"}</TableCell>
                     <TableCell>
@@ -194,8 +184,8 @@ export function StudentApplicationsSection({
                       )}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {app.scholarship_amount && app.scholarship_amount > 0
-                        ? app.scholarship_amount
+                      {app.scholarship_types && app.scholarship_types.length > 0
+                        ? <span className="capitalize">{app.scholarship_types.join(", ")}</span>
                         : "—"}
                     </TableCell>
                     <TableCell className="text-sm">{app.event?.name ?? "—"}</TableCell>

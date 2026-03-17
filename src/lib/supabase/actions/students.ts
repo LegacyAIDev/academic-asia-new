@@ -25,7 +25,9 @@ export type CreateStudentInput = {
   entry_year?: number | null
   entry_month?: number | null
   enrollment_date?: string | null
-  lead_source_id?: number | null
+  lead_source_category?: string | null
+  lead_source_referral_detail?: string | null
+  lead_source_event_id?: string | null
   status_id?: number | null
   placement_id?: number | null
   exam_paper?: string | null

@@ -10,6 +10,13 @@ export const EVENT_TYPE_CODES = {
   top_schools: 'top_schools',
   interview: 'interview',
   music_audition: 'music_audition',
+  webinar: 'webinar',
+  exhibition: 'exhibition',
+  group_entrance_exam: 'group_entrance_exam',
+  school_assessment: 'school_assessment',
+  scholarship_audition: 'scholarship_audition',
+  briefing_meeting: 'briefing_meeting',
+  reception_social: 'reception_social',
 } as const
 
 export type EventTypeCode = keyof typeof EVENT_TYPE_CODES
@@ -23,17 +30,31 @@ export const URL_TO_TYPE_CODE: Record<string, EventTypeCode> = {
   'top-schools': 'top_schools',
   'interview': 'interview',
   'music-audition': 'music_audition',
+  'webinar': 'webinar',
+  'exhibition': 'exhibition',
+  'group-entrance-exam': 'group_entrance_exam',
+  'school-assessment': 'school_assessment',
+  'scholarship-audition': 'scholarship_audition',
+  'briefing-meeting': 'briefing_meeting',
+  'reception-social': 'reception_social',
 }
 
 /**
  * Human-readable labels for each event type
  */
 export const EVENT_TYPE_LABELS: Record<EventTypeCode, string> = {
-  event: 'General Events',
+  event: 'Seminar / Workshop',
   expo: 'Education Expo',
   top_schools: 'Top Schools Weekend',
-  interview: 'Individual Interview',
+  interview: 'Interview Day',
   music_audition: 'Music Audition',
+  webinar: 'Webinar',
+  exhibition: 'Exhibition',
+  group_entrance_exam: 'Group Entrance Exam',
+  school_assessment: 'School Assessment',
+  scholarship_audition: 'Scholarship Audition',
+  briefing_meeting: 'Briefing / Meeting',
+  reception_social: 'Reception / Social',
 }
 
 /**
@@ -45,6 +66,13 @@ export const EVENT_TYPE_DESCRIPTIONS: Record<EventTypeCode, string> = {
   top_schools: 'Top Schools interview weekends',
   interview: 'One-on-one school interviews',
   music_audition: 'Music scholarship auditions',
+  webinar: 'Online seminars and information sessions',
+  exhibition: 'Education exhibitions and fairs',
+  group_entrance_exam: 'Group sitting entrance examinations',
+  school_assessment: 'School-run assessment sessions',
+  scholarship_audition: 'Scholarship and bursary auditions',
+  briefing_meeting: 'Briefing sessions and meetings with schools',
+  reception_social: 'Receptions, social events, and networking',
 }
 
 export type EventsListParams = {
@@ -82,7 +110,7 @@ export type EventListItem = {
   event_type: EventType | null
   assigned_to_profile: { id: string; first_name: string | null; surname: string | null } | null
   school_count: number
-  interviewer_count: number
+  representative_count: number
   schedule_count: number
 }
 
@@ -187,9 +215,9 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
   const eventIds = (data ?? []).map(e => e.id)
 
   // Fetch aggregated counts for each event in parallel
-  const [schoolCounts, interviewerCounts, scheduleCounts] = await Promise.all([
+  const [schoolCounts, representativeCounts, scheduleCounts] = await Promise.all([
     getEventSchoolCounts(supabase, eventIds),
-    getEventInterviewerCounts(supabase, eventIds),
+    getEventRepresentativeCounts(supabase, eventIds),
     getEventScheduleCounts(supabase, eventIds),
   ])
 
@@ -199,7 +227,7 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
     event_type: event.event_type as unknown as EventType | null,
     assigned_to_profile: event.assigned_to_profile as unknown as { id: string; first_name: string | null; surname: string | null } | null,
     school_count: schoolCounts[event.id] ?? 0,
-    interviewer_count: interviewerCounts[event.id] ?? 0,
+    representative_count: representativeCounts[event.id] ?? 0,
     schedule_count: scheduleCounts[event.id] ?? 0,
   }))
 
@@ -237,16 +265,16 @@ async function getEventSchoolCounts(
 }
 
 /**
- * Helper: Get interviewer counts per event
+ * Helper: Get representative counts per event
  */
-async function getEventInterviewerCounts(
+async function getEventRepresentativeCounts(
   supabase: ReturnType<typeof createClient>,
   eventIds: string[]
 ): Promise<Record<string, number>> {
   if (eventIds.length === 0) return {}
 
   const { data } = await supabase
-    .from('event_interviewers')
+    .from('event_representatives')
     .select('event_id')
     .in('event_id', eventIds)
 
@@ -322,19 +350,19 @@ export async function getEventStats(typeCode?: EventTypeCode) {
   const { data: eventIdsData } = await eventIdsQuery
   const eventIds = (eventIdsData ?? []).map(e => e.id)
 
-  // Count schools, interviewers, schedules for these events
+  // Count schools, representatives, schedules for these events
   let schoolCount = 0
-  let interviewerCount = 0
+  let representativeCount = 0
   let scheduleCount = 0
 
   if (eventIds.length > 0) {
-    const [schools, interviewers, schedules] = await Promise.all([
+    const [schools, representatives, schedules] = await Promise.all([
       supabase.from('event_schools').select('id', { count: 'exact', head: true }).in('event_id', eventIds),
-      supabase.from('event_interviewers').select('id', { count: 'exact', head: true }).in('event_id', eventIds),
+      supabase.from('event_representatives').select('id', { count: 'exact', head: true }).in('event_id', eventIds),
       supabase.from('event_schedules').select('id', { count: 'exact', head: true }).in('event_id', eventIds),
     ])
     schoolCount = schools.count ?? 0
-    interviewerCount = interviewers.count ?? 0
+    representativeCount = representatives.count ?? 0
     scheduleCount = schedules.count ?? 0
   }
 
@@ -342,7 +370,7 @@ export async function getEventStats(typeCode?: EventTypeCode) {
     totalEvents: totalCount ?? 0,
     upcomingEvents: upcomingCount ?? 0,
     totalSchools: schoolCount,
-    totalInterviewers: interviewerCount,
+    totalRepresentatives: representativeCount,
     totalSchedules: scheduleCount,
   }
 }
@@ -416,22 +444,22 @@ export async function getEventSchools(eventId: string) {
 }
 
 /**
- * Get interviewers for an event
+ * Get representatives for an event
  */
-export async function getEventInterviewers(eventId: string) {
+export async function getEventRepresentatives(eventId: string) {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
   const { data, error } = await supabase
-    .from('event_interviewers')
+    .from('event_representatives')
     .select(`
       *,
-      school:schools!event_interviewers_school_id_fkey(id, name)
+      school:schools!event_representatives_school_id_fkey(id, name)
     `)
     .eq('event_id', eventId)
 
   if (error) {
-    console.error('Error fetching event interviewers:', error)
+    console.error('Error fetching event representatives:', error)
     return []
   }
 

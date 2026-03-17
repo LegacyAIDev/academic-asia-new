@@ -149,7 +149,10 @@ export type StudentWithJoins = {
   placement: { id: number; code: string; label: string; color: string | null } | null
   nationality: { id: number; code: string; label: string } | null
   course: { id: number; code: string; label: string; category: string | null } | null
-  lead_source: { id: number; code: string; label: string; category: string | null } | null
+  lead_source_category: string | null
+  lead_source_referral_detail: string | null
+  lead_source_event_id: string | null
+  lead_source_event: { id: string; name: string } | null
   school_type: { id: number; code: string; label: string; region: string | null } | null
 }
 
@@ -168,7 +171,7 @@ export async function getStudentById(id: string): Promise<StudentWithJoins | nul
       placement:placement_statuses!students_placement_id_fkey(id, code, label, color),
       nationality:nationalities!students_nationality_id_fkey(id, code, label),
       course:courses!students_course_id_fkey(id, code, label, category),
-      lead_source:lead_sources!students_lead_source_id_fkey(id, code, label, category),
+      lead_source_event:events!students_lead_source_event_id_fkey(id, name),
       school_type:school_types!students_present_school_type_id_fkey(id, code, label, region)
     `)
     .eq('id', id)
@@ -247,13 +250,13 @@ export async function getReferenceData() {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  const [statuses, placements, nationalities, courses, leadSources, schoolTypes] = await Promise.all([
+  const [statuses, placements, nationalities, courses, schoolTypes, events] = await Promise.all([
     supabase.from('student_statuses').select('*').order('sort_order'),
     supabase.from('placement_statuses').select('*').order('sort_order'),
     supabase.from('nationalities').select('*').eq('is_active', true).order('sort_order'),
     supabase.from('courses').select('*').eq('is_active', true).order('sort_order'),
-    supabase.from('lead_sources').select('*').eq('is_active', true).order('sort_order'),
-    supabase.from('school_types').select('*').order('sort_order')
+    supabase.from('school_types').select('*').order('sort_order'),
+    supabase.from('events').select('id, name').gte('start_date', `${new Date().getFullYear() - 1}-01-01`).order('name'),
   ])
 
   return {
@@ -261,8 +264,8 @@ export async function getReferenceData() {
     placements: placements.data ?? [],
     nationalities: nationalities.data ?? [],
     courses: courses.data ?? [],
-    leadSources: leadSources.data ?? [],
-    schoolTypes: schoolTypes.data ?? []
+    schoolTypes: schoolTypes.data ?? [],
+    events: events.data ?? [],
   }
 }
 

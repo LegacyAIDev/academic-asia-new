@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useMemo } from "react"
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -54,15 +57,11 @@ type ReferenceItem = { id: number; code: string; label: string }
 type StatusItem = ReferenceItem & { category: string | null }
 type SchoolItem = { id: string; name: string }
 type EventItem = { id: string; name: string }
-type CourseItem = ReferenceItem & { category: string | null }
-
 export type ApplicationReferenceData = {
   statuses: StatusItem[]
-  subStatuses: ReferenceItem[]
   modes: ReferenceItem[]
   schools: SchoolItem[]
   events: EventItem[]
-  courses: CourseItem[]
 }
 
 type ApplicationDialogProps = {
@@ -132,6 +131,14 @@ const MONTHS = [
   { value: "11", label: "Nov" }, { value: "12", label: "Dec" },
 ]
 
+const SCHOLARSHIP_TYPES = [
+  { value: "music", label: "Music" },
+  { value: "arts", label: "Arts" },
+  { value: "academic", label: "Academic" },
+  { value: "sports", label: "Sports" },
+  { value: "others", label: "Others" },
+]
+
 export function ApplicationDialog({
   studentId,
   referenceData,
@@ -142,8 +149,24 @@ export function ApplicationDialog({
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [scholarshipTypes, setScholarshipTypes] = useState<string[]>(application?.scholarship_types ?? [])
 
-  const { statuses, subStatuses, modes, schools, events, courses } = referenceData
+  const parseDate = (val: string | null | undefined) => val ? new Date(val + "T00:00:00") : undefined
+  const defaultRegDate = useMemo(() => application?.registration_date ? parseDate(application.registration_date) : new Date(), [application])
+
+  const [regDate, setRegDate] = useState<Date | undefined>(defaultRegDate)
+  const [regDateOpen, setRegDateOpen] = useState(false)
+  const [visitDate, setVisitDate] = useState<Date | undefined>(parseDate(application?.visit_date))
+  const [visitDateOpen, setVisitDateOpen] = useState(false)
+  const [eventDate, setEventDate] = useState<Date | undefined>(parseDate(application?.event_date))
+  const [eventDateOpen, setEventDateOpen] = useState(false)
+
+  const formatDateDisplay = (date: Date | undefined) =>
+    date ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null
+  const formatDateValue = (date: Date | undefined) =>
+    date ? date.toISOString().split("T")[0] : null
+
+  const { statuses, modes, schools, events } = referenceData
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -153,23 +176,27 @@ export function ApplicationDialog({
 
     const input: Omit<CreateApplicationInput, 'student_id'> = {
       school_id: formData.get("school_id") as string,
-      course_id: formData.get("course_id") ? parseInt(formData.get("course_id") as string, 10) : null,
-      course_detail: (formData.get("course_detail") as string) || null,
-      entry_year: (formData.get("entry_year") as string) || null,
+      entry_year: formData.get("entry_year") ? parseInt(formData.get("entry_year") as string, 10) : null,
+      entry_month: formData.get("entry_month") ? parseInt(formData.get("entry_month") as string, 10) : null,
       course_start_month: formData.get("course_start_month") ? parseInt(formData.get("course_start_month") as string, 10) : null,
       course_start_year: formData.get("course_start_year") ? parseInt(formData.get("course_start_year") as string, 10) : null,
       status_id: formData.get("status_id") ? parseInt(formData.get("status_id") as string, 10) : null,
-      sub_status_id: formData.get("sub_status_id") ? parseInt(formData.get("sub_status_id") as string, 10) : null,
       mode_id: formData.get("mode_id") ? parseInt(formData.get("mode_id") as string, 10) : null,
       is_referral: formData.get("is_referral") === "true",
-      scholarship_amount: formData.get("scholarship_amount") ? parseFloat(formData.get("scholarship_amount") as string) : null,
       scholarship_detail: (formData.get("scholarship_detail") as string) || null,
+      scholarship_types: scholarshipTypes.length > 0 ? scholarshipTypes : null,
       event_id: (formData.get("event_id") as string) || null,
+      event_date: formatDateValue(eventDate),
+      event_time: (formData.get("event_time") as string) || null,
       music_audition: (formData.get("music_audition") as string) || null,
       result_remarks: (formData.get("result_remarks") as string) || null,
       remarks_to_school: (formData.get("remarks_to_school") as string) || null,
       aa_remarks: (formData.get("aa_remarks") as string) || null,
-      registration_date: (formData.get("registration_date") as string) || null,
+      registration_date: formatDateValue(regDate),
+      visit_date: formatDateValue(visitDate),
+      visit_time: (formData.get("visit_time") as string) || null,
+      school_contact: (formData.get("school_contact") as string) || null,
+      visit_remarks: (formData.get("visit_remarks") as string) || null,
     }
 
     if (!input.school_id) {
@@ -197,7 +224,15 @@ export function ApplicationDialog({
   const selectTriggerStyles = "h-10 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => {
+      setOpen(v)
+      if (v) {
+        setScholarshipTypes(application?.scholarship_types ?? [])
+        setRegDate(application?.registration_date ? parseDate(application.registration_date) : new Date())
+        setVisitDate(parseDate(application?.visit_date))
+        setEventDate(parseDate(application?.event_date))
+      }
+    }}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
@@ -263,7 +298,7 @@ export function ApplicationDialog({
               {/* Left Column */}
               <div className="space-y-5">
                 {/* School & Course */}
-                <FormSection icon={School} title="School & Course" accentColor="primary">
+                <FormSection icon={School} title="School" accentColor="primary">
                   <FormField label="School *">
                     <Select name="school_id" defaultValue={application?.school_id ?? ""}>
                       <SelectTrigger className={selectTriggerStyles}>
@@ -276,30 +311,36 @@ export function ApplicationDialog({
                       </SelectContent>
                     </Select>
                   </FormField>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField label="Course">
-                      <Select name="course_id" defaultValue={application?.course_id?.toString() ?? ""}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="Select course" />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-60">
-                          {courses.map((c) => (
-                            <SelectItem key={c.id} value={c.id.toString()}>{c.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-                    <FormField label="Course Detail">
-                      <Input name="course_detail" className={inputStyles} defaultValue={application?.course_detail ?? ""} placeholder="Additional info" />
-                    </FormField>
-                  </div>
                 </FormSection>
 
                 {/* Entry & Timing */}
                 <FormSection icon={Calendar} title="Entry & Timing" accentColor="teal">
-                  <FormField label="Year Apply / Entry Year">
-                    <Input name="entry_year" className={inputStyles} defaultValue={application?.entry_year ?? ""} placeholder="e.g. Year 12 (2019-20)" />
-                  </FormField>
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField label="Entry Year">
+                      <Select name="entry_year" defaultValue={application?.entry_year?.toString() ?? ""}>
+                        <SelectTrigger className={selectTriggerStyles}>
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 5 }, (_, i) => 2026 + i).map((y) => (
+                            <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormField>
+                    <FormField label="Entry Month">
+                      <Select name="entry_month" defaultValue={application?.entry_month?.toString() ?? ""}>
+                        <SelectTrigger className={selectTriggerStyles}>
+                          <SelectValue placeholder="Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {MONTHS.map((m) => (
+                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormField>
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
                     <FormField label="C.S.D. Month">
                       <Select name="course_start_month" defaultValue={application?.course_start_month?.toString() ?? ""}>
@@ -314,7 +355,16 @@ export function ApplicationDialog({
                       </Select>
                     </FormField>
                     <FormField label="C.S.D. Year">
-                      <Input name="course_start_year" type="number" className={inputStyles} defaultValue={application?.course_start_year ?? ""} placeholder="2025" />
+                      <Select name="course_start_year" defaultValue={application?.course_start_year?.toString() ?? ""}>
+                        <SelectTrigger className={selectTriggerStyles}>
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 7 }, (_, i) => 2025 + i).map((y) => (
+                            <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormField>
                   </div>
                 </FormSection>
@@ -328,18 +378,6 @@ export function ApplicationDialog({
                       </SelectTrigger>
                       <SelectContent className="max-h-60">
                         {statuses.map((s) => (
-                          <SelectItem key={s.id} value={s.id.toString()}>{s.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormField>
-                  <FormField label="Sub-Enrol Status">
-                    <Select name="sub_status_id" defaultValue={application?.sub_status_id?.toString() ?? ""}>
-                      <SelectTrigger className={selectTriggerStyles}>
-                        <SelectValue placeholder="Select sub-status" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {subStatuses.map((s) => (
                           <SelectItem key={s.id} value={s.id.toString()}>{s.label}</SelectItem>
                         ))}
                       </SelectContent>
@@ -377,14 +415,26 @@ export function ApplicationDialog({
               <div className="space-y-5">
                 {/* Scholarship */}
                 <FormSection icon={Award} title="Scholarship" accentColor="primary">
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField label="Amount">
-                      <Input name="scholarship_amount" type="number" step="0.01" className={inputStyles} defaultValue={application?.scholarship_amount ?? "0"} placeholder="0" />
-                    </FormField>
-                    <FormField label="Detail">
-                      <Input name="scholarship_detail" className={inputStyles} defaultValue={application?.scholarship_detail ?? ""} placeholder="Scholarship info" />
-                    </FormField>
-                  </div>
+                  <FormField label="Type">
+                    <div className="flex flex-wrap gap-4">
+                      {SCHOLARSHIP_TYPES.map((t) => (
+                        <label key={t.value} className="flex items-center gap-2 cursor-pointer">
+                          <Checkbox
+                            checked={scholarshipTypes.includes(t.value)}
+                            onCheckedChange={(checked) => {
+                              setScholarshipTypes(prev =>
+                                checked ? [...prev, t.value] : prev.filter(v => v !== t.value)
+                              )
+                            }}
+                          />
+                          <span className="text-sm">{t.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </FormField>
+                  <FormField label="Detail">
+                    <Input name="scholarship_detail" className={inputStyles} defaultValue={application?.scholarship_detail ?? ""} placeholder="Scholarship info" />
+                  </FormField>
                 </FormSection>
 
                 {/* Event */}
@@ -401,6 +451,29 @@ export function ApplicationDialog({
                       </SelectContent>
                     </Select>
                   </FormField>
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField label="Event Date">
+                      <Popover open={eventDateOpen} onOpenChange={setEventDateOpen}>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className={`w-full justify-start font-normal ${inputStyles}`}>
+                            <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {formatDateDisplay(eventDate) ?? <span className="text-muted-foreground">Select date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                          <CalendarComponent
+                            mode="single"
+                            selected={eventDate}
+                            defaultMonth={eventDate}
+                            onSelect={(date) => { setEventDate(date); setEventDateOpen(false) }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormField>
+                    <FormField label="Event Time">
+                      <Input name="event_time" type="time" className={inputStyles} defaultValue={application?.event_time ?? ""} />
+                    </FormField>
+                  </div>
                   <FormField label="Music Audition">
                     <Input name="music_audition" className={inputStyles} defaultValue={application?.music_audition ?? ""} placeholder="Music audition details" />
                   </FormField>
@@ -437,10 +510,54 @@ export function ApplicationDialog({
                   </FormField>
                 </FormSection>
 
-                {/* Registration */}
-                <FormSection icon={CalendarDays} title="Registration" accentColor="rose">
-                  <FormField label="Registration Date">
-                    <Input name="registration_date" type="date" className={inputStyles} defaultValue={application?.registration_date ?? ""} />
+                {/* Registration & Visit */}
+                <FormSection icon={CalendarDays} title="Registration & Visit" accentColor="rose">
+                  <FormField label="Reg. Date">
+                    <Popover open={regDateOpen} onOpenChange={setRegDateOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className={`w-full justify-start font-normal ${inputStyles}`}>
+                          <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
+                          {formatDateDisplay(regDate) ?? <span className="text-muted-foreground">Select date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={regDate}
+                          defaultMonth={regDate}
+                          onSelect={(date) => { setRegDate(date); setRegDateOpen(false) }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormField>
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField label="Visit Date">
+                      <Popover open={visitDateOpen} onOpenChange={setVisitDateOpen}>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className={`w-full justify-start font-normal ${inputStyles}`}>
+                            <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {formatDateDisplay(visitDate) ?? <span className="text-muted-foreground">Select date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                          <CalendarComponent
+                            mode="single"
+                            selected={visitDate}
+                            defaultMonth={visitDate}
+                            onSelect={(date) => { setVisitDate(date); setVisitDateOpen(false) }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormField>
+                    <FormField label="Visit Time">
+                      <Input name="visit_time" type="time" className={inputStyles} defaultValue={application?.visit_time ?? ""} />
+                    </FormField>
+                  </div>
+                  <FormField label="School Contact">
+                    <Input name="school_contact" className={inputStyles} defaultValue={application?.school_contact ?? ""} placeholder="Contact person at school" />
+                  </FormField>
+                  <FormField label="Visit Remarks">
+                    <Input name="visit_remarks" className={inputStyles} defaultValue={application?.visit_remarks ?? ""} placeholder="Notes about the visit" />
                   </FormField>
                 </FormSection>
               </div>
