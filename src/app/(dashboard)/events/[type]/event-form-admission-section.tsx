@@ -40,6 +40,7 @@ export function EventFormAdmissionSection({
                 <SelectValue placeholder="Select school" />
               </SelectTrigger>
               <SelectContent className="max-h-60">
+                <SelectItem value="none">— None —</SelectItem>
                 {schools.map((s) => (
                   <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                 ))}
@@ -53,6 +54,7 @@ export function EventFormAdmissionSection({
                 <SelectValue placeholder="None (standalone)" />
               </SelectTrigger>
               <SelectContent className="max-h-60">
+                <SelectItem value="none">— None (standalone) —</SelectItem>
                 {parentEvents.map((e) => (
                   <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
                 ))}

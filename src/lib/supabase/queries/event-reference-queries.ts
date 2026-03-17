@@ -81,13 +81,18 @@ export async function getSchoolsDropdown(): Promise<{ id: string; name: string }
   return data ?? []
 }
 
-/** Lightweight events list for parent event dropdown */
+/** Parent event dropdown: only events from last 3 months and future */
 export async function getEventsForParentDropdown(excludeId?: string): Promise<{ id: string; name: string }[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
+  const threeMonthsAgo = new Date()
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+  const cutoff = threeMonthsAgo.toISOString().split('T')[0]
+
   let query = supabase
     .from('events')
     .select('id, name')
+    .gte('start_date', cutoff)
     .order('name')
   if (excludeId) {
     query = query.neq('id', excludeId)

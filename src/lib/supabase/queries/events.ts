@@ -5,18 +5,14 @@ import { cookies } from 'next/headers'
  * Event type codes used for routing and filtering
  */
 export const EVENT_TYPE_CODES = {
-  event: 'event',
-  expo: 'expo',
-  top_schools: 'top_schools',
-  interview: 'interview',
-  music_audition: 'music_audition',
-  webinar: 'webinar',
-  exhibition: 'exhibition',
-  group_entrance_exam: 'group_entrance_exam',
-  school_assessment: 'school_assessment',
-  scholarship_audition: 'scholarship_audition',
+  expo_fair: 'expo_fair',
+  seminar_webinar: 'seminar_webinar',
   briefing_meeting: 'briefing_meeting',
   reception_social: 'reception_social',
+  interview: 'interview',
+  audition_day: 'audition_day',
+  group_entrance_exam: 'group_entrance_exam',
+  school_assessment_scholarship: 'school_assessment_scholarship',
 } as const
 
 export type EventTypeCode = keyof typeof EVENT_TYPE_CODES
@@ -25,54 +21,42 @@ export type EventTypeCode = keyof typeof EVENT_TYPE_CODES
  * Maps URL slugs to database event type codes
  */
 export const URL_TO_TYPE_CODE: Record<string, EventTypeCode> = {
-  'event': 'event',
-  'expo': 'expo',
-  'top-schools': 'top_schools',
-  'interview': 'interview',
-  'music-audition': 'music_audition',
-  'webinar': 'webinar',
-  'exhibition': 'exhibition',
-  'group-entrance-exam': 'group_entrance_exam',
-  'school-assessment': 'school_assessment',
-  'scholarship-audition': 'scholarship_audition',
+  'expo-fair': 'expo_fair',
+  'seminar-webinar': 'seminar_webinar',
   'briefing-meeting': 'briefing_meeting',
   'reception-social': 'reception_social',
+  'interview': 'interview',
+  'audition-day': 'audition_day',
+  'group-entrance-exam': 'group_entrance_exam',
+  'school-assessment-scholarship': 'school_assessment_scholarship',
 }
 
 /**
  * Human-readable labels for each event type
  */
 export const EVENT_TYPE_LABELS: Record<EventTypeCode, string> = {
-  event: 'Seminar / Workshop',
-  expo: 'Education Expo',
-  top_schools: 'Top Schools Weekend',
-  interview: 'Interview Day',
-  music_audition: 'Music Audition',
-  webinar: 'Webinar',
-  exhibition: 'Exhibition',
-  group_entrance_exam: 'Group Entrance Exam',
-  school_assessment: 'School Assessment',
-  scholarship_audition: 'Scholarship Audition',
+  expo_fair: 'Expo / Fair',
+  seminar_webinar: 'Seminar / Webinar',
   briefing_meeting: 'Briefing / Meeting',
   reception_social: 'Reception / Social',
+  interview: 'Interview Day',
+  audition_day: 'Audition Day',
+  group_entrance_exam: 'Group Entrance Exam',
+  school_assessment_scholarship: 'School Assessment / Scholarship',
 }
 
 /**
  * Descriptions for each event type
  */
 export const EVENT_TYPE_DESCRIPTIONS: Record<EventTypeCode, string> = {
-  event: 'Seminars, workshops, and general educational events',
-  expo: 'Large-scale education exhibitions and fairs',
-  top_schools: 'Top Schools interview weekends',
-  interview: 'One-on-one school interviews',
-  music_audition: 'Music scholarship auditions',
-  webinar: 'Online seminars and information sessions',
-  exhibition: 'Education exhibitions and fairs',
-  group_entrance_exam: 'Group sitting entrance examinations',
-  school_assessment: 'School-run assessment sessions',
-  scholarship_audition: 'Scholarship and bursary auditions',
+  expo_fair: 'Education expos, exhibitions, and fairs',
+  seminar_webinar: 'Seminars, webinars, and workshops',
   briefing_meeting: 'Briefing sessions and meetings with schools',
   reception_social: 'Receptions, social events, and networking',
+  interview: 'One-on-one school interviews',
+  audition_day: 'Music and scholarship auditions',
+  group_entrance_exam: 'Group sitting entrance examinations',
+  school_assessment_scholarship: 'School assessments and scholarship evaluations',
 }
 
 export type EventsListParams = {

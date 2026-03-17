@@ -345,7 +345,7 @@ function getStatCardsForType(
   ]
 
   // Type-specific customizations
-  if (typeCode === "interview" || typeCode === "music_audition") {
+  if (typeCode === "interview" || typeCode === "audition_day" || typeCode === "group_entrance_exam" || typeCode === "school_assessment_scholarship") {
     baseStats[3] = {
       label: "Representatives",
       value: stats.totalRepresentatives.toLocaleString(),

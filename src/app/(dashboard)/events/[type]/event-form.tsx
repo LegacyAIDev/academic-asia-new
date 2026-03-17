@@ -54,12 +54,20 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
   const showRepresentatives = isAdmission && schedulingModeCode === "one_to_one"
   const showExamBlocks = isAdmission && schedulingModeCode === "group_sitting"
 
+  const handleSchedulingModeChange = (id: number) => {
+    setSelectedSchedulingModeId(id)
+    const code = referenceData.schedulingModes.find((s) => s.id === id)?.code
+    if (code === "group_sitting" && examBlocks.length === 0) {
+      setExamBlocks([{ subject: "", name: "", apply_year: "", duration_minutes: "", start_time: "", end_time: "", venue_room: "", invigilator_names: "", capacity: "", allowed_items: "", special_instructions: "" }])
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
 
     const fd = new FormData(e.currentTarget)
-    const str = (name: string) => (fd.get(name) as string) || null
+    const str = (name: string) => { const v = (fd.get(name) as string); return (!v || v === "none") ? null : v }
     const int = (name: string) => fd.get(name) ? parseInt(fd.get(name) as string, 10) : null
     const assignedTo = str("assigned_to")
 
@@ -142,7 +150,7 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
         <EventFormAdmissionSection
           referenceData={referenceData}
           selectedSchedulingModeId={selectedSchedulingModeId}
-          onSchedulingModeChange={setSelectedSchedulingModeId}
+          onSchedulingModeChange={handleSchedulingModeChange}
           event={event}
         />
       )}
@@ -152,7 +160,7 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
       )}
 
       {showExamBlocks && (
-        <EventFormExamBlocks examBlocks={examBlocks} onChange={setExamBlocks} />
+        <EventFormExamBlocks examBlocks={examBlocks} onChange={setExamBlocks} profiles={referenceData.profiles} />
       )}
 
       <EventFormRemarksSection event={event} />

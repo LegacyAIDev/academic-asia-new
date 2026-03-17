@@ -13,18 +13,19 @@ import {
   FileText,
   UserCog,
   ChevronDown,
-  Sparkles,
   Building2,
   GraduationCap,
   Mic,
   CalendarDays,
 } from "lucide-react"
 
+type NavChild = { name: string; href: string; icon: React.ElementType }
+type NavGroup = { label?: string; items: NavChild[] }
 type NavItem = {
   name: string
   href: string
   icon: React.ElementType
-  children?: { name: string; href: string; icon: React.ElementType }[]
+  children?: NavGroup[]
 }
 
 const navigation: NavItem[] = [
@@ -36,11 +37,24 @@ const navigation: NavItem[] = [
     href: "/events",
     icon: Calendar,
     children: [
-      { name: "General Events", href: "/events/event", icon: CalendarDays },
-      { name: "Education Expo", href: "/events/expo", icon: Building2 },
-      { name: "Top Schools", href: "/events/top-schools", icon: Sparkles },
-      { name: "Interviews", href: "/events/interview", icon: GraduationCap },
-      { name: "Music Auditions", href: "/events/music-audition", icon: Mic },
+      {
+        label: "Engagement & Guidance",
+        items: [
+          { name: "Expo / Fair", href: "/events/expo-fair", icon: Building2 },
+          { name: "Seminar / Webinar", href: "/events/seminar-webinar", icon: CalendarDays },
+          { name: "Briefing / Meeting", href: "/events/briefing-meeting", icon: CalendarDays },
+          { name: "Reception / Social", href: "/events/reception-social", icon: CalendarDays },
+        ],
+      },
+      {
+        label: "Admissions & Assessment",
+        items: [
+          { name: "Interview Day", href: "/events/interview", icon: GraduationCap },
+          { name: "Audition Day", href: "/events/audition-day", icon: Mic },
+          { name: "Group Entrance Exam", href: "/events/group-entrance-exam", icon: GraduationCap },
+          { name: "Assessment / Scholarship", href: "/events/school-assessment-scholarship", icon: GraduationCap },
+        ],
+      },
     ],
   },
   { name: "Staff", href: "/staff", icon: UserCog },
@@ -65,9 +79,9 @@ export function Sidebar() {
     return pathname.startsWith(href)
   }
 
-  const isChildActive = (children?: NavItem["children"]) => {
+  const isChildActive = (children?: NavGroup[]) => {
     if (!children) return false
-    return children.some(child => pathname.startsWith(child.href))
+    return children.some(group => group.items.some(item => pathname.startsWith(item.href)))
   }
 
   return (
@@ -113,27 +127,38 @@ export function Sidebar() {
                       />
                     </button>
                     {isExpanded && (
-                      <ul className="mt-1 space-y-1 pl-9">
-                        {item.children!.map((child) => {
-                          const childIsActive = pathname.startsWith(child.href)
-                          return (
-                            <li key={child.href}>
-                              <Link
-                                href={child.href}
-                                className={cn(
-                                  "group flex items-center gap-x-2 rounded-md py-1.5 px-2 text-sm font-medium transition-colors",
-                                  childIsActive
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                                )}
-                              >
-                                <child.icon className="h-4 w-4 shrink-0" />
-                                {child.name}
-                              </Link>
-                            </li>
-                          )
-                        })}
-                      </ul>
+                      <div className="mt-1 pl-9 space-y-3">
+                        {item.children!.map((group) => (
+                          <div key={group.label ?? "default"}>
+                            {group.label && (
+                              <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                                {group.label}
+                              </p>
+                            )}
+                            <ul className="space-y-0.5">
+                              {group.items.map((child) => {
+                                const childIsActive = pathname.startsWith(child.href)
+                                return (
+                                  <li key={child.href}>
+                                    <Link
+                                      href={child.href}
+                                      className={cn(
+                                        "group flex items-center gap-x-2 rounded-md py-1.5 px-2 text-sm font-medium transition-colors",
+                                        childIsActive
+                                          ? "bg-primary text-primary-foreground"
+                                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                      )}
+                                    >
+                                      <child.icon className="h-4 w-4 shrink-0" />
+                                      {child.name}
+                                    </Link>
+                                  </li>
+                                )
+                              })}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </li>
                 )

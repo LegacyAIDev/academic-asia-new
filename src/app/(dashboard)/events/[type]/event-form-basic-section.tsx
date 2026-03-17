@@ -24,10 +24,12 @@ export function EventFormBasicSection({
 }: Props) {
   const { categories, eventTypes, deliveryModes, visibilities, profiles } = referenceData
 
-  // Filter event types by selected category
   const filteredTypes = selectedCategoryId
     ? eventTypes.filter((t) => t.category_id === selectedCategoryId)
     : eventTypes
+
+  const isAdmission = categories.find((c) => c.id === selectedCategoryId)?.code === "admission_assessment"
+  const privateVisibilityId = visibilities.find((v) => v.code === "private")?.id
 
   return (
     <Card className="border-0 shadow-sm">
@@ -101,7 +103,12 @@ export function EventFormBasicSection({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label className="flex items-center gap-1.5"><Eye className="h-3.5 w-3.5 text-muted-foreground" />Visibility</Label>
-            <Select name="visibility_id" defaultValue={event?.visibility_id?.toString() ?? ""}>
+            <Select
+              name="visibility_id"
+              value={isAdmission && privateVisibilityId ? privateVisibilityId.toString() : undefined}
+              defaultValue={event?.visibility_id?.toString() ?? ""}
+              disabled={isAdmission}
+            >
               <SelectTrigger className={selectTriggerStyles}>
                 <SelectValue placeholder="Select visibility" />
               </SelectTrigger>

@@ -5,8 +5,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { BookOpen, Plus, Trash2 } from "lucide-react"
-import { inputStyles } from "./event-form-types"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { BookOpen, Plus, Trash2, ChevronsUpDown } from "lucide-react"
+import { inputStyles, selectTriggerStyles } from "./event-form-types"
+
+const EXAM_SUBJECTS = ["Maths", "English", "Verbal", "Others"] as const
+const APPLY_YEARS = Array.from({ length: 13 }, (_, i) => `Year ${i + 1}`)
+const ALLOWED_ITEMS = ["Calculator allowed", "Dictionary allowed", "Pencil only", "Scratch paper provided"] as const
+const splitCsv = (s: string) => s ? s.split(", ").filter(Boolean) : []
 
 export type ExamBlockRow = {
   id?: string
@@ -29,13 +37,16 @@ const emptyBlock = (): ExamBlockRow => ({
   allowed_items: "", special_instructions: "",
 })
 
+type StaffProfile = { id: string; first_name: string | null; surname: string | null }
+
 type Props = {
   examBlocks: ExamBlockRow[]
   onChange: (blocks: ExamBlockRow[]) => void
+  profiles: StaffProfile[]
 }
 
 /** Repeatable exam block cards for group sitting scheduling mode */
-export function EventFormExamBlocks({ examBlocks, onChange }: Props) {
+export function EventFormExamBlocks({ examBlocks, onChange, profiles }: Props) {
   const addBlock = () => onChange([...examBlocks, emptyBlock()])
   const removeBlock = (idx: number) => onChange(examBlocks.filter((_, i) => i !== idx))
   const updateBlock = (idx: number, field: keyof ExamBlockRow, value: string) => {
@@ -43,10 +54,6 @@ export function EventFormExamBlocks({ examBlocks, onChange }: Props) {
     updated[idx] = { ...updated[idx], [field]: value }
     onChange(updated)
   }
-
-  // Auto-show first block if none exist
-  const blocks = examBlocks.length === 0 ? [emptyBlock()] : examBlocks
-  if (examBlocks.length === 0) onChange(blocks)
 
   return (
     <Card className="border-0 shadow-sm">
@@ -63,22 +70,26 @@ export function EventFormExamBlocks({ examBlocks, onChange }: Props) {
         </Button>
       </CardHeader>
       <CardContent className="space-y-6">
-        {blocks.map((block, idx) => (
+        {examBlocks.map((block, idx) => (
           <div key={idx} className="rounded-lg border border-border p-4 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">Exam {idx + 1}</span>
-              {blocks.length > 1 && (
+              {examBlocks.length > 1 && (
                 <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => removeBlock(idx)}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               )}
             </div>
 
-            {/* Row 1: Subject, Name, Apply Year */}
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label>Subject</Label>
-                <Input className={inputStyles} value={block.subject} onChange={(e) => updateBlock(idx, "subject", e.target.value)} placeholder="e.g. Mathematics" />
+                <Select value={block.subject || undefined} onValueChange={(v) => updateBlock(idx, "subject", v)}>
+                  <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder="Select subject" /></SelectTrigger>
+                  <SelectContent>
+                    {EXAM_SUBJECTS.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label>Exam Name</Label>
@@ -86,11 +97,15 @@ export function EventFormExamBlocks({ examBlocks, onChange }: Props) {
               </div>
               <div className="space-y-2">
                 <Label>Apply Year</Label>
-                <Input className={inputStyles} value={block.apply_year} onChange={(e) => updateBlock(idx, "apply_year", e.target.value)} placeholder="e.g. 2026" />
+                <Select value={block.apply_year || undefined} onValueChange={(v) => updateBlock(idx, "apply_year", v)}>
+                  <SelectTrigger className={selectTriggerStyles}><SelectValue placeholder="Select year" /></SelectTrigger>
+                  <SelectContent>
+                    {APPLY_YEARS.map((y) => (<SelectItem key={y} value={y}>{y}</SelectItem>))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            {/* Row 2: Duration, Start, End */}
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label>Duration (min)</Label>
@@ -106,7 +121,6 @@ export function EventFormExamBlocks({ examBlocks, onChange }: Props) {
               </div>
             </div>
 
-            {/* Row 3: Venue, Invigilator, Capacity */}
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label>Venue / Room</Label>
@@ -114,7 +128,35 @@ export function EventFormExamBlocks({ examBlocks, onChange }: Props) {
               </div>
               <div className="space-y-2">
                 <Label>Invigilator(s)</Label>
-                <Input className={inputStyles} value={block.invigilator_names} onChange={(e) => updateBlock(idx, "invigilator_names", e.target.value)} placeholder="Names, comma separated" />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button type="button" variant="outline" className={`${selectTriggerStyles} justify-between font-normal`}>
+                      <span className="truncate">
+                        {block.invigilator_names || "Select staff..."}
+                      </span>
+                      <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-60 p-2 max-h-60 overflow-y-auto" align="start">
+                    {profiles.map((p) => {
+                      const name = `${p.first_name ?? ""} ${p.surname ?? ""}`.trim()
+                      const selected = splitCsv(block.invigilator_names)
+                      const checked = selected.includes(name)
+                      return (
+                        <label key={p.id} className="flex items-center gap-2 px-2 py-1.5 text-sm rounded-md hover:bg-muted cursor-pointer">
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={(c) => {
+                              const next = c ? [...selected, name] : selected.filter((s) => s !== name)
+                              updateBlock(idx, "invigilator_names", next.join(", "))
+                            }}
+                          />
+                          {name}
+                        </label>
+                      )
+                    })}
+                  </PopoverContent>
+                </Popover>
               </div>
               <div className="space-y-2">
                 <Label>Capacity</Label>
@@ -122,11 +164,27 @@ export function EventFormExamBlocks({ examBlocks, onChange }: Props) {
               </div>
             </div>
 
-            {/* Row 4: Allowed items, Special instructions */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Allowed Items</Label>
-                <Input className={inputStyles} value={block.allowed_items} onChange={(e) => updateBlock(idx, "allowed_items", e.target.value)} placeholder="e.g. Calculator, ruler" />
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  {ALLOWED_ITEMS.map((item) => {
+                    const selected = splitCsv(block.allowed_items)
+                    const checked = selected.includes(item)
+                    return (
+                      <label key={item} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={(c) => {
+                            const next = c ? [...selected, item] : selected.filter((s) => s !== item)
+                            updateBlock(idx, "allowed_items", next.join(", "))
+                          }}
+                        />
+                        {item}
+                      </label>
+                    )
+                  })}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Special Instructions</Label>
