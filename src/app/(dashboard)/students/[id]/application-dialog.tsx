@@ -52,6 +52,10 @@ import {
   type CreateApplicationInput,
 } from "@/lib/supabase/actions/student-applications"
 import type { ApplicationWithJoins } from "@/lib/supabase/queries/student-applications"
+import { createApplicationDeposit } from "@/lib/supabase/actions/student-application-deposits"
+import { createIndividualExam } from "@/lib/supabase/actions/student-individual-exams"
+import { ApplicationDepositSection } from "./application-deposit-section"
+import { ApplicationExamSection } from "./application-exam-section"
 
 type ReferenceItem = { id: number; code: string; label: string }
 type StatusItem = ReferenceItem & { category: string | null }
@@ -160,6 +164,9 @@ export function ApplicationDialog({
   const [visitDateOpen, setVisitDateOpen] = useState(false)
   const [eventDate, setEventDate] = useState<Date | undefined>(parseDate(application?.event_date))
   const [eventDateOpen, setEventDateOpen] = useState(false)
+  const [depositDate, setDepositDate] = useState<Date | undefined>(undefined)
+  const [depositCommission, setDepositCommission] = useState(true)
+  const [examPrefDate, setExamPrefDate] = useState<Date | undefined>(undefined)
 
   const formatDateDisplay = (date: Date | undefined) =>
     date ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null
@@ -208,6 +215,49 @@ export function ApplicationDialog({
       let result
       if (mode === "create") {
         result = await createStudentApplication({ ...input, student_id: studentId } as CreateApplicationInput)
+
+        // Save deposit if any deposit field was filled
+        if (result?.success && result.data?.id) {
+          const depAmount = formData.get("deposit_amount") as string
+          const depDiscount = formData.get("deposit_discount") as string
+          const depRemarks = (formData.get("deposit_remarks") as string) || null
+          const hasDepositData = depAmount || depDiscount || depositDate || depRemarks
+
+          if (hasDepositData) {
+            await createApplicationDeposit({
+              application_id: result.data.id,
+              deposit_date: formatDateValue(depositDate),
+              amount: depAmount ? parseFloat(depAmount) : null,
+              discount: depDiscount ? parseFloat(depDiscount) : null,
+              has_commission: depositCommission,
+              remarks: depRemarks,
+            }, studentId)
+          }
+
+          // Save exam booking if any exam field was filled
+          const examSubject = (formData.get("exam_subject") as string) || null
+          const examYear = (formData.get("exam_year") as string) || null
+          const examMethod = formData.get("exam_method") as string
+          const examPrefTime = (formData.get("exam_pref_time") as string) || null
+          const examRemarks = (formData.get("exam_remarks") as string) || null
+          const hasExamData = examSubject || examYear || examPrefDate || examRemarks
+
+          if (hasExamData) {
+            await createIndividualExam({
+              student_id: studentId,
+              school_id: input.school_id,
+              application_id: result.data.id,
+              exam_type_id: 2,
+              subject: examSubject,
+              apply_year: examYear,
+              delivery_mode_id: examMethod ? parseInt(examMethod, 10) : null,
+              preferred_date: formatDateValue(examPrefDate),
+              preferred_start_time: examPrefTime,
+              remarks: examRemarks,
+              status_id: 1,
+            }, studentId)
+          }
+        }
       } else if (application?.id) {
         result = await updateStudentApplication(application.id, studentId, input)
       }
@@ -231,6 +281,9 @@ export function ApplicationDialog({
         setRegDate(application?.registration_date ? parseDate(application.registration_date) : new Date())
         setVisitDate(parseDate(application?.visit_date))
         setEventDate(parseDate(application?.event_date))
+        setDepositDate(undefined)
+        setDepositCommission(true)
+        setExamPrefDate(undefined)
       }
     }}>
       <DialogTrigger asChild>
@@ -560,6 +613,30 @@ export function ApplicationDialog({
                     <Input name="visit_remarks" className={inputStyles} defaultValue={application?.visit_remarks ?? ""} placeholder="Notes about the visit" />
                   </FormField>
                 </FormSection>
+
+                {/* Deposits */}
+                <ApplicationDepositSection
+                  applicationId={application?.id ?? ""}
+                  studentId={studentId}
+                  deposits={application?.deposits ?? []}
+                  isCreate={mode === "create"}
+                  depositDate={depositDate}
+                  onDepositDateChange={setDepositDate}
+                  commission={depositCommission}
+                  onCommissionChange={setDepositCommission}
+                />
+
+                {/* Entrance Exam Booking */}
+                <ApplicationExamSection
+                  applicationId={application?.id ?? ""}
+                  studentId={studentId}
+                  schoolId={application?.school_id ?? ""}
+                  exams={application?.exams ?? []}
+                  isCreate={mode === "create"}
+                  defaultYear={application?.entry_year?.toString() ?? ""}
+                  examPrefDate={examPrefDate}
+                  onExamPrefDateChange={setExamPrefDate}
+                />
               </div>
             </div>
           </div>

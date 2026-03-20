@@ -15,6 +15,11 @@ export type CreateEventAppInput = {
   event_id?: string | null
   status_id?: number | null
   email_sent?: boolean | null
+  representative_id?: string | null
+  preferred_time?: string | null
+  seats_requested?: number | null
+  seats_assigned?: number | null
+  pieces?: { piece: string; composer: string }[] | null
   remarks?: string | null
 }
 

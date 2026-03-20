@@ -33,6 +33,29 @@ export type ApplicationWithJoins = {
   status: { id: number; code: string; label: string; category: string | null } | null
   mode: { id: number; code: string; label: string } | null
   event: { id: string; name: string } | null
+  deposits: {
+    id: string
+    deposit_date: string | null
+    amount: number | null
+    discount: number | null
+    has_commission: boolean | null
+    remarks: string | null
+  }[]
+  exams: {
+    id: string
+    subject: string | null
+    apply_year: string | null
+    delivery_mode_id: number | null
+    preferred_date: string | null
+    preferred_start_time: string | null
+    confirmed_date: string | null
+    confirmed_start_time: string | null
+    room: string | null
+    seat_no: number | null
+    score: number | null
+    remarks: string | null
+    status_id: number
+  }[]
 }
 
 /**
@@ -49,7 +72,9 @@ export async function getStudentApplications(studentId: string): Promise<Applica
       school:schools!student_applications_school_id_fkey(id, name),
       status:application_statuses!student_applications_status_id_fkey(id, code, label, category),
       mode:application_modes!student_applications_mode_id_fkey(id, code, label),
-      event:events!student_applications_event_id_fkey(id, name)
+      event:events!student_applications_event_id_fkey(id, name),
+      deposits:student_application_deposits(id, deposit_date, amount, discount, has_commission, remarks),
+      exams:student_individual_exams(id, subject, apply_year, delivery_mode_id, preferred_date, preferred_start_time, confirmed_date, confirmed_start_time, room, seat_no, score, remarks, status_id)
     `)
     .eq('student_id', studentId)
     .order('created_at', { ascending: false })

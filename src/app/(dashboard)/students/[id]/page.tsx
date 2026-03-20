@@ -43,6 +43,7 @@ import { getStudentTravel, getTravelReferenceData } from "@/lib/supabase/queries
 import { getStudentExamResults, getExamResultReferenceData } from "@/lib/supabase/queries/student-exam-results"
 import { getStudentBriefIntro, getBriefIntroReferenceData } from "@/lib/supabase/queries/student-brief-intro"
 import { getStudentResume, getResumeReferenceData } from "@/lib/supabase/queries/student-resume"
+import { getStudentInternalNotes } from "@/lib/supabase/queries/student-internal-notes"
 import { StudentContactsSection } from "./student-contacts"
 import { StudentApplicationsSection } from "./student-applications"
 import { StudentEducationSection } from "./student-education"
@@ -52,6 +53,7 @@ import { StudentTravelSection } from "./student-travel"
 import { StudentExamResultsSection } from "./student-exam-results"
 import { StudentBriefIntroSection } from "./student-brief-intro"
 import { StudentResumeSection } from "./student-resume"
+import { StudentInternalNotesSection } from "./student-internal-notes"
 import { DeleteStudentDialog } from "./delete-student-dialog"
 
 // Status badge styling based on status code
@@ -87,6 +89,7 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     examResults, examResultReferenceData,
     briefIntro, briefIntroReferenceData,
     resumeEntries, resumeReferenceData,
+    internalNotes,
   ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
@@ -107,6 +110,7 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     getBriefIntroReferenceData(),
     getStudentResume(id),
     getResumeReferenceData(),
+    getStudentInternalNotes(id),
   ])
 
   if (!student) {
@@ -437,6 +441,14 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
             studentId={id}
             briefIntro={briefIntro}
             referenceData={briefIntroReferenceData}
+          />
+        </div>
+
+        {/* Internal Notes */}
+        <div id="internal-notes">
+          <StudentInternalNotesSection
+            studentId={id}
+            notes={internalNotes}
           />
         </div>
 
