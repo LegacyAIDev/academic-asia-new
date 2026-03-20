@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Languages } from "lucide-react"
+import { Languages, CheckCircle2, XCircle, Send } from "lucide-react"
 import { BriefIntroDialog } from "./brief-intro-dialog"
 import type { BriefIntroWithJoins } from "@/lib/supabase/queries/student-brief-intro"
 import type { BriefIntroReferenceData } from "./brief-intro-dialog"
@@ -114,6 +114,45 @@ export function StudentBriefIntroSection({
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Remarks</p>
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">{briefIntro.remarks}</p>
+          </div>
+        )}
+
+        {/* Approval Status */}
+        <div className="flex items-center gap-3 pt-2">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Approval</p>
+          {briefIntro.is_approved ? (
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-medium gap-1">
+              <CheckCircle2 className="h-3 w-3" /> Approved
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium gap-1">
+              <XCircle className="h-3 w-3" /> Pending
+            </Badge>
+          )}
+          {briefIntro.is_approved && briefIntro.approved_profile?.full_name && (
+            <span className="text-xs text-muted-foreground">
+              by {briefIntro.approved_profile.full_name} on {formatDate(briefIntro.approved_at)}
+            </span>
+          )}
+        </div>
+
+        {/* Sent History */}
+        {briefIntro.sent_history && briefIntro.sent_history.length > 0 && (
+          <div className="space-y-2 pt-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <Send className="h-3 w-3" /> Sent History ({briefIntro.sent_history.length})
+            </p>
+            <div className="space-y-1.5">
+              {briefIntro.sent_history.map((entry) => (
+                <div key={entry.id} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">{entry.school?.name ?? "Unknown school"}</span>
+                  <span>·</span>
+                  <span>{formatDate(entry.sent_at)}</span>
+                  {entry.method && <Badge variant="outline" className="text-[10px] px-1.5 py-0">{entry.method}</Badge>}
+                  {entry.sent_by_profile?.full_name && <span>by {entry.sent_by_profile.full_name}</span>}
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
