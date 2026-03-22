@@ -43,12 +43,12 @@ export async function getStudentEventApplications(studentId: string): Promise<Ev
     .from('student_event_applications')
     .select(`
       *,
-      event:events!student_event_apps_event_id_fkey(
+      event:events!student_event_applications_event_id_fkey(
         id, name, event_type_id, start_date, start_time, end_time, capacity, school_id,
         event_types(id, code, label, color, category_id),
         school:schools!events_school_id_fkey(id, name)
       ),
-      status:event_application_statuses!student_event_apps_status_id_fkey(id, code, label),
+      status:event_application_statuses!student_event_applications_status_id_fkey(id, code, label),
       representative:event_representatives!student_event_applications_representative_id_fkey(id, name)
     `)
     .eq('student_id', studentId)

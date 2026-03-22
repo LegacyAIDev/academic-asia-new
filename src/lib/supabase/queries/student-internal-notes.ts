@@ -14,7 +14,7 @@ export type InternalNotesRecord = {
   assigned_to: string | null
   created_at: string | null
   updated_at: string | null
-  assigned_profile: { id: string; full_name: string | null } | null
+  assigned_profile: { id: string; first_name: string | null; surname: string | null } | null
 }
 
 /** Fetch internal notes for a student — single record per student */
@@ -26,7 +26,7 @@ export async function getStudentInternalNotes(studentId: string): Promise<Intern
     .from('student_internal_notes')
     .select(`
       *,
-      assigned_profile:profiles!student_internal_notes_assigned_to_fkey(id, full_name)
+      assigned_profile:profiles!student_internal_notes_assigned_to_fkey(id, first_name, surname)
     `)
     .eq('student_id', studentId)
     .maybeSingle()

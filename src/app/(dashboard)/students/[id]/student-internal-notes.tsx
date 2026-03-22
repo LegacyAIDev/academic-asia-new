@@ -10,6 +10,11 @@ type Props = {
   notes: InternalNotesRecord | null
 }
 
+function profileName(p: { first_name: string | null; surname: string | null } | null) {
+  if (!p) return null
+  return [p.first_name, p.surname].filter(Boolean).join(" ") || null
+}
+
 function NoteField({ label, value }: { label: string; value: string | null }) {
   if (!value) return null
   return (
@@ -104,8 +109,8 @@ export function StudentInternalNotesSection({ studentId, notes }: Props) {
 
         <div className="pt-2 text-xs text-muted-foreground">
           Last updated: {formatDate(notes.updated_at)}
-          {notes.assigned_profile?.full_name && (
-            <> by <span className="font-medium text-foreground">{notes.assigned_profile.full_name}</span></>
+          {profileName(notes.assigned_profile) && (
+            <> by <span className="font-medium text-foreground">{profileName(notes.assigned_profile)}</span></>
           )}
         </div>
       </CardContent>

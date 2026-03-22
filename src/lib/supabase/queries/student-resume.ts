@@ -22,7 +22,7 @@ export type ResumeWithJoins = {
   updated_at: string | null
   resume_type: { id: number; code: string; label: string } | null
   instrument: { id: number; code: string; label: string; category: string | null } | null
-  assigned_profile: { id: string; full_name: string | null } | null
+  assigned_profile: { id: string; first_name: string | null; surname: string | null } | null
 }
 
 /**
@@ -38,7 +38,7 @@ export async function getStudentResume(studentId: string): Promise<ResumeWithJoi
       *,
       resume_type:resume_types(id, code, label),
       instrument:music_instruments(id, code, label, category),
-      assigned_profile:profiles!student_resume_assigned_to_fkey(id, full_name)
+      assigned_profile:profiles!student_resume_assigned_to_fkey(id, first_name, surname)
     `)
     .eq('student_id', studentId)
     .order('priority', { ascending: true })

@@ -6,7 +6,7 @@ export type IntroSentRecord = {
   school_id: string
   sent_at: string | null
   method: string | null
-  sent_by_profile: { id: string; full_name: string | null } | null
+  sent_by_profile: { id: string; first_name: string | null; surname: string | null } | null
   school: { id: string; name: string } | null
 }
 
@@ -25,8 +25,8 @@ export type BriefIntroWithJoins = {
   created_at: string | null
   updated_at: string | null
   spoken_english: { id: number; code: string; label: string } | null
-  assigned_profile: { id: string; full_name: string | null } | null
-  approved_profile: { id: string; full_name: string | null } | null
+  assigned_profile: { id: string; first_name: string | null; surname: string | null } | null
+  approved_profile: { id: string; first_name: string | null; surname: string | null } | null
   sent_history: IntroSentRecord[]
 }
 
@@ -42,11 +42,11 @@ export async function getStudentBriefIntro(studentId: string): Promise<BriefIntr
     .select(`
       *,
       spoken_english:spoken_english_levels(id, code, label),
-      assigned_profile:profiles!student_brief_intro_assigned_to_fkey(id, full_name),
-      approved_profile:profiles!student_brief_intro_approved_by_fkey(id, full_name),
+      assigned_profile:profiles!student_brief_intro_assigned_to_fkey(id, first_name, surname),
+      approved_profile:profiles!student_brief_intro_approved_by_fkey(id, first_name, surname),
       sent_history:student_intro_sent_history(
         id, school_id, sent_at, method,
-        sent_by_profile:profiles(id, full_name),
+        sent_by_profile:profiles(id, first_name, surname),
         school:schools(id, name)
       )
     `)

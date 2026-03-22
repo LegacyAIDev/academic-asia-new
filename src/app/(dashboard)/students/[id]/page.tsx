@@ -43,6 +43,8 @@ import { getStudentTravel, getTravelReferenceData } from "@/lib/supabase/queries
 import { getStudentExamResults, getExamResultReferenceData } from "@/lib/supabase/queries/student-exam-results"
 import { getStudentBriefIntro, getBriefIntroReferenceData } from "@/lib/supabase/queries/student-brief-intro"
 import { getStudentResume, getResumeReferenceData } from "@/lib/supabase/queries/student-resume"
+import { getStudentResumeProfile, getStudentResumeTalents, getStudentDocuments } from "@/lib/supabase/queries/student-resume-profile"
+import { getStudentAATests } from "@/lib/supabase/queries/student-individual-exams"
 import { getStudentInternalNotes } from "@/lib/supabase/queries/student-internal-notes"
 import { StudentContactsSection } from "./student-contacts"
 import { StudentApplicationsSection } from "./student-applications"
@@ -52,7 +54,7 @@ import { StudentEventApplicationsSection } from "./student-event-applications"
 import { StudentTravelSection } from "./student-travel"
 import { StudentExamResultsSection } from "./student-exam-results"
 import { StudentBriefIntroSection } from "./student-brief-intro"
-import { StudentResumeSection } from "./student-resume"
+import { StudentResumeProfileSection } from "./student-resume-profile"
 import { StudentInternalNotesSection } from "./student-internal-notes"
 import { DeleteStudentDialog } from "./delete-student-dialog"
 
@@ -90,6 +92,7 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     briefIntro, briefIntroReferenceData,
     resumeEntries, resumeReferenceData,
     internalNotes,
+    resumeProfile, resumeTalents, resumeDocuments, aaTests,
   ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
@@ -111,6 +114,10 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     getStudentResume(id),
     getResumeReferenceData(),
     getStudentInternalNotes(id),
+    getStudentResumeProfile(id),
+    getStudentResumeTalents(id),
+    getStudentDocuments(id, 'resume'),
+    getStudentAATests(id),
   ])
 
   if (!student) {
@@ -487,10 +494,12 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
 
         {/* Resume Section */}
         <div id="resume">
-          <StudentResumeSection
+          <StudentResumeProfileSection
             studentId={id}
-            resumeEntries={resumeEntries}
-            referenceData={resumeReferenceData}
+            profile={resumeProfile}
+            talents={resumeTalents}
+            documents={resumeDocuments}
+            aaTests={aaTests}
           />
         </div>
 
