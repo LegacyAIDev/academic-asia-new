@@ -187,7 +187,9 @@ export function ContactDialog({
       mobile: (formData.get("mobile") as string) || null,
       fax: (formData.get("fax") as string) || null,
       email_1: (formData.get("email_1") as string) || null,
+      email_2: (formData.get("email_2") as string) || null,
       address_1: address || null,
+      address_2: (formData.get("address_2") as string) || null,
       occupation: (formData.get("occupation") as string) || null,
       office_telephone: (formData.get("office_telephone") as string) || null,
       priority: formData.get("priority") ? parseInt(formData.get("priority") as string, 10) : null,
@@ -371,8 +373,11 @@ export function ContactDialog({
                 <FormField label="Fax">
                   <PhoneInput name="fax" defaultValue={contact?.fax ?? ""} defaultCountryCode="852" placeholder="Optional" />
                 </FormField>
-                <FormField label="Email">
+                <FormField label="Email 1">
                   <Input name="email_1" type="email" className={inputStyles} defaultValue={contact?.email_1 ?? ""} placeholder="email@example.com" />
+                </FormField>
+                <FormField label="Email 2">
+                  <Input name="email_2" type="email" className={inputStyles} defaultValue={contact?.email_2 ?? ""} placeholder="second email (optional)" />
                 </FormField>
               </FormSection>
 
@@ -399,6 +404,9 @@ export function ContactDialog({
                       </Button>
                     )}
                   </div>
+                </FormField>
+                <FormField label="Address (Office)">
+                  <Input name="address_2" className={inputStyles} defaultValue={contact?.address_2 ?? ""} placeholder="Office address (optional)" />
                 </FormField>
               </FormSection>
 

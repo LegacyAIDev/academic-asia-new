@@ -173,6 +173,12 @@ function ContactCard({
               <span className="truncate">{contact.email_1}</span>
             </div>
           )}
+          {contact.email_2 && (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate">{contact.email_2}</span>
+            </div>
+          )}
           {contact.mobile && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Phone className="h-3.5 w-3.5 flex-shrink-0" />
