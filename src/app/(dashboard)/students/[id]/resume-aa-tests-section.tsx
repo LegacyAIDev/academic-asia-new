@@ -10,18 +10,11 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Plus, Loader2, ClipboardList, Check } from "lucide-react"
+
 import { createAATestBooking } from "@/lib/supabase/actions/student-resume-aa-tests"
 import type { IndividualExamRecord } from "@/lib/supabase/queries/student-individual-exams"
 
 type Props = { studentId: string; aaTests: IndividualExamRecord[] }
-
-const statusStyles: Record<number, { label: string; style: string }> = {
-  1: { label: "Pending", style: "bg-amber-50 text-amber-700 border-amber-200" },
-  2: { label: "Booked", style: "bg-blue-50 text-blue-700 border-blue-200" },
-  3: { label: "Completed", style: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  4: { label: "Cancelled", style: "bg-rose-50 text-rose-700 border-rose-200" },
-  5: { label: "No Show", style: "bg-slate-50 text-slate-700 border-slate-200" },
-}
 
 function formatDate(d: string | null) {
   if (!d) return "—"
@@ -54,7 +47,6 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
         seat_no: seatRaw ? Number(seatRaw) : null,
         score: scoreRaw ? Number(scoreRaw) : null,
         remarks: (fd.get("remarks") as string) || null,
-        status_id: Number(fd.get("status_id") as string) || 1,
       })
       if (result?.success) setShowForm(false)
       else setError(result?.error ?? "Failed to book AA Test")
@@ -78,14 +70,9 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
         <p className="text-sm text-muted-foreground text-center py-2">No AA tests booked</p>
       )}
 
-      {aaTests.map((t) => {
-        const status = statusStyles[t.status_id] ?? statusStyles[1]
-        return (
+      {aaTests.map((t) => (
           <div key={t.id} className="text-sm bg-background rounded-lg p-3 border border-border/50 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-medium">{t.subject || "Untitled"}</span>
-              <Badge variant="outline" className={`${status.style} border text-xs shrink-0`}>{status.label}</Badge>
-            </div>
+            <span className="font-medium">{t.subject || "Untitled"}</span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div><span className="text-xs text-muted-foreground">Year</span><p>{t.apply_year || "—"}</p></div>
               <div><span className="text-xs text-muted-foreground">Confirmed Date</span><p>{formatDate(t.confirmed_date)}</p></div>
@@ -98,8 +85,7 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
             </div>
             {t.remarks && <p className="text-xs text-muted-foreground">{t.remarks}</p>}
           </div>
-        )
-      })}
+      ))}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-background rounded-lg p-4 border border-border/50 space-y-3">
@@ -143,19 +129,6 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Seat No.</Label>
               <Input name="seat_no" type="number" className="h-9 text-sm" placeholder="e.g. 12" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Status</Label>
-              <Select name="status_id" defaultValue="1">
-                <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Pending</SelectItem>
-                  <SelectItem value="2">Booked</SelectItem>
-                  <SelectItem value="3">Completed</SelectItem>
-                  <SelectItem value="4">Cancelled</SelectItem>
-                  <SelectItem value="5">No Show</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Score</Label>

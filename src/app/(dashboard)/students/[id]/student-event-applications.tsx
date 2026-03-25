@@ -23,11 +23,11 @@ type StudentEventApplicationsSectionProps = {
 
 /** Color map for event application status codes */
 const statusStyles: Record<string, string> = {
-  normal: "bg-slate-50 text-slate-700 border-slate-200",
-  confirmed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  pending: "bg-amber-50 text-amber-700 border-amber-200",
+  booked: "bg-blue-50 text-blue-700 border-blue-200",
+  completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
   cancelled: "bg-rose-50 text-rose-700 border-rose-200",
-  attended: "bg-blue-50 text-blue-700 border-blue-200",
-  no_show: "bg-amber-50 text-amber-700 border-amber-200",
+  no_show: "bg-slate-50 text-slate-700 border-slate-200",
 }
 
 /** Color map for event type badges */
@@ -117,7 +117,7 @@ export function StudentEventApplicationsSection({
             </TableHeader>
             <TableBody>
               {applications.map((app) => {
-                const style = statusStyles[app.status?.code ?? "normal"] ?? statusStyles.normal
+                const style = statusStyles[app.status?.code ?? "pending"] ?? statusStyles.pending
                 const eventType = app.event?.event_types
                 const etStyle = eventTypeStyles[eventType?.color ?? "blue"] ?? eventTypeStyles.blue
 
