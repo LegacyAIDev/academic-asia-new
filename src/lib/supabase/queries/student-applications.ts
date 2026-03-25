@@ -5,6 +5,7 @@ export type ApplicationWithJoins = {
   id: string
   student_id: string
   school_id: string
+  year_group: number | null
   entry_year: number | null
   entry_month: number | null
   course_start_month: number | null

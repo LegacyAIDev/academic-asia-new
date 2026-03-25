@@ -183,6 +183,7 @@ export function ApplicationDialog({
 
     const input: Omit<CreateApplicationInput, 'student_id'> = {
       school_id: formData.get("school_id") as string,
+      year_group: formData.get("year_group") ? parseInt(formData.get("year_group") as string, 10) : null,
       entry_year: formData.get("entry_year") ? parseInt(formData.get("entry_year") as string, 10) : null,
       entry_month: formData.get("entry_month") ? parseInt(formData.get("entry_month") as string, 10) : null,
       course_start_month: formData.get("course_start_month") ? parseInt(formData.get("course_start_month") as string, 10) : null,
@@ -368,7 +369,19 @@ export function ApplicationDialog({
 
                 {/* Entry & Timing */}
                 <FormSection icon={Calendar} title="Entry & Timing" accentColor="teal">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <FormField label="Year Group">
+                      <Select name="year_group" defaultValue={application?.year_group?.toString() ?? ""}>
+                        <SelectTrigger className={selectTriggerStyles}>
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 13 }, (_, i) => i + 1).map((y) => (
+                            <SelectItem key={y} value={y.toString()}>Year {y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormField>
                     <FormField label="Entry Year">
                       <Select name="entry_year" defaultValue={application?.entry_year?.toString() ?? ""}>
                         <SelectTrigger className={selectTriggerStyles}>
