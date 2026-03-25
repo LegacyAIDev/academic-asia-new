@@ -13,6 +13,11 @@ export type CreateAATestInput = {
   apply_year?: string | null
   preferred_date?: string | null
   preferred_start_time?: string | null
+  confirmed_date?: string | null
+  confirmed_start_time?: string | null
+  room?: string | null
+  seat_no?: number | null
+  score?: number | null
   remarks?: string | null
   status_id?: number
 }

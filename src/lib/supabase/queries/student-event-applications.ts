@@ -71,7 +71,7 @@ export async function getEventAppReferenceData() {
 
   const [eventTypes, events, statuses, representatives] = await Promise.all([
     supabase.from('event_types').select('*').order('sort_order'),
-    supabase.from('events').select('id, name, event_type_id, start_date, start_time, end_time, capacity, school_id, school:schools!events_school_id_fkey(name)').order('name'),
+    supabase.from('events').select('id, name, event_type_id, start_date, start_time, end_time, capacity, school_id, school:schools!events_school_id_fkey(name)').gte('start_date', new Date().toISOString().split('T')[0]).order('start_date'),
     supabase.from('event_application_statuses').select('*').order('sort_order'),
     supabase.from('event_representatives').select('id, event_id, name').order('name'),
   ])

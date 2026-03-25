@@ -16,11 +16,32 @@ export type CreateTalentInput = {
   video_file_name?: string | null
 }
 
-/** Add a special talent entry */
-export async function createStudentTalent(input: CreateTalentInput): Promise<ActionResult<{ id: string }>> {
+const ALLOWED_VIDEO_MIME = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo']
+const MAX_VIDEO_BYTES = 50 * 1024 * 1024
+
+/** Add a special talent entry with optional video upload */
+export async function createStudentTalent(input: CreateTalentInput, formData?: FormData): Promise<ActionResult<{ id: string }>> {
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    const file = formData?.get('video') as File | null
+    if (file && file.size > 0) {
+      if (!ALLOWED_VIDEO_MIME.includes(file.type)) return { success: false, error: 'Only video files (MP4, WebM, MOV, AVI) are allowed' }
+      if (file.size > MAX_VIDEO_BYTES) return { success: false, error: 'Video exceeds 50 MB limit' }
+
+      const timestamp = Date.now()
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+      const filePath = `${input.student_id}/talents/${timestamp}_${safeName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('student-documents')
+        .upload(filePath, file, { contentType: file.type, upsert: false })
+
+      if (uploadError) return { success: false, error: uploadError.message }
+      input.video_path = filePath
+      input.video_file_name = file.name
+    }
 
     const { data, error } = await supabase
       .from('student_resume_talents')
@@ -28,7 +49,10 @@ export async function createStudentTalent(input: CreateTalentInput): Promise<Act
       .select('id')
       .single()
 
-    if (error) return { success: false, error: error.message }
+    if (error) {
+      if (input.video_path) await supabase.storage.from('student-documents').remove([input.video_path])
+      return { success: false, error: error.message }
+    }
     revalidatePath(`/students/${input.student_id}`)
     return { success: true, data: { id: (data as { id: string }).id } }
   } catch (err) {
@@ -37,11 +61,18 @@ export async function createStudentTalent(input: CreateTalentInput): Promise<Act
   }
 }
 
-/** Delete a special talent entry */
+/** Delete a special talent entry and its video from storage */
 export async function deleteStudentTalent(talentId: string, studentId: string): Promise<ActionResult> {
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    const { data: talent, error: fetchError } = await supabase
+      .from('student_resume_talents')
+      .select('video_path')
+      .eq('id', talentId)
+      .single()
+    if (fetchError) return { success: false, error: fetchError.message }
 
     const { error } = await supabase
       .from('student_resume_talents')
@@ -49,6 +80,11 @@ export async function deleteStudentTalent(talentId: string, studentId: string): 
       .eq('id', talentId)
 
     if (error) return { success: false, error: error.message }
+
+    if (talent?.video_path) {
+      await supabase.storage.from('student-documents').remove([talent.video_path])
+    }
+
     revalidatePath(`/students/${studentId}`)
     return { success: true }
   } catch (err) {

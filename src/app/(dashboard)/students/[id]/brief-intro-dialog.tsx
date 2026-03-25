@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 import { Plus, Loader2, Pencil, Languages, Check } from "lucide-react"
 import {
   upsertStudentBriefIntro, type UpsertBriefIntroInput,
@@ -31,6 +32,7 @@ export function BriefIntroDialog({
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [isApproved, setIsApproved] = useState(briefIntro?.is_approved ?? false)
   const isEdit = !!briefIntro
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,7 +42,9 @@ export function BriefIntroDialog({
 
     const input: UpsertBriefIntroInput = {
       student_id: studentId,
+      subjects: (fd.get("subjects") as string) || null,
       remarks: (fd.get("remarks") as string) || null,
+      is_approved: isApproved,
     }
 
     startTransition(async () => {
@@ -95,14 +99,31 @@ export function BriefIntroDialog({
               </div>
             )}
             <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Intended Subjects</Label>
+              <Textarea
+                name="subjects"
+                rows={3}
+                className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                defaultValue={briefIntro?.subjects ?? ""}
+                placeholder="e.g. Mathematics, Physics, Chemistry..."
+              />
+            </div>
+            <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">Introduction</Label>
               <Textarea
                 name="remarks"
-                rows={12}
+                rows={8}
                 className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 defaultValue={briefIntro?.remarks ?? ""}
-                placeholder="Write a comprehensive introduction covering the student's background, spoken English, hobbies, subjects, and any other relevant information..."
+                placeholder="Write a brief introduction for this student..."
               />
+            </div>
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-medium">Approval Status</Label>
+                <p className="text-xs text-muted-foreground">Mark this introduction as approved</p>
+              </div>
+              <Switch checked={isApproved} onCheckedChange={setIsApproved} />
             </div>
           </div>
 

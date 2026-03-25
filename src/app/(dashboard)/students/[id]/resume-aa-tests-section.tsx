@@ -17,9 +17,10 @@ type Props = { studentId: string; aaTests: IndividualExamRecord[] }
 
 const statusStyles: Record<number, { label: string; style: string }> = {
   1: { label: "Pending", style: "bg-amber-50 text-amber-700 border-amber-200" },
-  2: { label: "Confirmed", style: "bg-blue-50 text-blue-700 border-blue-200" },
+  2: { label: "Booked", style: "bg-blue-50 text-blue-700 border-blue-200" },
   3: { label: "Completed", style: "bg-emerald-50 text-emerald-700 border-emerald-200" },
   4: { label: "Cancelled", style: "bg-rose-50 text-rose-700 border-rose-200" },
+  5: { label: "No Show", style: "bg-slate-50 text-slate-700 border-slate-200" },
 }
 
 function formatDate(d: string | null) {
@@ -38,15 +39,22 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
     const fd = new FormData(e.currentTarget)
 
     startTransition(async () => {
+      const seatRaw = fd.get("seat_no") as string
+      const scoreRaw = fd.get("score") as string
       const result = await createAATestBooking({
         student_id: studentId,
-        exam_type_id: 1, // AA Test
+        exam_type_id: 1,
         subject: (fd.get("subject") as string) || null,
         apply_year: (fd.get("apply_year") as string) || null,
         preferred_date: (fd.get("preferred_date") as string) || null,
         preferred_start_time: (fd.get("preferred_start_time") as string) || null,
+        confirmed_date: (fd.get("confirmed_date") as string) || null,
+        confirmed_start_time: (fd.get("confirmed_start_time") as string) || null,
+        room: (fd.get("room") as string) || null,
+        seat_no: seatRaw ? Number(seatRaw) : null,
+        score: scoreRaw ? Number(scoreRaw) : null,
         remarks: (fd.get("remarks") as string) || null,
-        status_id: 1,
+        status_id: Number(fd.get("status_id") as string) || 1,
       })
       if (result?.success) setShowForm(false)
       else setError(result?.error ?? "Failed to book AA Test")
@@ -73,14 +81,22 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
       {aaTests.map((t) => {
         const status = statusStyles[t.status_id] ?? statusStyles[1]
         return (
-          <div key={t.id} className="flex items-center gap-3 text-sm bg-background rounded-lg p-3 border border-border/50">
-            <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div><span className="text-xs text-muted-foreground">Subject</span><p className="font-medium">{t.subject || "—"}</p></div>
-              <div><span className="text-xs text-muted-foreground">Year</span><p>{t.apply_year || "—"}</p></div>
-              <div><span className="text-xs text-muted-foreground">Date</span><p>{formatDate(t.confirmed_date ?? t.preferred_date)}</p></div>
-              <div><span className="text-xs text-muted-foreground">Score</span><p className="font-medium">{t.score ?? "—"}</p></div>
+          <div key={t.id} className="text-sm bg-background rounded-lg p-3 border border-border/50 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-medium">{t.subject || "Untitled"}</span>
+              <Badge variant="outline" className={`${status.style} border text-xs shrink-0`}>{status.label}</Badge>
             </div>
-            <Badge variant="outline" className={`${status.style} border text-xs shrink-0`}>{status.label}</Badge>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div><span className="text-xs text-muted-foreground">Year</span><p>{t.apply_year || "—"}</p></div>
+              <div><span className="text-xs text-muted-foreground">Confirmed Date</span><p>{formatDate(t.confirmed_date)}</p></div>
+              <div><span className="text-xs text-muted-foreground">Confirmed Time</span><p>{t.confirmed_start_time || "—"}</p></div>
+              <div><span className="text-xs text-muted-foreground">Room</span><p>{t.room || "—"}</p></div>
+              <div><span className="text-xs text-muted-foreground">Seat No.</span><p>{t.seat_no ?? "—"}</p></div>
+              <div><span className="text-xs text-muted-foreground">Score</span><p className="font-medium">{t.score ?? "—"}</p></div>
+              <div><span className="text-xs text-muted-foreground">Preferred Date</span><p>{formatDate(t.preferred_date)}</p></div>
+              <div><span className="text-xs text-muted-foreground">Preferred Time</span><p>{t.preferred_start_time || "—"}</p></div>
+            </div>
+            {t.remarks && <p className="text-xs text-muted-foreground">{t.remarks}</p>}
           </div>
         )
       })}
@@ -111,6 +127,39 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Preferred Time</Label>
               <Input name="preferred_start_time" type="time" className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Confirmed Date</Label>
+              <Input name="confirmed_date" type="date" className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Confirmed Time</Label>
+              <Input name="confirmed_start_time" type="time" className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Room</Label>
+              <Input name="room" className="h-9 text-sm" placeholder="e.g. Room A1" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Seat No.</Label>
+              <Input name="seat_no" type="number" className="h-9 text-sm" placeholder="e.g. 12" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Status</Label>
+              <Select name="status_id" defaultValue="1">
+                <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Pending</SelectItem>
+                  <SelectItem value="2">Booked</SelectItem>
+                  <SelectItem value="3">Completed</SelectItem>
+                  <SelectItem value="4">Cancelled</SelectItem>
+                  <SelectItem value="5">No Show</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Score</Label>
+              <Input name="score" type="number" className="h-9 text-sm" placeholder="e.g. 85" />
             </div>
           </div>
           <div className="space-y-1">

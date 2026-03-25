@@ -63,10 +63,19 @@ export function StudentBriefIntroSection({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Main introduction text */}
-        <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">
-          {briefIntro.remarks || "No introduction text yet."}
-        </p>
+        {briefIntro.subjects && (
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Intended Subjects</p>
+            <p className="text-sm font-medium">{briefIntro.subjects}</p>
+          </div>
+        )}
+
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Introduction</p>
+          <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">
+            {briefIntro.remarks || "No introduction text yet."}
+          </p>
+        </div>
 
         {/* Approval Status */}
         <div className="flex items-center gap-3 pt-2">

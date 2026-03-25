@@ -115,7 +115,7 @@ export function ResumeDocumentsSection({ studentId, documents, categoryId, title
           {categoryId === 2 && (
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Date Taken</Label>
-              <Input name="academic_year" className="h-9 text-sm" placeholder="e.g. 2025" />
+              <Input name="academic_year" type="date" className="h-9 text-sm" />
             </div>
           )}
           <div className="flex justify-end gap-2">

@@ -16,6 +16,9 @@ export type UpsertBriefIntroInput = {
   hobbies?: string | null
   subjects?: string | null
   remarks?: string | null
+  is_approved?: boolean | null
+  approved_at?: string | null
+  approved_by?: string | null
 }
 
 /**
@@ -36,6 +39,12 @@ export async function upsertStudentBriefIntro(
 
     if (existing) {
       const { student_id: _, ...updateFields } = input
+      if (updateFields.is_approved) {
+        updateFields.approved_at = new Date().toISOString()
+      } else if (updateFields.is_approved === false) {
+        updateFields.approved_at = null
+        updateFields.approved_by = null
+      }
       const { error } = await supabase
         .from('student_brief_intro')
         .update(updateFields as never)

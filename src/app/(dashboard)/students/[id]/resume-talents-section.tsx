@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Plus, Loader2, Trophy, Trash2, Check } from "lucide-react"
+import { Plus, Loader2, Trophy, Trash2, Check, Video } from "lucide-react"
 import { createStudentTalent, deleteStudentTalent } from "@/lib/supabase/actions/student-resume-talents"
 import type { ResumeTalentRecord } from "@/lib/supabase/queries/student-resume-profile"
 
@@ -42,7 +42,7 @@ export function ResumeTalentsSection({ studentId, talents }: Props) {
         instrument_sport: (fd.get("instrument_sport") as string) || null,
         award_name: (fd.get("award_name") as string) || null,
         results: (fd.get("results") as string) || null,
-      })
+      }, fd)
       if (result?.success) setShowForm(false)
       else setError(result?.error ?? "Failed to add talent")
     })
@@ -81,6 +81,11 @@ export function ResumeTalentsSection({ studentId, talents }: Props) {
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 {t.instrument_sport && <span>{t.instrument_sport}</span>}
                 {t.results && <span>· {t.results}</span>}
+                {t.video_file_name && (
+                  <span className="inline-flex items-center gap-1 text-primary">
+                    <Video className="h-3 w-3" /> {t.video_file_name}
+                  </span>
+                )}
               </div>
             </div>
             <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(t.id)} disabled={isPending}>
@@ -119,6 +124,10 @@ export function ResumeTalentsSection({ studentId, talents }: Props) {
               <Label className="text-xs text-muted-foreground">Results</Label>
               <Input name="results" className="h-9 text-sm" placeholder="e.g. Distinction" />
             </div>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Video (optional, max 50 MB)</Label>
+            <Input name="video" type="file" className="h-9 text-sm" accept="video/mp4,video/webm,video/quicktime,video/x-msvideo" />
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
