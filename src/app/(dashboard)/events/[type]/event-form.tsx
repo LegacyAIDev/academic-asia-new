@@ -108,12 +108,11 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
       const eventId = mode === "create" ? result.data?.id : event?.id
       if (!eventId) { setError("Missing event ID"); return }
 
-      if (mode === "create") {
-        await saveEventSubItems({
-          eventId, isEngagement, showRepresentatives, showExamBlocks,
-          selectedSchoolIds, representatives, examBlocks,
-        })
-      }
+      await saveEventSubItems({
+        eventId, eventDate: input.start_date ?? null,
+        isEngagement, showRepresentatives, showExamBlocks,
+        selectedSchoolIds, representatives, examBlocks,
+      })
       router.push(`/events/${eventType}/${eventId}`)
     })
   }

@@ -29,6 +29,7 @@ import {
   Building2,
   Users,
   CalendarDays,
+  CalendarClock,
   FileText,
   User,
   Trash2,
@@ -159,6 +160,14 @@ export default async function EventDetailPage({ params }: EventDetailPageParams)
           </div>
         </div>
         <div className="flex items-center gap-3">
+          {event.scheduling_mode?.code === 'one_to_one' && (
+            <Button variant="outline" className="gap-2 shadow-sm" asChild>
+              <Link href={`/events/${type}/${id}/scheduler`}>
+                <CalendarClock className="h-4 w-4" />
+                Schedule Sessions
+              </Link>
+            </Button>
+          )}
           <Button className="gap-2 shadow-sm" asChild>
             <Link href={`/events/${type}/${id}/edit`}>
               <Edit className="h-4 w-4" />
@@ -377,8 +386,10 @@ export default async function EventDetailPage({ params }: EventDetailPageParams)
                 <Users className="h-4 w-4 text-muted-foreground" />
                 School Representatives
               </CardTitle>
-              <Button size="sm" variant="outline" disabled>
-                Add Representative
+              <Button size="sm" variant="outline" asChild>
+                <Link href={`/events/${type}/${id}/edit`}>
+                  Add Representative
+                </Link>
               </Button>
             </CardHeader>
             <CardContent className="p-0">
@@ -392,8 +403,8 @@ export default async function EventDetailPage({ params }: EventDetailPageParams)
                     <TableRow className="hover:bg-transparent bg-muted/20">
                       <TableHead className="font-medium">Representative Name</TableHead>
                       <TableHead className="font-medium">School</TableHead>
+                      <TableHead className="font-medium">Availability</TableHead>
                       <TableHead className="font-medium">Remarks</TableHead>
-                      <TableHead className="w-12"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -408,13 +419,16 @@ export default async function EventDetailPage({ params }: EventDetailPageParams)
                         <TableCell>
                           {representative.school?.name ?? "—"}
                         </TableCell>
+                        <TableCell className="text-muted-foreground text-sm">
+                          {representative.available_from && representative.available_to
+                            ? `${String(representative.available_from).includes('T') ? String(representative.available_from).split('T')[1].slice(0, 5) : String(representative.available_from).slice(0, 5)} – ${String(representative.available_to).includes('T') ? String(representative.available_to).split('T')[1].slice(0, 5) : String(representative.available_to).slice(0, 5)}`
+                            : "—"}
+                          {representative.slot_length_minutes && (
+                            <span className="ml-1 text-xs">({representative.slot_length_minutes}min)</span>
+                          )}
+                        </TableCell>
                         <TableCell className="text-muted-foreground max-w-[200px] truncate">
                           {representative.remarks ?? "—"}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}

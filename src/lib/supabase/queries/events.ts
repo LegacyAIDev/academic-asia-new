@@ -391,7 +391,8 @@ export async function getEventById(id: string) {
     .select(`
       *,
       event_type:event_types!events_event_type_id_fkey(id, code, label, color),
-      assigned_to_profile:profiles!events_assigned_to_fkey(id, first_name, surname, email_1)
+      assigned_to_profile:profiles!events_assigned_to_fkey(id, first_name, surname, email_1),
+      scheduling_mode:scheduling_modes!events_scheduling_mode_id_fkey(code, label)
     `)
     .eq('id', id)
     .single()
@@ -438,7 +439,7 @@ export async function getEventRepresentatives(eventId: string) {
     .from('event_representatives')
     .select(`
       *,
-      school:schools!event_representatives_school_id_fkey(id, name)
+      school:schools!event_interviewers_school_id_fkey(id, name)
     `)
     .eq('event_id', eventId)
 

@@ -93,7 +93,7 @@ export async function getEventRepresentativesList(eventId: string) {
   const supabase = createClient(cookieStore)
   const { data, error } = await supabase
     .from('event_representatives')
-    .select(`*, school:schools!event_representatives_school_id_fkey(id, name)`)
+    .select(`*, school:schools!event_interviewers_school_id_fkey(id, name)`)
     .eq('event_id', eventId)
     .order('created_at')
   if (error) {
