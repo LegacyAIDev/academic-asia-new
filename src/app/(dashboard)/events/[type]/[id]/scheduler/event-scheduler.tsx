@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import type {
   SchedulerEvent, SchedulerRepresentative, SchedulerSchedule, UnassignedStudent,
 } from '@/lib/supabase/queries/event-scheduler'
-import { assignStudentToSlot, moveStudentSlot } from '@/lib/supabase/actions/event-scheduler'
+import { assignStudentToSlot, moveStudentSlot, createBlocker } from '@/lib/supabase/actions/event-scheduler'
 import { RepresentativeTabs } from './representative-tabs'
 import { TimeSlotGrid } from './time-slot-grid'
 import { UnassignedSidebar } from './unassigned-sidebar'
@@ -25,8 +25,8 @@ type EventSchedulerProps = {
 
 /** Drag data attached to draggable items */
 export type DragData = {
-  type: 'unassigned' | 'scheduled'
-  studentId: string
+  type: 'unassigned' | 'scheduled' | 'blocker'
+  studentId?: string
   studentName: string
   scheduleId?: string
 }
@@ -70,8 +70,8 @@ export function EventScheduler({
     s => s.representative_id === selectedRepId && s.schedule_date === selectedDate
   )
   const slotMinutes = selectedRep?.slot_length_minutes ?? event.duration_minutes ?? 30
-  const scheduledCount = schedules.length
-  const totalApplicants = schedules.length + unassigned.length
+  const scheduledCount = schedules.filter(s => !s.is_blocker).length
+  const totalApplicants = scheduledCount + unassigned.length
   const isMultiDay = startDate !== endDate
 
   const handleDragStart = (e: DragStartEvent) => {
@@ -85,11 +85,26 @@ export function EventScheduler({
     const dropData = e.over?.data.current as DropData | undefined
     if (!dragData || !dropData) return
 
-    if (dragData.type === 'unassigned') {
+    if (dragData.type === 'blocker') {
+      startTransition(async () => {
+        const result = await createBlocker({
+          event_id: event.id,
+          representative_id: dropData.repId,
+          schedule_date: dropData.date,
+          start_time: dropData.start,
+          end_time: dropData.end,
+        })
+        if (result.success) {
+          toast.success('Slot blocked')
+        } else {
+          toast.error(result.error ?? 'Failed to block slot')
+        }
+      })
+    } else if (dragData.type === 'unassigned' && dragData.studentId) {
       startTransition(async () => {
         const result = await assignStudentToSlot({
           event_id: event.id,
-          student_id: dragData.studentId,
+          student_id: dragData.studentId!,
           representative_id: dropData.repId,
           schedule_date: dropData.date,
           start_time: dropData.start,
@@ -226,7 +241,7 @@ export function EventScheduler({
       </div>
 
       <DragOverlay dropAnimation={null}>
-        {activeDrag && <DragOverlayContent name={activeDrag.studentName} />}
+        {activeDrag && <DragOverlayContent name={activeDrag.studentName} isBlocker={activeDrag.type === 'blocker'} />}
       </DragOverlay>
     </DndContext>
   )

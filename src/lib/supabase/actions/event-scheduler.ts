@@ -10,6 +10,15 @@ type ActionResult<T = void> = {
   error?: string
 }
 
+const TIME_RE = /^\d{2}:\d{2}(:\d{2})?$/
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
+
+function validateSlotInput(date: string, start: string, end: string): string | null {
+  if (!DATE_RE.test(date)) return 'Invalid date format'
+  if (!TIME_RE.test(start) || !TIME_RE.test(end)) return 'Invalid time format'
+  return null
+}
+
 export type AssignSlotInput = {
   event_id: string
   student_id: string
@@ -84,6 +93,9 @@ async function hasStudentOverlap(
 /** Assign a student to a time slot */
 export async function assignStudentToSlot(input: AssignSlotInput): Promise<ActionResult<{ id: string }>> {
   try {
+    const validationError = validateSlotInput(input.schedule_date, input.start_time, input.end_time)
+    if (validationError) return { success: false, error: validationError }
+
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
@@ -132,7 +144,58 @@ export async function assignStudentToSlot(input: AssignSlotInput): Promise<Actio
   }
 }
 
-/** Remove a student from a time slot */
+/** Block a time slot (lunch, break, etc.) */
+export async function createBlocker(input: {
+  event_id: string
+  representative_id: string
+  schedule_date: string
+  start_time: string
+  end_time: string
+  remarks?: string | null
+}): Promise<ActionResult<{ id: string }>> {
+  try {
+    const validationError = validateSlotInput(input.schedule_date, input.start_time, input.end_time)
+    if (validationError) return { success: false, error: validationError }
+
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const repConflict = await hasRepOverlap(
+      supabase, input.event_id, input.representative_id,
+      input.schedule_date, input.start_time, input.end_time
+    )
+    if (repConflict) {
+      return { success: false, error: 'This time slot is already occupied.' }
+    }
+
+    const { data, error } = await supabase
+      .from('event_schedules')
+      .insert({
+        event_id: input.event_id,
+        representative_id: input.representative_id,
+        schedule_date: input.schedule_date,
+        start_time: input.start_time,
+        end_time: input.end_time,
+        remarks: input.remarks ?? 'Blocked',
+        is_blocker: true,
+      })
+      .select('id')
+      .single()
+
+    if (error) {
+      console.error('Error creating blocker:', error)
+      return { success: false, error: error.message }
+    }
+
+    revalidatePath('/events')
+    return { success: true, data: { id: data.id } }
+  } catch (err) {
+    console.error('Error in createBlocker:', err)
+    return { success: false, error: 'Failed to create blocker' }
+  }
+}
+
+/** Remove a schedule entry (student assignment or blocker) */
 export async function removeStudentFromSlot(scheduleId: string, eventId: string): Promise<ActionResult> {
   try {
     const cookieStore = await cookies()
@@ -160,10 +223,12 @@ export async function removeStudentFromSlot(scheduleId: string, eventId: string)
 /** Move a student to a different time slot or representative */
 export async function moveStudentSlot(scheduleId: string, eventId: string, input: MoveSlotInput): Promise<ActionResult> {
   try {
+    const validationError = validateSlotInput(input.schedule_date, input.start_time, input.end_time)
+    if (validationError) return { success: false, error: validationError }
+
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    // Get current schedule to know the student
     const { data: current, error: fetchError } = await supabase
       .from('event_schedules')
       .select('student_id')

@@ -5,7 +5,7 @@ import { useDraggable } from '@dnd-kit/core'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Search, UserPlus, Clock, GripVertical, CheckCircle2 } from 'lucide-react'
+import { Search, UserPlus, Clock, GripVertical, CheckCircle2, Ban } from 'lucide-react'
 import type { UnassignedStudent } from '@/lib/supabase/queries/event-scheduler'
 import type { DragData } from './event-scheduler'
 
@@ -52,6 +52,8 @@ export function UnassignedSidebar({
         </div>
       </CardHeader>
       <CardContent className="max-h-[calc(100vh-340px)] overflow-y-auto px-3 pb-3">
+        <DraggableBlocker />
+        <div className="my-2 border-t border-border/50" />
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center">
             {students.length === 0 ? (
@@ -85,6 +87,44 @@ export function UnassignedSidebar({
         )}
       </CardContent>
     </Card>
+  )
+}
+
+/** Draggable blocker item for blocking time slots */
+function DraggableBlocker() {
+  const dragData: DragData = {
+    type: 'blocker',
+    studentName: 'Blocker',
+  }
+
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: 'blocker-item',
+    data: dragData,
+  })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`group flex items-center gap-1 rounded-lg border transition-all duration-150 ${
+        isDragging
+          ? 'border-rose-300/30 bg-rose-50/50 opacity-40'
+          : 'border-transparent hover:border-rose-200 hover:bg-rose-50/50'
+      }`}
+    >
+      <button
+        type="button"
+        className="shrink-0 cursor-grab touch-none p-2 text-rose-400/50 transition-colors hover:text-rose-500 active:cursor-grabbing"
+        {...listeners}
+        {...attributes}
+      >
+        <GripVertical className="h-3.5 w-3.5" />
+      </button>
+      <div className="flex items-center gap-2 px-1 py-2.5">
+        <Ban className="h-3.5 w-3.5 text-rose-500" />
+        <span className="text-sm font-medium text-rose-600">Block Slot</span>
+        <span className="text-xs text-muted-foreground">(drag to grid)</span>
+      </div>
+    </div>
   )
 }
 

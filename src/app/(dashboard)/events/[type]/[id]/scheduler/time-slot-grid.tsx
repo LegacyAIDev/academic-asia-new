@@ -1,18 +1,14 @@
 'use client'
 
 import { useTransition } from 'react'
-import { useDroppable, useDraggable } from '@dnd-kit/core'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Clock, MapPin, User, X, Loader2, UserPlus, GripVertical, CalendarX } from 'lucide-react'
+import { Clock, MapPin, User, CalendarX, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import type { SchedulerRepresentative, SchedulerSchedule, UnassignedStudent } from '@/lib/supabase/queries/event-scheduler'
-import { assignStudentToSlot } from '@/lib/supabase/actions/event-scheduler'
-import { removeStudentFromSlot } from '@/lib/supabase/actions/event-scheduler'
+import { assignStudentToSlot, removeStudentFromSlot } from '@/lib/supabase/actions/event-scheduler'
 import { generateTimeSlots, formatSlotTime } from './time-slot-utils'
-import { AssignStudentPopover } from './assign-student-popover'
-import type { DragData, DropData } from './event-scheduler'
+import { BlockedSlot, OccupiedSlot, EmptySlot } from './time-slot-items'
 
 type TimeSlotGridProps = {
   eventId: string
@@ -113,7 +109,7 @@ export function TimeSlotGrid({
     })
   }
 
-  const filledCount = schedules.length
+  const filledCount = schedules.filter(s => !s.is_blocker).length
   const totalCount = timeSlots.length
   const fillPercentage = totalCount > 0 ? Math.round((filledCount / totalCount) * 100) : 0
 
@@ -165,16 +161,25 @@ export function TimeSlotGrid({
         <div className="space-y-1.5">
           {timeSlots.map(slot => {
             const schedule = scheduleByTime[slot.start]
-            const isOccupied = !!schedule
 
-            if (isOccupied) {
+            if (schedule?.is_blocker) {
+              return (
+                <BlockedSlot
+                  key={slot.key}
+                  slot={slot}
+                  schedule={schedule}
+                  onRemove={handleRemove}
+                  isPending={isPending}
+                />
+              )
+            }
+
+            if (schedule) {
               return (
                 <OccupiedSlot
                   key={slot.key}
                   slot={slot}
                   schedule={schedule}
-                  repId={representative.id}
-                  scheduleDate={scheduleDate}
                   onRemove={handleRemove}
                   isPending={isPending}
                 />
@@ -210,132 +215,5 @@ export function TimeSlotGrid({
         )}
       </CardContent>
     </Card>
-  )
-}
-
-/** Occupied slot -- shows student name, draggable for rescheduling */
-function OccupiedSlot({ slot, schedule, repId, scheduleDate, onRemove, isPending }: {
-  slot: { start: string; end: string; key: string }
-  schedule: SchedulerSchedule
-  repId: string
-  scheduleDate: string
-  onRemove: (id: string) => void
-  isPending: boolean
-}) {
-  const studentName = `${schedule.student?.first_name ?? ''} ${schedule.student?.surname ?? ''}`.trim()
-
-  const dragData: DragData = {
-    type: 'scheduled',
-    studentId: schedule.student_id,
-    studentName,
-    scheduleId: schedule.id,
-  }
-
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: `schedule-${schedule.id}`,
-    data: dragData,
-  })
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`group flex items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-all duration-150 ${
-        isDragging
-          ? 'border-primary/20 opacity-40'
-          : 'hover:border-border hover:shadow-sm'
-      }`}
-    >
-      <button
-        type="button"
-        className="shrink-0 cursor-grab touch-none text-muted-foreground/30 transition-colors hover:text-muted-foreground active:cursor-grabbing"
-        {...listeners}
-        {...attributes}
-      >
-        <GripVertical className="h-3.5 w-3.5" />
-      </button>
-      <div className="w-[6.5rem] shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
-        {formatSlotTime(slot.start)} -- {formatSlotTime(slot.end)}
-      </div>
-      <div className="h-8 w-0.5 rounded-full bg-primary/30" />
-      <div className="min-w-0 flex-1">
-        <span className="text-sm font-medium">
-          {schedule.student?.first_name} {schedule.student?.surname}
-        </span>
-        {schedule.student?.student_code && (
-          <code className="ml-2 rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-            {schedule.student.student_code}
-          </code>
-        )}
-      </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7 shrink-0 text-muted-foreground/40 opacity-0 transition-all hover:text-destructive group-hover:opacity-100"
-        onClick={() => onRemove(schedule.id)}
-        disabled={isPending}
-      >
-        {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />}
-      </Button>
-    </div>
-  )
-}
-
-/** Empty slot -- droppable target for drag-and-drop */
-function EmptySlot({ slot, repId, scheduleDate, selectedStudentId, unassigned, onQuickAssign, onPopoverAssign, isPending }: {
-  slot: { start: string; end: string; key: string }
-  repId: string
-  scheduleDate: string
-  selectedStudentId: string | null
-  unassigned: UnassignedStudent[]
-  onQuickAssign: () => void
-  onPopoverAssign: (studentId: string) => void
-  isPending: boolean
-}) {
-  const dropData: DropData = { repId, date: scheduleDate, start: slot.start, end: slot.end }
-
-  const { setNodeRef, isOver } = useDroppable({
-    id: `slot-${slot.key}`,
-    data: dropData,
-  })
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`group flex items-center gap-3 rounded-lg border border-dashed px-4 py-3 transition-all duration-150 ${
-        isOver
-          ? 'border-primary bg-primary/10 shadow-sm ring-1 ring-primary/20'
-          : selectedStudentId
-            ? 'cursor-pointer border-primary/30 bg-primary/[0.03] hover:border-primary/50 hover:bg-primary/[0.07]'
-            : 'border-muted-foreground/15 hover:border-muted-foreground/25 hover:bg-muted/40'
-      }`}
-      onClick={() => selectedStudentId && onQuickAssign()}
-    >
-      <div className="w-[6.5rem] shrink-0 font-mono text-sm tabular-nums text-muted-foreground/60">
-        {formatSlotTime(slot.start)} -- {formatSlotTime(slot.end)}
-      </div>
-      <div className="h-8 w-0.5 rounded-full bg-muted-foreground/10" />
-      <div className="min-w-0 flex-1 text-sm">
-        {isOver ? (
-          <span className="flex items-center gap-1.5 font-medium text-primary">
-            <UserPlus className="h-3.5 w-3.5" />
-            Drop to assign
-          </span>
-        ) : selectedStudentId ? (
-          <span className="flex items-center gap-1.5 text-primary/70">
-            <UserPlus className="h-3.5 w-3.5" />
-            Click to assign
-          </span>
-        ) : (
-          <span className="text-muted-foreground/40">Available</span>
-        )}
-      </div>
-      {!selectedStudentId && !isOver && unassigned.length > 0 && (
-        <AssignStudentPopover
-          students={unassigned}
-          onAssign={onPopoverAssign}
-          disabled={isPending}
-        />
-      )}
-    </div>
   )
 }

@@ -14,12 +14,13 @@ export type SchedulerRepresentative = {
 
 export type SchedulerSchedule = {
   id: string
-  student_id: string
+  student_id: string | null
   representative_id: string | null
   schedule_date: string | null
   start_time: string | null
   end_time: string | null
   remarks: string | null
+  is_blocker: boolean
   student: {
     id: string
     first_name: string | null
@@ -85,7 +86,7 @@ export async function getSchedulerData(eventId: string): Promise<SchedulerData> 
     supabase
       .from('event_schedules')
       .select(`
-        id, student_id, representative_id, schedule_date, start_time, end_time, remarks,
+        id, student_id, representative_id, schedule_date, start_time, end_time, remarks, is_blocker,
         student:students!event_schedules_student_id_fkey(id, first_name, surname, student_code)
       `)
       .eq('event_id', eventId)
@@ -109,7 +110,7 @@ export async function getSchedulerData(eventId: string): Promise<SchedulerData> 
   const schedules = (schedulesRes.data ?? []) as unknown as SchedulerSchedule[]
 
   // Compute unassigned: students with applications but no schedule entry
-  const scheduledStudentIds = new Set(schedules.map(s => s.student_id))
+  const scheduledStudentIds = new Set(schedules.filter(s => !s.is_blocker && s.student_id).map(s => s.student_id))
   const unassigned: UnassignedStudent[] = (appsRes.data ?? [])
     .filter(a => !scheduledStudentIds.has(a.student_id))
     .map(a => {
