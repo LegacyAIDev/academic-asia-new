@@ -56,6 +56,7 @@ import { StudentExamResultsSection } from "./student-exam-results"
 import { StudentBriefIntroSection } from "./student-brief-intro"
 import { StudentResumeProfileSection } from "./student-resume-profile"
 import { StudentInternalNotesSection } from "./student-internal-notes"
+import { StudentLegalDocumentsSection } from "./student-legal-documents"
 import { DeleteStudentDialog } from "./delete-student-dialog"
 
 // Status badge styling based on status code
@@ -92,7 +93,7 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     briefIntro, briefIntroReferenceData,
     resumeEntries, resumeReferenceData,
     internalNotes,
-    resumeProfile, resumeTalents, resumeDocuments, aaTests,
+    resumeProfile, resumeTalents, resumeDocuments, aaTests, legalDocuments,
   ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
@@ -118,6 +119,7 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
     getStudentResumeTalents(id),
     getStudentDocuments(id, 'resume'),
     getStudentAATests(id),
+    getStudentDocuments(id, 'legal_documents'),
   ])
 
   if (!student) {
@@ -509,6 +511,16 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
             studentId={id}
             visas={visas}
             referenceData={visaReferenceData}
+          />
+        </div>
+
+        {/* Legal Documents Section */}
+        <div id="legal-documents">
+          <StudentLegalDocumentsSection
+            studentId={id}
+            passportType={student.passport_type}
+            passportNumber={student.passport_number}
+            documents={legalDocuments}
           />
         </div>
 
