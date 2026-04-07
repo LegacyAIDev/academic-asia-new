@@ -13,12 +13,14 @@ type Props = {
   referenceData: EventFormReferenceData
   selectedSchedulingModeId: number | null
   onSchedulingModeChange: (id: number) => void
+  selectedSchoolId: string | null
+  onSchoolChange: (id: string | null) => void
   event?: EventData | null
 }
 
 /** Admission & Assessment specific fields: school, parent event, scheduling mode */
 export function EventFormAdmissionSection({
-  referenceData, selectedSchedulingModeId, onSchedulingModeChange, event,
+  referenceData, selectedSchedulingModeId, onSchedulingModeChange, selectedSchoolId, onSchoolChange, event,
 }: Props) {
   const { schools, parentEvents, schedulingModes } = referenceData
 
@@ -35,7 +37,7 @@ export function EventFormAdmissionSection({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label>School</Label>
-            <Select name="school_id" defaultValue={event?.school_id ?? ""}>
+            <Select name="school_id" value={selectedSchoolId ?? ""} onValueChange={(v) => onSchoolChange(v === "none" ? null : v)}>
               <SelectTrigger className={selectTriggerStyles}>
                 <SelectValue placeholder="Select school" />
               </SelectTrigger>

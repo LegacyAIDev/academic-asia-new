@@ -231,6 +231,15 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
               Basic Info
             </Link>
           </TabsTrigger>
+          <TabsTrigger value="contacts" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=contacts`}>
+              <Contact className="h-4 w-4" />
+              Contacts
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {schoolContactCount}
+              </Badge>
+            </Link>
+          </TabsTrigger>
           <TabsTrigger value="supplementary" className="gap-2" asChild>
             <Link href={`/schools/${id}?tab=supplementary`}>
               <Info className="h-4 w-4" />
@@ -291,15 +300,6 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
               Bank Details
               <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
                 {bankDetailCount}
-              </Badge>
-            </Link>
-          </TabsTrigger>
-          <TabsTrigger value="contacts" className="gap-2" asChild>
-            <Link href={`/schools/${id}?tab=contacts`}>
-              <Contact className="h-4 w-4" />
-              Contacts
-              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
-                {schoolContactCount}
               </Badge>
             </Link>
           </TabsTrigger>
@@ -559,6 +559,11 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
           )}
         </TabsContent>
 
+        {/* Contacts Tab */}
+        <TabsContent value="contacts" className="space-y-6">
+          <SchoolContactsSection schoolId={id} contacts={schoolContacts} />
+        </TabsContent>
+
         {/* Supplementary Info Tab */}
         <TabsContent value="supplementary" className="space-y-6">
           <Card className="border-0 shadow-sm">
@@ -701,11 +706,6 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
         {/* Bank Details Tab */}
         <TabsContent value="bank-details" className="space-y-6">
           <SchoolBankDetailsSection schoolId={id} bankDetails={bankDetails} referenceData={bankRefData} />
-        </TabsContent>
-
-        {/* Contacts Tab */}
-        <TabsContent value="contacts" className="space-y-6">
-          <SchoolContactsSection schoolId={id} contacts={schoolContacts} />
         </TabsContent>
 
         {/* Visits Tab */}

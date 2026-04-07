@@ -34,6 +34,8 @@ export async function saveEventSubItems(p: SaveSubItemsParams) {
     const repResults = await Promise.all(p.representatives.filter((r) => r.name).map((r) =>
       addRepresentative({
         event_id: p.eventId, name: r.name, role: r.role || null,
+        school_contact_id: r.school_contact_id || null,
+        school_id: r.school_id || null,
         venue_room: r.venue_room || null,
         available_from: toTimestamp(r.available_from || null, p.eventDate),
         available_to: toTimestamp(r.available_to || null, p.eventDate),

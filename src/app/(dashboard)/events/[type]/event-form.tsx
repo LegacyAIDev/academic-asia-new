@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,7 @@ import { EventFormAdmissionSection } from "./event-form-admission-section"
 import { EventFormRepresentatives, type RepresentativeRow } from "./event-form-representatives"
 import { EventFormExamBlocks, type ExamBlockRow } from "./event-form-exam-blocks"
 import { EventFormRemarksSection } from "./event-form-remarks-section"
+import { getContactsForSchools, type SchoolContactOption } from "@/lib/supabase/actions/school-contacts"
 
 export type EventFormProps = {
   mode: "create" | "edit"
@@ -39,9 +40,23 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
   // E&G: multi-select schools
   const [selectedSchoolIds, setSelectedSchoolIds] = useState<string[]>(existingSchoolIds)
 
+  // A&A: single school for admission events
+  const [admissionSchoolId, setAdmissionSchoolId] = useState<string | null>(event?.school_id ?? null)
+
   // A&A: repeatable sub-forms
   const [representatives, setRepresentatives] = useState<RepresentativeRow[]>([])
   const [examBlocks, setExamBlocks] = useState<ExamBlockRow[]>([])
+
+  // School contacts for representative dropdown — combines engagement multi-select + admission single school
+  const [schoolContacts, setSchoolContacts] = useState<SchoolContactOption[]>([])
+  useEffect(() => {
+    const allSchoolIds = [...new Set([...selectedSchoolIds, ...(admissionSchoolId ? [admissionSchoolId] : [])])]
+    if (allSchoolIds.length > 0) {
+      getContactsForSchools(allSchoolIds).then(setSchoolContacts)
+    } else {
+      setSchoolContacts([])
+    }
+  }, [selectedSchoolIds, admissionSchoolId])
 
   // Derive conditions from reference data lookups
   const deliveryModeCode = referenceData.deliveryModes.find((d) => d.id === selectedDeliveryModeId)?.code
@@ -150,12 +165,21 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
           referenceData={referenceData}
           selectedSchedulingModeId={selectedSchedulingModeId}
           onSchedulingModeChange={handleSchedulingModeChange}
+          selectedSchoolId={admissionSchoolId}
+          onSchoolChange={setAdmissionSchoolId}
           event={event}
         />
       )}
 
       {showRepresentatives && (
-        <EventFormRepresentatives representatives={representatives} onChange={setRepresentatives} />
+        <EventFormRepresentatives
+          representatives={representatives}
+          onChange={setRepresentatives}
+          schoolContacts={schoolContacts}
+          eventStartTime={event?.start_time?.slice(0, 5) ?? ""}
+          eventEndTime={event?.end_time?.slice(0, 5) ?? ""}
+          eventDuration={event?.duration_minutes?.toString() ?? ""}
+        />
       )}
 
       {showExamBlocks && (

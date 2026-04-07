@@ -28,6 +28,52 @@ export type CreateSchoolContactInput = {
   priority?: number | null
   responsible?: string | null
   remarks?: string | null
+  is_active?: boolean
+}
+
+export type SchoolContactOption = {
+  id: string
+  school_id: string
+  first_name: string | null
+  surname: string | null
+  position: string | null
+  school_name: string | null
+}
+
+/** Fetch contacts for multiple schools (for representative dropdown) */
+export async function getContactsForSchools(schoolIds: string[]): Promise<SchoolContactOption[]> {
+  if (schoolIds.length === 0) return []
+  try {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data, error } = await supabase
+      .from('school_contacts')
+      .select('id, school_id, first_name, surname, position, school:schools(name)')
+      .in('school_id', schoolIds)
+      .order('first_name')
+
+    if (error) {
+      console.error('Error fetching contacts for schools:', error)
+      return []
+    }
+
+    return (data ?? []).map((c) => {
+      const raw = c as Record<string, unknown>
+      const school = raw.school as { name: string } | { name: string }[] | null
+      return {
+        id: raw.id as string,
+        school_id: raw.school_id as string,
+        first_name: raw.first_name as string | null,
+        surname: raw.surname as string | null,
+        position: raw.position as string | null,
+        school_name: Array.isArray(school) ? school[0]?.name ?? null : school?.name ?? null,
+      }
+    })
+  } catch (err) {
+    console.error('Error in getContactsForSchools:', err)
+    return []
+  }
 }
 
 /** Create a new school contact */

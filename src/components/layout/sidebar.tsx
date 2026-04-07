@@ -38,6 +38,11 @@ const navigation: NavItem[] = [
     icon: Calendar,
     children: [
       {
+        items: [
+          { name: "All Events", href: "/events", icon: Calendar },
+        ],
+      },
+      {
         label: "Engagement & Guidance",
         items: [
           { name: "Expo / Fair", href: "/events/expo-fair", icon: Building2 },
@@ -137,7 +142,9 @@ export function Sidebar() {
                             )}
                             <ul className="space-y-0.5">
                               {group.items.map((child) => {
-                                const childIsActive = pathname.startsWith(child.href)
+                                const childIsActive = child.href === "/events"
+                                  ? pathname === "/events"
+                                  : pathname.startsWith(child.href)
                                 return (
                                   <li key={child.href}>
                                     <Link

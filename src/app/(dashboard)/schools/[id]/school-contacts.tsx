@@ -67,6 +67,7 @@ export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSect
                 <TableHead className="min-w-[140px]">Phone</TableHead>
                 <TableHead className="min-w-[200px]">Email</TableHead>
                 <TableHead className="min-w-[120px]">Responsible</TableHead>
+                <TableHead className="min-w-[80px]">Status</TableHead>
                 <TableHead className="pr-6 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -123,6 +124,13 @@ export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSect
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {item.responsible || "—"}
+                    </TableCell>
+                    <TableCell>
+                      {item.is_active ? (
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">Active</Badge>
+                      ) : (
+                        <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 text-xs">Inactive</Badge>
+                      )}
                     </TableCell>
                     <TableCell className="pr-6">
                       <div className="flex items-center justify-end gap-1">

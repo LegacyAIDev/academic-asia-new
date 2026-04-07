@@ -9,6 +9,7 @@ type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 export type CreateRepresentativeInput = {
   event_id: string
   school_id?: string | null
+  school_contact_id?: string | null
   name: string
   role?: string | null
   venue_room?: string | null

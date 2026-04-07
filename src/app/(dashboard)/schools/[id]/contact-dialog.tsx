@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import {
   Plus,
   Loader2,
@@ -109,6 +110,7 @@ export function SchoolContactDialog({ schoolId, mode, contact, trigger }: Contac
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [isActive, setIsActive] = useState(contact?.is_active ?? true)
 
   const handleOpenChange = (value: boolean) => {
     setOpen(value)
@@ -137,6 +139,7 @@ export function SchoolContactDialog({ schoolId, mode, contact, trigger }: Contac
       priority: formData.get("priority") ? parseInt(formData.get("priority") as string, 10) : null,
       responsible: (formData.get("responsible") as string) || null,
       remarks: (formData.get("remarks") as string) || null,
+      is_active: isActive,
     }
 
     startTransition(async () => {
@@ -289,6 +292,14 @@ export function SchoolContactDialog({ schoolId, mode, contact, trigger }: Contac
                 <Textarea name="remarks" rows={3} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={contact?.remarks ?? ""} placeholder="Additional notes..." />
               </FormField>
             </FormSection>
+
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-medium">Active Status</Label>
+                <p className="text-xs text-muted-foreground">Mark as inactive if no longer at this school</p>
+              </div>
+              <Switch checked={isActive} onCheckedChange={setIsActive} />
+            </div>
           </div>
 
           <div className="border-t border-border bg-muted/50 px-6 py-4">

@@ -20,6 +20,7 @@ export type SchoolContactWithJoins = {
   priority: number | null
   responsible: string | null
   remarks: string | null
+  is_active: boolean
   created_at: string | null
   updated_at: string | null
 }
@@ -34,7 +35,7 @@ export async function getSchoolContacts(schoolId: string): Promise<SchoolContact
     .select(`
       id, school_id, position, surname, first_name, title, gender,
       telephone, mobile, fax, email_1, email_2, email_3,
-      address_1, address_2, priority, responsible, remarks,
+      address_1, address_2, priority, responsible, remarks, is_active,
       created_at, updated_at
     `)
     .eq('school_id', schoolId)
