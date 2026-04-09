@@ -99,7 +99,7 @@ export async function getApplicationReferenceData() {
     supabase.from('application_statuses').select('*').eq('is_active', true).order('sort_order'),
     supabase.from('application_modes').select('*').order('sort_order'),
     supabase.from('schools').select('id, name').order('name'),
-    supabase.from('events').select('id, name').order('name'),
+    supabase.from('events').select('id, name, school_id, start_date, start_time').in('event_type_id', [4, 5, 8, 9]).order('name'),
   ])
 
   return {

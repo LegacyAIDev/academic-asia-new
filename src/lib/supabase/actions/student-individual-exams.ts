@@ -82,6 +82,58 @@ export async function updateIndividualExam(
   }
 }
 
+/** Compute status: needs both confirmed date AND time to move to Confirmed, then score for Completed */
+function deriveStatus(confirmed_date?: string | null, confirmed_start_time?: string | null, score?: number | null): number {
+  if (confirmed_date && confirmed_start_time && score != null) return 3 // Completed
+  if (confirmed_date && confirmed_start_time) return 2 // Confirmed
+  return 1 // Pending
+}
+
+/** Update exam fields from the consultant dashboard — auto-computes status */
+export async function updateExamFields(
+  examId: string,
+  input: {
+    confirmed_date?: string | null
+    confirmed_start_time?: string | null
+    room?: string | null
+    seat_no?: number | null
+    score?: number | null
+    remarks?: string | null
+  }
+): Promise<ActionResult> {
+  try {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    // Fetch current state to merge with input for status derivation
+    const { data: current, error: fetchError } = await supabase
+      .from('student_individual_exams')
+      .select('confirmed_date, confirmed_start_time, score')
+      .eq('id', examId)
+      .single()
+    if (fetchError) return { success: false, error: fetchError.message }
+
+    const finalDate = input.confirmed_date !== undefined ? input.confirmed_date : current?.confirmed_date
+    const finalTime = input.confirmed_start_time !== undefined ? input.confirmed_start_time : current?.confirmed_start_time
+    const finalScore = input.score !== undefined ? input.score : current?.score
+    const status_id = deriveStatus(finalDate, finalTime, finalScore)
+
+    const { error } = await supabase
+      .from('student_individual_exams')
+      .update({ ...input, status_id } as never)
+      .eq('id', examId)
+
+    if (error) return { success: false, error: error.message }
+
+    revalidatePath('/exams')
+    revalidatePath('/students')
+    return { success: true }
+  } catch (err) {
+    console.error('Error in updateExamFields:', err)
+    return { success: false, error: 'Failed to update exam' }
+  }
+}
+
 /** Delete an individual exam */
 export async function deleteIndividualExam(
   examId: string,

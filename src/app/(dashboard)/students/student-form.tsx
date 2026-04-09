@@ -54,6 +54,7 @@ export type StudentFormProps = {
     courses: ReferenceItem[]
     schoolTypes: ReferenceItem[]
     events: { id: string; name: string }[]
+    profiles: { id: string; first_name: string | null; surname: string | null }[]
   }
 }
 
@@ -66,7 +67,7 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
     student?.date_of_birth ? new Date(student.date_of_birth + "T00:00:00") : undefined
   )
 
-  const { statuses, placements, nationalities, courses, schoolTypes, events } = referenceData
+  const { statuses, placements, nationalities, courses, schoolTypes, events, profiles } = referenceData
   const [leadCategory, setLeadCategory] = useState<string>(student?.lead_source_category ?? "")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -104,6 +105,7 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
       remarks: (formData.get("remarks") as string) || null,
       aa_news: formData.get("aa_news") === "on",
       airport_pickup: formData.get("airport_pickup") === "on",
+      assigned_to: (formData.get("assigned_to") as string) || null,
     }
 
     startTransition(async () => {
@@ -250,15 +252,31 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="passport_number">Passport Number</Label>
-            <Input
-              id="passport_number"
-              name="passport_number"
-              placeholder="e.g. K1234567"
-              className="max-w-xs"
-              defaultValue={student?.passport_number ?? ""}
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="passport_number">Passport Number</Label>
+              <Input
+                id="passport_number"
+                name="passport_number"
+                placeholder="e.g. K1234567"
+                defaultValue={student?.passport_number ?? ""}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="assigned_to">Consultant</Label>
+              <Select name="assigned_to" defaultValue={student?.assigned_to ?? ""}>
+                <SelectTrigger id="assigned_to">
+                  <SelectValue placeholder="Select consultant" />
+                </SelectTrigger>
+                <SelectContent>
+                  {profiles.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {[p.first_name, p.surname].filter(Boolean).join(" ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, MapPin, Building2, Users, Sparkles } from "lucide-react"
+import { Calendar, Clock, MapPin, Building2, Users, Sparkles, CheckCircle2, AlertCircle } from "lucide-react"
 import type { EventListItem } from "@/lib/supabase/queries/events"
 import { URL_TO_TYPE_CODE } from "@/lib/supabase/queries/events"
 
@@ -65,12 +65,27 @@ export function UpcomingEventCard({ event }: { event: EventListItem }) {
             )}
           </div>
 
-          <div className="flex items-center gap-3 pt-1 border-t border-border/50">
+          <div className="flex items-center gap-3 pt-1 border-t border-border/50 flex-wrap">
             {event.school_count > 0 && (
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Building2 className="h-3 w-3" /> {event.school_count}
               </span>
             )}
+            {event.application_count > 0 && ["interview", "audition_day", "group_entrance_exam", "school_assessment_scholarship"].includes(typeCode) && (() => {
+              const unassigned = event.application_count - event.schedule_count
+              if (unassigned <= 0) {
+                return (
+                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] gap-0.5 px-1.5 py-0">
+                    <CheckCircle2 className="h-2.5 w-2.5" /> All Assigned
+                  </Badge>
+                )
+              }
+              return (
+                <span className="flex items-center gap-1 text-xs text-amber-600">
+                  <AlertCircle className="h-3 w-3" /> {unassigned} unassigned
+                </span>
+              )
+            })()}
             {event.schedule_count > 0 && (
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Users className="h-3 w-3" /> {event.schedule_count} slots

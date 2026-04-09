@@ -17,6 +17,7 @@ import {
   GraduationCap,
   Mic,
   CalendarDays,
+  ClipboardCheck,
 } from "lucide-react"
 
 type NavChild = { name: string; href: string; icon: React.ElementType }
@@ -62,6 +63,7 @@ const navigation: NavItem[] = [
       },
     ],
   },
+  { name: "Exams", href: "/exams", icon: ClipboardCheck },
   { name: "Staff", href: "/staff", icon: UserCog },
   { name: "Reports", href: "/reports", icon: FileText },
   { name: "Settings", href: "/settings", icon: Settings },

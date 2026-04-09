@@ -154,6 +154,8 @@ export type StudentWithJoins = {
   lead_source_event_id: string | null
   lead_source_event: { id: string; name: string } | null
   school_type: { id: number; code: string; label: string; region: string | null } | null
+  assigned_to: string | null
+  assigned_profile: { id: string; first_name: string | null; surname: string | null } | null
 }
 
 /**
@@ -172,7 +174,8 @@ export async function getStudentById(id: string): Promise<StudentWithJoins | nul
       nationality:nationalities!students_nationality_id_fkey(id, code, label),
       course:courses!students_course_id_fkey(id, code, label, category),
       lead_source_event:events!students_lead_source_event_id_fkey(id, name),
-      school_type:school_types!students_present_school_type_id_fkey(id, code, label, region)
+      school_type:school_types!students_present_school_type_id_fkey(id, code, label, region),
+      assigned_profile:profiles!students_assigned_to_fkey(id, first_name, surname)
     `)
     .eq('id', id)
     .single()
@@ -250,13 +253,14 @@ export async function getReferenceData() {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  const [statuses, placements, nationalities, courses, schoolTypes, events] = await Promise.all([
+  const [statuses, placements, nationalities, courses, schoolTypes, events, profiles] = await Promise.all([
     supabase.from('student_statuses').select('*').order('sort_order'),
     supabase.from('placement_statuses').select('*').order('sort_order'),
     supabase.from('nationalities').select('*').eq('is_active', true).order('sort_order'),
     supabase.from('courses').select('*').eq('is_active', true).order('sort_order'),
     supabase.from('school_types').select('*').order('sort_order'),
     supabase.from('events').select('id, name').gte('start_date', `${new Date().getFullYear() - 1}-01-01`).order('name'),
+    supabase.from('profiles').select('id, first_name, surname').order('first_name'),
   ])
 
   return {
@@ -266,6 +270,7 @@ export async function getReferenceData() {
     courses: courses.data ?? [],
     schoolTypes: schoolTypes.data ?? [],
     events: events.data ?? [],
+    profiles: (profiles.data ?? []) as { id: string; first_name: string | null; surname: string | null }[],
   }
 }
 

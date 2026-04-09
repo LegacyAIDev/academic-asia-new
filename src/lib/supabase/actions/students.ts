@@ -34,6 +34,7 @@ export type CreateStudentInput = {
   remarks?: string | null
   aa_news?: boolean | null
   airport_pickup?: boolean | null
+  assigned_to?: string | null
 }
 
 export type ActionResult<T = void> = {

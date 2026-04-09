@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -76,10 +77,14 @@ const placementStyles: Record<string, { color: string; label: string }> = {
   very_hot: { color: "bg-rose-100 text-rose-700", label: "Very Hot" },
 }
 
-type StudentDetailPageParams = { params: Promise<{ id: string }> }
+type StudentDetailPageParams = {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ tab?: string }>
+}
 
-export default async function StudentDetailPage({ params }: StudentDetailPageParams) {
+export default async function StudentDetailPage({ params, searchParams }: StudentDetailPageParams) {
   const { id } = await params
+  const { tab = "profile" } = await searchParams
 
   // Fetch student, contacts, applications, and reference data in parallel
   const [
@@ -273,6 +278,14 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
                   {student.passport_type ? `${student.passport_type} - ${student.passport_number || '—'}` : "—"}
                 </p>
               </div>
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Consultant</p>
+                <p className="text-sm font-medium">
+                  {student.assigned_profile
+                    ? [student.assigned_profile.first_name, student.assigned_profile.surname].filter(Boolean).join(" ")
+                    : "—"}
+                </p>
+              </div>
             </CardContent>
           </Card>
 
@@ -444,121 +457,112 @@ export default async function StudentDetailPage({ params }: StudentDetailPagePar
           </Card>
         </div>
 
-        {/* Brief Introduction */}
-        <div id="brief-intro">
-          <StudentBriefIntroSection
-            studentId={id}
-            briefIntro={briefIntro}
-            referenceData={briefIntroReferenceData}
-          />
-        </div>
+        {/* Tabs */}
+        <Tabs defaultValue={tab} className="space-y-6">
+          <TabsList className="bg-muted/50 w-max">
+            <TabsTrigger value="profile" asChild>
+              <Link href={`/students/${id}?tab=profile`} scroll={false}>Profile</Link>
+            </TabsTrigger>
+            <TabsTrigger value="applications" asChild>
+              <Link href={`/students/${id}?tab=applications`} scroll={false}>School Applications</Link>
+            </TabsTrigger>
+            <TabsTrigger value="events" asChild>
+              <Link href={`/students/${id}?tab=events`} scroll={false}>Event Applications</Link>
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Internal Notes */}
-        <div id="internal-notes">
-          <StudentInternalNotesSection
-            studentId={id}
-            notes={internalNotes}
-          />
-        </div>
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="space-y-6">
+            <StudentBriefIntroSection
+              studentId={id}
+              briefIntro={briefIntro}
+              referenceData={briefIntroReferenceData}
+            />
 
-        {/* Remarks */}
-        {student.remarks && (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <ClipboardList className="h-4 w-4 text-muted-foreground" />
-                Remarks
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{student.remarks}</p>
-            </CardContent>
-          </Card>
-        )}
+            <StudentResumeProfileSection
+              studentId={id}
+              profile={resumeProfile}
+              talents={resumeTalents}
+              documents={resumeDocuments}
+              aaTests={aaTests}
+            />
 
-        {/* School Applications Section */}
-        <div id="applications">
-          <StudentApplicationsSection
-            studentId={id}
-            applications={applications}
-            referenceData={appReferenceData}
-          />
-        </div>
+            <StudentInternalNotesSection
+              studentId={id}
+              notes={internalNotes}
+            />
 
-        {/* Education Section */}
-        <div id="education">
-          <StudentEducationSection
-            studentId={id}
-            educationEntries={educationEntries}
-            referenceData={eduReferenceData}
-          />
-        </div>
+            {student.remarks && (
+              <Card className="border-0 shadow-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                    <ClipboardList className="h-4 w-4 text-muted-foreground" />
+                    Remarks
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{student.remarks}</p>
+                </CardContent>
+              </Card>
+            )}
 
-        {/* Resume Section */}
-        <div id="resume">
-          <StudentResumeProfileSection
-            studentId={id}
-            profile={resumeProfile}
-            talents={resumeTalents}
-            documents={resumeDocuments}
-            aaTests={aaTests}
-          />
-        </div>
+            <StudentEducationSection
+              studentId={id}
+              educationEntries={educationEntries}
+              referenceData={eduReferenceData}
+            />
 
-        {/* Visa Section */}
-        <div id="visas">
-          <StudentVisasSection
-            studentId={id}
-            visas={visas}
-            referenceData={visaReferenceData}
-          />
-        </div>
+            <StudentVisasSection
+              studentId={id}
+              visas={visas}
+              referenceData={visaReferenceData}
+            />
 
-        {/* Legal Documents Section */}
-        <div id="legal-documents">
-          <StudentLegalDocumentsSection
-            studentId={id}
-            passportType={student.passport_type}
-            passportNumber={student.passport_number}
-            documents={legalDocuments}
-          />
-        </div>
+            <StudentLegalDocumentsSection
+              studentId={id}
+              passportType={student.passport_type}
+              passportNumber={student.passport_number}
+              documents={legalDocuments}
+            />
 
-        {/* Event Applications Section */}
-        <div id="event-applications">
-          <StudentEventApplicationsSection
-            studentId={id}
-            applications={eventApplications}
-            referenceData={eventAppReferenceData}
-          />
-        </div>
+            <StudentTravelSection
+              studentId={id}
+              travelRecords={travelRecords}
+              referenceData={travelReferenceData}
+            />
 
-        {/* Travel Section */}
-        <div id="travel">
-          <StudentTravelSection
-            studentId={id}
-            travelRecords={travelRecords}
-            referenceData={travelReferenceData}
-          />
-        </div>
+            <StudentExamResultsSection
+              studentId={id}
+              examResults={examResults}
+              referenceData={examResultReferenceData}
+            />
 
-        {/* Exam Results Section */}
-        <div id="exam-results">
-          <StudentExamResultsSection
-            studentId={id}
-            examResults={examResults}
-            referenceData={examResultReferenceData}
-          />
-        </div>
+            <StudentContactsSection
+              studentId={id}
+              contacts={contacts}
+              referenceData={contactReferenceData}
+              studentAddress={student.address_line_1}
+            />
+          </TabsContent>
 
+          {/* School Applications Tab */}
+          <TabsContent value="applications" className="space-y-6">
+            <StudentApplicationsSection
+              studentId={id}
+              applications={applications}
+              referenceData={appReferenceData}
+            />
+          </TabsContent>
 
-        {/* Contacts Section */}
-        <StudentContactsSection
-          studentId={id}
-          contacts={contacts}
-          referenceData={contactReferenceData}
-          studentAddress={student.address_line_1}
-        />
+          {/* Event Applications Tab */}
+          <TabsContent value="events" className="space-y-6">
+            <StudentEventApplicationsSection
+              studentId={id}
+              applications={eventApplications}
+              referenceData={eventAppReferenceData}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )

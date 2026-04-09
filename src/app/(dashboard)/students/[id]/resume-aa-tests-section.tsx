@@ -10,11 +10,16 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Plus, Loader2, ClipboardList, Check } from "lucide-react"
-
 import { createAATestBooking } from "@/lib/supabase/actions/student-resume-aa-tests"
 import type { IndividualExamRecord } from "@/lib/supabase/queries/student-individual-exams"
 
 type Props = { studentId: string; aaTests: IndividualExamRecord[] }
+
+const statusMap: Record<number, { label: string; style: string }> = {
+  1: { label: "Pending", style: "bg-amber-50 text-amber-700 border-amber-200" },
+  2: { label: "Confirmed", style: "bg-blue-50 text-blue-700 border-blue-200" },
+  3: { label: "Completed", style: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+}
 
 function formatDate(d: string | null) {
   if (!d) return "—"
@@ -32,8 +37,6 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
     const fd = new FormData(e.currentTarget)
 
     startTransition(async () => {
-      const seatRaw = fd.get("seat_no") as string
-      const scoreRaw = fd.get("score") as string
       const result = await createAATestBooking({
         student_id: studentId,
         exam_type_id: 1,
@@ -41,11 +44,6 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
         apply_year: (fd.get("apply_year") as string) || null,
         preferred_date: (fd.get("preferred_date") as string) || null,
         preferred_start_time: (fd.get("preferred_start_time") as string) || null,
-        confirmed_date: (fd.get("confirmed_date") as string) || null,
-        confirmed_start_time: (fd.get("confirmed_start_time") as string) || null,
-        room: (fd.get("room") as string) || null,
-        seat_no: seatRaw ? Number(seatRaw) : null,
-        score: scoreRaw ? Number(scoreRaw) : null,
         remarks: (fd.get("remarks") as string) || null,
       })
       if (result?.success) setShowForm(false)
@@ -70,22 +68,31 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
         <p className="text-sm text-muted-foreground text-center py-2">No AA tests booked</p>
       )}
 
-      {aaTests.map((t) => (
+      {aaTests.map((t) => {
+        const status = statusMap[t.status_id] ?? statusMap[1]
+        return (
           <div key={t.id} className="text-sm bg-background rounded-lg p-3 border border-border/50 space-y-2">
-            <span className="font-medium">{t.subject || "Untitled"}</span>
+            <div className="flex items-center justify-between">
+              <span className="font-medium">{t.subject || "Untitled"}</span>
+              <Badge variant="outline" className={`${status.style} border text-xs`}>{status.label}</Badge>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div><span className="text-xs text-muted-foreground">Year</span><p>{t.apply_year || "—"}</p></div>
-              <div><span className="text-xs text-muted-foreground">Confirmed Date</span><p>{formatDate(t.confirmed_date)}</p></div>
-              <div><span className="text-xs text-muted-foreground">Confirmed Time</span><p>{t.confirmed_start_time || "—"}</p></div>
-              <div><span className="text-xs text-muted-foreground">Room</span><p>{t.room || "—"}</p></div>
-              <div><span className="text-xs text-muted-foreground">Seat No.</span><p>{t.seat_no ?? "—"}</p></div>
+              <div><span className="text-xs text-muted-foreground">Preferred</span><p>{formatDate(t.preferred_date)}</p></div>
+              <div><span className="text-xs text-muted-foreground">Confirmed</span><p>{formatDate(t.confirmed_date)}</p></div>
               <div><span className="text-xs text-muted-foreground">Score</span><p className="font-medium">{t.score ?? "—"}</p></div>
-              <div><span className="text-xs text-muted-foreground">Preferred Date</span><p>{formatDate(t.preferred_date)}</p></div>
-              <div><span className="text-xs text-muted-foreground">Preferred Time</span><p>{t.preferred_start_time || "—"}</p></div>
             </div>
+            {(t.room || t.seat_no != null || t.confirmed_start_time) && (
+              <div className="flex gap-4 text-xs text-muted-foreground">
+                {t.confirmed_start_time && <span>Time: {t.confirmed_start_time}</span>}
+                {t.room && <span>Room: {t.room}</span>}
+                {t.seat_no != null && <span>Seat: {t.seat_no}</span>}
+              </div>
+            )}
             {t.remarks && <p className="text-xs text-muted-foreground">{t.remarks}</p>}
           </div>
-      ))}
+        )
+      })}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-background rounded-lg p-4 border border-border/50 space-y-3">
@@ -113,26 +120,6 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Preferred Time</Label>
               <Input name="preferred_start_time" type="time" className="h-9 text-sm" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Confirmed Date</Label>
-              <Input name="confirmed_date" type="date" className="h-9 text-sm" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Confirmed Time</Label>
-              <Input name="confirmed_start_time" type="time" className="h-9 text-sm" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Room</Label>
-              <Input name="room" className="h-9 text-sm" placeholder="e.g. Room A1" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Seat No.</Label>
-              <Input name="seat_no" type="number" className="h-9 text-sm" placeholder="e.g. 12" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Score</Label>
-              <Input name="score" type="number" className="h-9 text-sm" placeholder="e.g. 85" />
             </div>
           </div>
           <div className="space-y-1">

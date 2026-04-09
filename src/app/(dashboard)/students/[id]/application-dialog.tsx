@@ -33,6 +33,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
+  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+} from "@/components/ui/command"
+import {
   Plus,
   Loader2,
   Pencil,
@@ -44,6 +47,7 @@ import {
   CalendarDays,
   MessageSquare,
   Check,
+  ChevronsUpDown,
 } from "lucide-react"
 import {
   createStudentApplication,
@@ -60,7 +64,7 @@ import { ApplicationExamSection } from "./application-exam-section"
 type ReferenceItem = { id: number; code: string; label: string }
 type StatusItem = ReferenceItem & { category: string | null }
 type SchoolItem = { id: string; name: string }
-type EventItem = { id: string; name: string }
+type EventItem = { id: string; name: string; school_id: string | null; start_date: string | null; start_time: string | null }
 export type ApplicationReferenceData = {
   statuses: StatusItem[]
   modes: ReferenceItem[]
@@ -167,6 +171,8 @@ export function ApplicationDialog({
   const [depositDate, setDepositDate] = useState<Date | undefined>(undefined)
   const [depositCommission, setDepositCommission] = useState(true)
   const [examPrefDate, setExamPrefDate] = useState<Date | undefined>(undefined)
+  const [selectedSchoolId, setSelectedSchoolId] = useState(application?.school_id ?? "")
+  const [schoolSearchOpen, setSchoolSearchOpen] = useState(false)
 
   const formatDateDisplay = (date: Date | undefined) =>
     date ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null
@@ -174,6 +180,20 @@ export function ApplicationDialog({
     date ? date.toISOString().split("T")[0] : null
 
   const { statuses, modes, schools, events } = referenceData
+  const [selectedEventId, setSelectedEventId] = useState(application?.event_id ?? "")
+
+  // Only show events linked to the selected school
+  const filteredEvents = selectedSchoolId
+    ? events.filter(ev => ev.school_id === selectedSchoolId)
+    : []
+
+  // Auto-fill date/time from selected event
+  const selectedEvent = events.find(ev => ev.id === selectedEventId)
+  const handleEventSelect = (eventId: string) => {
+    setSelectedEventId(eventId)
+    const ev = events.find(e => e.id === eventId)
+    if (ev?.start_date) setEventDate(new Date(ev.start_date + "T00:00:00"))
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -193,9 +213,9 @@ export function ApplicationDialog({
       is_referral: formData.get("is_referral") === "true",
       scholarship_detail: (formData.get("scholarship_detail") as string) || null,
       scholarship_types: scholarshipTypes.length > 0 ? scholarshipTypes : null,
-      event_id: (formData.get("event_id") as string) || null,
-      event_date: formatDateValue(eventDate),
-      event_time: (formData.get("event_time") as string) || null,
+      event_id: selectedEventId || null,
+      event_date: selectedEvent?.start_date ?? null,
+      event_time: selectedEvent?.start_time?.slice(0, 5) ?? null,
       music_audition: (formData.get("music_audition") as string) || null,
       result_remarks: (formData.get("result_remarks") as string) || null,
       remarks_to_school: (formData.get("remarks_to_school") as string) || null,
@@ -354,47 +374,58 @@ export function ApplicationDialog({
                 {/* School & Course */}
                 <FormSection icon={School} title="School" accentColor="primary">
                   <FormField label="School *">
-                    <Select name="school_id" defaultValue={application?.school_id ?? ""}>
-                      <SelectTrigger className={selectTriggerStyles}>
-                        <SelectValue placeholder="Select school" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {schools.map((s) => (
-                          <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <input type="hidden" name="school_id" value={selectedSchoolId} />
+                    <Popover open={schoolSearchOpen} onOpenChange={setSchoolSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" role="combobox" aria-expanded={schoolSearchOpen}
+                          className={`${selectTriggerStyles} w-full justify-between font-normal`}>
+                          {selectedSchoolId
+                            ? schools.find(s => s.id === selectedSchoolId)?.name ?? "Select school"
+                            : "Select school"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                        <Command>
+                          <CommandInput placeholder="Search schools..." />
+                          <CommandList>
+                            <CommandEmpty>No school found.</CommandEmpty>
+                            <CommandGroup>
+                              {schools.map((s) => (
+                                <CommandItem key={s.id} value={s.name} onSelect={() => {
+                                  setSelectedSchoolId(s.id)
+                                  setSchoolSearchOpen(false)
+                                }}>
+                                  <Check className={`mr-2 h-4 w-4 ${selectedSchoolId === s.id ? "opacity-100" : "opacity-0"}`} />
+                                  {s.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </FormField>
                 </FormSection>
 
                 {/* Entry & Timing */}
                 <FormSection icon={Calendar} title="Entry & Timing" accentColor="teal">
-                  <div className="grid grid-cols-3 gap-3">
-                    <FormField label="Year Group">
-                      <Select name="year_group" defaultValue={application?.year_group?.toString() ?? ""}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="Year" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 13 }, (_, i) => i + 1).map((y) => (
-                            <SelectItem key={y} value={y.toString()}>Year {y}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-                    <FormField label="Entry Year">
-                      <Select name="entry_year" defaultValue={application?.entry_year?.toString() ?? ""}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="Year" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 5 }, (_, i) => 2026 + i).map((y) => (
-                            <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-                    <FormField label="Entry Month">
+                  <FormField label="Year Group">
+                    <Select name="year_group" defaultValue={application?.year_group?.toString() ?? ""}>
+                      <SelectTrigger className={selectTriggerStyles}>
+                        <SelectValue placeholder="Year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 13 }, (_, i) => i + 1).map((y) => (
+                          <SelectItem key={y} value={y.toString()}>Year {y}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormField>
+
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground">Entry</p>
+                    <div className="flex gap-1.5">
                       <Select name="entry_month" defaultValue={application?.entry_month?.toString() ?? ""}>
                         <SelectTrigger className={selectTriggerStyles}>
                           <SelectValue placeholder="Month" />
@@ -405,10 +436,22 @@ export function ApplicationDialog({
                           ))}
                         </SelectContent>
                       </Select>
-                    </FormField>
+                      <Select name="entry_year" defaultValue={application?.entry_year?.toString() ?? ""}>
+                        <SelectTrigger className={selectTriggerStyles}>
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 5 }, (_, i) => 2026 + i).map((y) => (
+                            <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField label="C.S.D. Month">
+
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground">Course Start Date (C.S.D.)</p>
+                    <div className="flex gap-1.5">
                       <Select name="course_start_month" defaultValue={application?.course_start_month?.toString() ?? ""}>
                         <SelectTrigger className={selectTriggerStyles}>
                           <SelectValue placeholder="Month" />
@@ -419,8 +462,6 @@ export function ApplicationDialog({
                           ))}
                         </SelectContent>
                       </Select>
-                    </FormField>
-                    <FormField label="C.S.D. Year">
                       <Select name="course_start_year" defaultValue={application?.course_start_year?.toString() ?? ""}>
                         <SelectTrigger className={selectTriggerStyles}>
                           <SelectValue placeholder="Year" />
@@ -431,7 +472,7 @@ export function ApplicationDialog({
                           ))}
                         </SelectContent>
                       </Select>
-                    </FormField>
+                    </div>
                   </div>
                 </FormSection>
 
@@ -506,40 +547,34 @@ export function ApplicationDialog({
                 {/* Event */}
                 <FormSection icon={CalendarDays} title="Event" accentColor="teal">
                   <FormField label="Event">
-                    <Select name="event_id" defaultValue={application?.event_id ?? ""}>
-                      <SelectTrigger className={selectTriggerStyles}>
-                        <SelectValue placeholder="No Event" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {events.map((ev) => (
-                          <SelectItem key={ev.id} value={ev.id}>{ev.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <input type="hidden" name="event_id" value={selectedEventId} />
+                    {filteredEvents.length === 0 ? (
+                      <p className="text-sm text-muted-foreground py-2">
+                        {selectedSchoolId ? "No admission events for this school" : "Select a school first"}
+                      </p>
+                    ) : (
+                      <Select value={selectedEventId} onValueChange={handleEventSelect}>
+                        <SelectTrigger className={selectTriggerStyles}>
+                          <SelectValue placeholder="Select event" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          {filteredEvents.map((ev) => (
+                            <SelectItem key={ev.id} value={ev.id}>{ev.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                   </FormField>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField label="Event Date">
-                      <Popover open={eventDateOpen} onOpenChange={setEventDateOpen}>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" className={`w-full justify-start font-normal ${inputStyles}`}>
-                            <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
-                            {formatDateDisplay(eventDate) ?? <span className="text-muted-foreground">Select date</span>}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                          <CalendarComponent
-                            mode="single"
-                            selected={eventDate}
-                            defaultMonth={eventDate}
-                            onSelect={(date) => { setEventDate(date); setEventDateOpen(false) }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </FormField>
-                    <FormField label="Event Time">
-                      <Input name="event_time" type="time" className={inputStyles} defaultValue={application?.event_time ?? ""} />
-                    </FormField>
-                  </div>
+                  {selectedEvent && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <FormField label="Event Date">
+                        <Input className={`${inputStyles} bg-muted/50`} readOnly value={selectedEvent.start_date ? new Date(selectedEvent.start_date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—"} />
+                      </FormField>
+                      <FormField label="Event Time">
+                        <Input className={`${inputStyles} bg-muted/50`} readOnly value={selectedEvent.start_time?.slice(0, 5) ?? "—"} />
+                      </FormField>
+                    </div>
+                  )}
                   <FormField label="Music Audition">
                     <Input name="music_audition" className={inputStyles} defaultValue={application?.music_audition ?? ""} placeholder="Music audition details" />
                   </FormField>

@@ -96,6 +96,7 @@ export type EventListItem = {
   school_count: number
   representative_count: number
   schedule_count: number
+  application_count: number
 }
 
 export type EventsListResult = {
@@ -199,10 +200,11 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
   const eventIds = (data ?? []).map(e => e.id)
 
   // Fetch aggregated counts for each event in parallel
-  const [schoolCounts, representativeCounts, scheduleCounts] = await Promise.all([
+  const [schoolCounts, representativeCounts, scheduleCounts, applicationCounts] = await Promise.all([
     getEventSchoolCounts(supabase, eventIds),
     getEventRepresentativeCounts(supabase, eventIds),
     getEventScheduleCounts(supabase, eventIds),
+    getEventApplicationCounts(supabase, eventIds),
   ])
 
   // Merge counts into event data
@@ -213,6 +215,7 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
     school_count: schoolCounts[event.id] ?? 0,
     representative_count: representativeCounts[event.id] ?? 0,
     schedule_count: scheduleCounts[event.id] ?? 0,
+    application_count: applicationCounts[event.id] ?? 0,
   }))
 
   const totalCount = count ?? 0
@@ -280,6 +283,27 @@ async function getEventScheduleCounts(
 
   const { data } = await supabase
     .from('event_schedules')
+    .select('event_id')
+    .in('event_id', eventIds)
+
+  const counts: Record<string, number> = {}
+  data?.forEach(row => {
+    counts[row.event_id] = (counts[row.event_id] ?? 0) + 1
+  })
+  return counts
+}
+
+/**
+ * Helper: Get application counts per event
+ */
+async function getEventApplicationCounts(
+  supabase: ReturnType<typeof createClient>,
+  eventIds: string[]
+): Promise<Record<string, number>> {
+  if (eventIds.length === 0) return {}
+
+  const { data } = await supabase
+    .from('student_event_applications')
     .select('event_id')
     .in('event_id', eventIds)
 
