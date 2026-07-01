@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server"
 type CookieToSet = { name: string; value: string; options?: CookieOptions }
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
 /** Refresh the auth session and return user + response with updated cookies */
 export async function updateSession(request: NextRequest) {
