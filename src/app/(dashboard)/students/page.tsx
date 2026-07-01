@@ -60,6 +60,17 @@ type SearchParams = Promise<{
   search?: string
   status?: string
   placement?: string
+  assigned?: string
+  gender?: string
+  dob_from?: string
+  dob_to?: string
+  entry_from?: string
+  entry_to?: string
+  course?: string
+  school?: string
+  event?: string
+  has_email?: string
+  has_phone?: string
 }>
 
 export default async function StudentsPage({
@@ -72,6 +83,17 @@ export default async function StudentsPage({
   const search = params.search ?? ""
   const statusId = params.status ? parseInt(params.status, 10) : undefined
   const placementId = params.placement ? parseInt(params.placement, 10) : undefined
+  const assignedTo = params.assigned || undefined
+  const gender = params.gender || undefined
+  const dobFrom = params.dob_from || undefined
+  const dobTo = params.dob_to || undefined
+  const entryYearFrom = params.entry_from ? parseInt(params.entry_from, 10) : undefined
+  const entryYearTo = params.entry_to ? parseInt(params.entry_to, 10) : undefined
+  const courseId = params.course ? parseInt(params.course, 10) : undefined
+  const schoolId = params.school || undefined
+  const eventId = params.event || undefined
+  const hasEmail = params.has_email === 'yes' ? true : params.has_email === 'no' ? false : undefined
+  const hasTelephone = params.has_phone === 'yes' ? true : params.has_phone === 'no' ? false : undefined
 
   const { students, totalCount, totalPages } = await getStudentsList({
     page,
@@ -79,6 +101,17 @@ export default async function StudentsPage({
     search,
     statusId,
     placementId,
+    assignedTo,
+    gender,
+    dobFrom,
+    dobTo,
+    entryYearFrom,
+    entryYearTo,
+    courseId,
+    schoolId,
+    eventId,
+    hasEmail,
+    hasTelephone,
   })
 
   // Calculate stats from the data
@@ -143,6 +176,7 @@ export default async function StudentsPage({
                 <TableHead className="font-medium">ID</TableHead>
                 <TableHead className="font-medium">Contact</TableHead>
                 <TableHead className="font-medium">School</TableHead>
+                <TableHead className="font-medium">Consultant</TableHead>
                 <TableHead className="font-medium">Status</TableHead>
                 <TableHead className="font-medium">Lead</TableHead>
                 <TableHead className="w-12 pr-6"></TableHead>
@@ -151,7 +185,7 @@ export default async function StudentsPage({
             <TableBody>
               {students.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
                     No students found. Try adjusting your filters.
                   </TableCell>
                 </TableRow>
@@ -183,9 +217,15 @@ export default async function StudentsPage({
 
 function StudentRow({ student }: { student: StudentListItem }) {
   const statusCode = student.status?.code ?? 'new'
-  const placementCode = student.status?.code ?? 'cold'
   const statusStyle = statusStyles[statusCode] ?? statusStyles.new
   const placementStyle = placementStyles[student.placement?.code ?? 'cold'] ?? placementStyles.cold
+
+  const consultant = student.assigned_profile
+  const consultantName = consultant
+    ? [consultant.first_name, consultant.surname].filter(Boolean).join(' ')
+    : ''
+  const consultantInitials =
+    `${consultant?.first_name?.[0] ?? ''}${consultant?.surname?.[0] ?? ''}`.toUpperCase() || '—'
 
   return (
     <TableRow className="group cursor-pointer">
@@ -240,6 +280,20 @@ function StudentRow({ student }: { student: StudentListItem }) {
             {student.course?.label ?? '—'} {student.entry_year ? `· ${student.entry_year}` : ''}
           </p>
         </div>
+      </TableCell>
+      <TableCell>
+        {consultantName ? (
+          <div className="flex items-center gap-2">
+            <Avatar className="h-6 w-6 border border-background shadow-sm">
+              <AvatarFallback className="bg-muted text-[10px] font-medium text-muted-foreground">
+                {consultantInitials}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm truncate max-w-[120px]">{consultantName}</span>
+          </div>
+        ) : (
+          <span className="text-xs text-muted-foreground">Unassigned</span>
+        )}
       </TableCell>
       <TableCell>
         {student.status && (
@@ -300,9 +354,10 @@ type PaginationProps = {
 function Pagination({ currentPage, totalPages, searchParams }: PaginationProps) {
   const createPageUrl = (page: number) => {
     const params = new URLSearchParams()
-    if (searchParams.search) params.set('search', searchParams.search)
-    if (searchParams.status) params.set('status', searchParams.status)
-    if (searchParams.placement) params.set('placement', searchParams.placement)
+    // Preserve every active filter, only swapping out the page number
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (key !== 'page' && value) params.set(key, value)
+    }
     params.set('page', page.toString())
     return `/students?${params.toString()}`
   }

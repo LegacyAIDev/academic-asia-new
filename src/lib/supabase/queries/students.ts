@@ -2,12 +2,70 @@ import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import type { StudentStatus, PlacementStatus, Course, Nationality, LeadSource, SchoolType } from '@/types/database.types'
 
+type SupabaseServerClient = ReturnType<typeof createClient>
+
+// Sentinel: a related-table filter is active but no student matches it.
+const NO_MATCHES = Symbol('no-matches')
+
+/**
+ * Resolve student IDs matching the related-table filters ("school applied" via
+ * student_applications, "event" via student_event_applications). Students must
+ * satisfy every active related filter, so the sets are intersected.
+ *
+ * Returns null when no related filter is active (don't constrain by id),
+ * NO_MATCHES when a filter is active but nothing matches, otherwise the id list.
+ */
+async function resolveRelatedStudentIds(
+  supabase: SupabaseServerClient,
+  { schoolId, eventId }: { schoolId?: string | null; eventId?: string | null },
+): Promise<string[] | null | typeof NO_MATCHES> {
+  const idSets: string[][] = []
+
+  if (schoolId) {
+    const { data } = await supabase
+      .from('student_applications')
+      .select('student_id')
+      .eq('school_id', schoolId)
+    idSets.push((data ?? []).map((r) => r.student_id).filter(Boolean) as string[])
+  }
+
+  if (eventId) {
+    const { data } = await supabase
+      .from('student_event_applications')
+      .select('student_id')
+      .eq('event_id', eventId)
+    idSets.push((data ?? []).map((r) => r.student_id).filter(Boolean) as string[])
+  }
+
+  if (idSets.length === 0) return null
+
+  let intersection = idSets[0]
+  for (let i = 1; i < idSets.length; i++) {
+    const next = new Set(idSets[i])
+    intersection = intersection.filter((id) => next.has(id))
+  }
+
+  const unique = Array.from(new Set(intersection))
+  return unique.length === 0 ? NO_MATCHES : unique
+}
+
 export type StudentsListParams = {
   page?: number
   pageSize?: number
   search?: string
   statusId?: number | null
   placementId?: number | null
+  assignedTo?: string | null
+  gender?: string | null
+  dobFrom?: string | null
+  dobTo?: string | null
+  entryYearFrom?: number | null
+  entryYearTo?: number | null
+  courseId?: number | null
+  schoolId?: string | null
+  eventId?: string | null
+  hasEmail?: boolean | null
+  hasTelephone?: boolean | null
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
 }
@@ -27,6 +85,7 @@ export type StudentListItem = {
   status: StudentStatus | null
   placement: PlacementStatus | null
   course: Course | null
+  assigned_profile: { id: string; first_name: string | null; surname: string | null } | null
 }
 
 export type StudentsListResult = {
@@ -48,6 +107,17 @@ export async function getStudentsList(params: StudentsListParams = {}): Promise<
 
     statusId,
     placementId,
+    assignedTo,
+    gender,
+    dobFrom,
+    dobTo,
+    entryYearFrom,
+    entryYearTo,
+    courseId,
+    schoolId,
+    eventId,
+    hasEmail,
+    hasTelephone,
     sortBy = 'created_at',
     sortOrder = 'desc'
   } = params
@@ -55,6 +125,14 @@ export async function getStudentsList(params: StudentsListParams = {}): Promise<
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const offset = (page - 1) * pageSize
+
+  // "School applied" and "Event" filters live in related tables, so resolve the
+  // matching student IDs first and constrain the main query with them. A null
+  // result means the filter is active but nobody matches → return empty early.
+  const relatedStudentIds = await resolveRelatedStudentIds(supabase, { schoolId, eventId })
+  if (relatedStudentIds === NO_MATCHES) {
+    return { students: [], totalCount: 0, page, pageSize, totalPages: 0 }
+  }
 
   // Build the query with JOINs for reference data
   let query = supabase
@@ -73,12 +151,27 @@ export async function getStudentsList(params: StudentsListParams = {}): Promise<
       entry_month,
       status:student_statuses!students_status_id_fkey(id, code, label, color),
       placement:placement_statuses!students_placement_id_fkey(id, code, label, color),
-      course:courses!students_course_id_fkey(id, code, label)
+      course:courses!students_course_id_fkey(id, code, label),
+      assigned_profile:profiles!students_assigned_to_fkey(id, first_name, surname)
     `, { count: 'exact' })
 
-  // Apply search filter
-  if (search) {
-    query = query.or(`first_name.ilike.%${search}%,surname.ilike.%${search}%,student_code.ilike.%${search}%,email.ilike.%${search}%`)
+  // Apply search filter — each whitespace-separated token must match at least one
+  // searchable field, so multi-word and cross-field queries work (e.g. "Lily LUEN"
+  // where first_name is "Yat Bun Lily" and surname is "LUEN"). Tokens are AND-ed
+  // together via chained .or() calls; fields within a token are OR-ed.
+  const searchTerm = search.trim()
+  if (searchTerm) {
+    const searchableColumns = ['first_name', 'surname', 'chinese_name', 'student_code', 'email']
+    const tokens = searchTerm
+      .split(/\s+/)
+      .slice(0, 6)
+      // Strip characters that would break PostgREST's or() filter grammar
+      .map((token) => token.replace(/[%,()"\\]/g, ''))
+      .filter(Boolean)
+
+    for (const token of tokens) {
+      query = query.or(searchableColumns.map((column) => `${column}.ilike.%${token}%`).join(','))
+    }
   }
 
   // Apply status filter
@@ -91,6 +184,44 @@ export async function getStudentsList(params: StudentsListParams = {}): Promise<
     query = query.eq('placement_id', placementId)
   }
 
+  // Apply consultant-in-charge (CIC) filter
+  if (assignedTo) {
+    query = query.eq('assigned_to', assignedTo)
+  }
+
+  // Apply gender filter
+  if (gender) {
+    query = query.eq('gender', gender)
+  }
+
+  // Apply date-of-birth range filter
+  if (dobFrom) query = query.gte('date_of_birth', dobFrom)
+  if (dobTo) query = query.lte('date_of_birth', dobTo)
+
+  // Apply entry year (course start date) range filter
+  if (entryYearFrom !== undefined && entryYearFrom !== null) {
+    query = query.gte('entry_year', entryYearFrom)
+  }
+  if (entryYearTo !== undefined && entryYearTo !== null) {
+    query = query.lte('entry_year', entryYearTo)
+  }
+
+  // Apply course filter
+  if (courseId !== undefined && courseId !== null) {
+    query = query.eq('course_id', courseId)
+  }
+
+  // Apply has-email / has-telephone presence filters (value present vs empty/null)
+  if (hasEmail === true) query = query.not('email', 'is', null).neq('email', '')
+  if (hasEmail === false) query = query.or('email.is.null,email.eq.')
+  if (hasTelephone === true) query = query.not('telephone', 'is', null).neq('telephone', '')
+  if (hasTelephone === false) query = query.or('telephone.is.null,telephone.eq.')
+
+  // Constrain by related-table matches (school applied / event) resolved above
+  if (relatedStudentIds !== null) {
+    query = query.in('id', relatedStudentIds)
+  }
+
   // Apply sorting
   const validSortColumns = ['created_at', 'surname', 'first_name', 'student_code', 'entry_year']
   const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'created_at'
@@ -101,7 +232,6 @@ export async function getStudentsList(params: StudentsListParams = {}): Promise<
 
   const { data, error, count } = await query
 
-    console.log(data);
   if (error) {
     console.error('Error fetching students:', error)
     throw new Error(`Failed to fetch students: ${error.message}`)

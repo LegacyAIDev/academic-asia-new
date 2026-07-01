@@ -11,13 +11,20 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Search, X, SlidersHorizontal } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { StudentsAdvancedFilters } from './students-advanced-filters'
 
 type ReferenceItem = {
   id: number
   code: string
   label: string
+}
+
+type Consultant = {
+  id: string
+  first_name: string | null
+  surname: string | null
 }
 
 export function StudentsFilters() {
@@ -29,19 +36,22 @@ export function StudentsFilters() {
   const [search, setSearch] = useState(searchParams.get('search') ?? '')
   const [statuses, setStatuses] = useState<ReferenceItem[]>([])
   const [placements, setPlacements] = useState<ReferenceItem[]>([])
+  const [consultants, setConsultants] = useState<Consultant[]>([])
 
   // Fetch reference data for dropdowns
   useEffect(() => {
     const fetchReferenceData = async () => {
       const supabase = createClient()
 
-      const [statusRes, placementRes] = await Promise.all([
+      const [statusRes, placementRes, consultantRes] = await Promise.all([
         supabase.from('student_statuses').select('id, code, label').order('sort_order'),
         supabase.from('placement_statuses').select('id, code, label').order('sort_order'),
+        supabase.from('profiles').select('id, first_name, surname').order('first_name'),
       ])
 
       if (statusRes.data) setStatuses(statusRes.data)
       if (placementRes.data) setPlacements(placementRes.data)
+      if (consultantRes.data) setConsultants(consultantRes.data)
     }
 
     fetchReferenceData()
@@ -84,18 +94,24 @@ export function StudentsFilters() {
     return () => clearTimeout(timer)
   }, [search, searchParams, pathname, router, createQueryString])
 
-  // Handle filter changes
-  const handleStatusChange = (value: string) => {
-    startTransition(() => {
-      router.push(`${pathname}?${createQueryString({ status: value === 'all' ? null : value })}`)
-    })
-  }
+  // Push one or more filter params into the URL (null clears a param)
+  const pushParams = useCallback(
+    (params: Record<string, string | null>) => {
+      startTransition(() => {
+        router.push(`${pathname}?${createQueryString(params)}`)
+      })
+    },
+    [router, pathname, createQueryString]
+  )
 
-  const handlePlacementChange = (value: string) => {
-    startTransition(() => {
-      router.push(`${pathname}?${createQueryString({ placement: value === 'all' ? null : value })}`)
-    })
-  }
+  const handleStatusChange = (value: string) =>
+    pushParams({ status: value === 'all' ? null : value })
+
+  const handlePlacementChange = (value: string) =>
+    pushParams({ placement: value === 'all' ? null : value })
+
+  const handleConsultantChange = (value: string) =>
+    pushParams({ assigned: value === 'all' ? null : value })
 
   // Clear all filters
   const clearFilters = () => {
@@ -105,7 +121,12 @@ export function StudentsFilters() {
     })
   }
 
-  const hasFilters = search || searchParams.get('status') || searchParams.get('placement')
+  const consultantName = (c: Consultant) =>
+    [c.first_name, c.surname].filter(Boolean).join(' ') || 'Unnamed'
+
+  // Any active filter (search or any URL param other than the page number)
+  const hasFilters =
+    Boolean(search) || Array.from(searchParams.keys()).some((k) => k !== 'page')
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -164,6 +185,27 @@ export function StudentsFilters() {
             ))}
           </SelectContent>
         </Select>
+
+        {/* Consultant-in-Charge (CIC) Filter */}
+        <Select
+          value={searchParams.get('assigned') ?? 'all'}
+          onValueChange={handleConsultantChange}
+        >
+          <SelectTrigger className="w-[170px] bg-background">
+            <SelectValue placeholder="Consultant" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Consultants</SelectItem>
+            {consultants.map((consultant) => (
+              <SelectItem key={consultant.id} value={consultant.id}>
+                {consultantName(consultant)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Advanced filters (sex, DOB, entry year, course, school applied, event, contact) */}
+        <StudentsAdvancedFilters searchParams={searchParams} onApply={pushParams} />
       </div>
 
       {/* Clear Filters */}
