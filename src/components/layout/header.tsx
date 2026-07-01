@@ -1,8 +1,7 @@
 "use client"
 
-import { Bell, Search, Menu, LogOut } from "lucide-react"
+import { Bell, Menu, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -33,12 +32,7 @@ export function Header({ user, onMenuClick }: HeaderProps) {
       </Button>
 
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-        <div className="relative flex flex-1 items-center">
-          <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search students, schools..." className="pl-10 w-full max-w-md" />
-        </div>
-
-        <div className="flex items-center gap-x-4 lg:gap-x-6">
+        <div className="flex flex-1 items-center justify-end gap-x-4 lg:gap-x-6">
           <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
             <Bell className="h-5 w-5" />
             <span className="sr-only">View notifications</span>
