@@ -5,6 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/** Whether a stored value is rich HTML (vs legacy plain text). */
+export function looksLikeHtml(value: string) {
+  return /<[a-z][\s\S]*>/i.test(value)
+}
+
 /** Generate academic year options (+/- 3 years from today), default is current year + 1 */
 export function getAcademicYearOptions() {
   const currentYear = new Date().getFullYear()

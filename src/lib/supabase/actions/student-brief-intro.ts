@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeRichText } from '@/lib/rich-text'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -30,6 +31,11 @@ export async function upsertStudentBriefIntro(
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    // Clean the rich text before it ever reaches the database
+    if (input.remarks) {
+      input = { ...input, remarks: sanitizeRichText(input.remarks) }
+    }
 
     const { data: existing } = await supabase
       .from('student_brief_intro')

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeRichText } from '@/lib/rich-text'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
@@ -20,6 +21,14 @@ export async function upsertStudentResumeProfile(
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    // Clean the rich text fields before they reach the database
+    if (input.interests_hobbies) {
+      input = { ...input, interests_hobbies: sanitizeRichText(input.interests_hobbies) }
+    }
+    if (input.parents_input) {
+      input = { ...input, parents_input: sanitizeRichText(input.parents_input) }
+    }
 
     const { data: existing } = await supabase
       .from('student_resume_profile')

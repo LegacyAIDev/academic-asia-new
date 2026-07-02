@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Languages, CheckCircle2, XCircle, Send } from "lucide-react"
+import { looksLikeHtml } from "@/lib/utils"
 import { BriefIntroDialog } from "./brief-intro-dialog"
 import type { BriefIntroWithJoins } from "@/lib/supabase/queries/student-brief-intro"
 import type { BriefIntroReferenceData } from "./brief-intro-dialog"
@@ -63,18 +64,38 @@ export function StudentBriefIntroSection({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {briefIntro.subjects && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Spoken English</p>
+            <p className="text-sm font-medium">
+              {briefIntro.spoken_english?.label ?? briefIntro.legacy_spoken_english ?? "—"}
+            </p>
+          </div>
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Intended Subjects</p>
-            <p className="text-sm font-medium">{briefIntro.subjects}</p>
+            <p className="text-sm font-medium">{briefIntro.subjects || "—"}</p>
           </div>
-        )}
+        </div>
 
         <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Introduction</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Hobbies &amp; Interests</p>
           <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">
-            {briefIntro.remarks || "No introduction text yet."}
+            {briefIntro.hobbies || "—"}
           </p>
+        </div>
+
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Remarks</p>
+          {briefIntro.remarks ? (
+            looksLikeHtml(briefIntro.remarks) ? (
+              // Sanitized on save in upsertStudentBriefIntro, safe to render
+              <div className="rich-content" dangerouslySetInnerHTML={{ __html: briefIntro.remarks }} />
+            ) : (
+              <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">{briefIntro.remarks}</p>
+            )
+          ) : (
+            <p className="text-sm text-muted-foreground">—</p>
+          )}
         </div>
 
         {/* Approval Status */}

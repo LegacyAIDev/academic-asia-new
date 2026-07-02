@@ -45,6 +45,46 @@ export const EVENT_TYPE_LABELS: Record<EventTypeCode, string> = {
   school_assessment_scholarship: 'School Assessment / Scholarship',
 }
 
+/** Reverse of URL_TO_TYPE_CODE — build a detail URL from an event type code */
+export const TYPE_CODE_TO_URL = Object.fromEntries(
+  Object.entries(URL_TO_TYPE_CODE).map(([url, code]) => [code, url])
+) as Record<EventTypeCode, string>
+
+export type SchoolEventItem = {
+  id: string
+  name: string
+  start_date: string | null
+  end_date: string | null
+  event_type: { code: string; label: string; color: string | null } | null
+}
+
+/** Events a school participates in (via event_schools), newest first. */
+export async function getSchoolEvents(schoolId: string): Promise<SchoolEventItem[]> {
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+
+  const { data, error } = await supabase
+    .from('event_schools')
+    .select(`
+      event:events!event_schools_event_id_fkey(
+        id, name, start_date, end_date,
+        event_type:event_types!events_event_type_id_fkey(code, label, color)
+      )
+    `)
+    .eq('school_id', schoolId)
+
+  if (error) {
+    console.error('Error fetching school events:', error)
+    return []
+  }
+
+  const rows = (data ?? []) as unknown as { event: SchoolEventItem | null }[]
+  return rows
+    .map((r) => r.event)
+    .filter((e): e is SchoolEventItem => e !== null)
+    .sort((a, b) => (b.start_date ?? '').localeCompare(a.start_date ?? ''))
+}
+
 /**
  * Descriptions for each event type
  */

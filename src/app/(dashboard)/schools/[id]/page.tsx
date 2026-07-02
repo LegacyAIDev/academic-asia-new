@@ -31,6 +31,8 @@ import {
   GraduationCap,
   Building2,
   FileText,
+  CalendarDays,
+  Files,
   ExternalLink,
   CheckCircle,
   XCircle,
@@ -58,6 +60,8 @@ import { getSchoolCourses, getCourseReferenceData, getSchoolCourseCount } from "
 import { getSchoolBankDetails, getBankReferenceData, getSchoolBankDetailCount } from "@/lib/supabase/queries/school-bank-details"
 import { getSchoolContacts, getSchoolContactCount } from "@/lib/supabase/queries/school-contacts"
 import { getSchoolVisits, getSchoolVisitCount } from "@/lib/supabase/queries/school-visits"
+import { getSchoolEvents } from "@/lib/supabase/queries/events"
+import { getSchoolDocuments } from "@/lib/supabase/queries/school-documents"
 import { DeleteSchoolDialog } from "./delete-school-dialog"
 import { SupInfoDialog, EditSupInfoButton, DeleteSupInfoButton } from "./sup-info-dialog"
 import { SchoolFeesSection } from "./school-fees"
@@ -68,6 +72,8 @@ import { SchoolCoursesSection } from "./school-courses"
 import { SchoolBankDetailsSection } from "./school-bank-details"
 import { SchoolContactsSection } from "./school-contacts"
 import { SchoolVisitsSection } from "./school-visits"
+import { SchoolEventsSection } from "./school-events"
+import { SchoolDocumentsSection } from "./school-documents"
 
 type SchoolDetailPageParams = {
   params: Promise<{ id: string }>
@@ -105,6 +111,8 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
     schoolContactCount,
     schoolVisits,
     schoolVisitCount,
+    schoolEvents,
+    schoolDocuments,
   ] = await Promise.all([
     getSchoolById(id),
     getSchoolSupplementaryInfo({ schoolId: id, page: parseInt(supPage), pageSize: 25 }),
@@ -132,6 +140,8 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
     getSchoolContactCount(id),
     getSchoolVisits(id),
     getSchoolVisitCount(id),
+    getSchoolEvents(id),
+    getSchoolDocuments(id),
   ])
 
   if (!school) {
@@ -310,6 +320,28 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
               <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
                 {schoolVisitCount}
               </Badge>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="events" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=events`}>
+              <CalendarDays className="h-4 w-4" />
+              Events
+              {schoolEvents.length > 0 && (
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                  {schoolEvents.length}
+                </Badge>
+              )}
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="gap-2" asChild>
+            <Link href={`/schools/${id}?tab=documents`}>
+              <Files className="h-4 w-4" />
+              Documents
+              {schoolDocuments.length > 0 && (
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                  {schoolDocuments.length}
+                </Badge>
+              )}
             </Link>
           </TabsTrigger>
         </TabsList>
@@ -711,6 +743,14 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
         {/* Visits Tab */}
         <TabsContent value="visits" className="space-y-6">
           <SchoolVisitsSection schoolId={id} visits={schoolVisits} />
+        </TabsContent>
+
+        <TabsContent value="events" className="space-y-6">
+          <SchoolEventsSection events={schoolEvents} />
+        </TabsContent>
+
+        <TabsContent value="documents" className="space-y-6">
+          <SchoolDocumentsSection schoolId={id} documents={schoolDocuments} />
         </TabsContent>
       </Tabs>
     </div>

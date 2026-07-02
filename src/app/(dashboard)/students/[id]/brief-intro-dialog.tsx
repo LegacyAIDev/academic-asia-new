@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { Plus, Loader2, Pencil, Languages, Check } from "lucide-react"
 import {
   upsertStudentBriefIntro, type UpsertBriefIntroInput,
@@ -27,12 +31,16 @@ type BriefIntroDialogProps = {
 }
 
 export function BriefIntroDialog({
-  studentId, referenceData: _referenceData, briefIntro, trigger,
+  studentId, referenceData, briefIntro, trigger,
 }: BriefIntroDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [isApproved, setIsApproved] = useState(briefIntro?.is_approved ?? false)
+  const [spokenEnglishId, setSpokenEnglishId] = useState<string>(
+    briefIntro?.spoken_english_id?.toString() ?? "none"
+  )
+  const [remarksHtml, setRemarksHtml] = useState(briefIntro?.remarks ?? "")
   const isEdit = !!briefIntro
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,8 +50,10 @@ export function BriefIntroDialog({
 
     const input: UpsertBriefIntroInput = {
       student_id: studentId,
+      spoken_english_id: spokenEnglishId === "none" ? null : parseInt(spokenEnglishId, 10),
+      hobbies: (fd.get("hobbies") as string) || null,
       subjects: (fd.get("subjects") as string) || null,
-      remarks: (fd.get("remarks") as string) || null,
+      remarks: remarksHtml || null,
       is_approved: isApproved,
     }
 
@@ -64,7 +74,7 @@ export function BriefIntroDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:!max-w-[560px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
+      <DialogContent className="sm:!max-w-[760px] w-[95vw] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
         <div className="relative overflow-hidden border-b border-border/50">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-60" />
@@ -98,24 +108,51 @@ export function BriefIntroDialog({
                 <span className="font-medium">{error}</span>
               </div>
             )}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground">Spoken English</Label>
+                <Select value={spokenEnglishId} onValueChange={setSpokenEnglishId}>
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder="Not set" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Not set</SelectItem>
+                    {referenceData.spokenEnglishLevels.map((level) => (
+                      <SelectItem key={level.id} value={level.id.toString()}>
+                        {level.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground">Intended Subjects</Label>
+                <Textarea
+                  name="subjects"
+                  rows={2}
+                  className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  defaultValue={briefIntro?.subjects ?? ""}
+                  placeholder="e.g. Mathematics, Physics, Chemistry..."
+                />
+              </div>
+            </div>
             <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Intended Subjects</Label>
+              <Label className="text-xs font-medium text-muted-foreground">Hobbies &amp; Interests</Label>
               <Textarea
-                name="subjects"
-                rows={3}
+                name="hobbies"
+                rows={4}
                 className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                defaultValue={briefIntro?.subjects ?? ""}
-                placeholder="e.g. Mathematics, Physics, Chemistry..."
+                defaultValue={briefIntro?.hobbies ?? ""}
+                placeholder="Sports, music, clubs, achievements..."
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Introduction</Label>
-              <Textarea
-                name="remarks"
-                rows={8}
-                className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                defaultValue={briefIntro?.remarks ?? ""}
-                placeholder="Write a brief introduction for this student..."
+              <Label className="text-xs font-medium text-muted-foreground">Remarks / Introduction</Label>
+              <RichTextEditor
+                value={remarksHtml}
+                onChange={setRemarksHtml}
+                studentId={studentId}
+                placeholder="Write the introduction — format text, add links or paste/upload photos…"
               />
             </div>
             <div className="flex items-center justify-between rounded-lg border border-border p-3">

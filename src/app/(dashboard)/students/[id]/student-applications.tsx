@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table"
 import { GraduationCap, Filter } from "lucide-react"
 import { ApplicationDialog, EditApplicationButton, DeleteApplicationButton } from "./application-dialog"
+import { ViewApplicationButton } from "./application-view-dialog"
 import type { ApplicationWithJoins } from "@/lib/supabase/queries/student-applications"
 import type { ApplicationReferenceData } from "./application-dialog"
 
@@ -192,6 +193,7 @@ export function StudentApplicationsSection({
                     <TableCell className="text-sm">{formatDate(app.registration_date)}</TableCell>
                     <TableCell className="pr-6">
                       <div className="flex items-center justify-end gap-1">
+                        <ViewApplicationButton application={app} />
                         <EditApplicationButton
                           application={app}
                           studentId={studentId}

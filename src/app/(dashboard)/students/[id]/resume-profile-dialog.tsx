@@ -6,10 +6,10 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { Pencil, Loader2, FileText, Check, Plus } from "lucide-react"
 import { upsertStudentResumeProfile, type UpsertResumeProfileInput } from "@/lib/supabase/actions/student-resume-profile"
 import type { ResumeProfileRecord } from "@/lib/supabase/queries/student-resume-profile"
@@ -19,13 +19,14 @@ type Props = {
   profile: ResumeProfileRecord | null
 }
 
-const textareaStyles = "resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
 const selectStyles = "h-10 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
 
 export function ResumeProfileDialog({ studentId, profile }: Props) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [interestsHtml, setInterestsHtml] = useState(profile?.interests_hobbies ?? "")
+  const [parentsHtml, setParentsHtml] = useState(profile?.parents_input ?? "")
   const isEdit = !!profile
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,8 +38,8 @@ export function ResumeProfileDialog({ studentId, profile }: Props) {
     const input: UpsertResumeProfileInput = {
       student_id: studentId,
       english_standard: (englishVal && englishVal !== "__none__") ? englishVal as 'fluent' | 'good' | 'not_good' : null,
-      interests_hobbies: (fd.get("interests_hobbies") as string) || null,
-      parents_input: (fd.get("parents_input") as string) || null,
+      interests_hobbies: interestsHtml || null,
+      parents_input: parentsHtml || null,
     }
 
     startTransition(async () => {
@@ -56,7 +57,7 @@ export function ResumeProfileDialog({ studentId, profile }: Props) {
           {isEdit ? "Edit Resume" : "Add Resume"}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:!max-w-[560px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
+      <DialogContent className="sm:!max-w-[760px] w-[95vw] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
         <div className="relative overflow-hidden border-b border-border/50">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
           <div className="relative flex items-center gap-4 px-6 py-5">
@@ -103,12 +104,22 @@ export function ResumeProfileDialog({ studentId, profile }: Props) {
 
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">Interests & Hobbies</Label>
-              <Textarea name="interests_hobbies" rows={4} className={textareaStyles} defaultValue={profile?.interests_hobbies ?? ""} placeholder="Student interests and hobbies..." />
+              <RichTextEditor
+                value={interestsHtml}
+                onChange={setInterestsHtml}
+                studentId={studentId}
+                placeholder="Student interests and hobbies — format text, add links or photos…"
+              />
             </div>
 
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">Parents Input</Label>
-              <Textarea name="parents_input" rows={4} className={textareaStyles} defaultValue={profile?.parents_input ?? ""} placeholder="Parent expectations and input..." />
+              <RichTextEditor
+                value={parentsHtml}
+                onChange={setParentsHtml}
+                studentId={studentId}
+                placeholder="Parent expectations and input…"
+              />
             </div>
           </div>
 

@@ -174,6 +174,18 @@ export function ApplicationDialog({
   const [selectedSchoolId, setSelectedSchoolId] = useState(application?.school_id ?? "")
   const [schoolSearchOpen, setSchoolSearchOpen] = useState(false)
 
+  // Entry & Course Start Date. CSD mirrors Entry until the user edits CSD directly,
+  // so "Entry Sep 2026" yields "CSD Sep 2026" instead of a stray default.
+  const [entryMonth, setEntryMonth] = useState(application?.entry_month?.toString() ?? "")
+  const [entryYear, setEntryYear] = useState(application?.entry_year?.toString() ?? "")
+  const [csdMonth, setCsdMonth] = useState(application?.course_start_month?.toString() ?? "")
+  const [csdYear, setCsdYear] = useState(application?.course_start_year?.toString() ?? "")
+  const [csdTouched, setCsdTouched] = useState(
+    !!(application?.course_start_month || application?.course_start_year)
+  )
+  const handleEntryMonth = (v: string) => { setEntryMonth(v); if (!csdTouched) setCsdMonth(v) }
+  const handleEntryYear = (v: string) => { setEntryYear(v); if (!csdTouched) setCsdYear(v) }
+
   const formatDateDisplay = (date: Date | undefined) =>
     date ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null
   const formatDateValue = (date: Date | undefined) =>
@@ -204,10 +216,10 @@ export function ApplicationDialog({
     const input: Omit<CreateApplicationInput, 'student_id'> = {
       school_id: formData.get("school_id") as string,
       year_group: formData.get("year_group") ? parseInt(formData.get("year_group") as string, 10) : null,
-      entry_year: formData.get("entry_year") ? parseInt(formData.get("entry_year") as string, 10) : null,
-      entry_month: formData.get("entry_month") ? parseInt(formData.get("entry_month") as string, 10) : null,
-      course_start_month: formData.get("course_start_month") ? parseInt(formData.get("course_start_month") as string, 10) : null,
-      course_start_year: formData.get("course_start_year") ? parseInt(formData.get("course_start_year") as string, 10) : null,
+      entry_year: entryYear ? parseInt(entryYear, 10) : null,
+      entry_month: entryMonth ? parseInt(entryMonth, 10) : null,
+      course_start_month: csdMonth ? parseInt(csdMonth, 10) : null,
+      course_start_year: csdYear ? parseInt(csdYear, 10) : null,
       status_id: formData.get("status_id") ? parseInt(formData.get("status_id") as string, 10) : null,
       mode_id: formData.get("mode_id") ? parseInt(formData.get("mode_id") as string, 10) : null,
       is_referral: formData.get("is_referral") === "true",
@@ -426,7 +438,7 @@ export function ApplicationDialog({
                   <div className="space-y-1.5">
                     <p className="text-xs font-medium text-muted-foreground">Entry</p>
                     <div className="flex gap-1.5">
-                      <Select name="entry_month" defaultValue={application?.entry_month?.toString() ?? ""}>
+                      <Select value={entryMonth} onValueChange={handleEntryMonth}>
                         <SelectTrigger className={selectTriggerStyles}>
                           <SelectValue placeholder="Month" />
                         </SelectTrigger>
@@ -436,7 +448,7 @@ export function ApplicationDialog({
                           ))}
                         </SelectContent>
                       </Select>
-                      <Select name="entry_year" defaultValue={application?.entry_year?.toString() ?? ""}>
+                      <Select value={entryYear} onValueChange={handleEntryYear}>
                         <SelectTrigger className={selectTriggerStyles}>
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
@@ -452,7 +464,7 @@ export function ApplicationDialog({
                   <div className="space-y-1.5">
                     <p className="text-xs font-medium text-muted-foreground">Course Start Date (C.S.D.)</p>
                     <div className="flex gap-1.5">
-                      <Select name="course_start_month" defaultValue={application?.course_start_month?.toString() ?? ""}>
+                      <Select value={csdMonth} onValueChange={(v) => { setCsdTouched(true); setCsdMonth(v) }}>
                         <SelectTrigger className={selectTriggerStyles}>
                           <SelectValue placeholder="Month" />
                         </SelectTrigger>
@@ -462,7 +474,7 @@ export function ApplicationDialog({
                           ))}
                         </SelectContent>
                       </Select>
-                      <Select name="course_start_year" defaultValue={application?.course_start_year?.toString() ?? ""}>
+                      <Select value={csdYear} onValueChange={(v) => { setCsdTouched(true); setCsdYear(v) }}>
                         <SelectTrigger className={selectTriggerStyles}>
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
@@ -582,13 +594,13 @@ export function ApplicationDialog({
 
                 {/* Remarks */}
                 <FormSection icon={MessageSquare} title="Remarks" accentColor="amber">
-                  <FormField label="Result Remarks">
+                  <FormField label="Enrol Status Remarks">
                     <Textarea
                       name="result_remarks"
                       rows={3}
                       className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                       defaultValue={application?.result_remarks ?? ""}
-                      placeholder="Result remarks..."
+                      placeholder="Remarks about the enrol status / result..."
                     />
                   </FormField>
                   <FormField label="Remarks to School">

@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Mail, Phone, Users } from "lucide-react"
 import { ContactDialog, EditContactButton, DeleteContactButton } from "./contact-dialog"
@@ -128,6 +129,8 @@ function ContactCard({
   const surname = contact.surname ?? ''
   const fullName = [title, firstName, surname].filter(Boolean).join(' ')
   const initials = `${firstName?.[0] ?? ''}${surname?.[0] ?? ''}`.toUpperCase() || '?'
+  // AA emails parents/guardians — use the first available email for the action
+  const contactEmail = contact.email_1 || contact.email_2 || contact.email_3
 
   return (
     <Card className="border shadow-none">
@@ -196,6 +199,14 @@ function ContactCard({
             <p className="text-xs text-muted-foreground mt-2">{contact.occupation}</p>
           )}
         </div>
+        {contactEmail && (
+          <Button variant="outline" size="sm" className="mt-3 w-full gap-2" asChild>
+            <a href={`mailto:${contactEmail}`}>
+              <Mail className="h-3.5 w-3.5" />
+              Send Email
+            </a>
+          </Button>
+        )}
       </CardContent>
     </Card>
   )

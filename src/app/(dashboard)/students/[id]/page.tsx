@@ -33,6 +33,7 @@ import {
   CalendarDays,
   Plane,
   FileCheck,
+  Files,
   Plus,
 } from "lucide-react"
 import { getStudentById, getStudentContacts, getContactReferenceData } from "@/lib/supabase/queries/students"
@@ -56,8 +57,10 @@ import { StudentTravelSection } from "./student-travel"
 import { StudentExamResultsSection } from "./student-exam-results"
 import { StudentBriefIntroSection } from "./student-brief-intro"
 import { StudentResumeProfileSection } from "./student-resume-profile"
+import { StudentResumeSection } from "./student-resume"
 import { StudentInternalNotesSection } from "./student-internal-notes"
 import { StudentLegalDocumentsSection } from "./student-legal-documents"
+import { StudentDocumentsSection } from "./student-documents-section"
 import { DeleteStudentDialog } from "./delete-student-dialog"
 
 // Status badge styling based on status code
@@ -84,7 +87,10 @@ type StudentDetailPageParams = {
 
 export default async function StudentDetailPage({ params, searchParams }: StudentDetailPageParams) {
   const { id } = await params
-  const { tab = "profile" } = await searchParams
+  const { tab: rawTab } = await searchParams
+  // Normalise the tab param, mapping the legacy "profile" value to "overview"
+  const validTabs = ["overview", "resume", "contacts", "education", "documents", "applications", "events", "immigration"]
+  const tab = validTabs.includes(rawTab ?? "") ? (rawTab as string) : "overview"
 
   // Fetch student, contacts, applications, and reference data in parallel
   const [
@@ -99,6 +105,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     resumeEntries, resumeReferenceData,
     internalNotes,
     resumeProfile, resumeTalents, resumeDocuments, aaTests, legalDocuments,
+    allDocuments,
   ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
@@ -125,6 +132,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     getStudentDocuments(id, 'resume'),
     getStudentAATests(id),
     getStudentDocuments(id, 'legal_documents'),
+    getStudentDocuments(id),
   ])
 
   if (!student) {
@@ -133,6 +141,16 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
 
   const statusStyle = statusStyles[student.status?.code ?? 'new'] ?? statusStyles.new
   const placementStyle = placementStyles[student.placement?.code ?? 'cold'] ?? placementStyles.cold
+
+  // AA mainly emails parents/guardians. Pick the highest-priority contact that
+  // has an email so the header offers a one-click "Email Parent" action.
+  const parentContact = [...contacts]
+    .filter((c) => c.email_1 || c.email_2 || c.email_3)
+    .sort((a, b) => (a.priority ?? 99) - (b.priority ?? 99))[0]
+  const parentEmail = parentContact?.email_1 || parentContact?.email_2 || parentContact?.email_3
+  const parentName = parentContact
+    ? [parentContact.first_name, parentContact.surname].filter(Boolean).join(' ')
+    : ''
 
   // Format date helper
   const formatDate = (dateStr: string | null) => {
@@ -203,6 +221,15 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               <code className="font-mono bg-muted px-2 py-0.5 rounded text-xs">
                 {student.student_code ?? '—'}
               </code>
+              {student.date_of_birth && (
+                <>
+                  <span>&middot;</span>
+                  <span className="flex items-center gap-1">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {formatDate(student.date_of_birth)}
+                  </span>
+                </>
+              )}
               {student.nationality && (
                 <>
                   <span>&middot;</span>
@@ -295,11 +322,19 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               <CardTitle className="text-base font-medium">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
+              {parentEmail && (
+                <Button className="w-full justify-start gap-2 shadow-sm" asChild>
+                  <a href={`mailto:${parentEmail}`} title={`${parentEmail}${parentName ? ` — ${parentName}` : ''}`}>
+                    <Mail className="h-4 w-4" />
+                    Email Parent{parentName ? ` (${parentName})` : ''}
+                  </a>
+                </Button>
+              )}
               {student.email && (
                 <Button variant="outline" className="w-full justify-start gap-2" asChild>
                   <a href={`mailto:${student.email}`}>
                     <Mail className="h-4 w-4" />
-                    Send Email
+                    Email Student
                   </a>
                 </Button>
               )}
@@ -312,46 +347,46 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
                 Add Note
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <a href="#applications">
+                <Link href={`/students/${id}?tab=applications`} scroll={false}>
                   <School className="h-4 w-4" />
                   New Application
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <a href="#education">
+                <Link href={`/students/${id}?tab=education`} scroll={false}>
                   <BookOpen className="h-4 w-4" />
                   New Education
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <a href="#visas">
+                <Link href={`/students/${id}?tab=immigration`} scroll={false}>
                   <Shield className="h-4 w-4" />
                   New Visa
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <a href="#event-applications">
+                <Link href={`/students/${id}?tab=events`} scroll={false}>
                   <CalendarDays className="h-4 w-4" />
                   New Event App
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <a href="#travel">
+                <Link href={`/students/${id}?tab=immigration`} scroll={false}>
                   <Plane className="h-4 w-4" />
                   New Travel
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <a href="#exam-results">
+                <Link href={`/students/${id}?tab=education`} scroll={false}>
                   <FileCheck className="h-4 w-4" />
                   New Exam Result
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <a href="#resume">
+                <Link href={`/students/${id}?tab=resume`} scroll={false}>
                   <FileText className="h-4 w-4" />
                   New Resume
-                </a>
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -457,34 +492,67 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
           </Card>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs — sections grouped to avoid one long scrolling page */}
         <Tabs defaultValue={tab} className="space-y-6">
-          <TabsList className="bg-muted/50 w-max">
-            <TabsTrigger value="profile" asChild>
-              <Link href={`/students/${id}?tab=profile`} scroll={false}>Profile</Link>
-            </TabsTrigger>
-            <TabsTrigger value="applications" asChild>
-              <Link href={`/students/${id}?tab=applications`} scroll={false}>School Applications</Link>
-            </TabsTrigger>
-            <TabsTrigger value="events" asChild>
-              <Link href={`/students/${id}?tab=events`} scroll={false}>Event Applications</Link>
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto pb-1">
+            <TabsList className="bg-muted/50 w-max">
+              <TabsTrigger value="overview" asChild>
+                <Link href={`/students/${id}?tab=overview`} scroll={false} className="gap-1.5">
+                  <User className="h-4 w-4" />
+                  Overview
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="resume" asChild>
+                <Link href={`/students/${id}?tab=resume`} scroll={false} className="gap-1.5">
+                  <FileText className="h-4 w-4" />
+                  Resume
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="contacts" asChild>
+                <Link href={`/students/${id}?tab=contacts`} scroll={false} className="gap-1.5">
+                  <Phone className="h-4 w-4" />
+                  Contacts
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="education" asChild>
+                <Link href={`/students/${id}?tab=education`} scroll={false} className="gap-1.5">
+                  <GraduationCap className="h-4 w-4" />
+                  Education
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="documents" asChild>
+                <Link href={`/students/${id}?tab=documents`} scroll={false} className="gap-1.5">
+                  <Files className="h-4 w-4" />
+                  Documents
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="applications" asChild>
+                <Link href={`/students/${id}?tab=applications`} scroll={false} className="gap-1.5">
+                  <School className="h-4 w-4" />
+                  School Applications
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="events" asChild>
+                <Link href={`/students/${id}?tab=events`} scroll={false} className="gap-1.5">
+                  <CalendarDays className="h-4 w-4" />
+                  Event Applications
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="immigration" asChild>
+                <Link href={`/students/${id}?tab=immigration`} scroll={false} className="gap-1.5">
+                  <Plane className="h-4 w-4" />
+                  Immigration
+                </Link>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          {/* Profile Tab */}
-          <TabsContent value="profile" className="space-y-6">
+          {/* Overview: brief intro, notes and remarks */}
+          <TabsContent value="overview" className="space-y-6">
             <StudentBriefIntroSection
               studentId={id}
               briefIntro={briefIntro}
               referenceData={briefIntroReferenceData}
-            />
-
-            <StudentResumeProfileSection
-              studentId={id}
-              profile={resumeProfile}
-              talents={resumeTalents}
-              documents={resumeDocuments}
-              aaTests={aaTests}
             />
 
             <StudentInternalNotesSection
@@ -505,13 +573,75 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
 
+          {/* Resume: profile (talents/interests) + Music Audition / Top Schools records */}
+          <TabsContent value="resume" className="space-y-6">
+            <StudentResumeProfileSection
+              studentId={id}
+              profile={resumeProfile}
+              talents={resumeTalents}
+              documents={resumeDocuments}
+              aaTests={aaTests}
+            />
+
+            <StudentResumeSection
+              studentId={id}
+              resumeEntries={resumeEntries}
+              referenceData={resumeReferenceData}
+            />
+          </TabsContent>
+
+          {/* Contacts: family / next-of-kin */}
+          <TabsContent value="contacts" className="space-y-6">
+            <StudentContactsSection
+              studentId={id}
+              contacts={contacts}
+              referenceData={contactReferenceData}
+              studentAddress={student.address_line_1}
+            />
+          </TabsContent>
+
+          {/* Education: schooling history and exam results */}
+          <TabsContent value="education" className="space-y-6">
             <StudentEducationSection
               studentId={id}
               educationEntries={educationEntries}
               referenceData={eduReferenceData}
             />
 
+            <StudentExamResultsSection
+              studentId={id}
+              examResults={examResults}
+              referenceData={examResultReferenceData}
+            />
+          </TabsContent>
+
+          {/* Documents: multi-file upload with categories and rename */}
+          <TabsContent value="documents" className="space-y-6">
+            <StudentDocumentsSection studentId={id} documents={allDocuments} />
+          </TabsContent>
+
+          {/* School Applications */}
+          <TabsContent value="applications" className="space-y-6">
+            <StudentApplicationsSection
+              studentId={id}
+              applications={applications}
+              referenceData={appReferenceData}
+            />
+          </TabsContent>
+
+          {/* Event Applications */}
+          <TabsContent value="events" className="space-y-6">
+            <StudentEventApplicationsSection
+              studentId={id}
+              applications={eventApplications}
+              referenceData={eventAppReferenceData}
+            />
+          </TabsContent>
+
+          {/* Immigration: visas, legal documents and travel */}
+          <TabsContent value="immigration" className="space-y-6">
             <StudentVisasSection
               studentId={id}
               visas={visas}
@@ -529,37 +659,6 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               travelRecords={travelRecords}
               referenceData={travelReferenceData}
-            />
-
-            <StudentExamResultsSection
-              studentId={id}
-              examResults={examResults}
-              referenceData={examResultReferenceData}
-            />
-
-            <StudentContactsSection
-              studentId={id}
-              contacts={contacts}
-              referenceData={contactReferenceData}
-              studentAddress={student.address_line_1}
-            />
-          </TabsContent>
-
-          {/* School Applications Tab */}
-          <TabsContent value="applications" className="space-y-6">
-            <StudentApplicationsSection
-              studentId={id}
-              applications={applications}
-              referenceData={appReferenceData}
-            />
-          </TabsContent>
-
-          {/* Event Applications Tab */}
-          <TabsContent value="events" className="space-y-6">
-            <StudentEventApplicationsSection
-              studentId={id}
-              applications={eventApplications}
-              referenceData={eventAppReferenceData}
             />
           </TabsContent>
         </Tabs>

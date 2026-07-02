@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { FileText } from "lucide-react"
+import { looksLikeHtml } from "@/lib/utils"
 import { ResumeProfileDialog } from "./resume-profile-dialog"
 import { ResumeTalentsSection } from "./resume-talents-section"
 import { ResumeDocumentsSection } from "./resume-documents-section"
@@ -55,7 +56,7 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
             </div>
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Interests & Hobbies</p>
-              <p className="text-sm whitespace-pre-wrap">{profile?.interests_hobbies || "—"}</p>
+              <RichOrPlain value={profile?.interests_hobbies} />
             </div>
           </div>
         </div>
@@ -83,9 +84,20 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
         {/* Section D — Parents Input */}
         <div className="space-y-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">D — Parents Input</p>
-          <p className="text-sm whitespace-pre-wrap">{profile?.parents_input || "—"}</p>
+          <RichOrPlain value={profile?.parents_input} />
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+/** Render sanitized rich HTML, falling back to plain text for legacy values. */
+function RichOrPlain({ value }: { value: string | null | undefined }) {
+  if (!value) return <p className="text-sm text-muted-foreground">—</p>
+  return looksLikeHtml(value) ? (
+    // Sanitized on save in upsertStudentResumeProfile, safe to render
+    <div className="rich-content" dangerouslySetInnerHTML={{ __html: value }} />
+  ) : (
+    <p className="text-sm whitespace-pre-wrap">{value}</p>
   )
 }

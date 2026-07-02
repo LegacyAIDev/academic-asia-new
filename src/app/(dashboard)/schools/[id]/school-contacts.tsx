@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
 import { Contact, Mail, Phone as PhoneIcon } from "lucide-react"
 import { SchoolContactDialog, EditSchoolContactButton, DeleteSchoolContactButton } from "./contact-dialog"
 import type { SchoolContactWithJoins } from "@/lib/supabase/queries/school-contacts"
@@ -114,10 +115,13 @@ export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSect
                     </TableCell>
                     <TableCell>
                       {item.email_1 ? (
-                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <a
+                          href={`mailto:${item.email_1}`}
+                          className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                        >
                           <Mail className="h-3 w-3 shrink-0" />
                           <span className="truncate max-w-[180px]">{item.email_1}</span>
-                        </div>
+                        </a>
                       ) : (
                         <span className="text-sm text-muted-foreground">—</span>
                       )}
@@ -134,6 +138,19 @@ export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSect
                     </TableCell>
                     <TableCell className="pr-6">
                       <div className="flex items-center justify-end gap-1">
+                        {item.email_1 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10"
+                            title={`Send email to ${item.email_1}`}
+                            asChild
+                          >
+                            <a href={`mailto:${item.email_1}`}>
+                              <Mail className="h-3.5 w-3.5" />
+                            </a>
+                          </Button>
+                        )}
                         <EditSchoolContactButton
                           contact={item}
                           schoolId={schoolId}
