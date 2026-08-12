@@ -11,6 +11,24 @@ type ActionResult<T = void> = {
   error?: string
 }
 
+/**
+ * Staff profile writes go through the service role client.
+ *
+ * The `profiles` RLS policy only allows a user to update their own row
+ * (auth.uid() = id), so a session client editing a colleague matches zero rows
+ * and PostgREST reports no error — the UI would show "saved" while nothing
+ * changed. Service role bypasses RLS so department/admin_level edits persist.
+ *
+ * This means the action itself is the only gate: it verifies the caller is
+ * signed in. Per-level authorisation (who may edit whom) is not implemented yet.
+ */
+async function getSignedInUserId(): Promise<string | null> {
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+  const { data: { user } } = await supabase.auth.getUser()
+  return user?.id ?? null
+}
+
 export type StaffInput = {
   first_name: string
   surname: string
@@ -34,6 +52,10 @@ export type StaffInput = {
 export async function createStaff(input: StaffInput): Promise<ActionResult<{ id: string }>> {
   try {
     const { password, ...profileData } = input
+
+    if (!(await getSignedInUserId())) {
+      return { success: false, error: 'You must be signed in to create staff.' }
+    }
 
     if (!profileData.email_1) {
       return { success: false, error: 'Email is required to create a staff account.' }
@@ -59,17 +81,20 @@ export async function createStaff(input: StaffInput): Promise<ActionResult<{ id:
     // Step 2: Update the auto-created profile with staff details
     // The DB trigger creates a bare profile on auth.users insert,
     // so we update it with the full staff data
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error: profileError } = await supabase
+    const { data: created, error: profileError } = await admin
       .from('profiles')
       .update(profileData)
       .eq('id', authUser.user.id)
+      .select('id')
 
     if (profileError) {
       console.error('Error updating staff profile:', profileError)
       return { success: false, error: profileError.message }
+    }
+
+    if (!created?.length) {
+      console.error('Auth user created but no profile row was written:', authUser.user.id)
+      return { success: false, error: 'Account created but profile details could not be saved.' }
     }
 
     revalidatePath('/staff')
@@ -84,29 +109,45 @@ export async function createStaff(input: StaffInput): Promise<ActionResult<{ id:
 export async function updateStaff(id: string, input: Partial<StaffInput>): Promise<ActionResult> {
   try {
     const { password, ...profileData } = input
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
 
-    const { error } = await supabase
+    if (!(await getSignedInUserId())) {
+      return { success: false, error: 'You must be signed in to edit staff.' }
+    }
+
+    const admin = createAdminClient()
+
+    const { data: updated, error } = await admin
       .from('profiles')
       .update({ ...profileData, updated_at: new Date().toISOString() })
       .eq('id', id)
+      .select('id')
 
     if (error) {
       console.error('Error updating staff:', error)
       return { success: false, error: error.message }
     }
 
+    // A zero-row update means the id no longer exists — never report that as saved
+    if (!updated?.length) {
+      return { success: false, error: 'Staff member not found.' }
+    }
+
     // Update auth email if changed
     if (profileData.email_1) {
-      const admin = createAdminClient()
-      await admin.auth.admin.updateUserById(id, { email: profileData.email_1 })
+      const { error: emailError } = await admin.auth.admin.updateUserById(id, { email: profileData.email_1 })
+      if (emailError) {
+        console.error('Error updating staff auth email:', emailError)
+        return { success: false, error: `Profile saved, but login email was not changed: ${emailError.message}` }
+      }
     }
 
     // Update password if provided
     if (password) {
-      const admin = createAdminClient()
-      await admin.auth.admin.updateUserById(id, { password })
+      const { error: passwordError } = await admin.auth.admin.updateUserById(id, { password })
+      if (passwordError) {
+        console.error('Error updating staff password:', passwordError)
+        return { success: false, error: `Profile saved, but password was not changed: ${passwordError.message}` }
+      }
     }
 
     revalidatePath('/staff')
@@ -121,6 +162,10 @@ export async function updateStaff(id: string, input: Partial<StaffInput>): Promi
 /** Delete a staff profile and its auth user */
 export async function deleteStaff(id: string): Promise<ActionResult> {
   try {
+    if (!(await getSignedInUserId())) {
+      return { success: false, error: 'You must be signed in to delete staff.' }
+    }
+
     // Delete auth user first (cascade will handle profile via FK)
     const admin = createAdminClient()
     const { error: authError } = await admin.auth.admin.deleteUser(id)
@@ -130,10 +175,9 @@ export async function deleteStaff(id: string): Promise<ActionResult> {
       // Continue to delete profile even if auth user doesn't exist
     }
 
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase
+    // Usually a no-op because the FK cascade already removed the row;
+    // kept for profiles orphaned from their auth user
+    const { error } = await admin
       .from('profiles')
       .delete()
       .eq('id', id)
