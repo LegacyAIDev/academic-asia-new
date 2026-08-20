@@ -74,6 +74,8 @@ import { SchoolContactsSection } from "./school-contacts"
 import { SchoolVisitsSection } from "./school-visits"
 import { SchoolEventsSection } from "./school-events"
 import { SchoolDocumentsSection } from "./school-documents"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type SchoolDetailPageParams = {
   params: Promise<{ id: string }>
@@ -81,6 +83,9 @@ type SchoolDetailPageParams = {
 }
 
 export default async function SchoolDetailPage({ params, searchParams }: SchoolDetailPageParams) {
+  await requireAccess(MODULES.SCHOOLS)
+  const canWrite = await canAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+
   const { id } = await params
   const { tab = "basic", supPage = "1" } = await searchParams
 
@@ -219,12 +224,14 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button className="gap-2 shadow-sm" asChild>
-            <Link href={`/schools/${id}/edit`}>
-              <Edit className="h-4 w-4" />
-              Edit School
-            </Link>
-          </Button>
+          {canWrite && (
+            <Button className="gap-2 shadow-sm" asChild>
+              <Link href={`/schools/${id}/edit`}>
+                <Edit className="h-4 w-4" />
+                Edit School
+              </Link>
+            </Button>
+          )}
           <DeleteSchoolDialog schoolId={id} schoolName={school.name} />
         </div>
       </div>

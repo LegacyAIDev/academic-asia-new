@@ -16,21 +16,63 @@ import {
 import Link from "next/link"
 import { createStaff, updateStaff, type StaffInput } from "@/lib/supabase/actions/staff"
 import type { StaffListItem } from "@/lib/supabase/queries/staff"
+import { setProfilePermissions } from "@/lib/supabase/actions/permissions"
+import { StaffAccessCard } from "./staff-access-card"
+import type { MatrixModule } from "@/components/permissions/permission-matrix"
+import type { AccessLevel } from "@/lib/permissions/modules"
 
 type StaffFormProps = {
   mode: "create" | "edit"
   staff?: StaffListItem | null
   departments: { id: number; label: string }[]
   adminLevels: { id: number; label: string }[]
+  modules: MatrixModule[]
+  levelDefaults: Record<number, Record<number, AccessLevel>>
+  /** Existing per-module deviations for this staff member, keyed by module id. */
+  initialOverrides?: Record<number, AccessLevel>
+  /** False when the signed-in user may not change another person's access. */
+  canManageAccess: boolean
 }
 
 const inputStyles = "bg-background"
 
 /** Shared form for creating and editing staff profiles */
-export function StaffForm({ mode, staff, departments, adminLevels }: StaffFormProps) {
+export function StaffForm({
+  mode,
+  staff,
+  departments,
+  adminLevels,
+  modules,
+  levelDefaults,
+  initialOverrides = {},
+  canManageAccess,
+}: StaffFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [adminLevel, setAdminLevel] = useState<number | null>(staff?.admin_level ?? null)
+  const [overrides, setOverrides] = useState<Record<number, AccessLevel>>(initialOverrides)
+
+  const inherited = adminLevel === null ? {} : (levelDefaults[adminLevel] ?? {})
+
+  // Setting a row back to what the level grants is not an override — drop it, so
+  // the person keeps inheriting future changes to that level.
+  const handleOverrideChange = (moduleId: number, access: AccessLevel) => {
+    setOverrides(prev => {
+      const next = { ...prev }
+      if (access === (inherited[moduleId] ?? 0)) delete next[moduleId]
+      else next[moduleId] = access
+      return next
+    })
+  }
+
+  const handleOverrideReset = (moduleId: number) => {
+    setOverrides(prev => {
+      const next = { ...prev }
+      delete next[moduleId]
+      return next
+    })
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -52,7 +94,7 @@ export function StaffForm({ mode, staff, departments, adminLevels }: StaffFormPr
       mobile: str("mobile"),
       fax: str("fax"),
       department_id: int("department_id"),
-      admin_level: int("admin_level"),
+      admin_level: adminLevel,
       position: str("position"),
       join_date: str("join_date"),
       yearly_case_count: int("yearly_case_count"),
@@ -76,6 +118,18 @@ export function StaffForm({ mode, staff, departments, adminLevels }: StaffFormPr
       }
 
       const staffId = mode === "create" ? result.data?.id : staff?.id
+
+      // Access rights are saved separately: on create the profile id only exists
+      // once createStaff has returned it.
+      if (staffId && canManageAccess && adminLevel !== 0) {
+        const effective = { ...inherited, ...overrides }
+        const permResult = await setProfilePermissions(staffId, effective)
+        if (!permResult.success) {
+          setError(permResult.error ?? "Staff saved, but access rights were not.")
+          return
+        }
+      }
+
       router.push(staffId ? `/staff/${staffId}` : "/staff")
     })
   }
@@ -200,44 +254,19 @@ export function StaffForm({ mode, staff, departments, adminLevels }: StaffFormPr
           </CardContent>
         </Card>
 
-        {/* Role & Access */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <Shield className="h-4 w-4 text-muted-foreground" />
-              Role & Access Level
-            </CardTitle>
-            <CardDescription>Department role and system permissions</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Role</Label>
-              <Select name="department_id" defaultValue={staff?.department_id?.toString() ?? ""}>
-                <SelectTrigger className={inputStyles}>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {departments.map(d => (
-                    <SelectItem key={d.id} value={d.id.toString()}>{d.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Access Level</Label>
-              <Select name="admin_level" defaultValue={staff?.admin_level?.toString() ?? ""}>
-                <SelectTrigger className={inputStyles}>
-                  <SelectValue placeholder="Select access level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {adminLevels.map(l => (
-                    <SelectItem key={l.id} value={l.id.toString()}>{l.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
+        <StaffAccessCard
+          departments={departments}
+          adminLevels={adminLevels}
+          modules={modules}
+          levelDefaults={levelDefaults}
+          defaultDepartmentId={staff?.department_id}
+          adminLevel={adminLevel}
+          onAdminLevelChange={setAdminLevel}
+          overrides={overrides}
+          onOverrideChange={handleOverrideChange}
+          onOverrideReset={handleOverrideReset}
+          canManageAccess={canManageAccess}
+        />
 
         {/* Caseload */}
         <Card className="border-0 shadow-sm">

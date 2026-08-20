@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -92,6 +94,9 @@ async function hasStudentOverlap(
 
 /** Assign a student to a time slot */
 export async function assignStudentToSlot(input: AssignSlotInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const validationError = validateSlotInput(input.schedule_date, input.start_time, input.end_time)
     if (validationError) return { success: false, error: validationError }
@@ -153,6 +158,9 @@ export async function createBlocker(input: {
   end_time: string
   remarks?: string | null
 }): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const validationError = validateSlotInput(input.schedule_date, input.start_time, input.end_time)
     if (validationError) return { success: false, error: validationError }
@@ -197,6 +205,9 @@ export async function createBlocker(input: {
 
 /** Remove a schedule entry (student assignment or blocker) */
 export async function removeStudentFromSlot(scheduleId: string, eventId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -222,6 +233,9 @@ export async function removeStudentFromSlot(scheduleId: string, eventId: string)
 
 /** Move a student to a different time slot or representative */
 export async function moveStudentSlot(scheduleId: string, eventId: string, input: MoveSlotInput): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const validationError = validateSlotInput(input.schedule_date, input.start_time, input.end_time)
     if (validationError) return { success: false, error: validationError }

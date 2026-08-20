@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import type { StudentInsert, StudentUpdate } from '@/types/database.types'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 export type CreateStudentInput = {
   surname: string
@@ -47,6 +49,9 @@ export type ActionResult<T = void> = {
  * Create a new student with auto-generated student code
  */
 export async function createStudent(input: CreateStudentInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -95,6 +100,9 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
  * Update an existing student by ID
  */
 export async function updateStudent(id: string, input: Partial<CreateStudentInput>): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -124,6 +132,9 @@ export async function updateStudent(id: string, input: Partial<CreateStudentInpu
  * Delete a student and their associated contacts
  */
 export async function deleteStudent(id: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -184,6 +195,9 @@ export type CreateContactInput = {
  * Create a new contact for a student
  */
 export async function createStudentContact(input: CreateContactInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -215,6 +229,9 @@ export async function updateStudentContact(
   studentId: string,
   input: Partial<Omit<CreateContactInput, 'student_id'>>
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -241,6 +258,9 @@ export async function updateStudentContact(
  * Delete a contact
  */
 export async function deleteStudentContact(contactId: string, studentId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

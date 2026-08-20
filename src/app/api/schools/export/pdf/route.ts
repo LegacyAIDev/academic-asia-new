@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/supabase/auth'
+import { canAccess } from '@/lib/permissions/guard'
+import { MODULES } from '@/lib/permissions/modules'
 import { getSchoolExportData } from '@/lib/supabase/queries/school-export'
 import { AGENCY_CONTACT } from '@/lib/schools/agency-contact'
 import { buildExportHtml, exportFilename, type ExportLayout } from '@/lib/schools/build-export-html'
@@ -27,6 +29,10 @@ export async function POST(request: NextRequest) {
   const user = await getCurrentUser()
   if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+  }
+
+  if (!(await canAccess(MODULES.SCHOOLS))) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   let body: { ids?: unknown; layout?: unknown; student?: unknown }

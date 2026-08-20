@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -25,6 +27,9 @@ export type UpsertInternalNotesInput = {
 export async function upsertStudentInternalNotes(
   input: UpsertInternalNotesInput
 ): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

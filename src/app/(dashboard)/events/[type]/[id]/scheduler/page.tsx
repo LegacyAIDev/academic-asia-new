@@ -6,12 +6,16 @@ import {
 import { URL_TO_TYPE_CODE, EVENT_TYPE_LABELS } from '@/lib/supabase/queries/events'
 import { getSchedulerData } from '@/lib/supabase/queries/event-scheduler'
 import { EventScheduler } from './event-scheduler'
+import { requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type SchedulerPageParams = {
   params: Promise<{ type: string; id: string }>
 }
 
 export default async function SchedulerPage({ params }: SchedulerPageParams) {
+  await requireAccess(MODULES.EVENTS, ACCESS.WRITE)
+
   const { type, id } = await params
 
   const typeCode = URL_TO_TYPE_CODE[type]

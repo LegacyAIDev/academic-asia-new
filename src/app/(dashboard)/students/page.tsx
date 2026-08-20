@@ -37,6 +37,8 @@ import {
 import { getStudentsList, type StudentListItem } from "@/lib/supabase/queries/students"
 import { StudentsFilters } from "./students-filters"
 import { Skeleton } from "@/components/ui/skeleton"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 // Status badge styling based on status code
 const statusStyles: Record<string, string> = {
@@ -78,6 +80,9 @@ export default async function StudentsPage({
 }: {
   searchParams: SearchParams
 }) {
+  await requireAccess(MODULES.STUDENTS)
+  const canWrite = await canAccess(MODULES.STUDENTS, ACCESS.WRITE)
+
   const params = await searchParams
   const page = parseInt(params.page ?? "1", 10)
   const search = params.search ?? ""
@@ -132,12 +137,14 @@ export default async function StudentsPage({
             Manage student profiles, track applications, and monitor placement progress
           </p>
         </div>
-        <Button className="gap-2 shadow-sm" asChild>
-          <Link href="/students/new">
-            <Plus className="h-4 w-4" />
-            Add Student
-          </Link>
-        </Button>
+        {canWrite && (
+          <Button className="gap-2 shadow-sm" asChild>
+            <Link href="/students/new">
+              <Plus className="h-4 w-4" />
+              Add Student
+            </Link>
+          </Button>
+        )}
       </div>
 
       {/* Quick Stats */}

@@ -4,6 +4,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { ACCESS, type PermissionMap } from "@/lib/permissions/modules"
+import { moduleForPath } from "@/lib/permissions/route-map"
 import {
   Users,
   School,
@@ -69,8 +71,19 @@ const navigation: NavItem[] = [
   { name: "Settings", href: "/settings", icon: Settings },
 ]
 
-export function Sidebar() {
+type SidebarProps = {
+  /** Resolved server-side in the dashboard layout. */
+  permissions: PermissionMap
+}
+
+export function Sidebar({ permissions }: SidebarProps) {
   const pathname = usePathname()
+
+  // Hide whole modules the user cannot read. Event sub-items all belong to the
+  // events module, so that group hides or shows as a unit.
+  const visibleNavigation = navigation.filter(
+    item => (permissions[moduleForPath(item.href)] ?? ACCESS.NONE) >= ACCESS.READ,
+  )
   const [expandedItems, setExpandedItems] = useState<string[]>(["Events"])
 
   const toggleExpanded = (name: string) => {
@@ -105,7 +118,7 @@ export function Sidebar() {
         {/* Navigation */}
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-1">
-            {navigation.map((item) => {
+            {visibleNavigation.map((item) => {
               const hasChildren = item.children && item.children.length > 0
               const isExpanded = expandedItems.includes(item.name)
               const itemIsActive = isActive(item.href) || isChildActive(item.children)

@@ -12,10 +12,14 @@ import {
 import { ArrowLeft } from "lucide-react"
 import { getStudentById, getReferenceData } from "@/lib/supabase/queries/students"
 import { StudentForm } from "../../student-form"
+import { requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type EditStudentPageParams = { params: Promise<{ id: string }> }
 
 export default async function EditStudentPage({ params }: EditStudentPageParams) {
+  await requireAccess(MODULES.STUDENTS, ACCESS.WRITE)
+
   const { id } = await params
 
   const [student, referenceData] = await Promise.all([

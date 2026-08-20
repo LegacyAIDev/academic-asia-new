@@ -5,6 +5,8 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { buildDocumentPath } from '@/lib/supabase/storage-paths'
 import { getCategoryCode, getCategoryId } from '@/lib/supabase/document-categories'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
@@ -34,6 +36,9 @@ export async function uploadStudentDocuments(
   items: BatchDocumentItem[],
   formData: FormData
 ): Promise<ActionResult<BatchUploadResult>> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -103,6 +108,9 @@ export async function renameStudentDocument(
   studentId: string,
   title: string
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -126,6 +134,9 @@ export async function uploadStudentDocument(
   input: UploadDocumentInput,
   formData: FormData
 ): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -189,6 +200,9 @@ export async function uploadStudentDocument(
 
 /** Delete a document record and its file from storage */
 export async function deleteStudentDocument(documentId: string, studentId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -222,6 +236,9 @@ export async function deleteStudentDocument(documentId: string, studentId: strin
 
 /** Get a signed URL for downloading a document */
 export async function getDocumentSignedUrl(filePath: string): Promise<ActionResult<{ url: string }>> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.READ)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

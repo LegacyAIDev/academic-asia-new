@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
@@ -27,6 +29,9 @@ export type CreateExamBlockInput = {
 export async function addExamBlock(
   input: CreateExamBlockInput
 ): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -52,6 +57,9 @@ export async function updateExamBlock(
   id: string,
   input: Partial<Omit<CreateExamBlockInput, 'event_id'>>
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -73,6 +81,9 @@ export async function updateExamBlock(
 
 /** Remove an exam block from an event */
 export async function removeExamBlock(id: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -94,6 +105,11 @@ export async function removeExamBlock(id: string): Promise<ActionResult> {
 
 /** Fetch exam blocks for an event */
 export async function getEventExamBlocks(eventId: string) {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.READ)
+  // Denied resolves to an empty list: this returns rows, not an ActionResult,
+  // and the page guard already blocks anyone who should not see them.
+  if (denied) return []
+
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const { data, error } = await supabase

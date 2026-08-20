@@ -13,12 +13,17 @@ import {
   Calendar, User, FileText, Printer,
 } from "lucide-react"
 import { getStaffById } from "@/lib/supabase/queries/staff"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type StaffDetailPageParams = {
   params: Promise<{ id: string }>
 }
 
 export default async function StaffDetailPage({ params }: StaffDetailPageParams) {
+  await requireAccess(MODULES.STAFF)
+  const canWrite = await canAccess(MODULES.STAFF, ACCESS.WRITE)
+
   const { id } = await params
   const staff = await getStaffById(id)
 
@@ -26,10 +31,6 @@ export default async function StaffDetailPage({ params }: StaffDetailPageParams)
 
   const fullName = `${staff.first_name ?? ''} ${staff.surname ?? ''}`.trim()
   const initials = `${(staff.first_name ?? '')[0] ?? ''}${(staff.surname ?? '')[0] ?? ''}`.toUpperCase()
-
-  const adminLabels: Record<number, string> = {
-    1: 'Super Admin', 2: 'Manager', 3: 'Senior Staff', 4: 'Staff', 5: 'Junior Staff', 6: 'Basic',
-  }
 
   const departmentColor: Record<string, string> = {
     Admin: 'bg-violet-50 text-violet-700 border-violet-200',
@@ -86,11 +87,13 @@ export default async function StaffDetailPage({ params }: StaffDetailPageParams)
             </div>
           </div>
         </div>
-        <Button className="gap-2 shadow-sm" asChild>
-          <Link href={`/staff/${id}/edit`}>
-            <Edit className="h-4 w-4" /> Edit Staff
-          </Link>
-        </Button>
+        {canWrite && (
+          <Button className="gap-2 shadow-sm" asChild>
+            <Link href={`/staff/${id}/edit`}>
+              <Edit className="h-4 w-4" /> Edit Staff
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -131,7 +134,7 @@ export default async function StaffDetailPage({ params }: StaffDetailPageParams)
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Access Level</span>
               <span className="text-sm font-medium">
-                {staff.admin_level ? adminLabels[staff.admin_level] ?? `Level ${staff.admin_level}` : '—'}
+                {staff.admin_level_label ?? '—'}
               </span>
             </div>
           </CardContent>

@@ -5,6 +5,8 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { buildDocumentPath } from '@/lib/supabase/storage-paths'
 import { getCategoryCode } from '@/lib/supabase/document-categories'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
@@ -21,6 +23,9 @@ export async function uploadSchoolDocuments(
   items: SchoolBatchItem[],
   formData: FormData
 ): Promise<ActionResult<SchoolBatchResult>> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -81,6 +86,9 @@ export async function renameSchoolDocument(
   schoolId: string,
   title: string
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -99,6 +107,9 @@ export async function renameSchoolDocument(
 
 /** Delete a school document (row + stored file). */
 export async function deleteSchoolDocument(documentId: string, schoolId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -120,6 +131,9 @@ export async function deleteSchoolDocument(documentId: string, schoolId: string)
 
 /** Signed URL for downloading a school document. */
 export async function getSchoolDocumentSignedUrl(filePath: string): Promise<ActionResult<{ url: string }>> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.READ)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

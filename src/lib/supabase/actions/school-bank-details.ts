@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -29,6 +31,9 @@ export type CreateBankDetailInput = {
 export async function createSchoolBankDetail(
   input: CreateBankDetailInput
 ): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -58,6 +63,9 @@ export async function updateSchoolBankDetail(
   schoolId: string,
   input: Partial<Omit<CreateBankDetailInput, 'school_id'>>
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -85,6 +93,9 @@ export async function deleteSchoolBankDetail(
   detailId: string,
   schoolId: string
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

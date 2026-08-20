@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -42,6 +44,11 @@ export type SchoolContactOption = {
 
 /** Fetch contacts for multiple schools (for representative dropdown) */
 export async function getContactsForSchools(schoolIds: string[]): Promise<SchoolContactOption[]> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.READ)
+  // Denied resolves to an empty list: this returns rows, not an ActionResult,
+  // and the page guard already blocks anyone who should not see them.
+  if (denied) return []
+
   if (schoolIds.length === 0) return []
   try {
     const cookieStore = await cookies()
@@ -80,6 +87,9 @@ export async function getContactsForSchools(schoolIds: string[]): Promise<School
 export async function createSchoolContact(
   input: CreateSchoolContactInput
 ): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -109,6 +119,9 @@ export async function updateSchoolContact(
   schoolId: string,
   input: Partial<Omit<CreateSchoolContactInput, 'school_id'>>
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -136,6 +149,9 @@ export async function deleteSchoolContact(
   contactId: string,
   schoolId: string
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

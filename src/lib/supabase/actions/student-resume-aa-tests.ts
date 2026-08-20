@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult = { success: boolean; error?: string }
 
@@ -18,6 +20,9 @@ export type CreateAATestInput = {
 
 /** Book an AA test from the resume section (no application context needed) */
 export async function createAATestBooking(input: CreateAATestInput): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

@@ -11,12 +11,16 @@ import {
 import { getEventFormReferenceData } from "@/lib/supabase/queries/event-reference-queries"
 import { EventForm } from "../../event-form"
 import type { EventData } from "../../event-form-types"
+import { requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type EditEventPageParams = {
   params: Promise<{ type: string; id: string }>
 }
 
 export default async function EditEventPage({ params }: EditEventPageParams) {
+  await requireAccess(MODULES.EVENTS, ACCESS.WRITE)
+
   const { type, id } = await params
   const typeCode = URL_TO_TYPE_CODE[type]
   if (!typeCode) notFound()

@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult = {
   success: boolean
@@ -33,6 +35,9 @@ export async function createIndividualExam(
   input: CreateIndividualExamInput,
   studentId: string
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -60,6 +65,9 @@ export async function updateIndividualExam(
   studentId: string,
   input: Partial<Omit<CreateIndividualExamInput, 'student_id' | 'school_id' | 'application_id' | 'exam_type_id'>>
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -101,6 +109,9 @@ export async function updateExamFields(
     remarks?: string | null
   }
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -139,6 +150,9 @@ export async function deleteIndividualExam(
   examId: string,
   studentId: string
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

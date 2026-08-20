@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { buildDocumentPath } from '@/lib/supabase/storage-paths'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
@@ -22,6 +24,9 @@ const MAX_VIDEO_BYTES = 50 * 1024 * 1024
 
 /** Add a special talent entry with optional video upload */
 export async function createStudentTalent(input: CreateTalentInput, formData?: FormData): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -65,6 +70,9 @@ export async function createStudentTalent(input: CreateTalentInput, formData?: F
 
 /** Delete a special talent entry and its video from storage */
 export async function deleteStudentTalent(talentId: string, studentId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

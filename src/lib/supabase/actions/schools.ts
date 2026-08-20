@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { normaliseCounty } from '@/lib/schools/county'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 export type CreateSchoolInput = {
   name: string
@@ -63,6 +65,9 @@ function withNormalisedCounty<T extends Partial<CreateSchoolInput>>(input: T) {
 }
 
 export async function createSchool(input: CreateSchoolInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -90,6 +95,9 @@ export async function createSchool(input: CreateSchoolInput): Promise<ActionResu
  * Update an existing school by ID
  */
 export async function updateSchool(id: string, input: Partial<CreateSchoolInput>): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -117,6 +125,9 @@ export async function updateSchool(id: string, input: Partial<CreateSchoolInput>
  * Delete a school
  */
 export async function deleteSchool(id: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -156,6 +167,9 @@ export type CreateSupInfoInput = {
  * Create new supplementary info for a school
  */
 export async function createSchoolSupInfo(input: CreateSupInfoInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -187,6 +201,9 @@ export async function updateSchoolSupInfo(
   schoolId: string,
   input: Partial<Omit<CreateSupInfoInput, 'school_id'>>
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -213,6 +230,9 @@ export async function updateSchoolSupInfo(
  * Delete supplementary info
  */
 export async function deleteSchoolSupInfo(id: string, schoolId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

@@ -1,5 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, School, Calendar, TrendingUp } from "lucide-react"
+import { requireAccess } from "@/lib/permissions/guard"
+import { MODULES } from "@/lib/permissions/modules"
 
 const stats = [
   {
@@ -32,7 +34,9 @@ const stats = [
   },
 ]
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await requireAccess(MODULES.DASHBOARD)
+
   return (
     <div className="space-y-6">
       <div>

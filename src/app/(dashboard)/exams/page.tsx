@@ -2,10 +2,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ClipboardCheck, Clock, CheckCircle2, AlertCircle } from "lucide-react"
 import { getAllExams, getExamStats } from "@/lib/supabase/queries/exam-management"
 import { ExamManagementTable } from "./exam-management-table"
+import { requireAccess } from "@/lib/permissions/guard"
+import { MODULES } from "@/lib/permissions/modules"
 
 type PageParams = { searchParams: Promise<{ status?: string; page?: string }> }
 
 export default async function ExamManagementPage({ searchParams }: PageParams) {
+  await requireAccess(MODULES.EXAMS)
+
   const { status, page: pageStr } = await searchParams
   const statusId = status ? parseInt(status, 10) : undefined
   const page = pageStr ? parseInt(pageStr, 10) : 1

@@ -13,6 +13,8 @@ import {
 } from "lucide-react"
 import { getStaffList, getDepartments } from "@/lib/supabase/queries/staff"
 import { StaffFilters } from "./staff-filters"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type SearchParams = Promise<{
   search?: string
@@ -20,6 +22,9 @@ type SearchParams = Promise<{
 }>
 
 export default async function StaffPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAccess(MODULES.STAFF)
+  const canWrite = await canAccess(MODULES.STAFF, ACCESS.WRITE)
+
   const params = await searchParams
   const departmentId = params.department ? parseInt(params.department, 10) : undefined
 
@@ -32,17 +37,15 @@ export default async function StaffPage({ searchParams }: { searchParams: Search
     return `${(first ?? '')[0] ?? ''}${(last ?? '')[0] ?? ''}`.toUpperCase() || '?'
   }
 
-  const adminLevelLabel = (level: number | null) => {
-    if (!level) return null
-    const labels: Record<number, string> = { 1: 'Super Admin', 2: 'Admin', 3: 'Staff', 4: 'Read Only' }
-    return labels[level] ?? `Level ${level}`
-  }
-
+  // Labels come from admin_levels via the query — the level number alone is not
+  // a display value, and level 0 (Super Admin) is falsy, which used to blank it out.
   const adminLevelStyle: Record<string, string> = {
     'Super Admin': 'bg-rose-50 text-rose-700 border-rose-200',
-    'Admin': 'bg-amber-50 text-amber-700 border-amber-200',
+    'Manager': 'bg-amber-50 text-amber-700 border-amber-200',
+    'Senior Staff': 'bg-sky-50 text-sky-700 border-sky-200',
     'Staff': 'bg-slate-50 text-slate-600 border-slate-200',
-    'Read Only': 'bg-zinc-50 text-zinc-500 border-zinc-200',
+    'Junior Staff': 'bg-slate-50 text-slate-600 border-slate-200',
+    'Basic': 'bg-zinc-50 text-zinc-500 border-zinc-200',
   }
 
   const departmentColor: Record<string, string> = {
@@ -61,11 +64,13 @@ export default async function StaffPage({ searchParams }: { searchParams: Search
             Manage team members, roles, and department assignments
           </p>
         </div>
-        <Button className="gap-2 shadow-sm" asChild>
-          <Link href="/staff/new">
-            <Plus className="h-4 w-4" /> New Staff
-          </Link>
-        </Button>
+        {canWrite && (
+          <Button className="gap-2 shadow-sm" asChild>
+            <Link href="/staff/new">
+              <Plus className="h-4 w-4" /> New Staff
+            </Link>
+          </Button>
+        )}
       </div>
 
       {/* Stats */}
@@ -202,9 +207,9 @@ export default async function StaffPage({ searchParams }: { searchParams: Search
                         </span>
                       </TableCell>
                       <TableCell className="pr-6">
-                        {adminLevelLabel(member.admin_level) ? (
-                          <Badge variant="outline" className={`text-xs ${adminLevelStyle[adminLevelLabel(member.admin_level)!] ?? ''}`}>
-                            {adminLevelLabel(member.admin_level)}
+                        {member.admin_level_label ? (
+                          <Badge variant="outline" className={`text-xs ${adminLevelStyle[member.admin_level_label] ?? ''}`}>
+                            {member.admin_level_label}
                           </Badge>
                         ) : (
                           <span className="text-xs text-muted-foreground">—</span>

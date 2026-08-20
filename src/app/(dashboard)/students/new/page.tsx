@@ -11,8 +11,12 @@ import {
 import { ArrowLeft } from "lucide-react"
 import { getReferenceData } from "@/lib/supabase/queries/students"
 import { StudentForm } from "../student-form"
+import { requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 export default async function NewStudentPage() {
+  await requireAccess(MODULES.STUDENTS, ACCESS.WRITE)
+
   const referenceData = await getReferenceData()
 
   return (

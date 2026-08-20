@@ -8,9 +8,14 @@ export const ADMIN_LEVELS = {
   BASIC: 8,
 } as const
 
-/** Check if user has at least the required access level (lower number = higher access) */
-export function hasMinLevel(userLevel: number | null, requiredLevel: number): boolean {
-  if (!userLevel) return false
+/**
+ * Check if user has at least the required access level (lower number = higher access).
+ *
+ * Tests for null explicitly: Super Admin is level 0, which is falsy, so a
+ * truthiness check here locked out the most privileged accounts.
+ */
+export function hasMinLevel(userLevel: number | null | undefined, requiredLevel: number): boolean {
+  if (userLevel === null || userLevel === undefined) return false
   return userLevel <= requiredLevel
 }
 

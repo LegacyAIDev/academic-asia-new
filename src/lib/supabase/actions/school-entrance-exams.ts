@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -29,6 +31,9 @@ export type CreateSchoolEntranceExamInput = {
 export async function createSchoolEntranceExam(
   input: CreateSchoolEntranceExamInput
 ): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -60,6 +65,9 @@ export async function updateSchoolEntranceExam(
   schoolId: string,
   input: Partial<Omit<CreateSchoolEntranceExamInput, 'school_id'>>
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -89,6 +97,9 @@ export async function deleteSchoolEntranceExam(
   examId: string,
   schoolId: string
 ): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

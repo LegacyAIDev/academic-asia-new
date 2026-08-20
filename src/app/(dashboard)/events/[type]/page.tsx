@@ -45,6 +45,8 @@ import {
 } from "@/lib/supabase/queries/events"
 import { EventsFilters } from "./events-filters"
 import { Skeleton } from "@/components/ui/skeleton"
+import { requireAccess } from "@/lib/permissions/guard"
+import { MODULES } from "@/lib/permissions/modules"
 
 type PageParams = {
   params: Promise<{ type: string }>
@@ -57,6 +59,8 @@ type PageParams = {
 }
 
 export default async function EventsListPage({ params, searchParams }: PageParams) {
+  await requireAccess(MODULES.EVENTS)
+
   const { type } = await params
   const queryParams = await searchParams
 

@@ -42,12 +42,16 @@ import {
   EVENT_TYPE_LABELS,
 } from "@/lib/supabase/queries/events"
 import { DeleteEventDialog } from "./delete-event-dialog"
+import { requireAccess } from "@/lib/permissions/guard"
+import { MODULES } from "@/lib/permissions/modules"
 
 type EventDetailPageParams = {
   params: Promise<{ type: string; id: string }>
 }
 
 export default async function EventDetailPage({ params }: EventDetailPageParams) {
+  await requireAccess(MODULES.EVENTS)
+
   const { type, id } = await params
 
   // Validate event type

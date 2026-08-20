@@ -6,6 +6,8 @@ import { ExportControls } from './export-controls'
 import { LayoutStacked } from './layout-stacked'
 import { LayoutMatrix } from './layout-matrix'
 import { EXPORT_DOCUMENT_CSS } from './export-document-styles'
+import { requireAccess } from "@/lib/permissions/guard"
+import { MODULES } from "@/lib/permissions/modules"
 
 /**
  * The matrix reserves 50mm for the label column inside 269mm of usable landscape
@@ -23,6 +25,8 @@ export default async function SchoolExportPage({
 }: {
   searchParams: SearchParams
 }) {
+  await requireAccess(MODULES.SCHOOLS)
+
   const params = await searchParams
   const ids = (params.ids ?? '').split(',').map((id) => id.trim()).filter(Boolean)
 

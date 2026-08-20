@@ -9,12 +9,16 @@ import { URL_TO_TYPE_CODE, EVENT_TYPE_LABELS } from "@/lib/supabase/queries/even
 import { getEventFormReferenceData } from "@/lib/supabase/queries/event-reference-queries"
 import { getStaffProfiles } from "@/lib/supabase/queries/events"
 import { EventForm } from "../event-form"
+import { requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type NewEventPageParams = {
   params: Promise<{ type: string }>
 }
 
 export default async function NewEventPage({ params }: NewEventPageParams) {
+  await requireAccess(MODULES.EVENTS, ACCESS.WRITE)
+
   const { type } = await params
   const typeCode = URL_TO_TYPE_CODE[type]
   if (!typeCode) notFound()

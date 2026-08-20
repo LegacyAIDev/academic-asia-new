@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { assertAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 export type CreateEventInput = {
   event_type_id: number
@@ -35,6 +37,9 @@ export type ActionResult<T = void> = {
  * Create a new event
  */
 export async function createEvent(input: CreateEventInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -81,6 +86,9 @@ export async function createEvent(input: CreateEventInput): Promise<ActionResult
  * Update an existing event by ID
  */
 export async function updateEvent(id: string, input: Partial<CreateEventInput>): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -111,6 +119,9 @@ export async function updateEvent(id: string, input: Partial<CreateEventInput>):
  * Delete an event by ID
  */
 export async function deleteEvent(id: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -158,6 +169,9 @@ export type CreateEventSchoolInput = {
 }
 
 export async function addEventSchool(input: CreateEventSchoolInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -182,6 +196,9 @@ export async function addEventSchool(input: CreateEventSchoolInput): Promise<Act
 }
 
 export async function removeEventSchool(eventSchoolId: string, eventId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -214,6 +231,9 @@ export type CreateEventRepresentativeInput = {
 }
 
 export async function addEventRepresentative(input: CreateEventRepresentativeInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -238,6 +258,9 @@ export async function addEventRepresentative(input: CreateEventRepresentativeInp
 }
 
 export async function removeEventRepresentative(representativeId: string, eventId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -272,6 +295,9 @@ export type CreateEventScheduleInput = {
 }
 
 export async function addEventSchedule(input: CreateEventScheduleInput): Promise<ActionResult<{ id: string }>> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -296,6 +322,9 @@ export async function addEventSchedule(input: CreateEventScheduleInput): Promise
 }
 
 export async function removeEventSchedule(scheduleId: string, eventId: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
+  if (denied) return denied
+
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)

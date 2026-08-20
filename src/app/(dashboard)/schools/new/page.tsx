@@ -11,8 +11,12 @@ import {
 import { ArrowLeft } from "lucide-react"
 import { getSchoolReferenceData } from "@/lib/supabase/queries/schools"
 import { SchoolForm } from "../school-form"
+import { requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 export default async function NewSchoolPage() {
+  await requireAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+
   const referenceData = await getSchoolReferenceData()
 
   return (

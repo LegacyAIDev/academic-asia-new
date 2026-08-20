@@ -62,6 +62,8 @@ import { StudentInternalNotesSection } from "./student-internal-notes"
 import { StudentLegalDocumentsSection } from "./student-legal-documents"
 import { StudentDocumentsSection } from "./student-documents-section"
 import { DeleteStudentDialog } from "./delete-student-dialog"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 // Status badge styling based on status code
 const statusStyles: Record<string, string> = {
@@ -86,6 +88,9 @@ type StudentDetailPageParams = {
 }
 
 export default async function StudentDetailPage({ params, searchParams }: StudentDetailPageParams) {
+  await requireAccess(MODULES.STUDENTS)
+  const canWrite = await canAccess(MODULES.STUDENTS, ACCESS.WRITE)
+
   const { id } = await params
   const { tab: rawTab } = await searchParams
   // Normalise the tab param, mapping the legacy "profile" value to "overview"
@@ -246,12 +251,14 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button className="gap-2 shadow-sm" asChild>
-            <Link href={`/students/${id}/edit`}>
-              <Edit className="h-4 w-4" />
-              Edit Student
-            </Link>
-          </Button>
+          {canWrite && (
+            <Button className="gap-2 shadow-sm" asChild>
+              <Link href={`/students/${id}/edit`}>
+                <Edit className="h-4 w-4" />
+                Edit Student
+              </Link>
+            </Button>
+          )}
           <DeleteStudentDialog
             studentId={id}
             studentName={`${student.first_name} ${student.surname}`}

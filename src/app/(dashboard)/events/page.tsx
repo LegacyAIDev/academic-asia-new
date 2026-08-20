@@ -13,12 +13,16 @@ import {
   type EventListItem,
 } from "@/lib/supabase/queries/events"
 import { UpcomingEventCard } from "./upcoming-event-card"
+import { requireAccess } from "@/lib/permissions/guard"
+import { MODULES } from "@/lib/permissions/modules"
 
 const TYPE_CODE_TO_URL = Object.fromEntries(
   Object.entries(URL_TO_TYPE_CODE).map(([slug, code]) => [code, slug])
 )
 
 export default async function EventsOverviewPage() {
+  await requireAccess(MODULES.EVENTS)
+
   const today = new Date().toISOString().split("T")[0]
 
   const [upcomingResult, stats] = await Promise.all([

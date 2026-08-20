@@ -41,6 +41,39 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_level_permissions: {
+        Row: {
+          access: number
+          admin_level: number
+          module_id: number
+        }
+        Insert: {
+          access?: number
+          admin_level: number
+          module_id: number
+        }
+        Update: {
+          access?: number
+          admin_level?: number
+          module_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_level_permissions_admin_level_fkey"
+            columns: ["admin_level"]
+            isOneToOne: false
+            referencedRelation: "admin_levels"
+            referencedColumns: ["level"]
+          },
+          {
+            foreignKeyName: "admin_level_permissions_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "permission_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_levels: {
         Row: {
           description: string | null
@@ -1520,6 +1553,27 @@ export type Database = {
         }
         Relationships: []
       }
+      permission_modules: {
+        Row: {
+          id: number
+          key: string
+          label: string
+          sort_order: number | null
+        }
+        Insert: {
+          id?: number
+          key: string
+          label: string
+          sort_order?: number | null
+        }
+        Update: {
+          id?: number
+          key?: string
+          label?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       pickup_providers: {
         Row: {
           code: string
@@ -1588,6 +1642,39 @@ export type Database = {
           sort_order?: number | null
         }
         Relationships: []
+      }
+      profile_permission_overrides: {
+        Row: {
+          access: number
+          module_id: number
+          profile_id: string
+        }
+        Insert: {
+          access: number
+          module_id: number
+          profile_id: string
+        }
+        Update: {
+          access?: number
+          module_id?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_permission_overrides_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "permission_modules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_permission_overrides_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -2691,6 +2778,8 @@ export type Database = {
           county_normalised: string | null
           created_at: string | null
           created_by: string | null
+          current_course_fee: number | null
+          current_course_fee_year: string | null
           email: string | null
           fax: string | null
           gender_type_id: number | null
@@ -2738,6 +2827,8 @@ export type Database = {
           county_normalised?: string | null
           created_at?: string | null
           created_by?: string | null
+          current_course_fee?: number | null
+          current_course_fee_year?: string | null
           email?: string | null
           fax?: string | null
           gender_type_id?: number | null
@@ -2785,6 +2876,8 @@ export type Database = {
           county_normalised?: string | null
           created_at?: string | null
           created_by?: string | null
+          current_course_fee?: number | null
+          current_course_fee_year?: string | null
           email?: string | null
           fax?: string | null
           gender_type_id?: number | null
@@ -5168,6 +5261,17 @@ export type Database = {
     }
     Functions: {
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
+      refresh_school_current_fee: {
+        Args: { target_school_id?: string }
+        Returns: undefined
+      }
+      resolve_permissions: {
+        Args: { p_profile_id: string }
+        Returns: {
+          access: number
+          module_key: string
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

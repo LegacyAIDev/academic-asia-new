@@ -39,6 +39,8 @@ import { SchoolsFilters } from "./schools-filters"
 import { SchoolSelectCheckbox, SchoolSelectAllCheckbox } from "./school-select-checkbox"
 import { SchoolSelectionToolbar } from "./school-selection-toolbar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type SearchParams = Promise<{
   page?: string
@@ -61,6 +63,9 @@ export default async function SchoolsPage({
 }: {
   searchParams: SearchParams
 }) {
+  await requireAccess(MODULES.SCHOOLS)
+  const canWrite = await canAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+
   const params = await searchParams
   const page = parseInt(params.page ?? "1", 10)
   const search = params.search ?? ""
@@ -115,12 +120,14 @@ export default async function SchoolsPage({
             Manage UK and international schools for student placements
           </p>
         </div>
-        <Button className="gap-2 shadow-sm" asChild>
-          <Link href="/schools/new">
-            <Plus className="h-4 w-4" />
-            Add School
-          </Link>
-        </Button>
+        {canWrite && (
+          <Button className="gap-2 shadow-sm" asChild>
+            <Link href="/schools/new">
+              <Plus className="h-4 w-4" />
+              Add School
+            </Link>
+          </Button>
+        )}
       </div>
 
       {/* Quick Stats */}

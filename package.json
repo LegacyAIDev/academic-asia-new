@@ -12,7 +12,8 @@
     "db:push": "supabase db push",
     "db:reset": "supabase db reset --linked",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:permissions": "node scripts/check-permission-coverage.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
