@@ -34,8 +34,10 @@ import {
   CheckCircle,
   ExternalLink,
 } from "lucide-react"
-import { getSchoolsList, type SchoolListItem } from "@/lib/supabase/queries/schools"
+import { getSchoolsList, getSchoolFilterOptions, type SchoolListItem } from "@/lib/supabase/queries/schools"
 import { SchoolsFilters } from "./schools-filters"
+import { SchoolSelectCheckbox, SchoolSelectAllCheckbox } from "./school-select-checkbox"
+import { SchoolSelectionToolbar } from "./school-selection-toolbar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 type SearchParams = Promise<{
@@ -44,6 +46,14 @@ type SearchParams = Promise<{
   country?: string
   gender?: string
   phase?: string
+  county?: string
+  religion?: string
+  institution?: string
+  minPupils?: string
+  minBoarders?: string
+  maxFee?: string
+  sort?: string
+  dir?: string
 }>
 
 export default async function SchoolsPage({
@@ -58,14 +68,34 @@ export default async function SchoolsPage({
   const genderTypeId = params.gender ? parseInt(params.gender, 10) : undefined
   const phaseId = params.phase ? parseInt(params.phase, 10) : undefined
 
-  const { schools, totalCount, totalPages } = await getSchoolsList({
-    page,
-    pageSize: 50,
-    search,
-    countryId,
-    genderTypeId,
-    phaseId,
-  })
+  // Numeric filters come from a user-editable URL: reject anything non-numeric
+  // and clamp to a sane range rather than passing it through to the query.
+  const positiveInt = (raw: string | undefined, max: number) => {
+    if (!raw) return undefined
+    const value = Number(raw)
+    if (!Number.isFinite(value) || value < 0) return undefined
+    return Math.min(Math.floor(value), max)
+  }
+
+  const [{ schools, totalCount, totalPages }, filterOptions] = await Promise.all([
+    getSchoolsList({
+      page,
+      pageSize: 50,
+      search,
+      countryId,
+      genderTypeId,
+      phaseId,
+      county: params.county ?? undefined,
+      religiousAffiliationId: params.religion ? parseInt(params.religion, 10) : undefined,
+      institutionTypeId: params.institution ? parseInt(params.institution, 10) : undefined,
+      minPupils: positiveInt(params.minPupils, 100_000),
+      minBoarders: positiveInt(params.minBoarders, 100_000),
+      maxFee: positiveInt(params.maxFee, 1_000_000),
+      sortBy: params.sort,
+      sortOrder: params.dir === 'desc' ? 'desc' : 'asc',
+    }),
+    getSchoolFilterOptions(),
+  ])
 
   // Calculate stats
   const stats = [
@@ -116,7 +146,7 @@ export default async function SchoolsPage({
       <Card className="border-0 shadow-sm">
         <CardHeader className="border-b bg-muted/30 px-6 py-4">
           <Suspense fallback={<Skeleton className="h-9 w-full max-w-md" />}>
-            <SchoolsFilters />
+            <SchoolsFilters options={filterOptions} />
           </Suspense>
         </CardHeader>
 
@@ -125,10 +155,16 @@ export default async function SchoolsPage({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b bg-muted/20">
-                <TableHead className="font-medium pl-6">School</TableHead>
+                <TableHead className="w-10 pl-6">
+                  <SchoolSelectAllCheckbox
+                    pageSchools={schools.map((s) => ({ id: s.id, name: s.name }))}
+                  />
+                </TableHead>
+                <TableHead className="font-medium">School</TableHead>
                 <TableHead className="font-medium">Location</TableHead>
                 <TableHead className="font-medium">Type</TableHead>
                 <TableHead className="font-medium">Students</TableHead>
+                <TableHead className="font-medium">Latest fee</TableHead>
                 <TableHead className="font-medium">Status</TableHead>
                 <TableHead className="w-12 pr-6"></TableHead>
               </TableRow>
@@ -136,7 +172,7 @@ export default async function SchoolsPage({
             <TableBody>
               {schools.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
                     No schools found. Try adjusting your filters.
                   </TableCell>
                 </TableRow>
@@ -160,6 +196,8 @@ export default async function SchoolsPage({
               searchParams={params}
             />
           </div>
+
+          <SchoolSelectionToolbar />
         </CardContent>
       </Card>
     </div>
@@ -170,6 +208,9 @@ function SchoolRow({ school }: { school: SchoolListItem }) {
   return (
     <TableRow className="group cursor-pointer">
       <TableCell className="pl-6">
+        <SchoolSelectCheckbox school={{ id: school.id, name: school.name }} />
+      </TableCell>
+      <TableCell>
         <div>
           <Link
             href={`/schools/${school.id}`}
@@ -221,6 +262,20 @@ function SchoolRow({ school }: { school: SchoolListItem }) {
             <p className="text-xs text-muted-foreground">{school.boarder_count.toLocaleString()} boarders</p>
           )}
         </div>
+      </TableCell>
+      <TableCell>
+        {school.current_course_fee !== null ? (
+          <div className="text-sm">
+            <p className="text-foreground">
+              £{Number(school.current_course_fee).toLocaleString('en-GB', { maximumFractionDigits: 0 })}
+            </p>
+            {/* The fee year varies by school, so showing it stops an old figure
+                being read as current when filtering on fee. */}
+            <p className="text-xs text-muted-foreground">{school.current_course_fee_year ?? '—'}</p>
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
+        )}
       </TableCell>
       <TableCell>
         {school.accepts_applications ? (

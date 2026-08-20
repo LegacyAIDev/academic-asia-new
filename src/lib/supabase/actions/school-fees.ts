@@ -23,6 +23,27 @@ export type CreateSchoolFeeInput = {
 /**
  * Create a new fee entry for a school
  */
+/**
+ * Recompute schools.current_course_fee after any fee change.
+ *
+ * The schools list filters on that cached figure, so leaving it stale would show
+ * a school under "fee <= X" using a fee it no longer charges. The rule itself
+ * lives in SQL (migration 078) so it cannot drift from the export's own
+ * resolveCurrentFee().
+ *
+ * A failure here must not fail the fee write — the cache is recoverable by
+ * rerunning scripts/42_backfill-school-current-fee.ts.
+ */
+async function refreshCurrentFee(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  schoolId: string
+) {
+  const { error } = await supabase.rpc('refresh_school_current_fee', {
+    target_school_id: schoolId,
+  } as never)
+  if (error) console.error('Could not refresh cached current fee:', error.message)
+}
+
 export async function createSchoolFee(
   input: CreateSchoolFeeInput
 ): Promise<ActionResult<{ id: string }>> {
@@ -41,6 +62,8 @@ export async function createSchoolFee(
       return { success: false, error: error.message }
     }
 
+    await refreshCurrentFee(supabase, input.school_id)
+    revalidatePath('/schools')
     revalidatePath(`/schools/${input.school_id}`)
     return { success: true, data: { id: (data as { id: string }).id } }
   } catch (err) {
@@ -71,6 +94,8 @@ export async function updateSchoolFee(
       return { success: false, error: error.message }
     }
 
+    await refreshCurrentFee(supabase, schoolId)
+    revalidatePath('/schools')
     revalidatePath(`/schools/${schoolId}`)
     return { success: true }
   } catch (err) {
@@ -100,6 +125,8 @@ export async function deleteSchoolFee(
       return { success: false, error: error.message }
     }
 
+    await refreshCurrentFee(supabase, schoolId)
+    revalidatePath('/schools')
     revalidatePath(`/schools/${schoolId}`)
     return { success: true }
   } catch (err) {

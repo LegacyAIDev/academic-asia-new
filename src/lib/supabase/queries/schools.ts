@@ -8,6 +8,14 @@ export type SchoolsListParams = {
   countryId?: number | null
   genderTypeId?: number | null
   phaseId?: number | null
+  /** Cleaned county value — see scripts/40_normalise-school-county.ts. */
+  county?: string | null
+  religiousAffiliationId?: number | null
+  institutionTypeId?: number | null
+  minPupils?: number | null
+  minBoarders?: number | null
+  /** Compares the latest recorded course fee, which is not the same year for every school. */
+  maxFee?: number | null
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
 }
@@ -25,6 +33,8 @@ export type SchoolListItem = {
   boarder_count: number | null
   status: string | null
   accepts_applications: boolean | null
+  current_course_fee: number | null
+  current_course_fee_year: string | null
   country: { id: number; code: string; label: string } | null
   gender_type: { id: number; code: string; label: string } | null
   institution_type: { id: number; code: string; label: string } | null
@@ -50,6 +60,12 @@ export async function getSchoolsList(params: SchoolsListParams = {}): Promise<Sc
     countryId,
     genderTypeId,
     phaseId,
+    county,
+    religiousAffiliationId,
+    institutionTypeId,
+    minPupils,
+    minBoarders,
+    maxFee,
     sortBy = 'name',
     sortOrder = 'asc'
   } = params
@@ -73,6 +89,8 @@ export async function getSchoolsList(params: SchoolsListParams = {}): Promise<Sc
       boarder_count,
       status,
       accepts_applications,
+      current_course_fee,
+      current_course_fee_year,
       country:countries!schools_country_id_fkey(id, code, label),
       gender_type:school_gender_types!schools_gender_type_id_fkey(id, code, label),
       institution_type:school_institution_types!schools_institution_type_id_fkey(id, code, label),
@@ -99,8 +117,36 @@ export async function getSchoolsList(params: SchoolsListParams = {}): Promise<Sc
     query = query.eq('phase_id', phaseId)
   }
 
+  if (county) {
+    query = query.eq('county_normalised', county)
+  }
+
+  if (religiousAffiliationId !== undefined && religiousAffiliationId !== null) {
+    query = query.eq('religious_affiliation_id', religiousAffiliationId)
+  }
+
+  if (institutionTypeId !== undefined && institutionTypeId !== null) {
+    query = query.eq('institution_type_id', institutionTypeId)
+  }
+
+  if (minPupils !== undefined && minPupils !== null) {
+    query = query.gte('pupil_count', minPupils)
+  }
+
+  if (minBoarders !== undefined && minBoarders !== null) {
+    query = query.gte('boarder_count', minBoarders)
+  }
+
+  // Filters on the denormalised current fee (migration 078). Schools with no
+  // recorded course fee are excluded rather than treated as free.
+  if (maxFee !== undefined && maxFee !== null) {
+    query = query.lte('current_course_fee', maxFee)
+  }
+
   // Apply sorting
-  const validSortColumns = ['name', 'city', 'county', 'pupil_count', 'created_at']
+  const validSortColumns = [
+    'name', 'city', 'county', 'pupil_count', 'boarder_count', 'current_course_fee', 'created_at',
+  ]
   const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'name'
   query = query.order(sortColumn, { ascending: sortOrder === 'asc' })
 
@@ -145,6 +191,11 @@ export type SchoolWithJoins = {
   boarder_count: number | null
   boarder_age_min: number | null
   boarder_age_max: number | null
+  school_age_min: number | null
+  school_age_max: number | null
+  offers_a_level: boolean | null
+  offers_ib: boolean | null
+  county_normalised: string | null
   child_visa_age: number | null
   accepts_child_visa: boolean | null
   accepts_general_visa: boolean | null
@@ -247,5 +298,72 @@ export async function getSchoolReferenceData() {
     phases: phases.data ?? [],
     religiousAffiliations: religiousAffiliations.data ?? [],
     coedFromOptions: coedFromOptions.data ?? []
+  }
+}
+
+export type SchoolFilterOptions = {
+  countries: { id: number; label: string }[]
+  genderTypes: { id: number; label: string }[]
+  phases: { id: number; label: string }[]
+  institutionTypes: { id: number; label: string }[]
+  religiousAffiliations: { id: number; label: string }[]
+  counties: string[]
+}
+
+/**
+ * Options for the schools list filters.
+ *
+ * Read from the reference tables rather than hardcoded in the client — the
+ * previous filter listed country ids 1-4 as England/Scotland/Wales/N.Ireland,
+ * which did not match the seeded `countries` table and silently returned the
+ * wrong schools.
+ *
+ * Counties come from the cleaned column, so placeholders like "N/A" and nations
+ * like "Scotland" never appear as if they were counties.
+ */
+export async function getSchoolFilterOptions(): Promise<SchoolFilterOptions> {
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+
+  const [countries, genderTypes, phases, institutionTypes, religiousAffiliations, counties] =
+    await Promise.all([
+      supabase.from('schools').select('country_id').not('country_id', 'is', null),
+      supabase.from('school_gender_types').select('id, label').order('sort_order'),
+      supabase.from('school_phases').select('id, label').order('sort_order'),
+      supabase.from('school_institution_types').select('id, label').order('sort_order'),
+      supabase.from('school_religious_affiliations').select('id, label').order('sort_order'),
+      supabase
+        .from('schools')
+        .select('county_normalised')
+        .not('county_normalised', 'is', null)
+        .order('county_normalised'),
+    ])
+
+  const rows = <T,>(res: { data: T[] | null }) => res.data ?? []
+
+  // Only offer countries that some school actually uses. The reference table
+  // carries England, Scotland and Northern Ireland, but every UK school is
+  // filed under "UK" (or its duplicate "United Kingdom"), so offering the
+  // nations would give options that always return nothing.
+  const usedCountryIds = new Set(
+    (rows(countries) as { country_id: number }[]).map((r) => r.country_id)
+  )
+  const countryLabels = await supabase
+    .from('countries')
+    .select('id, label')
+    .in('id', [...usedCountryIds])
+    .order('label')
+
+  return {
+    countries: rows(countryLabels) as { id: number; label: string }[],
+    genderTypes: rows(genderTypes) as { id: number; label: string }[],
+    phases: rows(phases) as { id: number; label: string }[],
+    institutionTypes: rows(institutionTypes) as { id: number; label: string }[],
+    religiousAffiliations: rows(religiousAffiliations) as { id: number; label: string }[],
+    counties: [
+      ...new Set(
+        (rows(counties) as { county_normalised: string }[]).map((r) => r.county_normalised)
+      ),
+    ].sort(),
   }
 }
