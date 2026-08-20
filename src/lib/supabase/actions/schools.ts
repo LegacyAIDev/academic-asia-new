@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { normaliseCounty } from '@/lib/schools/county'
 
 export type CreateSchoolInput = {
   name: string
@@ -26,6 +27,10 @@ export type CreateSchoolInput = {
   boarder_count?: number | null
   boarder_age_min?: number | null
   boarder_age_max?: number | null
+  school_age_min?: number | null
+  school_age_max?: number | null
+  offers_a_level?: boolean | null
+  offers_ib?: boolean | null
   child_visa_age?: number | null
   accepts_child_visa?: boolean | null
   accepts_general_visa?: boolean | null
@@ -44,6 +49,19 @@ export type ActionResult<T = void> = {
 /**
  * Create a new school
  */
+/**
+ * Keep county_normalised in step with whatever county was typed, so a school
+ * saved today appears in the list filter without waiting for someone to rerun
+ * scripts/40_normalise-school-county.ts.
+ *
+ * Only applied when `county` is part of the write — a partial update that does
+ * not touch county must not clear the normalised value.
+ */
+function withNormalisedCounty<T extends Partial<CreateSchoolInput>>(input: T) {
+  if (!('county' in input)) return input
+  return { ...input, county_normalised: normaliseCounty(input.county ?? null) }
+}
+
 export async function createSchool(input: CreateSchoolInput): Promise<ActionResult<{ id: string }>> {
   try {
     const cookieStore = await cookies()
@@ -51,7 +69,7 @@ export async function createSchool(input: CreateSchoolInput): Promise<ActionResu
 
     const { data, error } = await supabase
       .from('schools')
-      .insert(input as never)
+      .insert(withNormalisedCounty(input) as never)
       .select('id')
       .single()
 
@@ -78,7 +96,7 @@ export async function updateSchool(id: string, input: Partial<CreateSchoolInput>
 
     const { error } = await supabase
       .from('schools')
-      .update(input as never)
+      .update(withNormalisedCounty(input) as never)
       .eq('id', id)
 
     if (error) {

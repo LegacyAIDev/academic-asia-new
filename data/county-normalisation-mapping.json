@@ -1,0 +1,435 @@
+{
+  "droppedToNull": [
+    {
+      "raw": "UK",
+      "schools": 5
+    },
+    {
+      "raw": "Scotland",
+      "schools": 16
+    },
+    {
+      "raw": "-",
+      "schools": 6
+    },
+    {
+      "raw": "Zhejiang",
+      "schools": 1
+    },
+    {
+      "raw": "Macau",
+      "schools": 1
+    },
+    {
+      "raw": "Northern Ireland",
+      "schools": 5
+    },
+    {
+      "raw": "Selangor",
+      "schools": 1
+    },
+    {
+      "raw": "Vienna",
+      "schools": 1
+    },
+    {
+      "raw": "N/A",
+      "schools": 33
+    },
+    {
+      "raw": "Porto",
+      "schools": 1
+    },
+    {
+      "raw": "NA",
+      "schools": 1
+    },
+    {
+      "raw": "Negeri Sembilan Darul Khusus",
+      "schools": 1
+    },
+    {
+      "raw": "B.C.",
+      "schools": 1
+    },
+    {
+      "raw": "Hong Kong",
+      "schools": 1
+    },
+    {
+      "raw": "Ireland",
+      "schools": 1
+    },
+    {
+      "raw": "North Wales",
+      "schools": 2
+    },
+    {
+      "raw": "South Wales",
+      "schools": 1
+    },
+    {
+      "raw": "Belfast",
+      "schools": 1
+    }
+  ],
+  "remapped": [
+    {
+      "raw": "Poole, Dorset",
+      "to": "Dorset",
+      "schools": 1
+    },
+    {
+      "raw": "London",
+      "to": "Greater London",
+      "schools": 46
+    },
+    {
+      "raw": "Bolton",
+      "to": "Greater Manchester",
+      "schools": 1
+    },
+    {
+      "raw": "Hampton",
+      "to": "Greater London",
+      "schools": 3
+    },
+    {
+      "raw": "Guildford",
+      "to": "Surrey",
+      "schools": 1
+    },
+    {
+      "raw": "Hove",
+      "to": "East Sussex",
+      "schools": 1
+    },
+    {
+      "raw": "Birmingham",
+      "to": "West Midlands",
+      "schools": 1
+    },
+    {
+      "raw": "London Area",
+      "to": "Greater London",
+      "schools": 1
+    },
+    {
+      "raw": "Highgate",
+      "to": "Greater London",
+      "schools": 1
+    },
+    {
+      "raw": "London & Greater London",
+      "to": "Greater London",
+      "schools": 24
+    },
+    {
+      "raw": "Cambridge",
+      "to": "Cambridgeshire",
+      "schools": 2
+    },
+    {
+      "raw": "Twickenham",
+      "to": "Greater London",
+      "schools": 1
+    },
+    {
+      "raw": "Manchester",
+      "to": "Greater Manchester",
+      "schools": 1
+    },
+    {
+      "raw": "Greenock",
+      "to": "Inverclyde",
+      "schools": 1
+    },
+    {
+      "raw": "Hull",
+      "to": "East Riding of Yorkshire",
+      "schools": 1
+    },
+    {
+      "raw": "Haywards Heath, UK",
+      "to": "West Sussex",
+      "schools": 1
+    },
+    {
+      "raw": "Durham",
+      "to": "County Durham",
+      "schools": 1
+    },
+    {
+      "raw": "Oxford",
+      "to": "Oxfordshire",
+      "schools": 1
+    },
+    {
+      "raw": "Yorkshire Area West",
+      "to": "West Yorkshire",
+      "schools": 1
+    },
+    {
+      "raw": "East Yorkshire",
+      "to": "East Riding of Yorkshire",
+      "schools": 1
+    },
+    {
+      "raw": "Conwy, North Wales",
+      "to": "Conwy",
+      "schools": 1
+    },
+    {
+      "raw": "Peterborough",
+      "to": "Cambridgeshire",
+      "schools": 1
+    },
+    {
+      "raw": "Wallington",
+      "to": "Greater London",
+      "schools": 1
+    }
+  ],
+  "unchanged": [
+    {
+      "raw": "Surrey",
+      "schools": 49
+    },
+    {
+      "raw": "Kent",
+      "schools": 36
+    },
+    {
+      "raw": "Berkshire",
+      "schools": 30
+    },
+    {
+      "raw": "Oxfordshire",
+      "schools": 25
+    },
+    {
+      "raw": "Somerset",
+      "schools": 25
+    },
+    {
+      "raw": "West Sussex",
+      "schools": 23
+    },
+    {
+      "raw": "Hertfordshire",
+      "schools": 19
+    },
+    {
+      "raw": "East Sussex",
+      "schools": 18
+    },
+    {
+      "raw": "Dorset",
+      "schools": 17
+    },
+    {
+      "raw": "Hampshire",
+      "schools": 17
+    },
+    {
+      "raw": "Devon",
+      "schools": 15
+    },
+    {
+      "raw": "North Yorkshire",
+      "schools": 15
+    },
+    {
+      "raw": "Suffolk",
+      "schools": 14
+    },
+    {
+      "raw": "Cambridgeshire",
+      "schools": 13
+    },
+    {
+      "raw": "Gloucestershire",
+      "schools": 12
+    },
+    {
+      "raw": "Bristol",
+      "schools": 11
+    },
+    {
+      "raw": "Shropshire",
+      "schools": 11
+    },
+    {
+      "raw": "Lancashire",
+      "schools": 11
+    },
+    {
+      "raw": "West Midlands",
+      "schools": 11
+    },
+    {
+      "raw": "Worcestershire",
+      "schools": 10
+    },
+    {
+      "raw": "Greater Manchester",
+      "schools": 9
+    },
+    {
+      "raw": "Warwickshire",
+      "schools": 8
+    },
+    {
+      "raw": "Buckinghamshire",
+      "schools": 8
+    },
+    {
+      "raw": "Essex",
+      "schools": 8
+    },
+    {
+      "raw": "Leicestershire",
+      "schools": 8
+    },
+    {
+      "raw": "Lincolnshire",
+      "schools": 8
+    },
+    {
+      "raw": "Wiltshire",
+      "schools": 8
+    },
+    {
+      "raw": "Cumbria",
+      "schools": 7
+    },
+    {
+      "raw": "Bath & NE Somerset",
+      "schools": 7
+    },
+    {
+      "raw": "West Yorkshire",
+      "schools": 6
+    },
+    {
+      "raw": "Nottinghamshire",
+      "schools": 6
+    },
+    {
+      "raw": "Norfolk",
+      "schools": 6
+    },
+    {
+      "raw": "Cheshire",
+      "schools": 5
+    },
+    {
+      "raw": "Greater London",
+      "schools": 5
+    },
+    {
+      "raw": "Staffordshire",
+      "schools": 4
+    },
+    {
+      "raw": "Derbyshire",
+      "schools": 4
+    },
+    {
+      "raw": "Middlesex",
+      "schools": 3
+    },
+    {
+      "raw": "County Durham",
+      "schools": 3
+    },
+    {
+      "raw": "Edinburgh",
+      "schools": 2
+    },
+    {
+      "raw": "Herefordshire",
+      "schools": 2
+    },
+    {
+      "raw": "Merseyside",
+      "schools": 2
+    },
+    {
+      "raw": "Bedfordshire",
+      "schools": 2
+    },
+    {
+      "raw": "Cornwall",
+      "schools": 2
+    },
+    {
+      "raw": "South Yorkshire",
+      "schools": 2
+    },
+    {
+      "raw": "East Riding of Yorkshire",
+      "schools": 2
+    },
+    {
+      "raw": "Carmarthenshire",
+      "schools": 2
+    },
+    {
+      "raw": "Vale of Glamorgan",
+      "schools": 1
+    },
+    {
+      "raw": "Perth & Kinross",
+      "schools": 1
+    },
+    {
+      "raw": "North East Lincolnshire",
+      "schools": 1
+    },
+    {
+      "raw": "Northumberland",
+      "schools": 1
+    },
+    {
+      "raw": "Rutland",
+      "schools": 1
+    },
+    {
+      "raw": "Pembrokeshire",
+      "schools": 1
+    },
+    {
+      "raw": "East Lothian",
+      "schools": 1
+    },
+    {
+      "raw": "Isle of Man",
+      "schools": 1
+    },
+    {
+      "raw": "Northamptonshire",
+      "schools": 1
+    },
+    {
+      "raw": "Powys",
+      "schools": 1
+    },
+    {
+      "raw": "North Somerset",
+      "schools": 1
+    },
+    {
+      "raw": "Monmouthshire",
+      "schools": 1
+    },
+    {
+      "raw": "Denbighshire",
+      "schools": 1
+    },
+    {
+      "raw": "Isle of Wight",
+      "schools": 1
+    }
+  ]
+}

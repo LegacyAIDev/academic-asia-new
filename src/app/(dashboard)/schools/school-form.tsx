@@ -29,6 +29,13 @@ import {
 import { createSchool, updateSchool, type CreateSchoolInput } from "@/lib/supabase/actions/schools"
 import type { SchoolWithJoins } from "@/lib/supabase/queries/schools"
 
+/** Tri-state select <-> nullable boolean. NULL means nobody has answered yet. */
+const boolToSelect = (value: boolean | null | undefined) =>
+  value === true ? "yes" : value === false ? "no" : "unknown"
+
+const selectToBool = (value: FormDataEntryValue | null): boolean | null =>
+  value === "yes" ? true : value === "no" ? false : null
+
 type ReferenceItem = {
   id: number
   code: string
@@ -85,6 +92,10 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
       boarder_count: formData.get("boarder_count") ? parseInt(formData.get("boarder_count") as string, 10) : null,
       boarder_age_min: formData.get("boarder_age_min") ? parseInt(formData.get("boarder_age_min") as string, 10) : null,
       boarder_age_max: formData.get("boarder_age_max") ? parseInt(formData.get("boarder_age_max") as string, 10) : null,
+      school_age_min: formData.get("school_age_min") ? parseInt(formData.get("school_age_min") as string, 10) : null,
+      school_age_max: formData.get("school_age_max") ? parseInt(formData.get("school_age_max") as string, 10) : null,
+      offers_a_level: selectToBool(formData.get("offers_a_level")),
+      offers_ib: selectToBool(formData.get("offers_ib")),
       child_visa_age: formData.get("child_visa_age") ? parseInt(formData.get("child_visa_age") as string, 10) : null,
       accepts_child_visa: formData.get("accepts_child_visa") === "on",
       accepts_general_visa: formData.get("accepts_general_visa") === "on",
@@ -273,6 +284,66 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
                 placeholder="e.g. 18"
                 defaultValue={school?.boarder_age_max ?? ""}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="school_age_min">School Age From</Label>
+              <Input
+                id="school_age_min"
+                name="school_age_min"
+                type="number"
+                min="0"
+                max="25"
+                placeholder="e.g. 3"
+                defaultValue={school?.school_age_min ?? ""}
+              />
+              <p className="text-xs text-muted-foreground">
+                Whole school, including day pupils
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="school_age_max">School Age To</Label>
+              <Input
+                id="school_age_max"
+                name="school_age_max"
+                type="number"
+                min="0"
+                max="25"
+                placeholder="e.g. 18"
+                defaultValue={school?.school_age_max ?? ""}
+              />
+            </div>
+          </div>
+
+          {/* Three states, not two. The comparison export prints "not offered"
+              for No and "NP" for Unknown, which are different claims — so an
+              unanswered question must stay unanswered rather than defaulting
+              to No when someone edits an unrelated field. */}
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="offers_a_level">Offers A-Levels</Label>
+              <Select name="offers_a_level" defaultValue={boolToSelect(school?.offers_a_level)}>
+                <SelectTrigger id="offers_a_level">
+                  <SelectValue placeholder="Unknown" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unknown">Unknown</SelectItem>
+                  <SelectItem value="yes">Yes</SelectItem>
+                  <SelectItem value="no">No</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="offers_ib">Offers IB Diploma</Label>
+              <Select name="offers_ib" defaultValue={boolToSelect(school?.offers_ib)}>
+                <SelectTrigger id="offers_ib">
+                  <SelectValue placeholder="Unknown" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unknown">Unknown</SelectItem>
+                  <SelectItem value="yes">Yes</SelectItem>
+                  <SelectItem value="no">No</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>

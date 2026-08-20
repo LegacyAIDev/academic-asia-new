@@ -1,0 +1,290 @@
+{
+  "generatedFor": "course fees",
+  "total": 1645,
+  "descriptions": [
+    {
+      "description": "Others",
+      "count": 1093
+    },
+    {
+      "description": "Foundation",
+      "count": 71
+    },
+    {
+      "description": "1 Year GCSE",
+      "count": 62
+    },
+    {
+      "description": "Pre-AL",
+      "count": 51
+    },
+    {
+      "description": "1 Year AL",
+      "count": 43
+    },
+    {
+      "description": "IB",
+      "count": 31
+    },
+    {
+      "description": "18 Months AL",
+      "count": 20
+    },
+    {
+      "description": "2 Year AL",
+      "count": 20
+    },
+    {
+      "description": "Year Foundation",
+      "count": 18
+    },
+    {
+      "description": "Year 1 Year GCSE",
+      "count": 15
+    },
+    {
+      "description": "Pre-GCSE",
+      "count": 14
+    },
+    {
+      "description": "Year Pre-IB",
+      "count": 12
+    },
+    {
+      "description": "Year 18 months AL",
+      "count": 12
+    },
+    {
+      "description": "Year Summer",
+      "count": 10
+    },
+    {
+      "description": "Year English Course",
+      "count": 9
+    },
+    {
+      "description": "International Study Centre",
+      "count": 8
+    },
+    {
+      "description": "Year Summer-3",
+      "count": 8
+    },
+    {
+      "description": "International Foundation Courses",
+      "count": 8
+    },
+    {
+      "description": "English Course",
+      "count": 7
+    },
+    {
+      "description": "1-Year IGCSE",
+      "count": 7
+    },
+    {
+      "description": "Year",
+      "count": 6
+    },
+    {
+      "description": "Day fees for all courses",
+      "count": 6
+    },
+    {
+      "description": "Fast Track A Level",
+      "count": 5
+    },
+    {
+      "description": "Year Summer-8",
+      "count": 5
+    },
+    {
+      "description": "Year Summer-2",
+      "count": 5
+    },
+    {
+      "description": "Accelerated GCSE (1 year)",
+      "count": 4
+    },
+    {
+      "description": "18 Months GCSE",
+      "count": 4
+    },
+    {
+      "description": "Development Year",
+      "count": 4
+    },
+    {
+      "description": "1 Year Pre-IB",
+      "count": 4
+    },
+    {
+      "description": "GCSE",
+      "count": 4
+    },
+    {
+      "description": "Pre-IB",
+      "count": 4
+    },
+    {
+      "description": "Grade 9",
+      "count": 3
+    },
+    {
+      "description": "International Foundation Year",
+      "count": 3
+    },
+    {
+      "description": "Year 1 Year AL",
+      "count": 3
+    },
+    {
+      "description": "Higher Education",
+      "count": 3
+    },
+    {
+      "description": "Year Summer-4",
+      "count": 3
+    },
+    {
+      "description": "Grade 12",
+      "count": 3
+    },
+    {
+      "description": "Grade 8",
+      "count": 3
+    },
+    {
+      "description": "Grade 11",
+      "count": 3
+    },
+    {
+      "description": "HE/HND/DEGREE",
+      "count": 3
+    },
+    {
+      "description": "Grade 7",
+      "count": 3
+    },
+    {
+      "description": "Grade 10",
+      "count": 3
+    },
+    {
+      "description": "Year Summer-6",
+      "count": 3
+    },
+    {
+      "description": "University Foundation",
+      "count": 3
+    },
+    {
+      "description": "(blank)",
+      "count": 2
+    },
+    {
+      "description": "Alevel Programme",
+      "count": 2
+    },
+    {
+      "description": "Pre-Foundation Year",
+      "count": 2
+    },
+    {
+      "description": "Pre-programmes",
+      "count": 2
+    },
+    {
+      "description": "Nursery",
+      "count": 2
+    },
+    {
+      "description": "A Level Programme",
+      "count": 2
+    },
+    {
+      "description": "Reception",
+      "count": 2
+    },
+    {
+      "description": "NCUK International Foundation Year",
+      "count": 2
+    },
+    {
+      "description": "Further Education",
+      "count": 2
+    },
+    {
+      "description": "Form 3",
+      "count": 1
+    },
+    {
+      "description": "Further Education courses and Intensive English courses",
+      "count": 1
+    },
+    {
+      "description": "Year 18 months",
+      "count": 1
+    },
+    {
+      "description": "IELTS (per term)",
+      "count": 1
+    },
+    {
+      "description": "Year Pre-AL",
+      "count": 1
+    },
+    {
+      "description": "Sixth Form IB",
+      "count": 1
+    },
+    {
+      "description": "A-Levels (2-year course)",
+      "count": 1
+    },
+    {
+      "description": "3 Years AL",
+      "count": 1
+    },
+    {
+      "description": "Foundation(Jan14-Jun14)",
+      "count": 1
+    },
+    {
+      "description": "Deposit",
+      "count": 1
+    },
+    {
+      "description": "Sixth Form Foundation",
+      "count": 1
+    },
+    {
+      "description": "Form 4",
+      "count": 1
+    },
+    {
+      "description": "Form 6",
+      "count": 1
+    },
+    {
+      "description": "Intensive English Course",
+      "count": 1
+    },
+    {
+      "description": "Foundation(Sep13-Jun14)",
+      "count": 1
+    },
+    {
+      "description": "Form 5",
+      "count": 1
+    },
+    {
+      "description": "Access to Further Education",
+      "count": 1
+    },
+    {
+      "description": "A Levels (1-year course)",
+      "count": 1
+    }
+  ]
+}
