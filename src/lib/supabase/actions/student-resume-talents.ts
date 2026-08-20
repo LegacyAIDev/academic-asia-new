@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { buildDocumentPath } from '@/lib/supabase/storage-paths'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
@@ -30,9 +31,10 @@ export async function createStudentTalent(input: CreateTalentInput, formData?: F
       if (!ALLOWED_VIDEO_MIME.includes(file.type)) return { success: false, error: 'Only video files (MP4, WebM, MOV, AVI) are allowed' }
       if (file.size > MAX_VIDEO_BYTES) return { success: false, error: 'Video exceeds 50 MB limit' }
 
-      const timestamp = Date.now()
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-      const filePath = `${input.student_id}/talents/${timestamp}_${safeName}`
+      const filePath = buildDocumentPath({
+        ownerId: input.student_id, categoryCode: 'talents',
+        fileName: file.name, disambiguator: Date.now(),
+      })
 
       const { error: uploadError } = await supabase.storage
         .from('student-documents')

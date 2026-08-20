@@ -22,8 +22,6 @@ type Props = {
   documents: StudentDocumentRecord[]
 }
 
-const PASSPORT_CATEGORY_ID = 4
-
 /** Legal documents section — passport info + document uploads */
 export function StudentLegalDocumentsSection({ studentId, passportType, passportNumber, documents }: Props) {
   const [editing, setEditing] = useState(false)
@@ -53,7 +51,7 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
     startTransition(async () => {
       const result = await uploadStudentDocument({
         student_id: studentId,
-        category_id: PASSPORT_CATEGORY_ID,
+        category_code: 'passport_copy',
         title: (fd.get("title") as string) || null,
         description: (fd.get("description") as string) || null,
       }, fd)

@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { buildDocumentPath } from '@/lib/supabase/storage-paths'
+import { getCategoryCode } from '@/lib/supabase/document-categories'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
@@ -34,8 +36,11 @@ export async function uploadSchoolDocuments(
       if (!ALLOWED_MIME.includes(file.type)) { errors.push(`${label}: only PDF and image files are allowed`); continue }
       if (file.size > MAX_BYTES) { errors.push(`${label}: exceeds 10 MB limit`); continue }
 
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-      const filePath = `${schoolId}/${items[i].category_id}/${Date.now()}_${i}_${safeName}`
+      const categoryCode = await getCategoryCode(supabase, items[i].category_id)
+      const filePath = buildDocumentPath({
+        ownerId: schoolId, categoryCode, fileName: file.name,
+        disambiguator: `${Date.now()}_${i}`,
+      })
 
       const { error: uploadError } = await supabase.storage
         .from(BUCKET)

@@ -3,12 +3,16 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { buildDocumentPath } from '@/lib/supabase/storage-paths'
+import { getCategoryCode, getCategoryId } from '@/lib/supabase/document-categories'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 export type UploadDocumentInput = {
   student_id: string
-  category_id: number
+  /** Either category_id or category_code must be given; the code is preferred. */
+  category_id?: number
+  category_code?: string
   title?: string | null
   description?: string | null
   academic_year?: string | null
@@ -51,8 +55,11 @@ export async function uploadStudentDocuments(
         continue
       }
 
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-      const filePath = `${studentId}/${items[i].category_id}/${Date.now()}_${i}_${safeName}`
+      const categoryCode = await getCategoryCode(supabase, items[i].category_id)
+      const filePath = buildDocumentPath({
+        ownerId: studentId, categoryCode, fileName: file.name,
+        disambiguator: `${Date.now()}_${i}`,
+      })
 
       const { error: uploadError } = await supabase.storage
         .from('student-documents')
@@ -126,14 +133,20 @@ export async function uploadStudentDocument(
     const file = formData.get('file') as File | null
     if (!file || file.size === 0) return { success: false, error: 'No file provided' }
 
-    const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
-    const MAX_BYTES = 10 * 1024 * 1024
     if (!ALLOWED_MIME.includes(file.type)) return { success: false, error: 'Only PDF and image files are allowed' }
     if (file.size > MAX_BYTES) return { success: false, error: 'File exceeds 10 MB limit' }
 
-    const timestamp = Date.now()
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-    const filePath = `${input.student_id}/${input.category_id}/${timestamp}_${safeName}`
+    const categoryId = input.category_id
+      ?? (input.category_code ? await getCategoryId(supabase, input.category_code) : null)
+    if (!categoryId) {
+      return { success: false, error: `Unknown document category: ${input.category_code ?? 'none given'}` }
+    }
+
+    const categoryCode = input.category_code ?? await getCategoryCode(supabase, categoryId)
+    const filePath = buildDocumentPath({
+      ownerId: input.student_id, categoryCode, fileName: file.name,
+      disambiguator: Date.now(),
+    })
 
     const { error: uploadError } = await supabase.storage
       .from('student-documents')
@@ -148,7 +161,7 @@ export async function uploadStudentDocument(
       .from('student_documents')
       .insert({
         student_id: input.student_id,
-        category_id: input.category_id,
+        category_id: categoryId,
         file_name: file.name,
         file_path: filePath,
         file_size: file.size,
