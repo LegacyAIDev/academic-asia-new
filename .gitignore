@@ -72,3 +72,12 @@ prompt.md
 # Gemini CLI settings (symlink to .claude/.mcp.json)
 .gemini/settings.json
 .claude/settings.bak.json
+# Legacy file dumps — student/school PII. Never commit.
+# Also required for the build: Tailwind v4 auto-scans every path not listed
+# here, and tries to parse these PDFs/BMPs as source files.
+studentdatafile/
+school-files/
+
+# Staff credentials — never commit
+data/staff-credentials.json
+data/staff-credentials.txt
