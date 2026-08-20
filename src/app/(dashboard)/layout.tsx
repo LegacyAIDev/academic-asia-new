@@ -11,10 +11,15 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar />
-      <div className="lg:pl-64">
-        <Header user={user} />
-        <main className="py-6 px-4 sm:px-6 lg:px-8">
+      {/* The app shell is screen-only: printable documents live under /schools/export. */}
+      <div className="print:hidden">
+        <Sidebar />
+      </div>
+      <div className="lg:pl-64 print:pl-0">
+        <div className="print:hidden">
+          <Header user={user} />
+        </div>
+        <main className="py-6 px-4 sm:px-6 lg:px-8 print:p-0">
           {children}
         </main>
       </div>
