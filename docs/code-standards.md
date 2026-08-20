@@ -247,18 +247,103 @@ import { cn } from '@/lib/utils'
 
 ## 10. RBAC / Access Control
 
-Use the helpers from `src/lib/auth-utils.ts`:
+Access is per **module**, not per role. Eight modules — `dashboard`, `students`,
+`schools`, `events`, `exams`, `staff`, `reports`, `settings` — each carry one of three
+levels: `NONE (0)`, `READ (1)`, `WRITE (2)`.
+
+A staff member inherits the defaults of their admin level (`admin_level_permissions`)
+and may deviate per module (`profile_permission_overrides`). The database function
+`resolve_permissions(profile_id)` combines the two. Super Admin (level 0) resolves to
+full write unconditionally, so the last administrator can never be locked out.
+
+Permissions resolve **from the database per request**, not from a JWT claim: a claim
+only refreshes when the token does (up to an hour), so revoking access would not take
+effect until then. `getPermissions()` is wrapped in React `cache()`, so repeat calls
+within one request cost one query.
+
+### Guarding a page
 
 ```typescript
-import { ADMIN_LEVELS, hasMinLevel, getAdminLevel } from '@/lib/auth-utils'
+import { requireAccess } from '@/lib/permissions/guard'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
-// Check if user can perform a manager-level action
-if (!hasMinLevel(user.admin_level, ADMIN_LEVELS.MANAGER)) {
-  return { success: false, error: 'Insufficient permissions' }
+export default async function StudentsPage() {
+  await requireAccess(MODULES.STUDENTS)                  // list / detail
+  // ...
+}
+
+export default async function EditStudentPage() {
+  await requireAccess(MODULES.STUDENTS, ACCESS.WRITE)    // new / edit
+  // ...
 }
 ```
 
-`getCurrentUser()` from `src/lib/supabase/auth.ts` returns the current user with `admin_level` from the profiles table. The admin level is also in JWT `app_metadata` (set by the `custom_access_token_hook`) so it can be read without a DB query via `getAdminLevel(session)`.
+Rule: pages under a `new/` or `edit/` segment require `WRITE`, everything else `READ`.
+`requireAccess` redirects to `/403`.
+
+### Guarding a Server Action
+
+Guards go **first**, before validation, so a denied caller gets "insufficient
+permissions" rather than a field error that leaks whether a record exists.
+
+```typescript
+const denied = await assertAccess(MODULES.STAFF, ACCESS.WRITE)
+if (denied) return denied
+```
+
+`assertAccess` returns an `ActionResult`-shaped error, never throws (see §11). It also
+covers the signed-out case — an anonymous caller resolves to all-`NONE`.
+
+### Conditional rendering
+
+```typescript
+const canWrite = await canAccess(MODULES.STUDENTS, ACCESS.WRITE)
+// ...
+{canWrite && <Button asChild><Link href="/students/new">Add Student</Link></Button>}
+```
+
+Hide write actions rather than disabling them — a greyed-out button invites a support
+ticket.
+
+### Preventing privilege escalation
+
+`WRITE` on the `staff` module would otherwise equal Super Admin, since the holder could
+promote themselves. Three guards, each covering a different route to the same outcome:
+
+| Guard | Blocks |
+|---|---|
+| `assertNoEscalation(callerLevel, target)` | Granting a level or module access above your own |
+| `assertOutranksTarget(profileId)` | Acting on a **more senior** colleague at all |
+| `assertCanManageAccess(callerLevel)` | Changing anyone's access rights below Manager |
+
+`assertOutranksTarget` reads the target's **current** level from the database, not the
+level in the payload. Checking only the payload was exploitable: a request that simply
+omitted `admin_level` skipped the check, so `staff:WRITE` was enough to reset a Super
+Admin's password or delete the account. Peers are allowed — a Manager may administer
+another Manager — otherwise routine admin work stalls whenever two people share a level.
+
+Call sites: `createStaff` (escalation), `updateStaff` and `deleteStaff` (outranks +
+escalation), `setProfilePermissions` (all three), `setLevelPermissions` (manage + escalation).
+
+The staff form mirrors these rules with `hasMinLevel(user.admin_level, ADMIN_LEVELS.MANAGER)`
+to disable the controls, but **the client is never the enforcement point** — every rule
+above is re-checked in the Server Action.
+
+`hasMinLevel` remains the right tool for seniority questions ("is this person senior
+enough"), which are distinct from module access. Note levels are inverted — **lower
+number means more access** — and Super Admin is `0`, which is falsy; never write
+`if (!level)`.
+
+### Coverage
+
+`npm run check:permissions` fails the build if a dashboard page ships without
+`requireAccess` or an action file has fewer `assertAccess` calls than exported actions.
+Allowlisted: `/403` and `actions/auth.ts`.
+
+> ⚠️ **RLS is still permissive.** All ~197 policies grant any authenticated user full
+> access, so these app-layer guards are the *only* enforcement. Actions using
+> `createAdminClient()` bypass RLS entirely, making their guard especially load-bearing.
+> Tightening RLS is tracked as follow-up work.
 
 ---
 

@@ -147,6 +147,12 @@ src/components/
 src/lib/
 ├── utils.ts                      # cn() — Tailwind class merge (clsx + tailwind-merge)
 ├── auth-utils.ts                 # ADMIN_LEVELS constants, hasMinLevel(), getAdminLevel()
+├── permissions/                  # Module access rights — the enforcement core
+│   ├── modules.ts                # MODULES/ACCESS constants, PermissionMap, denyAll()
+│   ├── resolve.ts                # getPermissions() — per-request, React cache(), fails closed
+│   ├── guard.ts                  # requireAccess / assertAccess / canAccess / assertNoEscalation
+│   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
+│   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
 └── supabase/
     ├── client.ts                 # Browser Supabase client (anon/publishable key)
     ├── server.ts                 # Server component client (cookie SSR)
@@ -161,7 +167,8 @@ src/lib/
     │   ├── event-scheduler.ts
     │   ├── event-representatives.ts
     │   ├── event-exam-blocks.ts
-    │   ├── auth.ts               # signIn, signOut, resetPassword actions
+    │   ├── auth.ts               # signIn, signOut, resetPassword actions — the only unguarded action file
+    │   ├── permissions.ts        # setProfilePermissions, setLevelPermissions (service-role + anti-escalation)
     │   ├── student-applications.ts
     │   ├── student-application-deposits.ts
     │   ├── student-education.ts

@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-08-20
 **Current phase:** Phase 2 — Feature Completion
 
 > Items marked as "Inferred" are based on codebase signals (sidebar links, migration patterns, absence of test/CI config) and not from explicit specifications.
@@ -43,12 +43,25 @@
 
 ## Phase 3 — Security Hardening
 
-**Status: Planned** *(Inferred — no RLS found in any migration)*
+**Status: In Progress**
 
-- [ ] Implement Row-Level Security (RLS) policies on all Postgres tables
-  - `profiles`: users can only read their own profile; managers can read all
-  - `students`, `schools`, `events`: staff can read all; mutations restricted by admin level
-  - `student_internal_notes`: restrict by department or admin level
+- [x] Enable RLS on every public table (migration `075`) — stops anonymous access
+- [x] **Module permission matrix** — level defaults + per-staff overrides, replacing the
+      legacy `Operator - Detail → Access Right` grid
+  - [x] Schema: `permission_modules`, `admin_level_permissions`,
+        `profile_permission_overrides`, `resolve_permissions()`
+  - [x] Core library `src/lib/permissions/` — per-request resolution, fails closed
+  - [x] Enforcement: 21 pages, 106 server actions, 1 API route, sidebar, write buttons
+  - [x] Anti-escalation rules so `staff:WRITE` cannot self-promote to Super Admin
+  - [x] Staff access-rights grid + `/settings/access-levels` editor
+  - [x] `npm run check:permissions` coverage gate
+- [x] Fixed: `getAdminLevels()` returned `admin_levels.id` into a column keyed on
+      `level`, so saving a staff member either failed the FK or silently granted the
+      wrong level. Also `hasMinLevel(0, …)` denied Super Admins (falsy zero)
+- [ ] **Tighten RLS policies** — all ~197 are still `using (true)` for `authenticated`,
+      so app-layer guards remain the only real gate. Needs the permission map in a JWT
+      claim for Postgres to read
+- [ ] Permission audit log — record who changed whose access, and when
 - [ ] Audit service-role client usage — confirm `admin.ts` is never imported in client bundles
 - [ ] Review and tighten Supabase Auth redirect URL allowlist in `config.toml`
 
@@ -56,10 +69,11 @@
 
 ## Phase 4 — Testing & Quality
 
-**Status: Planned** *(Inferred — no test runner config found)*
+**Status: In Progress**
 
-- [ ] Set up test runner (Vitest recommended for Next.js 16 + TypeScript)
-- [ ] Unit tests for utility functions: `hasMinLevel`, `getAdminLevel`, `cn`, time-slot utils
+- [x] Test runner: Vitest, scoped to `src/**` (76 tests passing)
+- [x] Unit + integration tests for the permission layer (30 tests)
+- [ ] Unit tests for remaining utilities: `getAdminLevel`, `cn`, time-slot utils
 - [ ] Unit tests for Server Action input validation (zod schemas)
 - [ ] Integration tests for Server Actions (mock Supabase client)
 - [ ] E2E tests for critical flows (login, create student, create event, assign student to scheduler) via Playwright
@@ -70,7 +84,8 @@
 
 **Status: Planned** *(Inferred from sidebar links without backing pages)*
 
-- [ ] `/settings` — user profile settings, password change, notification preferences
+- [x] `/settings` — shell + Access Levels editor
+- [ ] `/settings` — remaining sections: profile settings, password change, notifications
 - [ ] `/reports` — operational reports: student pipeline, school application stats, event attendance
 
 ---

@@ -70,29 +70,100 @@ Route access decision:
 
 Middleware matcher excludes static assets (`_next/static`, `_next/image`, images, `favicon.ico`).
 
-### 3.3 RBAC
+### 3.3 RBAC — Module Permission Matrix
 
-Access levels are numeric integers stored in the `profiles` table and injected into JWT `app_metadata` by a Postgres function hook (`custom_access_token_hook`, migration `065`). Lower number = more privileged.
+Access control has two layers: a numeric **admin level** (seniority) and a per-**module**
+**access right** (what you may do). The legacy system's `Operator - Detail → Access Right`
+grid is the direct ancestor of the second.
+
+**Admin levels** live in `admin_levels` and are referenced by `profiles.admin_level`.
+Lower number = more privileged:
 
 ```
-SUPER_ADMIN = 0
-MANAGER     = 3
-SENIOR_STAFF = 4
-STAFF       = 6
-JUNIOR_STAFF = 7
-BASIC       = 8
+SUPER_ADMIN  = 0     STAFF        = 6
+MANAGER      = 3     JUNIOR_STAFF = 7
+SENIOR_STAFF = 4     BASIC        = 8
 ```
 
-The hook fires on every token issuance/refresh, so `session.user.app_metadata.admin_level` always reflects the current database value. Guards use `hasMinLevel(userLevel, requiredLevel)` which evaluates `userLevel <= requiredLevel`.
+> `admin_levels.id` (1–6) and `admin_levels.level` (0,3,4,6,7,8) are different columns.
+> `profiles.admin_level` is a foreign key to **`level`**. Always select `level`.
 
-### 3.4 SECURITY NOTE — No Database-Level RLS
+**Module rights** are `NONE (0)` / `READ (1)` / `WRITE (2)` across eight modules:
+`dashboard`, `students`, `schools`, `events`, `exams`, `staff`, `reports`, `settings`.
+An ordered scalar, not two booleans, so every check is one comparison and no combination
+can contradict itself.
 
-Row-Level Security (RLS) is not currently enabled on any Supabase table. All access control is enforced at the application layer:
-- Middleware blocks unauthenticated requests before they reach any data-fetching code.
-- Server Actions can check `admin_level` before executing mutations.
-- The service-role client (`admin.ts`) is restricted to server-only files.
+```
+permission_modules            8 modules
+admin_level_permissions       level defaults  (6 levels × 8 = 48 rows)
+profile_permission_overrides  per-person deviations only
+        ↓
+resolve_permissions(profile_id)   coalesce(override, level default, NONE)
+                                  level 0 short-circuits to WRITE
+```
 
-**Risk**: If an application-layer bug bypasses the middleware or a Server Action skips the permission check, the Supabase Postgres database would return data regardless of the requesting user's identity. RLS policies should be implemented before any multi-tenant or externally exposed deployment.
+Only genuine deviations are stored as overrides, so changing a level default still
+propagates to everyone who never deviated.
+
+### 3.4 Resolution: per-request, not per-token
+
+`custom_access_token_hook` (migration `065`) still injects `admin_level` into JWT
+`app_metadata`, but the **permission map is not read from the token**. `getPermissions()`
+calls `resolve_permissions` over the session client on each request, wrapped in React
+`cache()` so repeat calls within one request cost a single query.
+
+A claim would only refresh when the token does — up to an hour — so revoking someone's
+access would not take effect until then. Per-request resolution is always current, and
+costs the same as the profile lookup `getCurrentUser()` already performs.
+
+Trade-off: this means the map is unavailable in middleware without a DB round-trip on
+every navigation. Middleware therefore stays authentication-only, and authorisation
+happens in server components and Server Actions, which already run server-side.
+
+### 3.5 Enforcement points
+
+| Layer | Mechanism | Coverage |
+|---|---|---|
+| Page | `requireAccess(module, level)` → redirect `/403` | 21 dashboard pages |
+| Server Action | `assertAccess(module, level)` → `ActionResult` error | 106 exported actions |
+| API route | `canAccess(...)` → 403 JSON | `/api/schools/export/pdf` |
+| Navigation | Sidebar filtered by resolved map in the dashboard layout | 8 top-level items |
+| Buttons | `canAccess(module, WRITE)` gates create/edit affordances | list + detail pages |
+
+`npm run check:permissions` fails the build if a page or action ships unguarded.
+
+### 3.6 Privilege escalation controls
+
+`staff:WRITE` would otherwise be equivalent to Super Admin — the holder could assign
+themselves a higher level. Three separate guards, because there are three distinct routes:
+
+- `assertNoEscalation()` — cannot grant a level or module access above your own
+- `assertOutranksTarget()` — cannot act on a **more senior** colleague at all, checked
+  against the target's current level in the database rather than the submitted payload.
+  A payload that omitted `admin_level` would otherwise bypass the escalation check while
+  still reaching the password and login-email updates
+- `assertCanManageAccess()` — changing anyone's access rights needs Manager or above,
+  on top of `staff:WRITE`
+
+Peers may administer each other; only strictly more senior targets are protected. All
+three run server-side in the actions — the UI merely mirrors them.
+
+### 3.7 SECURITY NOTE — RLS is enabled but permissive
+
+RLS **is** enabled on every public table (migration `075`), which stops anonymous access
+via the publishable key. However, all ~197 policies grant `authenticated` unrestricted
+read and write (`using (true)`). Any signed-in staff member can therefore still query any
+table directly.
+
+**This makes the application layer the only real gate.** Two consequences:
+
+1. An unguarded page or action is a genuine data-exposure hole, not a style issue —
+   hence the coverage script.
+2. Actions using the service-role client (`admin.ts`) bypass RLS entirely. `staff.ts` and
+   `permissions.ts` are in this category and their guards are especially load-bearing.
+
+Tightening RLS to read the permission matrix is deliberate follow-up work, not an
+oversight — see §9.
 
 ---
 
@@ -241,8 +312,9 @@ See `docs/deployment-guide.md` for environment variable setup and deployment ste
 
 | Gap | Severity | Notes |
 |---|---|---|
-| No RLS at DB level | High | All access control is application-layer only |
-| No automated tests | Medium | No Jest/Vitest/Playwright configuration found |
-| No CI/CD pipeline | Medium | No `.github/workflows/` found |
-| `/settings` and `/reports` not implemented | Low | Sidebar links exist, no pages yet |
+| RLS enabled but permissive | High | Migration `075` enabled RLS everywhere, but policies are `using (true)` for `authenticated`. App-layer guards are the real gate — see §3.7. Next step: policies that read `resolve_permissions` via a JWT claim |
+| Thin test coverage | Medium | Vitest configured; 76 tests, concentrated on permissions and school export. No E2E |
+| No CI/CD pipeline | Medium | No `.github/workflows/` found. `npm run check:permissions` is written and passing but not wired to CI |
+| `/reports` not implemented | Low | Sidebar link exists, no page yet. `/settings` now has the Access Levels section |
+| No permission audit log | Medium | Access-right changes are not recorded. Cheaper to add before the matrix is in real use than after |
 | Env var naming inconsistency | Low | Server client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`; tooling/docs may still reference `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
