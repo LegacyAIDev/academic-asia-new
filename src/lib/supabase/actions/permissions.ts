@@ -106,15 +106,21 @@ export async function setProfilePermissions(
     }
 
     if (toStore.length > 0) {
-      const { error: upsertError } = await admin
+      const { data: written, error: upsertError } = await admin
         .from('profile_permission_overrides')
         .upsert(
           toStore.map(row => ({ ...row, profile_id: profileId })),
           { onConflict: 'profile_id,module_id' },
         )
+        .select('module_id')
       if (upsertError) {
         console.error('Error saving permission overrides:', upsertError)
         return { success: false, error: upsertError.message }
+      }
+      // Never report success on a write that landed nothing
+      if (written?.length !== toStore.length) {
+        console.error('Permission overrides partially written:', { expected: toStore.length, written: written?.length })
+        return { success: false, error: 'Access rights could not be saved. Please try again.' }
       }
     }
 
@@ -166,13 +172,24 @@ export async function setLevelPermissions(
       access: toAccessLevel(value),
     }))
 
-    const { error } = await admin
+    // An empty matrix would upsert nothing and still report success
+    if (rows.length === 0) {
+      return { success: false, error: 'No modules were submitted for this level.' }
+    }
+
+    const { data: written, error } = await admin
       .from('admin_level_permissions')
       .upsert(rows, { onConflict: 'admin_level,module_id' })
+      .select('module_id')
 
     if (error) {
       console.error('Error saving level permissions:', error)
       return { success: false, error: error.message }
+    }
+
+    if (written?.length !== rows.length) {
+      console.error('Level permissions partially written:', { expected: rows.length, written: written?.length })
+      return { success: false, error: 'Access level could not be saved. Please try again.' }
     }
 
     revalidatePath('/settings/access-levels')
