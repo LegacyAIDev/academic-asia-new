@@ -145,7 +145,9 @@ src/components/
 │   ├── button.tsx, input.tsx, select.tsx, dialog.tsx, ...
 │   └── sonner.tsx                # Toast wrapper
 ├── features/                     # Cross-route feature components
-│   ├── document-manager.tsx
+│   ├── document-manager.tsx      # Owner-level Documents tab: batch upload, rename, download
+│   ├── attachment-field.tsx      # Inline attach file/link next to a text field
+│   ├── attachment-list.tsx       # Attachment rows: open (spinner while signing), delete
 │   └── brief-intro-export-menu.tsx  # PDF/Excel menu — profile card + bulk picker
 ├── permissions/                  # Permission-aware wrappers
 └── layout/
@@ -165,6 +167,11 @@ src/lib/
 │   ├── guard.ts                  # requireAccess / assertAccess / canAccess / assertNoEscalation
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
+├── attachments/                  # Record attachments — file or link on a specific row
+│   ├── attach-points.ts          # ATTACH_POINTS registry: owner, attachable_type, category
+│   ├── constraints.ts            # ALLOWED_MIME, MAX_BYTES, isSafeExternalUrl, formatFileSize
+│   ├── open-in-new-tab.ts        # Post-await open that Safari does not block
+│   └── __tests__/                # 38 tests: registry/DB/seed parity, URL validation
 ├── rich-text.ts                  # sanitizeRichText() — cleans editor HTML before storage
 ├── pdf/
 │   └── render-document-pdf.ts    # Shared headless-Chromium renderer (HTML string → PDF)
@@ -260,7 +267,7 @@ src/hooks/
 
 ## Database Migrations Overview
 
-Migrations are in `supabase/migrations/` numbered `001` through `068`.
+Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped.
 
 | Range | Theme |
 |---|---|
@@ -269,6 +276,8 @@ Migrations are in `supabase/migrations/` numbered `001` through `068`.
 | 036–051 | Data normalization: consolidate gender types, institution types, phases, religious affiliations, split/merge fields, remap categories, add scholarship types |
 | 052–060 | Lead source restructure, visit fields on applications, new event types, consolidate event types, add application_id to individual exams, create internal notes, school intro approval, resume fields and documents |
 | 061–068 | Resume profile/talents tables, event application status updates, year group on applications, nullable school_id on representatives, custom_access_token_hook (RBAC), schedule blocker, school_contact_id on representatives, is_active on school contacts |
+| 069–078 | Student intro images bucket, document categories, school documents + bucket, row level security across the public schema, school export fields, county normalisation, current course fee |
+| Timestamped | School document category rounds, permission matrix, record attachments (polymorphic `attachable_type`/`attachable_id` + `external_url` on both document tables) |
 
 ---
 

@@ -252,6 +252,64 @@ Many fields reference small lookup tables rather than storing raw strings. Examp
 
 `student_resume`, `student_resume_profile`, `student_resume_talents`, `student_resume_aa_tests`, `student_legal_documents`
 
+### 5.7 Documents and Record Attachments
+
+`student_documents` and `school_documents` are the only two file stores in the app.
+Each row is one artifact belonging to one owner (a student or a school), categorised
+by `document_categories.code`. Files live in the private `student-documents` /
+`school-documents` buckets and are read through short-lived signed URLs.
+
+A row can be attached to a **specific record** rather than just to the owner:
+
+| Column | Meaning |
+|---|---|
+| `attachable_type` | Parent table name, e.g. `student_visas`, `school_fees`. Null for owner-level documents. |
+| `attachable_id` | Parent row uuid. |
+| `external_url` | Set when the artifact is a link rather than an uploaded file. |
+
+This backs the "file/link support where only text input exists" requirement:
+certificate, exam paper, qualification and fee-schedule fields keep their text
+value and gain the ability to carry the real document.
+
+Three CHECK constraints hold the model together (migration
+`20260827092739_record_attachments.sql`):
+
+1. **artifact** — exactly one of `(file_path + file_name)` or `external_url`. A row
+   can never point at nothing, or at two different things.
+2. **pair** — `attachable_type` and `attachable_id` are both set or both null.
+3. **type** — `attachable_type` is drawn from a per-side allowlist, so a school
+   table name cannot land on `student_documents`.
+
+**Why this extends the existing tables rather than adding an `attachments` table:**
+one bucket, one upload path, one manager component — and record-level attachments
+still appear in the Documents tab, so staff who look there first are not shown a
+partial picture.
+
+**The cost:** a polymorphic reference cannot have a foreign key, so nothing cascades.
+Cleanup is explicit — every parent `delete*` action calls `deleteAttachmentsForRecord`
+before removing its row, and `deleteStudent` / `deleteSchool` call `purgeOwnerStorage`
+to sweep the bucket. Skipping either leaves orphaned storage objects that nothing
+will ever find again.
+
+**Code layout:**
+
+```
+lib/attachments/attach-points.ts   ← registry: owner, attachable_type, category, label
+lib/attachments/constraints.ts     ← ALLOWED_MIME, MAX_BYTES, isSafeExternalUrl
+queries/record-attachments.ts      ← batched reads keyed by attachable_id
+actions/record-attachments.ts      ← attach file/link, delete, purge, signed URL
+components/features/attachment-field.tsx  ← inline control; stages on create, flushes after insert
+```
+
+`ATTACH_POINTS` is the single source of truth. `attach-points.test.ts` asserts it
+agrees with the CHECK lists and the category seeds — the three copies of that
+knowledge will otherwise drift.
+
+**Permissions:** attachments have no module of their own; they inherit the parent
+entity's rights via `assertAccess(STUDENTS|SCHOOLS, WRITE)`.
+
+---
+
 ### 5.7 custom_access_token_hook
 
 Migration `065_custom_access_token_hook.sql` installs a Postgres function that fires on every Supabase Auth token issuance. It reads `admin_level` from `profiles` for the authenticating user and injects it into `app_metadata` in the JWT. This makes RBAC checks possible without a database round-trip on every request.
