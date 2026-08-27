@@ -14,11 +14,14 @@ import { Banknote } from "lucide-react"
 import { FeeDialog, EditFeeButton, DeleteFeeButton } from "./fee-dialog"
 import type { SchoolFeeWithJoins } from "@/lib/supabase/queries/school-fees"
 import type { FeeReferenceData } from "./fee-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type SchoolFeesSectionProps = {
   schoolId: string
   fees: SchoolFeeWithJoins[]
   referenceData: FeeReferenceData
+  attachmentsByFee?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 function formatAmount(amount: string | null) {
@@ -44,6 +47,8 @@ export function SchoolFeesSection({
   schoolId,
   fees,
   referenceData,
+  attachmentsByFee,
+  canWrite = true,
 }: SchoolFeesSectionProps) {
   if (fees.length === 0) {
     return (
@@ -118,6 +123,8 @@ export function SchoolFeesSection({
                         fee={fee}
                         schoolId={schoolId}
                         referenceData={referenceData}
+                        attachments={attachmentsByFee?.get(fee.id) ?? []}
+                        canWrite={canWrite}
                       />
                       <DeleteFeeButton
                         feeId={fee.id}

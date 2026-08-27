@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useTransition } from "react"
+import { useRef, useState, useMemo, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -39,6 +39,7 @@ import {
   ClipboardList,
   MessageSquare,
   Check,
+  Paperclip,
 } from "lucide-react"
 import {
   createStudentExamResult,
@@ -47,6 +48,8 @@ import {
   type CreateExamResultInput,
 } from "@/lib/supabase/actions/student-exam-results"
 import type { ExamResultWithJoins } from "@/lib/supabase/queries/student-exam-results"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type ExamTypeItem = { id: number; code: string; label: string }
 type SubjectItem = { id: number; code: string; label: string; exam_type_code: string | null }
@@ -66,6 +69,8 @@ type ExamResultDialogProps = {
   mode: "create" | "edit"
   examResult?: ExamResultWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
 function FormSection({
@@ -124,8 +129,11 @@ export function ExamResultDialog({
   mode,
   examResult,
   trigger,
+  attachments = [],
+  canWrite = true,
 }: ExamResultDialogProps) {
   const [open, setOpen] = useState(false)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -179,6 +187,11 @@ export function ExamResultDialog({
       let result
       if (mode === "create") {
         result = await createStudentExamResult({ ...input, student_id: studentId } as CreateExamResultInput)
+        // Staged attachments could not be linked before the row existed.
+        if (result?.success && result.data?.id) {
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Saved, but ${failed} attachment(s) failed to upload`)
+        }
       } else if (examResult?.id) {
         result = await updateStudentExamResult(examResult.id, studentId, input)
       }
@@ -348,6 +361,19 @@ export function ExamResultDialog({
               </div>
             </FormSection>
 
+            <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+              <FormField label="Result document (file or link)">
+                <AttachmentField
+                  ref={attachRef}
+                  attachPoint="student_exam_result"
+                  ownerId={studentId}
+                  attachableId={mode === "edit" ? examResult?.id ?? null : null}
+                  attachments={attachments}
+                  canWrite={canWrite}
+                />
+              </FormField>
+            </FormSection>
+
             <FormSection icon={MessageSquare} title="Remarks" accentColor="rose">
               <FormField label="Remarks">
                 <Textarea
@@ -403,10 +429,14 @@ export function EditExamResultButton({
   examResult,
   studentId,
   referenceData,
+  attachments = [],
+  canWrite = true,
 }: {
   examResult: ExamResultWithJoins
   studentId: string
   referenceData: ExamResultReferenceData
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }) {
   return (
     <ExamResultDialog
@@ -414,6 +444,8 @@ export function EditExamResultButton({
       referenceData={referenceData}
       mode="edit"
       examResult={examResult}
+      attachments={attachments}
+      canWrite={canWrite}
       trigger={
         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
           <Pencil className="h-3.5 w-3.5" />

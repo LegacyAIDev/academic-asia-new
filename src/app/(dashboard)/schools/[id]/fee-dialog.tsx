@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -41,6 +41,7 @@ import {
   MessageSquare,
   Check,
   ChevronsUpDown,
+  Paperclip,
 } from "lucide-react"
 import {
   createSchoolFee,
@@ -50,6 +51,8 @@ import {
 } from "@/lib/supabase/actions/school-fees"
 import { getAcademicYearOptions } from "@/lib/utils"
 import type { SchoolFeeWithJoins } from "@/lib/supabase/queries/school-fees"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type FeeTypeItem = { id: number; code: string; label: string }
 
@@ -61,6 +64,8 @@ type FeeDialogProps = {
   mode: "create" | "edit"
   fee?: SchoolFeeWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
 function FormSection({
@@ -113,8 +118,9 @@ function FormField({
   )
 }
 
-export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDialogProps) {
+export function FeeDialog({ schoolId, referenceData, mode, fee, trigger, attachments = [], canWrite = true }: FeeDialogProps) {
   const [open, setOpen] = useState(false)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -160,6 +166,11 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
       let result
       if (mode === "create") {
         result = await createSchoolFee({ ...input, school_id: schoolId } as CreateSchoolFeeInput)
+        // Staged attachments could not be linked before the row existed.
+        if (result?.success && result.data?.id) {
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Saved, but ${failed} attachment(s) failed to upload`)
+        }
       } else if (fee?.id) {
         result = await updateSchoolFee(fee.id, schoolId, input)
       }
@@ -278,6 +289,19 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
               </FormField>
             </FormSection>
 
+            <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+              <FormField label="Fee schedule (file or link)">
+                <AttachmentField
+                  ref={attachRef}
+                  attachPoint="school_fee"
+                  ownerId={schoolId}
+                  attachableId={mode === "edit" ? fee?.id ?? null : null}
+                  attachments={attachments}
+                  canWrite={canWrite}
+                />
+              </FormField>
+            </FormSection>
+
             <FormSection icon={MessageSquare} title="Remarks" accentColor="rose">
               <FormField label="Remarks">
                 <Textarea name="remarks" rows={4} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={fee?.remarks ?? ""} placeholder="Additional notes about this fee..." />
@@ -299,9 +323,9 @@ export function FeeDialog({ schoolId, referenceData, mode, fee, trigger }: FeeDi
   )
 }
 
-export function EditFeeButton({ fee, schoolId, referenceData }: { fee: SchoolFeeWithJoins; schoolId: string; referenceData: FeeReferenceData }) {
+export function EditFeeButton({ fee, schoolId, referenceData, attachments = [], canWrite = true }: { fee: SchoolFeeWithJoins; schoolId: string; referenceData: FeeReferenceData; attachments?: AttachmentRecord[]; canWrite?: boolean }) {
   return (
-    <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="edit" fee={fee}
+    <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="edit" fee={fee} attachments={attachments} canWrite={canWrite}
       trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )

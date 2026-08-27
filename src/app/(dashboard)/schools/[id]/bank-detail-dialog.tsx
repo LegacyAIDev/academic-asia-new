@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,7 @@ import {
   CreditCard,
   MessageSquare,
   Check,
+  Paperclip,
 } from "lucide-react"
 import {
   createSchoolBankDetail,
@@ -46,6 +47,8 @@ import {
   type CreateBankDetailInput,
 } from "@/lib/supabase/actions/school-bank-details"
 import type { SchoolBankDetailWithJoins, BankAccountType, Currency } from "@/lib/supabase/queries/school-bank-details"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 export type BankReferenceData = {
   accountTypes: BankAccountType[]
@@ -58,6 +61,8 @@ type BankDetailDialogProps = {
   mode: "create" | "edit"
   bankDetail?: SchoolBankDetailWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
 function FormSection({
@@ -110,8 +115,9 @@ function FormField({
   )
 }
 
-export function BankDetailDialog({ schoolId, referenceData, mode, bankDetail, trigger }: BankDetailDialogProps) {
+export function BankDetailDialog({ schoolId, referenceData, mode, bankDetail, trigger, attachments = [], canWrite = true }: BankDetailDialogProps) {
   const [open, setOpen] = useState(false)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -145,6 +151,11 @@ export function BankDetailDialog({ schoolId, referenceData, mode, bankDetail, tr
       let result
       if (mode === "create") {
         result = await createSchoolBankDetail({ ...input, school_id: schoolId } as CreateBankDetailInput)
+        // Staged attachments could not be linked before the row existed.
+        if (result?.success && result.data?.id) {
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Saved, but ${failed} attachment(s) failed to upload`)
+        }
       } else if (bankDetail?.id) {
         result = await updateSchoolBankDetail(bankDetail.id, schoolId, input)
       }
@@ -263,6 +274,19 @@ export function BankDetailDialog({ schoolId, referenceData, mode, bankDetail, tr
               </FormField>
             </FormSection>
 
+            <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+              <FormField label="Bank document (file or link)">
+                <AttachmentField
+                  ref={attachRef}
+                  attachPoint="school_bank_detail"
+                  ownerId={schoolId}
+                  attachableId={mode === "edit" ? bankDetail?.id ?? null : null}
+                  attachments={attachments}
+                  canWrite={canWrite}
+                />
+              </FormField>
+            </FormSection>
+
             <FormSection icon={MessageSquare} title="Remarks" accentColor="rose">
               <FormField label="Remarks">
                 <Textarea name="remarks" rows={3} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={bankDetail?.remarks ?? ""} placeholder="Additional notes..." />
@@ -284,9 +308,9 @@ export function BankDetailDialog({ schoolId, referenceData, mode, bankDetail, tr
   )
 }
 
-export function EditBankDetailButton({ bankDetail, schoolId, referenceData }: { bankDetail: SchoolBankDetailWithJoins; schoolId: string; referenceData: BankReferenceData }) {
+export function EditBankDetailButton({ bankDetail, schoolId, referenceData, attachments = [], canWrite = true }: { bankDetail: SchoolBankDetailWithJoins; schoolId: string; referenceData: BankReferenceData; attachments?: AttachmentRecord[]; canWrite?: boolean }) {
   return (
-    <BankDetailDialog schoolId={schoolId} referenceData={referenceData} mode="edit" bankDetail={bankDetail}
+    <BankDetailDialog schoolId={schoolId} referenceData={referenceData} mode="edit" bankDetail={bankDetail} attachments={attachments} canWrite={canWrite}
       trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )

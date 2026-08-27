@@ -75,6 +75,7 @@ import { SchoolVisitsSection } from "./school-visits"
 import { SchoolEventsSection } from "./school-events"
 import { SchoolDocumentsSection } from "./school-documents"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type SchoolDetailPageParams = {
@@ -152,6 +153,15 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
   if (!school) {
     notFound()
   }
+
+  // Batched per section: the fees and entrance exam tabs render dozens of rows,
+  // and a per-row lookup would be dozens of round trips on every page load.
+  const [feeAttachments, examAttachments, noteAttachments, bankAttachments] = await Promise.all([
+    getAttachmentsForMany('school_fee', fees.map(f => f.id)),
+    getAttachmentsForMany('school_entrance_exam_paper', entranceExams.map(e => e.id)),
+    getAttachmentsForMany('school_note', notes.map(n => n.id)),
+    getAttachmentsForMany('school_bank_detail', bankDetails.map(b => b.id)),
+  ])
 
   return (
     <div className="space-y-6">
@@ -719,12 +729,12 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
 
         {/* Fees Tab */}
         <TabsContent value="fees" className="space-y-6">
-          <SchoolFeesSection schoolId={id} fees={fees} referenceData={feeRefData} />
+          <SchoolFeesSection schoolId={id} fees={fees} referenceData={feeRefData} attachmentsByFee={feeAttachments} canWrite={canWrite} />
         </TabsContent>
 
         {/* Entrance Exams Tab */}
         <TabsContent value="entrance-exams" className="space-y-6">
-          <SchoolEntranceExamsSection schoolId={id} exams={entranceExams} referenceData={entranceExamRefData} />
+          <SchoolEntranceExamsSection schoolId={id} exams={entranceExams} referenceData={entranceExamRefData} attachmentsByExam={examAttachments} canWrite={canWrite} />
         </TabsContent>
 
         {/* Academic Results Tab */}
@@ -734,7 +744,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
 
         {/* Notes Tab */}
         <TabsContent value="notes" className="space-y-6">
-          <SchoolNotesSection schoolId={id} notes={notes} referenceData={noteRefData} />
+          <SchoolNotesSection schoolId={id} notes={notes} referenceData={noteRefData} attachmentsByNote={noteAttachments} canWrite={canWrite} />
         </TabsContent>
 
         {/* Courses Tab */}
@@ -744,7 +754,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
 
         {/* Bank Details Tab */}
         <TabsContent value="bank-details" className="space-y-6">
-          <SchoolBankDetailsSection schoolId={id} bankDetails={bankDetails} referenceData={bankRefData} />
+          <SchoolBankDetailsSection schoolId={id} bankDetails={bankDetails} referenceData={bankRefData} attachmentsByDetail={bankAttachments} canWrite={canWrite} />
         </TabsContent>
 
         {/* Visits Tab */}

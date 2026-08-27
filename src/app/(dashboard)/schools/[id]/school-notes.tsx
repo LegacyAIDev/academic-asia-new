@@ -14,11 +14,14 @@ import { StickyNote } from "lucide-react"
 import { NoteDialog, EditNoteButton, DeleteNoteButton } from "./note-dialog"
 import type { SchoolNoteWithJoins } from "@/lib/supabase/queries/school-notes"
 import type { NoteReferenceData } from "./note-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type SchoolNotesSectionProps = {
   schoolId: string
   notes: SchoolNoteWithJoins[]
   referenceData: NoteReferenceData
+  attachmentsByNote?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 /** Category badge color based on category code */
@@ -39,6 +42,8 @@ export function SchoolNotesSection({
   schoolId,
   notes,
   referenceData,
+  attachmentsByNote,
+  canWrite = true,
 }: SchoolNotesSectionProps) {
   if (notes.length === 0) {
     return (
@@ -107,6 +112,8 @@ export function SchoolNotesSection({
                           note={note}
                           schoolId={schoolId}
                           referenceData={referenceData}
+                          attachments={attachmentsByNote?.get(note.id) ?? []}
+                          canWrite={canWrite}
                         />
                         <DeleteNoteButton
                           noteId={note.id}

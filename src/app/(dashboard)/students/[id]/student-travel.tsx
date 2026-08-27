@@ -14,11 +14,14 @@ import { Plane, Check, Minus } from "lucide-react"
 import { TravelDialog, EditTravelButton, DeleteTravelButton } from "./travel-dialog"
 import type { TravelWithJoins } from "@/lib/supabase/queries/student-travel"
 import type { TravelReferenceData } from "./travel-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type StudentTravelSectionProps = {
   studentId: string
   travelRecords: TravelWithJoins[]
   referenceData: TravelReferenceData
+  attachmentsByTravel?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 /** Color map for travel status codes */
@@ -54,6 +57,8 @@ export function StudentTravelSection({
   studentId,
   travelRecords,
   referenceData,
+  attachmentsByTravel,
+  canWrite = true,
 }: StudentTravelSectionProps) {
   if (travelRecords.length === 0) {
     return (
@@ -157,6 +162,8 @@ export function StudentTravelSection({
                           travel={rec}
                           studentId={studentId}
                           referenceData={referenceData}
+                          attachments={attachmentsByTravel?.get(rec.id) ?? []}
+                          canWrite={canWrite}
                         />
                         <DeleteTravelButton
                           travelId={rec.id}

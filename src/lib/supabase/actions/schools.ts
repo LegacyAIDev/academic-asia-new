@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { normaliseCounty } from '@/lib/schools/county'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { purgeOwnerStorage } from '@/lib/supabase/actions/record-attachments'
 
 export type CreateSchoolInput = {
   name: string
@@ -131,6 +132,9 @@ export async function deleteSchool(id: string): Promise<ActionResult> {
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    // Storage is outside Postgres, so the row cascade does not reach the files.
+    await purgeOwnerStorage('school', id)
 
     const { error } = await supabase
       .from('schools')

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition, useMemo } from "react"
+import { useRef, useState, useTransition, useMemo } from "react"
 import {
   Dialog,
   DialogContent,
@@ -48,6 +48,7 @@ import {
   MessageSquare,
   Check,
   ChevronsUpDown,
+  Paperclip,
 } from "lucide-react"
 import {
   createStudentApplication,
@@ -60,6 +61,8 @@ import { createApplicationDeposit } from "@/lib/supabase/actions/student-applica
 import { createIndividualExam } from "@/lib/supabase/actions/student-individual-exams"
 import { ApplicationDepositSection } from "./application-deposit-section"
 import { ApplicationExamSection } from "./application-exam-section"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type ReferenceItem = { id: number; code: string; label: string }
 type StatusItem = ReferenceItem & { category: string | null }
@@ -78,6 +81,9 @@ type ApplicationDialogProps = {
   mode: "create" | "edit"
   application?: ApplicationWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
+  attachmentsByDeposit?: Map<string, AttachmentRecord[]>
 }
 
 function FormSection({
@@ -153,8 +159,12 @@ export function ApplicationDialog({
   mode,
   application,
   trigger,
+  attachments = [],
+  attachmentsByDeposit,
+  canWrite = true,
 }: ApplicationDialogProps) {
   const [open, setOpen] = useState(false)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [scholarshipTypes, setScholarshipTypes] = useState<string[]>(application?.scholarship_types ?? [])
@@ -290,6 +300,10 @@ export function ApplicationDialog({
               status_id: 1,
             }, studentId)
           }
+
+          // Staged attachments could not be linked before the row existed.
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Application saved, but ${failed} attachment(s) failed to upload`)
         }
       } else if (application?.id) {
         result = await updateStudentApplication(application.id, studentId, input)
@@ -593,6 +607,19 @@ export function ApplicationDialog({
                 </FormSection>
 
                 {/* Remarks */}
+                <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+                  <FormField label="Application documents (file or link)">
+                    <AttachmentField
+                      ref={attachRef}
+                      attachPoint="student_application"
+                      ownerId={studentId}
+                      attachableId={mode === "edit" ? application?.id ?? null : null}
+                      attachments={attachments}
+                      canWrite={canWrite}
+                    />
+                  </FormField>
+                </FormSection>
+
                 <FormSection icon={MessageSquare} title="Remarks" accentColor="amber">
                   <FormField label="Enrol Status Remarks">
                     <Textarea
@@ -684,6 +711,8 @@ export function ApplicationDialog({
                   onDepositDateChange={setDepositDate}
                   commission={depositCommission}
                   onCommissionChange={setDepositCommission}
+                  attachmentsByDeposit={attachmentsByDeposit}
+                  canWrite={canWrite}
                 />
 
                 {/* Entrance Exam Booking */}
@@ -748,10 +777,16 @@ export function EditApplicationButton({
   application,
   studentId,
   referenceData,
+  attachments = [],
+  attachmentsByDeposit,
+  canWrite = true,
 }: {
   application: ApplicationWithJoins
   studentId: string
   referenceData: ApplicationReferenceData
+  attachments?: AttachmentRecord[]
+  attachmentsByDeposit?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }) {
   return (
     <ApplicationDialog
@@ -759,6 +794,9 @@ export function EditApplicationButton({
       referenceData={referenceData}
       mode="edit"
       application={application}
+      attachments={attachments}
+      attachmentsByDeposit={attachmentsByDeposit}
+      canWrite={canWrite}
       trigger={
         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
           <Pencil className="h-3.5 w-3.5" />

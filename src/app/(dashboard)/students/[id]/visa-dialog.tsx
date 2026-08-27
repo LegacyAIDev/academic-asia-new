@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -40,6 +40,7 @@ import {
   MessageSquare,
   CheckSquare,
   Check,
+  Paperclip,
 } from "lucide-react"
 import {
   createStudentVisa,
@@ -48,6 +49,8 @@ import {
   type CreateVisaInput,
 } from "@/lib/supabase/actions/student-visas"
 import type { VisaWithJoins } from "@/lib/supabase/queries/student-visas"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type StatusItem = { id: number; code: string; label: string }
 type SchoolItem = { id: string; name: string }
@@ -63,6 +66,8 @@ type VisaDialogProps = {
   mode: "create" | "edit"
   visa?: VisaWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
 function FormSection({
@@ -130,10 +135,13 @@ export function VisaDialog({
   mode,
   visa,
   trigger,
+  attachments = [],
+  canWrite = true,
 }: VisaDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
 
   const { statuses, schools } = referenceData
 
@@ -166,6 +174,11 @@ export function VisaDialog({
       let result
       if (mode === "create") {
         result = await createStudentVisa({ ...input, student_id: studentId } as CreateVisaInput)
+        // Staged attachments could not be linked before the row existed.
+        if (result?.success && result.data?.id) {
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Visa saved, but ${failed} attachment(s) failed to upload`)
+        }
       } else if (visa?.id) {
         result = await updateStudentVisa(visa.id, studentId, input)
       }
@@ -389,6 +402,19 @@ export function VisaDialog({
                   </div>
                 </FormSection>
 
+                <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+                  <FormField label="Visa documents (file or link)">
+                    <AttachmentField
+                      ref={attachRef}
+                      attachPoint="student_visa"
+                      ownerId={studentId}
+                      attachableId={mode === "edit" ? visa?.id ?? null : null}
+                      attachments={attachments}
+                      canWrite={canWrite}
+                    />
+                  </FormField>
+                </FormSection>
+
                 <FormSection icon={Calendar} title="Appointment" accentColor="teal">
                   <FormField label="Has Appointment (AP)">
                     <Select name="appointment" defaultValue={visa?.appointment ? "true" : "false"}>
@@ -459,10 +485,14 @@ export function EditVisaButton({
   visa,
   studentId,
   referenceData,
+  attachments = [],
+  canWrite = true,
 }: {
   visa: VisaWithJoins
   studentId: string
   referenceData: VisaReferenceData
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }) {
   return (
     <VisaDialog
@@ -470,6 +500,8 @@ export function EditVisaButton({
       referenceData={referenceData}
       mode="edit"
       visa={visa}
+      attachments={attachments}
+      canWrite={canWrite}
       trigger={
         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
           <Pencil className="h-3.5 w-3.5" />

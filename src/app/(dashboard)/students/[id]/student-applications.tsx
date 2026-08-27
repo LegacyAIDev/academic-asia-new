@@ -17,11 +17,15 @@ import { ApplicationDialog, EditApplicationButton, DeleteApplicationButton } fro
 import { ViewApplicationButton } from "./application-view-dialog"
 import type { ApplicationWithJoins } from "@/lib/supabase/queries/student-applications"
 import type { ApplicationReferenceData } from "./application-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type StudentApplicationsSectionProps = {
   studentId: string
   applications: ApplicationWithJoins[]
   referenceData: ApplicationReferenceData
+  attachmentsByApplication?: Map<string, AttachmentRecord[]>
+  attachmentsByDeposit?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 /** Color map for application status categories */
@@ -61,6 +65,9 @@ export function StudentApplicationsSection({
   studentId,
   applications,
   referenceData,
+  attachmentsByApplication,
+  attachmentsByDeposit,
+  canWrite = true,
 }: StudentApplicationsSectionProps) {
   const [showArchived, setShowArchived] = useState(false)
   const [showSuspended, setShowSuspended] = useState(false)
@@ -198,6 +205,9 @@ export function StudentApplicationsSection({
                           application={app}
                           studentId={studentId}
                           referenceData={referenceData}
+                          attachments={attachmentsByApplication?.get(app.id) ?? []}
+                          attachmentsByDeposit={attachmentsByDeposit}
+                          canWrite={canWrite}
                         />
                         <DeleteApplicationButton
                           applicationId={app.id}

@@ -7,6 +7,7 @@ import { buildDocumentPath } from '@/lib/supabase/storage-paths'
 import { getCategoryCode, getCategoryId } from '@/lib/supabase/document-categories'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { ALLOWED_MIME, MAX_BYTES } from '@/lib/attachments/constraints'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
@@ -20,8 +21,6 @@ export type UploadDocumentInput = {
   academic_year?: string | null
 }
 
-const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
-const MAX_BYTES = 10 * 1024 * 1024
 
 export type BatchDocumentItem = { category_id: number; title?: string | null }
 export type BatchUploadResult = { uploaded: number; failed: number; errors: string[] }

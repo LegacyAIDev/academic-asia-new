@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -40,6 +40,7 @@ import {
   MessageSquare,
   Truck,
   Check,
+  Paperclip,
 } from "lucide-react"
 import {
   createStudentTravel,
@@ -48,6 +49,8 @@ import {
   type CreateTravelInput,
 } from "@/lib/supabase/actions/student-travel"
 import type { TravelWithJoins } from "@/lib/supabase/queries/student-travel"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type AirlineItem = { id: number; code: string; label: string }
 type AirportItem = { id: number; code: string; label: string; city: string | null }
@@ -69,6 +72,8 @@ type TravelDialogProps = {
   mode: "create" | "edit"
   travel?: TravelWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
 function FormSection({
@@ -127,8 +132,11 @@ export function TravelDialog({
   mode,
   travel,
   trigger,
+  attachments = [],
+  canWrite = true,
 }: TravelDialogProps) {
   const [open, setOpen] = useState(false)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -162,6 +170,11 @@ export function TravelDialog({
       let result
       if (mode === "create") {
         result = await createStudentTravel({ ...input, student_id: studentId } as CreateTravelInput)
+        // Staged attachments could not be linked before the row existed.
+        if (result?.success && result.data?.id) {
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Saved, but ${failed} attachment(s) failed to upload`)
+        }
       } else if (travel?.id) {
         result = await updateStudentTravel(travel.id, studentId, input)
       }
@@ -332,6 +345,19 @@ export function TravelDialog({
 
               {/* Right Column */}
               <div className="space-y-5">
+                  <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+                    <FormField label="Travel documents (file or link)">
+                      <AttachmentField
+                        ref={attachRef}
+                        attachPoint="student_travel"
+                        ownerId={studentId}
+                        attachableId={mode === "edit" ? travel?.id ?? null : null}
+                        attachments={attachments}
+                        canWrite={canWrite}
+                      />
+                    </FormField>
+                  </FormSection>
+
                 <FormSection icon={Truck} title="Pickup Confirmation" accentColor="primary">
                   <FormField label="Pickup Status">
                     <Select name="pickup_status_id" defaultValue={travel?.pickup_status_id?.toString() ?? ""}>
@@ -425,10 +451,14 @@ export function EditTravelButton({
   travel,
   studentId,
   referenceData,
+  attachments = [],
+  canWrite = true,
 }: {
   travel: TravelWithJoins
   studentId: string
   referenceData: TravelReferenceData
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }) {
   return (
     <TravelDialog
@@ -436,6 +466,8 @@ export function EditTravelButton({
       referenceData={referenceData}
       mode="edit"
       travel={travel}
+      attachments={attachments}
+      canWrite={canWrite}
       trigger={
         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
           <Pencil className="h-3.5 w-3.5" />

@@ -5,9 +5,11 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { deleteAttachmentsForRecord } from '@/lib/supabase/actions/record-attachments'
 
-type ActionResult = {
+type ActionResult<T = void> = {
   success: boolean
+  data?: T
   error?: string
 }
 
@@ -24,7 +26,7 @@ export type CreateDepositInput = {
 export async function createApplicationDeposit(
   input: CreateDepositInput,
   studentId: string
-): Promise<ActionResult> {
+): Promise<ActionResult<{ id: string }>> {
   const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
   if (denied) return denied
 
@@ -32,9 +34,12 @@ export async function createApplicationDeposit(
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const { error } = await supabase
+    // Returns the new id so the dialog can attach staged files to the deposit.
+    const { data, error } = await supabase
       .from('student_application_deposits')
       .insert(input as never)
+      .select('id')
+      .single()
 
     if (error) {
       console.error('Error creating deposit:', error)
@@ -42,7 +47,7 @@ export async function createApplicationDeposit(
     }
 
     revalidatePath(`/students/${studentId}`)
-    return { success: true }
+    return { success: true, data: { id: (data as { id: string }).id } }
   } catch (err) {
     console.error('Error in createApplicationDeposit:', err)
     return { success: false, error: 'Failed to create deposit' }
@@ -91,6 +96,10 @@ export async function deleteApplicationDeposit(
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    // Attachments are polymorphic, so no foreign key cascades them. Remove them
+    // first: an orphaned storage object is invisible and never cleaned up.
+    await deleteAttachmentsForRecord('student_deposit', depositId, studentId)
 
     const { error } = await supabase
       .from('student_application_deposits')

@@ -15,11 +15,14 @@ import { FileText } from "lucide-react"
 import { ResumeDialog, EditResumeButton, DeleteResumeButton } from "./resume-dialog"
 import type { ResumeWithJoins } from "@/lib/supabase/queries/student-resume"
 import type { ResumeReferenceData } from "./resume-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type StudentResumeSectionProps = {
   studentId: string
   resumeEntries: ResumeWithJoins[]
   referenceData: ResumeReferenceData
+  attachmentsByResume?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 /** Color map for resume type badges */
@@ -45,6 +48,8 @@ export function StudentResumeSection({
   studentId,
   resumeEntries,
   referenceData,
+  attachmentsByResume,
+  canWrite = true,
 }: StudentResumeSectionProps) {
   const [filter, setFilter] = useState<string>("all")
 
@@ -164,6 +169,8 @@ export function StudentResumeSection({
                           resume={entry}
                           studentId={studentId}
                           referenceData={referenceData}
+                          attachments={attachmentsByResume?.get(entry.id) ?? []}
+                          canWrite={canWrite}
                         />
                         <DeleteResumeButton
                           resumeId={entry.id}

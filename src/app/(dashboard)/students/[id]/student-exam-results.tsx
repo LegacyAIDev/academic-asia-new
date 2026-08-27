@@ -14,11 +14,14 @@ import { FileCheck, Check, Minus } from "lucide-react"
 import { ExamResultDialog, EditExamResultButton, DeleteExamResultButton } from "./exam-result-dialog"
 import type { ExamResultWithJoins } from "@/lib/supabase/queries/student-exam-results"
 import type { ExamResultReferenceData } from "./exam-result-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type StudentExamResultsSectionProps = {
   studentId: string
   examResults: ExamResultWithJoins[]
   referenceData: ExamResultReferenceData
+  attachmentsByResult?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 /** Status badge styles keyed by exam result status code */
@@ -52,6 +55,8 @@ export function StudentExamResultsSection({
   studentId,
   examResults,
   referenceData,
+  attachmentsByResult,
+  canWrite = true,
 }: StudentExamResultsSectionProps) {
   if (examResults.length === 0) {
     return (
@@ -157,6 +162,8 @@ export function StudentExamResultsSection({
                           examResult={rec}
                           studentId={studentId}
                           referenceData={referenceData}
+                          attachments={attachmentsByResult?.get(rec.id) ?? []}
+                          canWrite={canWrite}
                         />
                         <DeleteExamResultButton
                           resultId={rec.id}

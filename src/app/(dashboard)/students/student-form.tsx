@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition, useMemo } from "react"
+import { useRef, useState, useTransition, useMemo } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -34,6 +34,8 @@ import {
   CalendarDays,
 } from "lucide-react"
 import { createStudent, updateStudent, type CreateStudentInput} from "@/lib/supabase/actions/students"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import type { StudentWithJoins } from "@/lib/supabase/queries/students"
 
 type ReferenceItem = {
@@ -56,10 +58,15 @@ export type StudentFormProps = {
     events: { id: string; name: string }[]
     profiles: { id: string; first_name: string | null; surname: string | null }[]
   }
+  examPaperAttachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
-export function StudentForm({ mode, student, referenceData }: StudentFormProps) {
+export function StudentForm({
+  mode, student, referenceData, examPaperAttachments = [], canWrite = true,
+}: StudentFormProps) {
   const router = useRouter()
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [dobOpen, setDobOpen] = useState(false)
@@ -117,6 +124,11 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
       }
 
       if (result?.success) {
+        // On a new student the exam paper had nowhere to attach until now.
+        if (mode === "create" && result.data?.id) {
+          await attachRef.current?.flush(result.data.id, result.data.id)
+        }
+
         if (mode === "create" && result.data?.id) {
           router.push(`/students/${result.data.id}`)
         } else if (student?.id) {
@@ -509,6 +521,14 @@ export function StudentForm({ mode, student, referenceData }: StudentFormProps) 
                 name="exam_paper"
                 placeholder="e.g. Year 12"
                 defaultValue={student?.exam_paper ?? ""}
+              />
+              <AttachmentField
+                ref={attachRef}
+                attachPoint="student_exam_paper"
+                ownerId={student?.id ?? ""}
+                attachableId={mode === "edit" ? student?.id ?? null : null}
+                attachments={examPaperAttachments}
+                canWrite={canWrite}
               />
             </div>
           </div>

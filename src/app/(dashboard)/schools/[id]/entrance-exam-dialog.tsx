@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -39,9 +39,12 @@ import {
   Clock,
   MessageSquare,
   Check,
+  Paperclip,
 } from "lucide-react"
 import { getAcademicYearOptions } from "@/lib/utils"
 import type { SchoolEntranceExamWithJoins } from "@/lib/supabase/queries/school-entrance-exams"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import {
   createSchoolEntranceExam,
   updateSchoolEntranceExam,
@@ -61,6 +64,8 @@ type EntranceExamDialogProps = {
   mode: "create" | "edit"
   exam?: SchoolEntranceExamWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
 function FormSection({
@@ -119,8 +124,11 @@ export function EntranceExamDialog({
   mode,
   exam,
   trigger,
+  attachments = [],
+  canWrite = true,
 }: EntranceExamDialogProps) {
   const [open, setOpen] = useState(false)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -159,6 +167,11 @@ export function EntranceExamDialog({
       let result
       if (mode === "create") {
         result = await createSchoolEntranceExam({ ...input, school_id: schoolId })
+        // Staged attachments could not be linked before the row existed.
+        if (result?.success && result.data?.id) {
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Saved, but ${failed} attachment(s) failed to upload`)
+        }
       } else if (exam?.id) {
         result = await updateSchoolEntranceExam(exam.id, schoolId, input)
       }
@@ -270,6 +283,19 @@ export function EntranceExamDialog({
               </FormField>
             </FormSection>
 
+            <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+              <FormField label="Exam paper (file or link)">
+                <AttachmentField
+                  ref={attachRef}
+                  attachPoint="school_entrance_exam_paper"
+                  ownerId={schoolId}
+                  attachableId={mode === "edit" ? exam?.id ?? null : null}
+                  attachments={attachments}
+                  canWrite={canWrite}
+                />
+              </FormField>
+            </FormSection>
+
             <FormSection icon={MessageSquare} title="Remarks" accentColor="rose">
               <FormField label="Remarks">
                 <Textarea name="remarks" rows={3} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={exam?.remarks ?? ""} placeholder="General remarks about this exam..." />
@@ -294,9 +320,9 @@ export function EntranceExamDialog({
   )
 }
 
-export function EditEntranceExamButton({ exam, schoolId, referenceData }: { exam: SchoolEntranceExamWithJoins; schoolId: string; referenceData: EntranceExamReferenceData }) {
+export function EditEntranceExamButton({ exam, schoolId, referenceData, attachments = [], canWrite = true }: { exam: SchoolEntranceExamWithJoins; schoolId: string; referenceData: EntranceExamReferenceData; attachments?: AttachmentRecord[]; canWrite?: boolean }) {
   return (
-    <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="edit" exam={exam}
+    <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="edit" exam={exam} attachments={attachments} canWrite={canWrite}
       trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -37,8 +37,11 @@ import {
   Tag,
   FileText,
   Check,
+  Paperclip,
 } from "lucide-react"
 import type { SchoolNoteWithJoins } from "@/lib/supabase/queries/school-notes"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import {
   createSchoolNote,
   updateSchoolNote,
@@ -55,6 +58,8 @@ type NoteDialogProps = {
   mode: "create" | "edit"
   note?: SchoolNoteWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
 function FormSection({
@@ -113,8 +118,11 @@ export function NoteDialog({
   mode,
   note,
   trigger,
+  attachments = [],
+  canWrite = true,
 }: NoteDialogProps) {
   const [open, setOpen] = useState(false)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -142,6 +150,11 @@ export function NoteDialog({
       let result
       if (mode === "create") {
         result = await createSchoolNote({ ...input, school_id: schoolId } as CreateSchoolNoteInput)
+        // Staged attachments could not be linked before the row existed.
+        if (result?.success && result.data?.id) {
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Saved, but ${failed} attachment(s) failed to upload`)
+        }
       } else if (note?.id) {
         result = await updateSchoolNote(note.id, schoolId, input)
       }
@@ -216,6 +229,19 @@ export function NoteDialog({
               </FormField>
             </FormSection>
 
+            <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+              <FormField label="Attachment (file or link)">
+                <AttachmentField
+                  ref={attachRef}
+                  attachPoint="school_note"
+                  ownerId={schoolId}
+                  attachableId={mode === "edit" ? note?.id ?? null : null}
+                  attachments={attachments}
+                  canWrite={canWrite}
+                />
+              </FormField>
+            </FormSection>
+
             <FormSection icon={FileText} title="Content" accentColor="teal">
               <FormField label="Detail *">
                 <Textarea name="detail" rows={8} required className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={note?.detail ?? ""} placeholder="Enter note content..." />
@@ -237,9 +263,9 @@ export function NoteDialog({
   )
 }
 
-export function EditNoteButton({ note, schoolId, referenceData }: { note: SchoolNoteWithJoins; schoolId: string; referenceData: NoteReferenceData }) {
+export function EditNoteButton({ note, schoolId, referenceData, attachments = [], canWrite = true }: { note: SchoolNoteWithJoins; schoolId: string; referenceData: NoteReferenceData; attachments?: AttachmentRecord[]; canWrite?: boolean }) {
   return (
-    <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="edit" note={note}
+    <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="edit" note={note} attachments={attachments} canWrite={canWrite}
       trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )

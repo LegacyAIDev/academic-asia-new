@@ -2169,10 +2169,13 @@ export type Database = {
       school_documents: {
         Row: {
           academic_year: string | null
+          attachable_id: string | null
+          attachable_type: string | null
           category_id: number
           created_at: string | null
-          file_name: string
-          file_path: string
+          external_url: string | null
+          file_name: string | null
+          file_path: string | null
           file_size: number | null
           id: string
           is_music_audition: boolean | null
@@ -2186,10 +2189,13 @@ export type Database = {
         }
         Insert: {
           academic_year?: string | null
+          attachable_id?: string | null
+          attachable_type?: string | null
           category_id: number
           created_at?: string | null
-          file_name: string
-          file_path: string
+          external_url?: string | null
+          file_name?: string | null
+          file_path?: string | null
           file_size?: number | null
           id?: string
           is_music_audition?: boolean | null
@@ -2203,10 +2209,13 @@ export type Database = {
         }
         Update: {
           academic_year?: string | null
+          attachable_id?: string | null
+          attachable_type?: string | null
           category_id?: number
           created_at?: string | null
-          file_name?: string
-          file_path?: string
+          external_url?: string | null
+          file_name?: string | null
+          file_path?: string | null
           file_size?: number | null
           id?: string
           is_music_audition?: boolean | null
@@ -3443,11 +3452,14 @@ export type Database = {
       student_documents: {
         Row: {
           academic_year: string | null
+          attachable_id: string | null
+          attachable_type: string | null
           category_id: number
           created_at: string | null
           description: string | null
-          file_name: string
-          file_path: string
+          external_url: string | null
+          file_name: string | null
+          file_path: string | null
           file_size: number | null
           id: string
           mime_type: string | null
@@ -3458,11 +3470,14 @@ export type Database = {
         }
         Insert: {
           academic_year?: string | null
+          attachable_id?: string | null
+          attachable_type?: string | null
           category_id: number
           created_at?: string | null
           description?: string | null
-          file_name: string
-          file_path: string
+          external_url?: string | null
+          file_name?: string | null
+          file_path?: string | null
           file_size?: number | null
           id?: string
           mime_type?: string | null
@@ -3473,11 +3488,14 @@ export type Database = {
         }
         Update: {
           academic_year?: string | null
+          attachable_id?: string | null
+          attachable_type?: string | null
           category_id?: number
           created_at?: string | null
           description?: string | null
-          file_name?: string
-          file_path?: string
+          external_url?: string | null
+          file_name?: string | null
+          file_path?: string | null
           file_size?: number | null
           id?: string
           mime_type?: string | null

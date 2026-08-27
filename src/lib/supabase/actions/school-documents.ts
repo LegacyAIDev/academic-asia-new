@@ -7,12 +7,11 @@ import { buildDocumentPath } from '@/lib/supabase/storage-paths'
 import { getCategoryCode } from '@/lib/supabase/document-categories'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { ALLOWED_MIME, MAX_BYTES } from '@/lib/attachments/constraints'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 const BUCKET = 'school-documents'
-const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
-const MAX_BYTES = 10 * 1024 * 1024
 
 export type SchoolBatchItem = { category_id: number; title?: string | null }
 export type SchoolBatchResult = { uploaded: number; failed: number; errors: string[] }

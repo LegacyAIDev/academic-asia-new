@@ -63,6 +63,8 @@ import { StudentLegalDocumentsSection } from "./student-legal-documents"
 import { StudentDocumentsSection } from "./student-documents-section"
 import { DeleteStudentDialog } from "./delete-student-dialog"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
+import { AttachmentField } from "@/components/features/attachment-field"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 // Status badge styling based on status code
@@ -143,6 +145,23 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
   if (!student) {
     notFound()
   }
+
+  // Record attachments are fetched per section in one batched query each — the
+  // ids only exist once the rows above have loaded, hence the second round.
+  const depositIds = applications.flatMap(a => (a.deposits ?? []).map(d => d.id))
+  const [
+    visaAttachments, travelAttachments, examResultAttachments,
+    resumeAttachments, applicationAttachments, depositAttachments,
+    examPaperAttachments,
+  ] = await Promise.all([
+    getAttachmentsForMany('student_visa', visas.map(v => v.id)),
+    getAttachmentsForMany('student_travel', travelRecords.map(t => t.id)),
+    getAttachmentsForMany('student_exam_result', examResults.map(r => r.id)),
+    getAttachmentsForMany('student_qualification', resumeEntries.map(r => r.id)),
+    getAttachmentsForMany('student_application', applications.map(a => a.id)),
+    getAttachmentsForMany('student_deposit', depositIds),
+    getAttachmentsForMany('student_exam_paper', [id]),
+  ])
 
   const statusStyle = statusStyles[student.status?.code ?? 'new'] ?? statusStyles.new
   const placementStyle = placementStyles[student.placement?.code ?? 'cold'] ?? placementStyles.cold
@@ -486,6 +505,13 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               <div className="space-y-1">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exam Paper</p>
                 <p className="text-sm font-medium">{student.exam_paper || "—"}</p>
+                <AttachmentField
+                  attachPoint="student_exam_paper"
+                  ownerId={id}
+                  attachableId={id}
+                  attachments={examPaperAttachments.get(id) ?? []}
+                  canWrite={canWrite}
+                />
               </div>
               <div className="flex gap-4 pt-2">
                 <Badge variant={student.aa_news ? "default" : "secondary"} className="text-xs">
@@ -596,6 +622,8 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               resumeEntries={resumeEntries}
               referenceData={resumeReferenceData}
+              attachmentsByResume={resumeAttachments}
+              canWrite={canWrite}
             />
           </TabsContent>
 
@@ -621,6 +649,8 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               examResults={examResults}
               referenceData={examResultReferenceData}
+              attachmentsByResult={examResultAttachments}
+              canWrite={canWrite}
             />
           </TabsContent>
 
@@ -635,6 +665,9 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               applications={applications}
               referenceData={appReferenceData}
+              attachmentsByApplication={applicationAttachments}
+              attachmentsByDeposit={depositAttachments}
+              canWrite={canWrite}
             />
           </TabsContent>
 
@@ -653,6 +686,8 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               visas={visas}
               referenceData={visaReferenceData}
+              attachmentsByVisa={visaAttachments}
+              canWrite={canWrite}
             />
 
             <StudentLegalDocumentsSection
@@ -666,6 +701,8 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               travelRecords={travelRecords}
               referenceData={travelReferenceData}
+              attachmentsByTravel={travelAttachments}
+              canWrite={canWrite}
             />
           </TabsContent>
         </Tabs>

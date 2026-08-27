@@ -14,11 +14,14 @@ import { Shield, Check, Minus } from "lucide-react"
 import { VisaDialog, EditVisaButton, DeleteVisaButton } from "./visa-dialog"
 import type { VisaWithJoins } from "@/lib/supabase/queries/student-visas"
 import type { VisaReferenceData } from "./visa-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type StudentVisasSectionProps = {
   studentId: string
   visas: VisaWithJoins[]
   referenceData: VisaReferenceData
+  attachmentsByVisa?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 /** Color map for visa status codes */
@@ -62,6 +65,8 @@ export function StudentVisasSection({
   studentId,
   visas,
   referenceData,
+  attachmentsByVisa,
+  canWrite = true,
 }: StudentVisasSectionProps) {
   if (visas.length === 0) {
     return (
@@ -165,6 +170,8 @@ export function StudentVisasSection({
                           visa={visa}
                           studentId={studentId}
                           referenceData={referenceData}
+                          attachments={attachmentsByVisa?.get(visa.id) ?? []}
+                          canWrite={canWrite}
                         />
                         <DeleteVisaButton
                           visaId={visa.id}

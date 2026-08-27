@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -39,6 +39,7 @@ import {
   Award,
   MessageSquare,
   Check,
+  Paperclip,
 } from "lucide-react"
 import {
   createStudentResume,
@@ -47,6 +48,8 @@ import {
   type CreateResumeInput,
 } from "@/lib/supabase/actions/student-resume"
 import type { ResumeWithJoins } from "@/lib/supabase/queries/student-resume"
+import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type ResumeTypeItem = { id: number; code: string; label: string }
 type InstrumentItem = { id: number; code: string; label: string; category: string | null }
@@ -62,6 +65,8 @@ type ResumeDialogProps = {
   mode: "create" | "edit"
   resume?: ResumeWithJoins
   trigger?: React.ReactNode
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }
 
 function FormSection({
@@ -112,8 +117,11 @@ export function ResumeDialog({
   mode,
   resume,
   trigger,
+  attachments = [],
+  canWrite = true,
 }: ResumeDialogProps) {
   const [open, setOpen] = useState(false)
+  const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -143,6 +151,11 @@ export function ResumeDialog({
       let result
       if (mode === "create") {
         result = await createStudentResume({ ...input, student_id: studentId } as CreateResumeInput)
+        // Staged attachments could not be linked before the row existed.
+        if (result?.success && result.data?.id) {
+          const failed = await attachRef.current?.flush(result.data.id) ?? 0
+          if (failed > 0) setError(`Saved, but ${failed} attachment(s) failed to upload`)
+        }
       } else if (resume?.id) {
         result = await updateStudentResume(resume.id, studentId, input)
       }
@@ -271,6 +284,19 @@ export function ResumeDialog({
               </FormField>
             </FormSection>
 
+            <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+              <FormField label="Certificate (file or link)">
+                <AttachmentField
+                  ref={attachRef}
+                  attachPoint="student_qualification"
+                  ownerId={studentId}
+                  attachableId={mode === "edit" ? resume?.id ?? null : null}
+                  attachments={attachments}
+                  canWrite={canWrite}
+                />
+              </FormField>
+            </FormSection>
+
             <FormSection icon={MessageSquare} title="Event & Remarks" accentColor="rose">
               <FormField label="Event Name">
                 <Input name="event_name" className={inputStyles} defaultValue={resume?.event_name ?? ""} placeholder="Event name" />
@@ -318,10 +344,14 @@ export function EditResumeButton({
   resume,
   studentId,
   referenceData,
+  attachments = [],
+  canWrite = true,
 }: {
   resume: ResumeWithJoins
   studentId: string
   referenceData: ResumeReferenceData
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
 }) {
   return (
     <ResumeDialog
@@ -329,6 +359,8 @@ export function EditResumeButton({
       referenceData={referenceData}
       mode="edit"
       resume={resume}
+      attachments={attachments}
+      canWrite={canWrite}
       trigger={
         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
           <Pencil className="h-3.5 w-3.5" />

@@ -10,6 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Loader2, Trash2, Plus, Banknote, CalendarDays } from "lucide-react"
 import { deleteApplicationDeposit } from "@/lib/supabase/actions/student-application-deposits"
 import { NewDepositForm } from "./application-deposit-form"
+import { AttachmentField } from "@/components/features/attachment-field"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 export type DepositItem = {
   id: string
@@ -29,12 +31,21 @@ type Props = {
   onDepositDateChange?: (d: Date | undefined) => void
   commission?: boolean
   onCommissionChange?: (v: boolean) => void
+  attachmentsByDeposit?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 const inputStyles = "h-9 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm"
 
 /** Single deposit row with delete */
-function DepositRow({ deposit, studentId }: { deposit: DepositItem; studentId: string }) {
+function DepositRow({
+  deposit, studentId, attachments = [], canWrite = true,
+}: {
+  deposit: DepositItem
+  studentId: string
+  attachments?: AttachmentRecord[]
+  canWrite?: boolean
+}) {
   const [isPending, startTransition] = useTransition()
 
   const handleDelete = () => {
@@ -45,7 +56,8 @@ function DepositRow({ deposit, studentId }: { deposit: DepositItem; studentId: s
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2 text-sm">
+    <div className="space-y-1.5 rounded-lg border bg-card px-3 py-2">
+    <div className="flex items-center gap-3 text-sm">
       <div className="flex-1 grid grid-cols-4 gap-2 items-center">
         <span className="text-muted-foreground">
           {deposit.deposit_date
@@ -63,6 +75,15 @@ function DepositRow({ deposit, studentId }: { deposit: DepositItem; studentId: s
         {isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
       </Button>
     </div>
+    {/* The deposit already exists here, so attachments save immediately. */}
+    <AttachmentField
+      attachPoint="student_deposit"
+      ownerId={studentId}
+      attachableId={deposit.id}
+      attachments={attachments}
+      canWrite={canWrite}
+    />
+    </div>
   )
 }
 
@@ -70,6 +91,7 @@ function DepositRow({ deposit, studentId }: { deposit: DepositItem; studentId: s
 export function ApplicationDepositSection({
   applicationId, studentId, deposits, isCreate,
   depositDate, onDepositDateChange, commission, onCommissionChange,
+  attachmentsByDeposit, canWrite = true,
 }: Props) {
   const [showForm, setShowForm] = useState(false)
   const [dateOpen, setDateOpen] = useState(false)
@@ -140,7 +162,8 @@ export function ApplicationDepositSection({
         {!isCreate && (
           <div className="space-y-2">
             {deposits.map((d) => (
-              <DepositRow key={d.id} deposit={d} studentId={studentId} />
+              <DepositRow key={d.id} deposit={d} studentId={studentId}
+                attachments={attachmentsByDeposit?.get(d.id) ?? []} canWrite={canWrite} />
             ))}
             {deposits.length === 0 && !showForm && (
               <p className="text-sm text-muted-foreground text-center py-3">No deposits recorded</p>

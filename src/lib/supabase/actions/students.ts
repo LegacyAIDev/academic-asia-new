@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { StudentInsert, StudentUpdate } from '@/types/database.types'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { purgeOwnerStorage } from '@/lib/supabase/actions/record-attachments'
 
 export type CreateStudentInput = {
   surname: string
@@ -144,6 +145,10 @@ export async function deleteStudent(id: string): Promise<ActionResult> {
       .from('student_contacts')
       .delete()
       .eq('student_id', id)
+
+    // Storage is outside Postgres, so the row cascade does not reach the files.
+    // Sweep them before the student goes, while the id is still resolvable.
+    await purgeOwnerStorage('student', id)
 
     // Then delete the student
     const { error } = await supabase

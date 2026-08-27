@@ -14,17 +14,22 @@ import { Landmark } from "lucide-react"
 import { BankDetailDialog, EditBankDetailButton, DeleteBankDetailButton } from "./bank-detail-dialog"
 import type { SchoolBankDetailWithJoins } from "@/lib/supabase/queries/school-bank-details"
 import type { BankReferenceData } from "./bank-detail-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type SchoolBankDetailsSectionProps = {
   schoolId: string
   bankDetails: SchoolBankDetailWithJoins[]
   referenceData: BankReferenceData
+  attachmentsByDetail?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 export function SchoolBankDetailsSection({
   schoolId,
   bankDetails,
   referenceData,
+  attachmentsByDetail,
+  canWrite = true,
 }: SchoolBankDetailsSectionProps) {
   if (bankDetails.length === 0) {
     return (
@@ -109,6 +114,8 @@ export function SchoolBankDetailsSection({
                         bankDetail={item}
                         schoolId={schoolId}
                         referenceData={referenceData}
+                        attachments={attachmentsByDetail?.get(item.id) ?? []}
+                        canWrite={canWrite}
                       />
                       <DeleteBankDetailButton
                         detailId={item.id}

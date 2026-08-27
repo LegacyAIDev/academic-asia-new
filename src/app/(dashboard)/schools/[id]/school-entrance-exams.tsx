@@ -10,15 +10,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ClipboardCheck, Check, Minus } from "lucide-react"
+import { ClipboardCheck, Check, Minus, Paperclip } from "lucide-react"
 import { EntranceExamDialog, EditEntranceExamButton, DeleteEntranceExamButton } from "./entrance-exam-dialog"
 import type { SchoolEntranceExamWithJoins } from "@/lib/supabase/queries/school-entrance-exams"
 import type { EntranceExamReferenceData } from "./entrance-exam-dialog"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 
 type SchoolEntranceExamsSectionProps = {
   schoolId: string
   exams: SchoolEntranceExamWithJoins[]
   referenceData: EntranceExamReferenceData
+  attachmentsByExam?: Map<string, AttachmentRecord[]>
+  canWrite?: boolean
 }
 
 function BoolIndicator({ value }: { value: boolean | null }) {
@@ -30,6 +33,8 @@ export function SchoolEntranceExamsSection({
   schoolId,
   exams,
   referenceData,
+  attachmentsByExam,
+  canWrite = true,
 }: SchoolEntranceExamsSectionProps) {
   if (exams.length === 0) {
     return (
@@ -107,7 +112,17 @@ export function SchoolEntranceExamsSection({
                     {exam.duration_minutes ? `${exam.duration_minutes} min` : "—"}
                   </TableCell>
                   <TableCell className="text-center">
-                    <BoolIndicator value={exam.has_paper} />
+                    {/* The flag covers papers held physically in the office; the
+                        clip covers digitally attached ones. Staff need both. */}
+                    <div className="flex items-center justify-center gap-1.5">
+                      <BoolIndicator value={exam.has_paper} />
+                      {(attachmentsByExam?.get(exam.id)?.length ?? 0) > 0 && (
+                        <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                          <Paperclip className="h-3 w-3" />
+                          {attachmentsByExam?.get(exam.id)?.length}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="pr-6">
                     <div className="flex items-center justify-end gap-1">
@@ -115,6 +130,8 @@ export function SchoolEntranceExamsSection({
                         exam={exam}
                         schoolId={schoolId}
                         referenceData={referenceData}
+                        attachments={attachmentsByExam?.get(exam.id) ?? []}
+                        canWrite={canWrite}
                       />
                       <DeleteEntranceExamButton
                         examId={exam.id}

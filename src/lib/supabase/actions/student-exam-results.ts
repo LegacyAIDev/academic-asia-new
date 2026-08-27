@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { deleteAttachmentsForRecord } from '@/lib/supabase/actions/record-attachments'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -104,6 +105,10 @@ export async function deleteStudentExamResult(
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    // Attachments are polymorphic, so no foreign key cascades them. Remove them
+    // first: an orphaned storage object is invisible and never cleaned up.
+    await deleteAttachmentsForRecord('student_exam_result', resultId, studentId)
 
     const { error } = await supabase
       .from('student_exam_results')
