@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Plus, Loader2, FileUp, Trash2, Download } from "lucide-react"
 import { uploadStudentDocument, deleteStudentDocument, getDocumentSignedUrl } from "@/lib/supabase/actions/student-documents"
 import type { StudentDocumentRecord } from "@/lib/supabase/queries/student-resume-profile"
+import { formatFileSize } from "@/lib/attachments/constraints"
+import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
 
 type Props = {
   studentId: string
@@ -16,17 +18,11 @@ type Props = {
   title: string
 }
 
-function formatSize(bytes: number | null) {
-  if (!bytes) return ""
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / 1048576).toFixed(1)} MB`
-}
-
 export function ResumeDocumentsSection({ studentId, documents, categoryId, title }: Props) {
   const [showForm, setShowForm] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
   const handleUpload = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -52,10 +48,14 @@ export function ResumeDocumentsSection({ studentId, documents, categoryId, title
     })
   }
 
-  const handleDownload = async (filePath: string) => {
-    const result = await getDocumentSignedUrl(filePath)
-    if (result.success && result.data?.url) {
-      window.open(result.data.url, "_blank")
+  // Signing takes a second or two — without the spinner the button reads as dead.
+  const handleDownload = async (docId: string, filePath: string) => {
+    setDownloadingId(docId)
+    try {
+      const result = await getDocumentSignedUrl(filePath)
+      if (result.success && result.data?.url) openInNewTab(result.data.url)
+    } finally {
+      setDownloadingId(null)
     }
   }
 
@@ -83,11 +83,15 @@ export function ResumeDocumentsSection({ studentId, documents, categoryId, title
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               {doc.description && <span>{doc.description}</span>}
               {doc.academic_year && <span>· {doc.academic_year}</span>}
-              <span>· {formatSize(doc.file_size)}</span>
+              <span>· {formatFileSize(doc.file_size)}</span>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => handleDownload(doc.file_path)}>
-            <Download className="h-3.5 w-3.5" />
+          <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0"
+            onClick={() => handleDownload(doc.id, doc.file_path)} disabled={downloadingId === doc.id}
+            aria-label="Download document">
+            {downloadingId === doc.id
+              ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              : <Download className="h-3.5 w-3.5" />}
           </Button>
           <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(doc.id)} disabled={isPending}>
             <Trash2 className="h-3.5 w-3.5" />

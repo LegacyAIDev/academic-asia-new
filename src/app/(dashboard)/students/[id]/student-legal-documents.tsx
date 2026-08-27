@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import { updateStudent } from "@/lib/supabase/actions/students"
 import { uploadStudentDocument, deleteStudentDocument, getDocumentSignedUrl } from "@/lib/supabase/actions/student-documents"
 import type { StudentDocumentRecord } from "@/lib/supabase/queries/student-resume-profile"
+import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
 
 type Props = {
   studentId: string
@@ -26,6 +27,7 @@ type Props = {
 export function StudentLegalDocumentsSection({ studentId, passportType, passportNumber, documents }: Props) {
   const [editing, setEditing] = useState(false)
   const [showUpload, setShowUpload] = useState(false)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   const handlePassportSave = (e: React.FormEvent<HTMLFormElement>) => {
@@ -71,9 +73,16 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
     })
   }
 
-  const handleDownload = async (filePath: string) => {
-    const result = await getDocumentSignedUrl(filePath)
-    if (result.success && result.data?.url) window.open(result.data.url, "_blank")
+  // Signing takes a second or two — without the spinner the button reads as dead.
+  const handleDownload = async (docId: string, filePath: string) => {
+    setDownloadingId(docId)
+    try {
+      const result = await getDocumentSignedUrl(filePath)
+      if (result.success && result.data?.url) openInNewTab(result.data.url)
+      else toast.error("Could not open document")
+    } finally {
+      setDownloadingId(null)
+    }
   }
 
   return (
@@ -181,8 +190,12 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
                 {doc.category && (
                   <Badge variant="outline" className="text-xs shrink-0">{doc.category.label}</Badge>
                 )}
-                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => handleDownload(doc.file_path)}>
-                  <Download className="h-3.5 w-3.5" />
+                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0"
+                  onClick={() => handleDownload(doc.id, doc.file_path)} disabled={downloadingId === doc.id}
+                  aria-label="Download document">
+                  {downloadingId === doc.id
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <Download className="h-3.5 w-3.5" />}
                 </Button>
                 <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(doc.id)} disabled={isPending}>
                   <Trash2 className="h-3.5 w-3.5" />

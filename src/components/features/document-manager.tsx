@@ -11,6 +11,8 @@ import {
 import { FileText, FileUp, Loader2, Trash2, Download, X, Check, Pencil } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
+import { formatFileSize } from "@/lib/attachments/constraints"
+import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
 
 type Category = { id: number; code: string; label: string }
 type Staged = { file: File; name: string; categoryId: string }
@@ -40,13 +42,6 @@ type DocumentManagerProps = {
   getFilePath: (doc: ManagedDocument) => string
 }
 
-function formatSize(bytes: number | null) {
-  if (!bytes) return ""
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / 1048576).toFixed(1)} MB`
-}
-
 /** Reusable multi-file document manager: staged upload with per-file name +
  *  category, plus rename / download / delete of existing documents. */
 export function DocumentManager({
@@ -57,6 +52,9 @@ export function DocumentManager({
   const [staged, setStaged] = useState<Staged[]>([])
   const [isPending, startTransition] = useTransition()
   const [renamingId, setRenamingId] = useState<string | null>(null)
+  // Signing a storage URL takes a second or two; without a per-row spinner the
+  // click reads as a dead button and people click it again.
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState("")
 
   useEffect(() => {
@@ -117,9 +115,14 @@ export function DocumentManager({
   }
 
   const handleDownload = async (doc: ManagedDocument) => {
-    const result = await signedUrlAction(getFilePath(doc))
-    if (result.success && result.data?.url) window.open(result.data.url, "_blank")
-    else toast.error("Could not open document")
+    setDownloadingId(doc.id)
+    try {
+      const result = await signedUrlAction(getFilePath(doc))
+      if (result.success && result.data?.url) openInNewTab(result.data.url)
+      else toast.error("Could not open document")
+    } finally {
+      setDownloadingId(null)
+    }
   }
 
   return (
@@ -152,7 +155,7 @@ export function DocumentManager({
                     {categories.map((c) => (<SelectItem key={c.id} value={c.id.toString()}>{c.label}</SelectItem>))}
                   </SelectContent>
                 </Select>
-                <span className="w-16 shrink-0 text-right text-xs text-muted-foreground">{formatSize(s.file.size)}</span>
+                <span className="w-16 shrink-0 text-right text-xs text-muted-foreground">{formatFileSize(s.file.size)}</span>
                 <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0"
                   onClick={() => setStaged((prev) => prev.filter((_, idx) => idx !== i))}>
                   <X className="h-4 w-4" />
@@ -191,14 +194,18 @@ export function DocumentManager({
                     <>
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium">{doc.title || doc.file_name}</p>
-                        <p className="text-xs text-muted-foreground">{formatSize(doc.file_size)}</p>
+                        <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
                       </div>
                       <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0"
                         onClick={() => { setRenamingId(doc.id); setRenameValue(doc.title || doc.file_name) }}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => handleDownload(doc)}>
-                        <Download className="h-3.5 w-3.5" />
+                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0"
+                        onClick={() => handleDownload(doc)} disabled={downloadingId === doc.id}
+                        aria-label="Download document">
+                        {downloadingId === doc.id
+                          ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          : <Download className="h-3.5 w-3.5" />}
                       </Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
                         onClick={() => handleDelete(doc.id)} disabled={isPending}>
