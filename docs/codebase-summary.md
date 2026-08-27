@@ -1,6 +1,6 @@
 # Codebase Summary
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-08-27
 **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase
 
 ---
@@ -9,11 +9,11 @@
 
 | Metric | Value |
 |---|---|
-| Source files (src/) | ~236 files |
+| Source files (src/) | ~250 files |
 | Estimated LOC (src/) | ~37,600 |
 | SQL migrations | 68 (001–068) |
 | Server action files | 30 |
-| Query files | 35+ |
+| Query files | 36+ |
 | shadcn/ui primitives | 53 |
 | Legacy migration scripts | 34 |
 
@@ -61,8 +61,10 @@ src/app/
     ├── students/
     │   ├── page.tsx               # Student list with filters
     │   ├── students-filters.tsx
+    │   ├── students-advanced-filters.tsx  # Sheet: sex, DOB, entry year, course, school, event, contact
     │   ├── student-form.tsx       # Shared create/edit form
     │   ├── new/page.tsx
+    │   ├── brief-intros/export/   # Bulk Brief Introduction export — picker + controls + print CSS
     │   └── [id]/
     │       ├── page.tsx           # Student detail — assembles all sections
     │       ├── edit/page.tsx
@@ -127,6 +129,12 @@ src/app/
     └── exams/
         ├── page.tsx
         └── exam-management-table.tsx
+
+src/app/api/                       # Route Handlers — file downloads only
+├── schools/export/pdf/            # Selected School List PDF
+└── students/brief-intro/export/
+    ├── pdf/                       # Brief Introduction booklet
+    └── xlsx/                      # Brief Introduction data sheet
 ```
 
 ### components/ — Shared Components
@@ -136,6 +144,10 @@ src/components/
 ├── ui/                           # 53 shadcn/ui primitives
 │   ├── button.tsx, input.tsx, select.tsx, dialog.tsx, ...
 │   └── sonner.tsx                # Toast wrapper
+├── features/                     # Cross-route feature components
+│   ├── document-manager.tsx
+│   └── brief-intro-export-menu.tsx  # PDF/Excel menu — profile card + bulk picker
+├── permissions/                  # Permission-aware wrappers
 └── layout/
     ├── sidebar.tsx               # App navigation sidebar
     └── header.tsx                # Top header bar
@@ -153,6 +165,19 @@ src/lib/
 │   ├── guard.ts                  # requireAccess / assertAccess / canAccess / assertNoEscalation
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
+├── rich-text.ts                  # sanitizeRichText() — cleans editor HTML before storage
+├── pdf/
+│   └── render-document-pdf.ts    # Shared headless-Chromium renderer (HTML string → PDF)
+├── schools/                      # Selected School List export — types, shaping, HTML builder
+├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
+│   ├── export-types.ts           # One payload for single and bulk, PDF and Excel
+│   ├── export-shaping.ts         # PURE: htmlToPlainText, toCellText/Date, filenames
+│   ├── build-export-html.tsx     # server-only — booklet HTML for the PDF route
+│   ├── build-export-workbook.ts  # server-only — exceljs flat data sheet
+│   ├── download-export.ts        # Client helper shared by both entry points
+│   └── __tests__/                # 49 tests: shaping + workbook round-trip
+├── students/
+│   └── parse-list-filters.ts     # URL params → list filters, shared by list + export picker
 └── supabase/
     ├── client.ts                 # Browser Supabase client (anon/publishable key)
     ├── server.ts                 # Server component client (cookie SSR)
@@ -281,6 +306,9 @@ Source CSVs (`data/`): `AA_Student.csv`, `AA_School.csv`, `AA_Event*.csv`, and o
 | `recharts` ^2.15 | Charts |
 | `sonner` ^2.0 | Toast notifications |
 | `papaparse` ^5.5 | CSV parsing in migration scripts |
+| `puppeteer-core` ^25.8 + `@sparticuz/chromium` ^149 | Headless Chromium for the PDF exports |
+| `exceljs` ^4.4 | Excel workbook generation (pure JS, no native binary) |
+| `sanitize-html` ^2.17 | Cleans editor HTML on save; flattens it for spreadsheet cells |
 | `lucide-react` ^0.561 | Icon set |
 | `date-fns` ^4.1 | Date utilities |
 | `tsx` ^4.21 | Run TypeScript migration scripts directly |

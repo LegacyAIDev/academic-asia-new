@@ -27,7 +27,13 @@ type Consultant = {
   surname: string | null
 }
 
-export function StudentsFilters() {
+/**
+ * @param preserveParams URL params that "Clear filters" must not remove and that
+ *   do not count as an active filter. The brief introduction export keeps its
+ *   student selection in the URL, and clearing a filter there should narrow the
+ *   list, not silently discard what the consultant has picked.
+ */
+export function StudentsFilters({ preserveParams = [] }: { preserveParams?: string[] } = {}) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -113,20 +119,28 @@ export function StudentsFilters() {
   const handleConsultantChange = (value: string) =>
     pushParams({ assigned: value === 'all' ? null : value })
 
-  // Clear all filters
+  // Clear all filters, keeping anything the host screen owns
   const clearFilters = () => {
     setSearch('')
+    const kept = new URLSearchParams()
+    preserveParams.forEach((key) => {
+      const value = searchParams.get(key)
+      if (value) kept.set(key, value)
+    })
+    const query = kept.toString()
     startTransition(() => {
-      router.push(pathname)
+      router.push(query ? `${pathname}?${query}` : pathname)
     })
   }
 
   const consultantName = (c: Consultant) =>
     [c.first_name, c.surname].filter(Boolean).join(' ') || 'Unnamed'
 
-  // Any active filter (search or any URL param other than the page number)
+  // Any active filter (search or any URL param other than the page number and
+  // whatever the host screen owns)
   const hasFilters =
-    Boolean(search) || Array.from(searchParams.keys()).some((k) => k !== 'page')
+    Boolean(search) ||
+    Array.from(searchParams.keys()).some((k) => k !== 'page' && !preserveParams.includes(k))
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

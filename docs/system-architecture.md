@@ -1,6 +1,6 @@
 # System Architecture
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-08-27
 
 ---
 
@@ -126,7 +126,7 @@ happens in server components and Server Actions, which already run server-side.
 |---|---|---|
 | Page | `requireAccess(module, level)` → redirect `/403` | 21 dashboard pages |
 | Server Action | `assertAccess(module, level)` → `ActionResult` error | 106 exported actions |
-| API route | `canAccess(...)` → 403 JSON | `/api/schools/export/pdf` |
+| API route | `canAccess(...)` → 403 JSON | 3 export routes under `/api/` |
 | Navigation | Sidebar filtered by resolved map in the dashboard layout | 8 top-level items |
 | Buttons | `canAccess(module, WRITE)` gates create/edit affordances | list + detail pages |
 
@@ -275,7 +275,64 @@ State mutations go through `actions/event-scheduler.ts` Server Actions. `@schedu
 
 ---
 
-## 7. Legacy Data Migration Architecture
+## 7. Document Export Architecture
+
+Two client-facing documents are generated server-side: the Selected School List
+(`src/lib/schools/`) and the student Brief Introduction (`src/lib/brief-intro/`).
+Both follow the same layering, and a third export should copy it rather than invent
+a variant.
+
+```
+queries/<name>-export.ts        ← batched reads, caps, { ok, payload } result
+          │
+          ▼
+lib/<name>/export-shaping.ts    ← PURE. every fallback + format decision. unit tested
+          │
+   ┌──────┴──────┐
+   ▼             ▼
+build-export-    build-export-      ← 'server-only'
+html.tsx         workbook.ts
+   │                 │
+   ▼                 ▼
+lib/pdf/render-  exceljs buffer
+document-pdf.ts
+   │                 │
+   ▼                 ▼
+/api/.../pdf     /api/.../xlsx     ← auth → cap → render → private, no-store
+```
+
+**Rules that keep this working:**
+
+1. **The PDF renderer is handed HTML, never a URL.** Headless Chromium carries no
+   session and would be redirected to `/login`, and accepting a URL would open an
+   SSRF surface. `renderDocumentPdf` is shared and takes a self-contained string.
+
+2. **`outputFileTracingIncludes` in `next.config.ts` is keyed per route path.**
+   Every new PDF route needs its own entry pointing at the Chromium `bin/` glob.
+   Miss it and the route works locally — where Chrome is resolved from the
+   developer's own installation — and fails only once deployed.
+
+3. **Shaping is pure and separate.** No Supabase, no I/O, so the awkward cases
+   (legacy fallbacks, HTML flattened for spreadsheet cells) are tested directly.
+
+4. **Spreadsheet cells are written verbatim — do not "fix" this.** The reflex is to
+   escape a leading `= + - @` against formula injection, but that mitigation belongs
+   to CSV. A string written through ExcelJS lands as a String cell (ValueType 3) with
+   no formula attached, so `=1+1` is already inert; the workbook tests round-trip the
+   generated file to prove it. Prefixing an apostrophe would be actively harmful —
+   ExcelJS stores it as a literal character rather than the OOXML `quotePrefix` style
+   (which it drops), so it would show in the cell and corrupt any hobbies field a
+   consultant began with a dash. Escape only if a CSV export is ever added.
+
+5. **Documents name students, so responses are `Cache-Control: private, no-store`
+   and failures are logged without the payload.**
+
+Modules marked `'server-only'` are aliased to a stub in `vitest.config.ts` so they
+keep the bundling guard while staying unit testable.
+
+---
+
+## 8. Legacy Data Migration Architecture
 
 ```
 data/                    ← Source CSVs (AA_Student.csv, AA_School.csv, AA_Event*.csv, ...)
@@ -300,7 +357,7 @@ data/
 
 ---
 
-## 8. Deployment Architecture
+## 9. Deployment Architecture
 
 The app is deployed as a standard Next.js application. Supabase is a hosted managed service — no self-hosted Postgres.
 
@@ -308,12 +365,12 @@ See `docs/deployment-guide.md` for environment variable setup and deployment ste
 
 ---
 
-## 9. Known Architectural Gaps
+## 10. Known Architectural Gaps
 
 | Gap | Severity | Notes |
 |---|---|---|
 | RLS enabled but permissive | High | Migration `075` enabled RLS everywhere, but policies are `using (true)` for `authenticated`. App-layer guards are the real gate — see §3.7. Next step: policies that read `resolve_permissions` via a JWT claim |
-| Thin test coverage | Medium | Vitest configured; 76 tests, concentrated on permissions and school export. No E2E |
+| Thin test coverage | Medium | Vitest configured; 133 tests, concentrated on permissions and the export pipelines. No E2E |
 | No CI/CD pipeline | Medium | No `.github/workflows/` found. `npm run check:permissions` is written and passing but not wired to CI |
 | `/reports` not implemented | Low | Sidebar link exists, no page yet. `/settings` now has the Access Levels section |
 | No permission audit log | Medium | Access-right changes are not recorded. Cheaper to add before the matrix is in real use than after |

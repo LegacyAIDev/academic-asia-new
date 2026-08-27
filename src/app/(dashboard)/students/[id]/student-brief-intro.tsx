@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Languages, CheckCircle2, XCircle, Send } from "lucide-react"
 import { looksLikeHtml } from "@/lib/utils"
 import { BriefIntroDialog } from "./brief-intro-dialog"
+import { BriefIntroExportMenu } from "@/components/features/brief-intro-export-menu"
 import type { BriefIntroWithJoins } from "@/lib/supabase/queries/student-brief-intro"
 import type { BriefIntroReferenceData } from "./brief-intro-dialog"
 
@@ -60,7 +61,12 @@ export function StudentBriefIntroSection({
             <Languages className="h-4 w-4 text-muted-foreground" />
             Brief Introduction
           </CardTitle>
-          <BriefIntroDialog studentId={studentId} referenceData={referenceData} briefIntro={briefIntro} />
+          <div className="flex items-start gap-2">
+            {/* Only offered once there is something to export — the empty state
+                above has no introduction to put in a document. */}
+            <BriefIntroExportMenu studentIds={[studentId]} />
+            <BriefIntroDialog studentId={studentId} referenceData={referenceData} briefIntro={briefIntro} />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

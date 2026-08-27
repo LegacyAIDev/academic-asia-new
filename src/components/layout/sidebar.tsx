@@ -20,6 +20,7 @@ import {
   Mic,
   CalendarDays,
   ClipboardCheck,
+  Languages,
 } from "lucide-react"
 
 type NavChild = { name: string; href: string; icon: React.ElementType }
@@ -33,7 +34,19 @@ type NavItem = {
 
 const navigation: NavItem[] = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Students", href: "/students", icon: Users },
+  {
+    name: "Students",
+    href: "/students",
+    icon: Users,
+    children: [
+      {
+        items: [
+          { name: "All Students", href: "/students", icon: Users },
+          { name: "Brief Intro Export", href: "/students/brief-intros/export", icon: Languages },
+        ],
+      },
+    ],
+  },
   { name: "Schools", href: "/schools", icon: School },
   {
     name: "Events",

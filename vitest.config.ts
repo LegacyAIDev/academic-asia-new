@@ -10,6 +10,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // See the stub for why: keeps the 'server-only' marker meaningful in the
+      // build without making those modules impossible to unit test.
+      'server-only': path.resolve(__dirname, './src/test/server-only-stub.ts'),
     },
   },
 })

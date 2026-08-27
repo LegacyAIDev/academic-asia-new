@@ -35,6 +35,10 @@ import {
   Clock,
 } from "lucide-react"
 import { getStudentsList, type StudentListItem } from "@/lib/supabase/queries/students"
+import {
+  parseStudentListFilters,
+  type StudentListSearchParams,
+} from "@/lib/students/parse-list-filters"
 import { StudentsFilters } from "./students-filters"
 import { Skeleton } from "@/components/ui/skeleton"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
@@ -57,23 +61,7 @@ const placementStyles: Record<string, { color: string; label: string }> = {
   very_hot: { color: "bg-rose-100 text-rose-700", label: "Very Hot" },
 }
 
-type SearchParams = Promise<{
-  page?: string
-  search?: string
-  status?: string
-  placement?: string
-  assigned?: string
-  gender?: string
-  dob_from?: string
-  dob_to?: string
-  entry_from?: string
-  entry_to?: string
-  course?: string
-  school?: string
-  event?: string
-  has_email?: string
-  has_phone?: string
-}>
+type SearchParams = Promise<StudentListSearchParams>
 
 export default async function StudentsPage({
   searchParams,
@@ -85,38 +73,11 @@ export default async function StudentsPage({
 
   const params = await searchParams
   const page = parseInt(params.page ?? "1", 10)
-  const search = params.search ?? ""
-  const statusId = params.status ? parseInt(params.status, 10) : undefined
-  const placementId = params.placement ? parseInt(params.placement, 10) : undefined
-  const assignedTo = params.assigned || undefined
-  const gender = params.gender || undefined
-  const dobFrom = params.dob_from || undefined
-  const dobTo = params.dob_to || undefined
-  const entryYearFrom = params.entry_from ? parseInt(params.entry_from, 10) : undefined
-  const entryYearTo = params.entry_to ? parseInt(params.entry_to, 10) : undefined
-  const courseId = params.course ? parseInt(params.course, 10) : undefined
-  const schoolId = params.school || undefined
-  const eventId = params.event || undefined
-  const hasEmail = params.has_email === 'yes' ? true : params.has_email === 'no' ? false : undefined
-  const hasTelephone = params.has_phone === 'yes' ? true : params.has_phone === 'no' ? false : undefined
 
   const { students, totalCount, totalPages } = await getStudentsList({
     page,
     pageSize: 50,
-    search,
-    statusId,
-    placementId,
-    assignedTo,
-    gender,
-    dobFrom,
-    dobTo,
-    entryYearFrom,
-    entryYearTo,
-    courseId,
-    schoolId,
-    eventId,
-    hasEmail,
-    hasTelephone,
+    ...parseStudentListFilters(params),
   })
 
   // Calculate stats from the data
