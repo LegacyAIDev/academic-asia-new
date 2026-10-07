@@ -11,6 +11,8 @@ describe('moduleForPath', () => {
     expect(moduleForPath('/staff')).toBe(MODULES.STAFF)
     expect(moduleForPath('/reports')).toBe(MODULES.REPORTS)
     expect(moduleForPath('/settings')).toBe(MODULES.SETTINGS)
+    expect(moduleForPath('/scheduler')).toBe(MODULES.SCHEDULER)
+    expect(moduleForPath('/scheduler/rooms')).toBe(MODULES.SCHEDULER)
   })
 
   it('maps nested routes to the owning module', () => {

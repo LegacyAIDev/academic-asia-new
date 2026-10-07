@@ -5,17 +5,21 @@ import { ACCESS, MODULE_KEYS, denyAll, toAccessLevel } from '../modules'
 
 /**
  * MODULE_KEYS is hand-maintained so a typo fails at compile time, which means it
- * can drift from the seeded rows. This reads the migration and compares.
+ * can drift from the seeded rows. This reads every migration that seeds
+ * permission_modules and compares.
  */
 function seededModuleKeys(): string[] {
   const dir = join(process.cwd(), 'supabase/migrations')
-  const file = readdirSync(dir).find(f => f.endsWith('_create_permission_matrix.sql'))
-  if (!file) throw new Error('permission matrix migration not found')
-
-  const sql = readFileSync(join(dir, file), 'utf8')
-  const insert = sql.slice(sql.indexOf('insert into public.permission_modules'))
-  const values = insert.slice(0, insert.indexOf(';'))
-  return [...values.matchAll(/\('([a-z_]+)',\s*'[^']+',\s*\d+\)/g)].map(m => m[1])
+  const keys = new Set<string>()
+  for (const file of readdirSync(dir).filter(f => f.endsWith('.sql'))) {
+    const sql = readFileSync(join(dir, file), 'utf8')
+    for (const block of sql.split('insert into public.permission_modules').slice(1)) {
+      const values = block.slice(0, block.indexOf(';'))
+      for (const m of values.matchAll(/\('([a-z_]+)',\s*'[^']+',\s*\d+\)/g)) keys.add(m[1])
+    }
+  }
+  if (keys.size === 0) throw new Error('no permission_modules seed found in migrations')
+  return [...keys]
 }
 
 describe('module keys', () => {

@@ -15,6 +15,7 @@ const ROUTE_MODULES: { prefix: string; module: ModuleKey }[] = [
   { prefix: '/staff', module: MODULES.STAFF },
   { prefix: '/reports', module: MODULES.REPORTS },
   { prefix: '/settings', module: MODULES.SETTINGS },
+  { prefix: '/scheduler', module: MODULES.SCHEDULER },
   { prefix: '/', module: MODULES.DASHBOARD },
 ]
 

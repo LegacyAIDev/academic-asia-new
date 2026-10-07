@@ -29,6 +29,7 @@ export const MODULES = {
   STAFF: 'staff',
   REPORTS: 'reports',
   SETTINGS: 'settings',
+  SCHEDULER: 'scheduler',
 } as const
 
 export type ModuleKey = (typeof MODULES)[keyof typeof MODULES]

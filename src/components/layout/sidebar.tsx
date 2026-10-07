@@ -6,83 +6,8 @@ import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { ACCESS, type PermissionMap } from "@/lib/permissions/modules"
 import { moduleForPath } from "@/lib/permissions/route-map"
-import {
-  Users,
-  School,
-  Calendar,
-  Settings,
-  LayoutDashboard,
-  FileText,
-  UserCog,
-  ChevronDown,
-  Building2,
-  GraduationCap,
-  Mic,
-  CalendarDays,
-  ClipboardCheck,
-  Languages,
-} from "lucide-react"
-
-type NavChild = { name: string; href: string; icon: React.ElementType }
-type NavGroup = { label?: string; items: NavChild[] }
-type NavItem = {
-  name: string
-  href: string
-  icon: React.ElementType
-  children?: NavGroup[]
-}
-
-const navigation: NavItem[] = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  {
-    name: "Students",
-    href: "/students",
-    icon: Users,
-    children: [
-      {
-        items: [
-          { name: "All Students", href: "/students", icon: Users },
-          { name: "Brief Intro Export", href: "/students/brief-intros/export", icon: Languages },
-        ],
-      },
-    ],
-  },
-  { name: "Schools", href: "/schools", icon: School },
-  {
-    name: "Events",
-    href: "/events",
-    icon: Calendar,
-    children: [
-      {
-        items: [
-          { name: "All Events", href: "/events", icon: Calendar },
-        ],
-      },
-      {
-        label: "Engagement & Guidance",
-        items: [
-          { name: "Expo / Fair", href: "/events/expo-fair", icon: Building2 },
-          { name: "Seminar / Webinar", href: "/events/seminar-webinar", icon: CalendarDays },
-          { name: "Briefing / Meeting", href: "/events/briefing-meeting", icon: CalendarDays },
-          { name: "Reception / Social", href: "/events/reception-social", icon: CalendarDays },
-        ],
-      },
-      {
-        label: "Admissions & Assessment",
-        items: [
-          { name: "Interview Day", href: "/events/interview", icon: GraduationCap },
-          { name: "Audition Day", href: "/events/audition-day", icon: Mic },
-          { name: "Group Entrance Exam", href: "/events/group-entrance-exam", icon: GraduationCap },
-          { name: "Assessment / Scholarship", href: "/events/school-assessment-scholarship", icon: GraduationCap },
-        ],
-      },
-    ],
-  },
-  { name: "Exams", href: "/exams", icon: ClipboardCheck },
-  { name: "Staff", href: "/staff", icon: UserCog },
-  { name: "Reports", href: "/reports", icon: FileText },
-  { name: "Settings", href: "/settings", icon: Settings },
-]
+import { ChevronDown } from "lucide-react"
+import { navigation, type NavGroup } from "./sidebar-navigation"
 
 type SidebarProps = {
   /** Resolved server-side in the dashboard layout. */

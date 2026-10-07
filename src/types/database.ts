@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -585,6 +585,7 @@ export type Database = {
           id: string
           invigilator_names: string | null
           name: string | null
+          room_id: string | null
           sort_order: number | null
           special_instructions: string | null
           start_time: string | null
@@ -604,6 +605,7 @@ export type Database = {
           id?: string
           invigilator_names?: string | null
           name?: string | null
+          room_id?: string | null
           sort_order?: number | null
           special_instructions?: string | null
           start_time?: string | null
@@ -623,6 +625,7 @@ export type Database = {
           id?: string
           invigilator_names?: string | null
           name?: string | null
+          room_id?: string | null
           sort_order?: number | null
           special_instructions?: string | null
           start_time?: string | null
@@ -636,6 +639,13 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_exam_blocks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "scheduler_rooms"
             referencedColumns: ["id"]
           },
         ]
@@ -1780,6 +1790,358 @@ export type Database = {
           sort_order?: number | null
         }
         Relationships: []
+      }
+      scheduler_booking_attendees: {
+        Row: {
+          application_id: string | null
+          booking_id: string
+          id: string
+          period: unknown
+          profile_id: string | null
+          role: string
+          room_id: string | null
+          seat_no: number | null
+          student_id: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          booking_id: string
+          id?: string
+          period?: unknown
+          profile_id?: string | null
+          role?: string
+          room_id?: string | null
+          seat_no?: number | null
+          student_id?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          booking_id?: string
+          id?: string
+          period?: unknown
+          profile_id?: string | null
+          role?: string
+          room_id?: string | null
+          seat_no?: number | null
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduler_booking_attendees_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "student_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_booking_attendees_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "scheduler_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_booking_attendees_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_booking_attendees_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scheduler_booking_history: {
+        Row: {
+          action: string
+          actor_id: string | null
+          at: string
+          booking_id: string
+          changes: Json | null
+          id: number
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          at?: string
+          booking_id: string
+          changes?: Json | null
+          id?: number
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          at?: string
+          booking_id?: string
+          changes?: Json | null
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduler_booking_history_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_booking_history_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "scheduler_bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scheduler_bookings: {
+        Row: {
+          application_id: string | null
+          assessment_set_id: string | null
+          assessment_snapshot: Json | null
+          attendance: string | null
+          booking_type: string
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          created_by: string | null
+          end_at: string
+          exam_id: string | null
+          id: string
+          instructions: string | null
+          is_exclusive: boolean
+          local_date: string
+          location_type: string
+          notes: string | null
+          online_link: string | null
+          organiser_id: string | null
+          period: unknown
+          room_id: string | null
+          school_id: string | null
+          seats_required: number
+          start_at: string
+          status: string
+          student_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          assessment_set_id?: string | null
+          assessment_snapshot?: Json | null
+          attendance?: string | null
+          booking_type: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          end_at: string
+          exam_id?: string | null
+          id?: string
+          instructions?: string | null
+          is_exclusive?: boolean
+          local_date: string
+          location_type?: string
+          notes?: string | null
+          online_link?: string | null
+          organiser_id?: string | null
+          period?: unknown
+          room_id?: string | null
+          school_id?: string | null
+          seats_required?: number
+          start_at: string
+          status?: string
+          student_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          assessment_set_id?: string | null
+          assessment_snapshot?: Json | null
+          attendance?: string | null
+          booking_type?: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          end_at?: string
+          exam_id?: string | null
+          id?: string
+          instructions?: string | null
+          is_exclusive?: boolean
+          local_date?: string
+          location_type?: string
+          notes?: string | null
+          online_link?: string | null
+          organiser_id?: string | null
+          period?: unknown
+          room_id?: string | null
+          school_id?: string | null
+          seats_required?: number
+          start_at?: string
+          status?: string
+          student_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduler_bookings_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "student_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_bookings_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_bookings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_bookings_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "student_individual_exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_bookings_organiser_id_fkey"
+            columns: ["organiser_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "scheduler_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_bookings_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_bookings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scheduler_locations: {
+        Row: {
+          address: string | null
+          building: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          building?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          building?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      scheduler_rooms: {
+        Row: {
+          capacity: number
+          color: string | null
+          created_at: string
+          display_name: string
+          facilities_notes: string | null
+          floor: string | null
+          id: string
+          is_accessible: boolean
+          is_active: boolean
+          is_exam_suitable: boolean
+          location_id: string
+          online_station_count: number
+          room_number: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number
+          color?: string | null
+          created_at?: string
+          display_name: string
+          facilities_notes?: string | null
+          floor?: string | null
+          id?: string
+          is_accessible?: boolean
+          is_active?: boolean
+          is_exam_suitable?: boolean
+          location_id: string
+          online_station_count?: number
+          room_number?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number
+          color?: string | null
+          created_at?: string
+          display_name?: string
+          facilities_notes?: string | null
+          floor?: string | null
+          id?: string
+          is_accessible?: boolean
+          is_active?: boolean
+          is_exam_suitable?: boolean
+          location_id?: string
+          online_station_count?: number
+          room_number?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduler_rooms_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "scheduler_locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scheduling_modes: {
         Row: {
@@ -3912,6 +4274,7 @@ export type Database = {
           preferred_start_time: string | null
           remarks: string | null
           room: string | null
+          room_id: string | null
           school_id: string | null
           score: number | null
           seat_no: number | null
@@ -3945,6 +4308,7 @@ export type Database = {
           preferred_start_time?: string | null
           remarks?: string | null
           room?: string | null
+          room_id?: string | null
           school_id?: string | null
           score?: number | null
           seat_no?: number | null
@@ -3978,6 +4342,7 @@ export type Database = {
           preferred_start_time?: string | null
           remarks?: string | null
           room?: string | null
+          room_id?: string | null
           school_id?: string | null
           score?: number | null
           seat_no?: number | null
@@ -4014,6 +4379,13 @@ export type Database = {
             columns: ["exam_type_id"]
             isOneToOne: false
             referencedRelation: "individual_exam_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_individual_exams_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "scheduler_rooms"
             referencedColumns: ["id"]
           },
           {
@@ -5275,7 +5647,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      scheduler_calendar_items: {
+        Row: {
+          application_id: string | null
+          booking_id: string | null
+          booking_type: string | null
+          created_by: string | null
+          end_at: string | null
+          exam_id: string | null
+          floor: string | null
+          is_exclusive: boolean | null
+          local_date: string | null
+          location_name: string | null
+          location_type: string | null
+          notes: string | null
+          online_link: string | null
+          organiser_id: string | null
+          room_id: string | null
+          room_name: string | null
+          room_number: string | null
+          school_id: string | null
+          seats_required: number | null
+          source: string | null
+          source_id: string | null
+          start_at: string | null
+          status: string | null
+          student_id: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
@@ -5289,6 +5690,60 @@ export type Database = {
           access: number
           module_key: string
         }[]
+      }
+      scheduler_available_rooms: {
+        Args: {
+          p_exam_only?: boolean
+          p_exclude_booking?: string
+          p_from: string
+          p_seats?: number
+          p_to: string
+        }
+        Returns: {
+          capacity: number
+          display_name: string
+          floor: string
+          is_accessible: boolean
+          is_exam_suitable: boolean
+          location_name: string
+          online_station_count: number
+          remaining: number
+          room_id: string
+          room_number: string
+        }[]
+      }
+      scheduler_cancel_booking: {
+        Args: { p_id: string; p_reason: string }
+        Returns: undefined
+      }
+      scheduler_confirm_booking: { Args: { p_id: string }; Returns: undefined }
+      scheduler_free_busy: {
+        Args: {
+          p_exclude_booking_id?: string
+          p_from: string
+          p_profile_ids?: string[]
+          p_room_ids?: string[]
+          p_student_ids?: string[]
+          p_to: string
+        }
+        Returns: {
+          booking_type: string
+          end_at: string
+          item_id: string
+          item_source: string
+          start_at: string
+          subject_id: string
+          subject_kind: string
+          title: string
+        }[]
+      }
+      scheduler_record_attendance: {
+        Args: { p_attendance: string; p_id: string }
+        Returns: undefined
+      }
+      scheduler_save_booking: {
+        Args: { p_attendees?: Json; p_booking: Json }
+        Returns: string
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
@@ -5310,12 +5765,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -5339,11 +5794,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -5364,11 +5819,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -5389,11 +5844,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -5406,11 +5861,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
