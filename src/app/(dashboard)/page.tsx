@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, School, Calendar, TrendingUp } from "lucide-react"
 import { requireAccess } from "@/lib/permissions/guard"
 import { MODULES } from "@/lib/permissions/modules"
+import { PendingExamBookingsCard } from "./pending-exam-bookings-card"
 
 const stats = [
   {
@@ -48,6 +49,7 @@ export default async function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <PendingExamBookingsCard />
         {stats.map((stat) => (
           <Card key={stat.name}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -1,0 +1,79 @@
+/* Maps the FullCalendar "monarch" palette onto the app's shadcn tokens and
+   styles the booking states the adapter marks with class names. Type hues
+   mirror src/lib/scheduler/colors.ts and are used only for the accent bar. */
+
+.scheduler-calendar {
+  --fc-monarch-primary: var(--primary);
+  --fc-monarch-primary-foreground: var(--primary-foreground);
+  --fc-monarch-secondary: var(--muted);
+  --fc-monarch-secondary-foreground: var(--muted-foreground);
+  --fc-monarch-border: var(--border);
+  --fc-monarch-background: var(--card);
+  --fc-monarch-foreground: var(--foreground);
+  --sched-examination: #dc2626;
+  --sched-group-examination: #b91c1c;
+  --sched-consultation: #16a34a;
+  --sched-school-interview: #7c3aed;
+  --sched-internal-meeting: #2563eb;
+  --sched-room-reservation: #64748b;
+  --sched-other: #475569;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Event cards: the accent bar is an inset shadow so FullCalendar's inline
+   border colour never overrides it. */
+.scheduler-calendar .type-examination,
+.scheduler-calendar .type-group_examination,
+.scheduler-calendar .type-consultation,
+.scheduler-calendar .type-school_interview,
+.scheduler-calendar .type-internal_meeting,
+.scheduler-calendar .type-room_reservation,
+.scheduler-calendar .type-other {
+  --sched-accent: var(--sched-other);
+  border-radius: 6px;
+  box-shadow: inset 3px 0 0 0 var(--sched-accent);
+  font-size: 12px;
+  line-height: 1.25;
+  overflow: hidden;
+}
+
+.scheduler-calendar .type-examination { --sched-accent: var(--sched-examination); }
+.scheduler-calendar .type-group_examination { --sched-accent: var(--sched-group-examination); }
+.scheduler-calendar .type-consultation { --sched-accent: var(--sched-consultation); }
+.scheduler-calendar .type-school_interview { --sched-accent: var(--sched-school-interview); }
+.scheduler-calendar .type-internal_meeting { --sched-accent: var(--sched-internal-meeting); }
+.scheduler-calendar .type-room_reservation { --sched-accent: var(--sched-room-reservation); }
+
+.scheduler-calendar .type-examination:focus-visible,
+.scheduler-calendar .type-group_examination:focus-visible,
+.scheduler-calendar .type-consultation:focus-visible,
+.scheduler-calendar .type-school_interview:focus-visible,
+.scheduler-calendar .type-internal_meeting:focus-visible,
+.scheduler-calendar .type-room_reservation:focus-visible,
+.scheduler-calendar .type-other:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.scheduler-calendar .is-cancelled {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.scheduler-calendar .is-pending {
+  border-style: dashed !important;
+}
+
+.scheduler-calendar .is-readonly {
+  opacity: 0.85;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scheduler-calendar,
+  .scheduler-calendar * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
