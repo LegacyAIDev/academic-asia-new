@@ -58,38 +58,6 @@ export async function createIndividualExam(
     return { success: false, error: 'Failed to create exam booking' }
   }
 }
-
-/** Update an existing individual exam */
-export async function updateIndividualExam(
-  examId: string,
-  studentId: string,
-  input: Partial<Omit<CreateIndividualExamInput, 'student_id' | 'school_id' | 'application_id' | 'exam_type_id'>>
-): Promise<ActionResult> {
-  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase
-      .from('student_individual_exams')
-      .update(input as never)
-      .eq('id', examId)
-
-    if (error) {
-      console.error('Error updating individual exam:', error)
-      return { success: false, error: error.message }
-    }
-
-    revalidatePath(`/students/${studentId}`)
-    return { success: true }
-  } catch (err) {
-    console.error('Error in updateIndividualExam:', err)
-    return { success: false, error: 'Failed to update exam booking' }
-  }
-}
-
 /** Compute status: needs both confirmed date AND time to move to Confirmed, then score for Completed */
 function deriveStatus(confirmed_date?: string | null, confirmed_start_time?: string | null, score?: number | null): number {
   if (confirmed_date && confirmed_start_time && score != null) return 3 // Completed
@@ -97,47 +65,48 @@ function deriveStatus(confirmed_date?: string | null, confirmed_start_time?: str
   return 1 // Pending
 }
 
-/** Update exam fields from the consultant dashboard — auto-computes status */
+/**
+ * Updates the score or remarks of an exam. Date, time, room and seat are owned
+ * by the scheduler and can only change through a scheduler booking.
+ */
 export async function updateExamFields(
   examId: string,
-  input: {
-    confirmed_date?: string | null
-    confirmed_start_time?: string | null
-    room?: string | null
-    seat_no?: number | null
-    score?: number | null
-    remarks?: string | null
-  }
+  input: { score?: number | null; remarks?: string | null }
 ): Promise<ActionResult> {
   const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
   if (denied) return denied
+
+  const allowed = ['score', 'remarks']
+  if (Object.keys(input).some(key => !allowed.includes(key))) {
+    return { success: false, error: 'Scheduling fields are managed by the scheduler.' }
+  }
 
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    // Fetch current state to merge with input for status derivation
     const { data: current, error: fetchError } = await supabase
       .from('student_individual_exams')
-      .select('confirmed_date, confirmed_start_time, score')
+      .select('confirmed_date, confirmed_start_time, score, status_id')
       .eq('id', examId)
       .single()
     if (fetchError) return { success: false, error: fetchError.message }
 
-    const finalDate = input.confirmed_date !== undefined ? input.confirmed_date : current?.confirmed_date
-    const finalTime = input.confirmed_start_time !== undefined ? input.confirmed_start_time : current?.confirmed_start_time
     const finalScore = input.score !== undefined ? input.score : current?.score
-    const status_id = deriveStatus(finalDate, finalTime, finalScore)
+    const status_id = current?.status_id === 4
+      ? 4
+      : deriveStatus(current?.confirmed_date, current?.confirmed_start_time, finalScore)
 
     const { error } = await supabase
       .from('student_individual_exams')
-      .update({ ...input, status_id } as never)
+      .update({ score: input.score, remarks: input.remarks, status_id } as never)
       .eq('id', examId)
 
     if (error) return { success: false, error: error.message }
 
     revalidatePath('/exams')
     revalidatePath('/students')
+    revalidatePath('/scheduler')
     return { success: true }
   } catch (err) {
     console.error('Error in updateExamFields:', err)

@@ -35,6 +35,7 @@ import {
   FileCheck,
   Files,
   Plus,
+  CalendarClock,
 } from "lucide-react"
 import { getStudentById, getStudentContacts, getContactReferenceData } from "@/lib/supabase/queries/students"
 import { getStudentApplications, getApplicationReferenceData } from "@/lib/supabase/queries/student-applications"
@@ -47,6 +48,7 @@ import { getStudentBriefIntro, getBriefIntroReferenceData } from "@/lib/supabase
 import { getStudentResume, getResumeReferenceData } from "@/lib/supabase/queries/student-resume"
 import { getStudentResumeProfile, getStudentResumeTalents, getStudentDocuments } from "@/lib/supabase/queries/student-resume-profile"
 import { getStudentAATests } from "@/lib/supabase/queries/student-individual-exams"
+import { StudentCalendarSection } from "./student-calendar-section"
 import { getStudentInternalNotes } from "@/lib/supabase/queries/student-internal-notes"
 import { StudentContactsSection } from "./student-contacts"
 import { StudentApplicationsSection } from "./student-applications"
@@ -571,6 +573,12 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
                   Event Applications
                 </Link>
               </TabsTrigger>
+              <TabsTrigger value="calendar" asChild>
+                <Link href={`/students/${id}?tab=calendar`} scroll={false} className="gap-1.5">
+                  <CalendarClock className="h-4 w-4" />
+                  Calendar
+                </Link>
+              </TabsTrigger>
               <TabsTrigger value="immigration" asChild>
                 <Link href={`/students/${id}?tab=immigration`} scroll={false} className="gap-1.5">
                   <Plane className="h-4 w-4" />
@@ -681,6 +689,10 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
           </TabsContent>
 
           {/* Immigration: visas, legal documents and travel */}
+          <TabsContent value="calendar" className="space-y-6">
+            <StudentCalendarSection studentId={id} canBook={await canAccess(MODULES.SCHEDULER, ACCESS.WRITE)} />
+          </TabsContent>
+
           <TabsContent value="immigration" className="space-y-6">
             <StudentVisasSection
               studentId={id}

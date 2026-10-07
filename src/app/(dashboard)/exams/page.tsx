@@ -2,8 +2,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ClipboardCheck, Clock, CheckCircle2, AlertCircle } from "lucide-react"
 import { getAllExams, getExamStats } from "@/lib/supabase/queries/exam-management"
 import { ExamManagementTable } from "./exam-management-table"
-import { requireAccess } from "@/lib/permissions/guard"
-import { MODULES } from "@/lib/permissions/modules"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
+
+import { getExamBookingLinks } from "@/lib/supabase/queries/scheduler-exams"
 
 type PageParams = { searchParams: Promise<{ status?: string; page?: string }> }
 
@@ -20,6 +22,10 @@ export default async function ExamManagementPage({ searchParams }: PageParams) {
   ])
 
   const { exams, totalCount, totalPages } = result
+  const [links, canSchedule] = await Promise.all([
+    getExamBookingLinks(exams.map((exam) => exam.id)),
+    canAccess(MODULES.SCHEDULER, ACCESS.WRITE),
+  ])
 
   return (
     <div className="space-y-6">
@@ -36,7 +42,7 @@ export default async function ExamManagementPage({ searchParams }: PageParams) {
         <StatCard icon={ClipboardCheck} label="Total" value={stats.total} bg="bg-primary/10" color="text-primary" />
       </div>
 
-      <ExamManagementTable exams={exams} currentStatus={statusId} page={page} totalPages={totalPages} totalCount={totalCount} />
+      <ExamManagementTable exams={exams} links={links} canSchedule={canSchedule} currentStatus={statusId} page={page} totalPages={totalPages} totalCount={totalCount} />
     </div>
   )
 }

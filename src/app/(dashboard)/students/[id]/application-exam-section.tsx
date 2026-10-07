@@ -12,6 +12,7 @@ import {
 import { Loader2, Trash2, Plus, GraduationCap, CalendarDays } from "lucide-react"
 import { deleteIndividualExam } from "@/lib/supabase/actions/student-individual-exams"
 import { NewExamForm } from "./application-exam-form"
+import { ScheduleBookingButton } from "@/components/scheduler/schedule-booking-button"
 
 export type ExamItem = {
   id: string
@@ -43,7 +44,6 @@ type Props = {
 const inputStyles = "h-9 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm"
 const YEARS = Array.from({ length: 13 }, (_, i) => String(i + 1))
 const DELIVERY_LABELS: Record<number, string> = { 1: "In Person", 2: "Online", 3: "Hybrid" }
-
 function formatDate(val: string | null) {
   if (!val) return "—"
   return new Date(val + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
@@ -69,14 +69,19 @@ function ExamRow({ exam, studentId }: { exam: ExamItem; studentId: string }) {
           <span className="text-muted-foreground">{DELIVERY_LABELS[exam.delivery_mode_id ?? 0] ?? "—"}</span>
           <span className="text-muted-foreground">{formatDate(exam.preferred_date)}{exam.preferred_start_time ? ` ${exam.preferred_start_time}` : ""}</span>
         </div>
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0" onClick={handleDelete} disabled={isPending}>
-          {isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
-        </Button>
+        <div className="flex items-center gap-1 shrink-0">
+          {exam.status_id !== 3 && exam.status_id !== 4 && (
+            <ScheduleBookingButton examId={exam.id} label={exam.confirmed_date ? "Reschedule" : "Schedule"} variant="ghost" />
+          )}
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0" onClick={handleDelete} disabled={isPending}>
+            {isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+          </Button>
+        </div>
       </div>
       {/* Confirmation row */}
       {(exam.confirmed_date || exam.room || exam.seat_no != null || exam.score != null) && (
         <div className="flex items-center gap-3 text-xs text-muted-foreground pl-1 border-t pt-1">
-          {exam.confirmed_date && <span>Confirmed: {formatDate(exam.confirmed_date)}{exam.confirmed_start_time ? ` ${exam.confirmed_start_time}` : ""}</span>}
+          {exam.confirmed_date && <span>Scheduled: {formatDate(exam.confirmed_date)}{exam.confirmed_start_time ? ` ${exam.confirmed_start_time}` : ""}</span>}
           {exam.room && <span>Room: {exam.room}</span>}
           {exam.seat_no != null && <span>Seat: {exam.seat_no}</span>}
           {exam.score != null && <span className="font-medium text-foreground">Score: {exam.score}</span>}
@@ -95,8 +100,7 @@ export function ApplicationExamSection({
   const [showForm, setShowForm] = useState(false)
   const [dateOpen, setDateOpen] = useState(false)
 
-  const formatDateDisplay = (date: Date | undefined) =>
-    date ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null
+  const formatDateDisplay = (date?: Date) => date?.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) ?? null
 
   return (
     <div className="group">
@@ -178,9 +182,7 @@ export function ApplicationExamSection({
             {exams.map((ex) => (
               <ExamRow key={ex.id} exam={ex} studentId={studentId} />
             ))}
-            {exams.length === 0 && !showForm && (
-              <p className="text-sm text-muted-foreground text-center py-3">No exam bookings</p>
-            )}
+            {exams.length === 0 && !showForm && <p className="text-sm text-muted-foreground text-center py-3">No exam bookings</p>}
             {showForm && (
               <NewExamForm
                 applicationId={applicationId}
