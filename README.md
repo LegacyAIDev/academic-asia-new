@@ -15,7 +15,7 @@ This project is a full rebuild of a legacy system, migrating existing data from 
 | Database / Auth | Supabase (Postgres + Auth + SSR sessions) |
 | Styling | Tailwind CSS v4, shadcn/ui (53 Radix-based primitives) |
 | Forms | react-hook-form + zod + @hookform/resolvers |
-| Calendar | @schedule-x v4 with drag-and-drop + @dnd-kit/core |
+| Calendar | FullCalendar v7 (Premium resource views) + @dnd-kit/core for the event scheduler |
 | Charts | recharts |
 | Toasts | sonner |
 
@@ -43,6 +43,10 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=<your-publishable-key>
 
 # Service role key — server-only, never expose to browser
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+
+# FullCalendar Premium license for the Scheduler module.
+# Leave empty to run on the evaluation key during development.
+NEXT_PUBLIC_FULLCALENDAR_LICENSE_KEY=<your-fullcalendar-license-key>
 ```
 
 ### 3. Install & Run
@@ -83,8 +87,11 @@ src/
 │   │   ├── students/        # Student list, detail, new, edit
 │   │   ├── schools/         # School list, detail, new, edit
 │   │   ├── staff/           # Staff list, detail, new, edit
-│   │   ├── events/[type]/   # Type-parameterized event pages + scheduler
-│   │   └── exams/           # Exam management table
+│   │   ├── events/[type]/   # Type-parameterized event pages + event scheduler
+│   │   ├── exams/           # Exam management table
+│   │   └── scheduler/       # Rooms, bookings, exam scheduling (FullCalendar v7)
+│   │       ├── rooms/       # Rooms + locations admin
+│   │       └── bookings/[id]/  # Booking detail route
 │   └── auth/callback/       # Supabase OAuth/email callback route
 ├── components/
 │   ├── ui/                  # 53 shadcn/ui primitives
@@ -106,7 +113,7 @@ src/
     ├── database.ts           # Supabase-generated types
     └── database.types.ts     # Extended/aliased types
 supabase/
-├── migrations/              # 68 SQL migrations (001–068)
+├── migrations/              # 84 SQL migrations (001–078 + timestamped, incl. Scheduler)
 └── config.toml
 scripts/                     # 34 one-off TypeScript data migration scripts
 data/                        # Source CSVs + migration artifacts
