@@ -1,6 +1,6 @@
 # Code Standards & Conventions
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-09-28
 
 This document is the canonical reference for how code is written and organized in this project. All contributors must follow these patterns. When in doubt, look at `students/[id]/` (most complex entity) and `schools/[id]/` as the reference implementations.
 
@@ -158,6 +158,12 @@ export async function getStudent(id: string) {
 
 **Separation rule**: queries/ = reads only. actions/ = writes only. Never mix them.
 
+**Pure helpers**: business logic that has no I/O (zod schemas, conflict detection, calendar
+adapters, error-code mapping) does not belong in `actions/` or `queries/`. The scheduler module
+keeps this kind of code in `src/lib/scheduler/` (e.g. `booking-schema.ts`, `conflicts.ts`,
+`calendar-adapter.ts`) with a matching `__tests__/` folder — follow this pattern for any new
+feature with non-trivial pure logic rather than burying it inside a Server Action.
+
 ---
 
 ## 7. Page & Component Patterns
@@ -247,9 +253,14 @@ import { cn } from '@/lib/utils'
 
 ## 10. RBAC / Access Control
 
-Access is per **module**, not per role. Eight modules — `dashboard`, `students`,
-`schools`, `events`, `exams`, `staff`, `reports`, `settings` — each carry one of three
+Access is per **module**, not per role. Modules — `dashboard`, `students`,
+`schools`, `events`, `exams`, `staff`, `reports`, `settings`, `scheduler` — each carry one of three
 levels: `NONE (0)`, `READ (1)`, `WRITE (2)`.
+
+**Adding a new module**: seed its default permissions in a migration, not just in
+`src/lib/permissions/modules.ts`. A parity test scans every file in `supabase/migrations/` and
+fails if a module defined in code has no seed row — see how `scheduler` was added in
+`20260928070931_scheduler_permission_module.sql`.
 
 A staff member inherits the defaults of their admin level (`admin_level_permissions`)
 and may deviate per module (`profile_permission_overrides`). The database function

@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-08-20
+**Last updated:** 2026-09-28
 **Current phase:** Phase 2 — Feature Completion
 
 > Items marked as "Inferred" are based on codebase signals (sidebar links, migration patterns, absence of test/CI config) and not from explicit specifications.
@@ -80,6 +80,37 @@
 
 ---
 
+## Phase 4a — Scheduler v1
+
+**Status: Implemented 2026-09-28**
+
+- [x] Rooms + locations admin page (`/scheduler/rooms`) — capacity, facilities, active flag
+- [x] Calendar page (`/scheduler`) — my / team / rooms views on FullCalendar v7 Premium
+- [x] Bookings with capacity guard + seat assignment (exclusion constraint), reason-required cancel
+- [x] Availability check while booking (`scheduler_free_busy`, `scheduler_available_rooms`)
+- [x] Exam scheduling single write path — date/time/room/seat only via scheduler RPCs, `updateExamFields` narrowed to score/remarks
+- [x] Student detail calendar tab (`student-calendar-section.tsx`)
+- [x] Booking history / audit trail (`scheduler_booking_history`, trigger-written)
+- [x] `scheduler` permission module (0/3/4/6 write, 7/8 read; confirm + rooms/locations CRUD require EXAMS WRITE)
+
+**Deferred to v2 backlog** (customer scope cut, 2026-09-26):
+- Recurring availability rules / lunch-break blocked times
+- Legacy `AA_Scheduler.csv` import (folded into the data-migration workstream)
+- Excel exports (rooms list, bookings-in-range)
+- Copy-as-text (booking text, family-ready exam text)
+- Team view people-as-columns layout (overlay view covers this in v1)
+- Resource timeline week view
+- Microsoft 365 calendar sync — feasibility note only, not implemented
+
+**Open items before go-live:**
+- [ ] Purchase FullCalendar Premium license ($480/yr) and set `NEXT_PUBLIC_FULLCALENDAR_LICENSE_KEY` — currently on evaluation key
+- [ ] Run a production build to confirm the scheduler module compiles clean end-to-end
+- [ ] Load real room inventory (current rooms are placeholder/seed data, not the full AA Centre list)
+
+See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-meetings-exams/plan.md` for design detail.
+
+---
+
 ## Phase 5 — Missing Pages & Features
 
 **Status: Planned** *(Inferred from sidebar links without backing pages)*
@@ -121,3 +152,19 @@
 - Internationalisation / Chinese language support (student profiles have `chinese_name` and `chinese_address` fields)
 - Bulk operations on student list (bulk assign staff, bulk status update)
 - Email notifications for application status changes
+
+---
+
+## Changelog
+
+- **2026-09-28** — Scheduler v1: rooms/locations admin, my/team/rooms calendar (FullCalendar v7
+  Premium), room + staff bookings with capacity/seat conflict handling, exam scheduling single
+  write path, student calendar tab, booking history. See Phase 4a above.
+- **2026-10-02** — Scheduler review hardening + visual pass: scheduler RPCs revoked from
+  public/anon and granted to authenticated only; `scheduler_record_attendance` RPC (show_up
+  completes the linked exam); trigger clears a booking's `exam_id` when it stops being an
+  examination type; calendar view now shows completed exams as confirmed; availability lookups
+  capped at 62-day ranges and URL ids validated as UUIDs before hitting PostgREST; new dashboard
+  "pending exam bookings" card (spec NOT-01); room chip design system (`room-chip.tsx`,
+  `booking-status-badge.tsx`, `booking-form-section.tsx`) rolled out across rooms admin, booking
+  dialogs, and the details ribbon.

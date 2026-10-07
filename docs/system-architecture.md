@@ -329,7 +329,54 @@ Key components:
 - `drag-overlay.tsx` — custom drag preview rendered by `@dnd-kit/core`
 - `time-slot-utils.ts` — pure utility functions for time slot math
 
-State mutations go through `actions/event-scheduler.ts` Server Actions. `@schedule-x` handles the underlying calendar rendering with drag-and-drop enabled by `@schedule-x/drag-and-drop`.
+State mutations go through `actions/event-scheduler.ts` Server Actions. Calendar rendering for this feature uses `@dnd-kit/core` directly (not FullCalendar) — see §6a for the shared calendar library used by the newer Scheduler module.
+
+---
+
+## 6a. Scheduler Module (Rooms, Bookings, Exam Scheduling)
+
+Internal scheduler for staff, room, and examination bookings (`src/app/(dashboard)/scheduler/`), added 2026-09-28. Calendar rendering is FullCalendar v7 Premium, not `@schedule-x` (evaluated then removed during the build).
+
+**Calendar library:** `@fullcalendar/react` 7.1.0 core + `@fullcalendar/react-scheduler` 7.1.0 for resource/room timeline views. Plugins are imported from their v7 subpaths, not the v6-style flat package. Timezones are Temporal-based; the business timezone `Asia/Hong_Kong` is fixed in `src/lib/scheduler/config.ts` (`SCHEDULER_TIMEZONE`) rather than read from the browser. A single wrapper component (`src/components/scheduler/scheduler-calendar.tsx`) imports the library; everything else maps data through a pure adapter (`src/lib/scheduler/calendar-adapter.ts`).
+
+**License:** Premium runs under the evaluation key until purchased. `FULLCALENDAR_LICENSE_KEY` in `src/lib/scheduler/config.ts` reads `NEXT_PUBLIC_FULLCALENDAR_LICENSE_KEY`, falling back to the evaluation license string when unset. Purchasing before go-live is an open item (see roadmap).
+
+**Data model:**
+
+| Table / View | Purpose |
+|---|---|
+| `scheduler_locations` | Physical sites (e.g. "AA Centre") |
+| `scheduler_rooms` | Rooms per location: capacity, facilities, active flag |
+| `scheduler_bookings` | One row per booking. `type`: `examination`\|`group_examination`\|`consultation`\|`school_interview`\|`internal_meeting`\|`room_reservation`\|`other`. `status`: `pending`\|`confirmed`\|`cancelled`. `location_type`: `room`\|`online` |
+| `scheduler_booking_attendees` | Staff/student attendees per booking: `role`, `seat_no`; denormalises `room_id` + period from the parent booking so seat clashes can be enforced with an `EXCLUDE` constraint |
+| `scheduler_booking_history` | Append-only audit trail, written by a trigger on every insert/update (`created`/`confirmed`/`rescheduled`/`updated`/`cancelled`), actor = `auth.uid()`, reason captured in `changes` |
+| `scheduler_calendar_items` (view) | Union of non-cancelled bookings, confirmed exams, and `event_schedules` — the single read source for calendar rendering |
+
+**RPCs (all writes go through these, no direct table writes from the app):**
+- `scheduler_save_booking` — atomic create/update across booking + attendees
+- `scheduler_confirm_booking` — sets `confirmed_by`/`confirmed_at`
+- `scheduler_cancel_booking(id, reason)` — soft-cancel only, reason required, no hard delete
+- `scheduler_available_rooms` — remaining-capacity search for the "needs a room" flow
+- `scheduler_free_busy` — availability check used while booking
+- `scheduler_record_attendance(p_id, p_attendance)` — `show_up`\|`no_show`, confirmed bookings only; `show_up` on a booking linked to an exam moves that exam to `status_id = 3` (completed)
+
+All five original RPCs plus `scheduler_record_attendance` are `revoke`d from `public`/`anon` and `grant`ed only to `authenticated` (`20261002165441_scheduler_grants_attendance_and_view_fix.sql`) — PostgREST can no longer execute them unauthenticated.
+
+**Triggers / integrity:** a `BEFORE` trigger locks the room row and enforces capacity and rule checks, raising typed `SQLSTATE`s the UI maps to messages (`src/lib/scheduler/error-messages.ts`): `SR001` exclusive-slot overlap, `SR002` over capacity, `SR003` seat out of range, `SR004` missing cancel/reschedule reason, `SR006` inactive room, `23P01` seat clash (Postgres exclusion violation). Exam-type bookings are forced to `pending` on insert regardless of caller input, and rooms with `is_active = false` refuse new bookings (`SR006`). A second `BEFORE INSERT OR UPDATE` trigger, `scheduler_bookings_clear_exam_link`, nulls `exam_id` whenever `booking_type` is changed away from `examination`/`group_examination`, so a repurposed booking can't keep pointing at a stale exam record.
+
+**Calendar view fix:** `scheduler_calendar_items` now includes exams with `status_id in (2, 3)` (confirmed and completed) and reports both as `confirmed` — a completed exam no longer shows as pending on the calendar.
+
+**Range & id validation:** availability actions (`checkAvailability`, `findAvailableRooms` in `scheduler-availability.ts`) cap `from`/`to` at `MAX_RANGE_DAYS = 62` days (`src/lib/scheduler/config.ts`) and reject wider ranges before querying. URL-sourced ids (`src/lib/scheduler/search-params.ts`) are filtered through a UUID regex before being used as PostgREST filters.
+
+**Attendance action:** `recordAttendance(id, attendance)` in `src/lib/supabase/actions/scheduler-bookings.ts` requires `EXAMS WRITE` and wraps `scheduler_record_attendance`.
+
+**Dashboard:** `src/app/(dashboard)/pending-exam-bookings-card.tsx` shows a count of examination/group-examination bookings still `pending`, linking into the scheduler filtered to that state (spec NOT-01).
+
+**Exam scheduling has a single write path.** The exam *request* still originates on the application form (`application-exam-form.tsx`, unchanged). Date, time, room, and seat are set only via the scheduler booking dialog — opened from both the Exams page and the student detail calendar tab, same component. `updateExamFields` (in `student-individual-exams.ts`) is narrowed to score/remarks only; Exams-page date/time/room cells are read-only.
+
+**Permissions:** new module `scheduler` — admin levels 0/3/4/6 get `WRITE`, 7/8 get `READ` (see `src/lib/permissions/modules.ts`). Confirming a booking, cancelling a confirmed exam booking, and rooms/locations CRUD additionally require `EXAMS WRITE`; a plain scheduler `WRITE` covers creating/updating/moving one's own bookings.
+
+**Migrations:** `20260928070928_scheduler_core.sql` (tables, triggers, view), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql`, `20260928074722_scheduler_review_hardening.sql` (force-pending exam status, inactive-room refusal), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix).
 
 ---
 

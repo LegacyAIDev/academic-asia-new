@@ -258,3 +258,20 @@ Full mobile QA has not been completed — treat mobile as best-effort for the cu
 The event scheduler uses `@schedule-x` with the `theme-shadcn` theme package, ensuring it blends with the existing design system. The scheduler's visual configuration (colors, fonts) should be adjusted through the `@schedule-x/theme-shadcn` API rather than overriding CSS directly.
 
 Drag-and-drop behavior uses `@dnd-kit/core`. The `drag-overlay.tsx` component renders a floating preview of the dragged item — keep this visually simple (student name + exam type label).
+
+## 11. Scheduler Conventions (Rooms, Bookings, Exam Scheduling)
+
+Subject: physical seats in physical rooms on Hong Kong office floors. Every screen answers one question — which room or colleague is free, and can I book it now.
+
+- **Tokens only.** `primary` for actions/selection, `card` for surfaces, `muted` for secondary text/quiet backgrounds, `border` for hairlines. Booking-type hues come only from `src/lib/scheduler/colors.ts` and appear only as an accent — the 3px left bar on calendar cards, the type dot, type badges, and the details ribbon. Never use raw Tailwind colours or per-room custom swatches as the primary identifier.
+- **Type.** System sans; hierarchy through weight/tracking, not fonts. `tabular-nums` on every time, count, and capacity figure. Eyebrows are `text-[11px] uppercase tracking-wide text-muted-foreground` — used for floor labels, form sections, and sources.
+- **Room chip — the signature component** (`src/components/scheduler/room-chip.tsx`): a two-tone tag ("14/F · Exam Room") with a thin capacity meter underneath. Reuse it wherever a room appears — rooms admin, booking room recommendations, the details ribbon, the student agenda. One component, every home; don't rebuild a room label inline.
+- **Shared booking pieces:** `booking-status-badge.tsx` (status pill, tokens only), `booking-form-section.tsx` (form section wrapper driving the When · Where · Who · Details eyebrow rhythm), `booking-details-ribbon.tsx` (type badge + status badge + room chip row atop the details sheet), `booking-form-reason.tsx` (cancel/reschedule reason field).
+- **Command bar:** one rounded-xl card holding view tabs, date navigation + mode segmented control, people picker, and New booking. Filters live as a quiet chip row beneath, with an active-filter count and Clear — reuse this pattern for other scheduler-style toolbars.
+- **Calendar cards:** 3px left accent in type colour, 6px radius, 12px text; dashed border for pending; struck + faded for cancelled. Motion is removed under `prefers-reduced-motion` (enforced in `scheduler-calendar.css`).
+- **History:** a dot-and-line timeline, reason shown as a quiet quote — see `booking-history-list.tsx`.
+- **Rejected as generic:** gradient headers, raw-colour status pills, icon-in-circle decoration, shadows as hierarchy, dashboard-style stat tiles for rooms, hover scale effects, per-room custom colour swatches as primary identifier.
+- **Quality floor:** `focus-visible:ring-2 ring-ring` on custom interactive elements, targets >= 36px, wraps correctly at 400px, dark mode via tokens only.
+- **Copy:** sentence case, plain verbs. Empty states invite the next action ("Add your first room", "Book a consultation to add the first one").
+
+Source: `plans/260912-0136-scheduler-rooms-meetings-exams/design-notes.md`.

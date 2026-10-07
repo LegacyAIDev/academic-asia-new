@@ -1,6 +1,6 @@
 # Codebase Summary
 
-**Last updated:** 2026-08-27
+**Last updated:** 2026-10-02
 **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase
 
 ---
@@ -9,13 +9,14 @@
 
 | Metric | Value |
 |---|---|
-| Source files (src/) | ~250 files |
-| Estimated LOC (src/) | ~37,600 |
-| SQL migrations | 68 (001–068) |
-| Server action files | 30 |
-| Query files | 36+ |
+| Source files (src/) | ~290 files |
+| Estimated LOC (src/) | ~40,500 |
+| SQL migrations | 85 (numbered 001–078 + timestamped, incl. 6 scheduler migrations) |
+| Server action files | 37 |
+| Query files | 43+ |
 | shadcn/ui primitives | 53 |
 | Legacy migration scripts | 34 |
+| Test files | 17 (305 tests) |
 
 ---
 
@@ -25,7 +26,7 @@
 aa-new/
 ├── src/                  # Application source
 ├── supabase/
-│   ├── migrations/       # 68 SQL migration files
+│   ├── migrations/       # 85 SQL migration files
 │   └── config.toml       # Supabase project config (project_id: aa-new)
 ├── scripts/              # 34 data migration TypeScript scripts (run via tsx)
 ├── data/                 # Source CSVs + migration output artifacts
@@ -58,6 +59,7 @@ src/app/
 └── (dashboard)/                   # Protected routes — layout renders Sidebar + Header
     ├── layout.tsx                 # Loads getCurrentUser() server-side, renders shell
     ├── page.tsx                   # Dashboard home
+    ├── pending-exam-bookings-card.tsx  # Dashboard alert: pending exam bookings count (spec NOT-01)
     ├── students/
     │   ├── page.tsx               # Student list with filters
     │   ├── students-filters.tsx
@@ -80,6 +82,7 @@ src/app/
     │       ├── student-brief-intro.tsx
     │       ├── student-internal-notes.tsx
     │       ├── student-legal-documents.tsx
+    │       ├── student-calendar-section.tsx  # Scheduler tab: student's bookings/exams
     │       └── *-dialog.tsx       # One dialog per sub-entity (create/edit modals)
     ├── schools/
     │   ├── page.tsx
@@ -126,9 +129,26 @@ src/app/
     │               ├── unassigned-sidebar.tsx
     │               ├── representative-tabs.tsx
     │               └── drag-overlay.tsx
-    └── exams/
-        ├── page.tsx
-        └── exam-management-table.tsx
+    ├── exams/
+    │   ├── page.tsx
+    │   └── exam-management-table.tsx
+    └── scheduler/                  # Rooms, bookings, exam scheduling (added 2026-09-28)
+        ├── page.tsx                # My / team / rooms calendar (FullCalendar v7)
+        ├── scheduler-shell.tsx     # Client shell: view state, dialogs orchestration
+        ├── scheduler-toolbar.tsx
+        ├── scheduler-filter-bar.tsx
+        ├── people-picker.tsx
+        ├── booking-details-sheet.tsx
+        ├── move-confirm-dialog.tsx # Drag/resize reschedule confirmation
+        ├── bookings/[id]/page.tsx  # Booking detail route (kept per Tab rule)
+        └── rooms/                  # Rooms + locations admin
+            ├── page.tsx
+            ├── rooms-table.tsx
+            ├── room-row.tsx
+            ├── room-row-actions.tsx    # Per-row actions menu (edit/deactivate)
+            ├── room-dialog.tsx
+            ├── room-form-fields.tsx
+            └── locations-panel.tsx / location-dialog.tsx
 
 src/app/api/                       # Route Handlers — file downloads only
 ├── schools/export/pdf/            # Selected School List PDF
@@ -149,9 +169,27 @@ src/components/
 │   ├── attachment-field.tsx      # Inline attach file/link next to a text field
 │   ├── attachment-list.tsx       # Attachment rows: open (spinner while signing), delete
 │   └── brief-intro-export-menu.tsx  # PDF/Excel menu — profile card + bulk picker
+├── scheduler/                     # Scheduler UI (added 2026-09-28)
+│   ├── scheduler-calendar.tsx     # FullCalendar wrapper — the one file that imports the library
+│   ├── scheduler-calendar.css     # FullCalendar theme overrides
+│   ├── booking-dialog.tsx         # Type-specific booking create/edit dialog
+│   ├── booking-form-basics.tsx / booking-form-location.tsx / booking-form-people.tsx
+│   ├── booking-form-staff-attendees.tsx / booking-form-candidates.tsx / booking-form-details.tsx
+│   ├── booking-student-search.tsx
+│   ├── booking-conflict-banner.tsx / use-booking-conflicts.ts
+│   ├── booking-cancel-dialog.tsx  # Reason-required cancel
+│   ├── booking-details.tsx        # Read view for booking detail route
+│   ├── booking-details-ribbon.tsx # Type badge + status badge + room chip row atop details sheet
+│   ├── booking-form-section.tsx   # Form section wrapper (When · Where · Who · Details eyebrows)
+│   ├── booking-form-reason.tsx    # Cancel/reschedule reason field
+│   ├── booking-status-badge.tsx   # Shared status pill (tokens only)
+│   ├── room-chip.tsx              # Signature room tag + capacity meter — reused across scheduler
+│   ├── booking-history-list.tsx   # Renders `scheduler_booking_history` rows
+│   └── schedule-booking-button.tsx  # Entry point used by Exams page + student tab
 ├── permissions/                  # Permission-aware wrappers
 └── layout/
     ├── sidebar.tsx               # App navigation sidebar
+    ├── sidebar-navigation.ts     # Nav item config, incl. Scheduler entry
     └── header.tsx                # Top header bar
 ```
 
@@ -185,6 +223,21 @@ src/lib/
 │   └── __tests__/                # 49 tests: shaping + workbook round-trip
 ├── students/
 │   └── parse-list-filters.ts     # URL params → list filters, shared by list + export picker
+├── scheduler/                    # Scheduler pure helpers (added 2026-09-28) — unit tested, no I/O
+│   ├── config.ts                 # SCHEDULER_TIMEZONE, FULLCALENDAR_LICENSE_KEY, slot constants
+│   ├── booking-schema.ts         # zod schemas per booking type (discriminated union)
+│   ├── room-schema.ts            # zod schema for room/location forms
+│   ├── conflicts.ts              # Overlap/capacity/seat conflict detection (client-side pre-check)
+│   ├── error-messages.ts         # Maps SQLSTATE codes (SR001–SR006, 23P01) → user messages
+│   ├── calendar-adapter.ts       # PURE: bookings/exams/event_schedules → FullCalendar events
+│   ├── colors.ts                 # Booking type/status → calendar color mapping
+│   ├── search-params.ts          # URL query param parsing for calendar filters
+│   ├── time-utils.ts             # Temporal/date-fns helpers, HKT-aware
+│   ├── booking-defaults.ts       # Default form values per booking type
+│   ├── exam-booking-defaults.ts  # Default form values for exam-linked bookings
+│   ├── action-helpers.ts         # Shared RPC-call/error-mapping helpers for actions
+│   └── __tests__/                # 7 test files: booking-schema, calendar-adapter, colors,
+│                                  # conflicts, error-messages, exam-booking-defaults, search-params
 └── supabase/
     ├── client.ts                 # Browser Supabase client (anon/publishable key)
     ├── server.ts                 # Server component client (cookie SSR)
@@ -223,7 +276,12 @@ src/lib/
     │   ├── school-academic-results.ts
     │   ├── school-bank-details.ts
     │   ├── school-notes.ts
-    │   └── school-visits.ts
+    │   ├── school-visits.ts
+    │   ├── scheduler-rooms.ts         # Room CRUD, requires EXAMS WRITE
+    │   ├── scheduler-locations.ts     # Location CRUD, requires EXAMS WRITE
+    │   ├── scheduler-bookings.ts      # Wraps scheduler_save_booking/confirm/cancel/record_attendance RPCs
+    │   ├── scheduler-exams.ts         # Exam scheduling via the same RPCs (single write path)
+    │   └── scheduler-availability.ts  # Wraps scheduler_free_busy / scheduler_available_rooms
     └── queries/                  # Read-only data fetching for Server Components
         ├── students.ts
         ├── schools.ts
@@ -245,7 +303,12 @@ src/lib/
         ├── school-bank-details.ts
         ├── school-notes.ts
         ├── school-supplementary-info.ts
-        └── school-visits.ts
+        ├── school-visits.ts
+        ├── scheduler-rooms.ts       # Room list for filters/booking dialog
+        ├── scheduler-bookings.ts    # Calendar data via scheduler_calendar_items view
+        ├── scheduler-exams.ts       # Exam bookings for Exams page + student tab
+        ├── scheduler-history.ts     # scheduler_booking_history reads
+        └── scheduler-stats.ts       # Rooms-view / dashboard counts
 ```
 
 ### types/ — TypeScript Types
@@ -267,7 +330,7 @@ src/hooks/
 
 ## Database Migrations Overview
 
-Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped.
+Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped (84 total).
 
 | Range | Theme |
 |---|---|
@@ -277,7 +340,8 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | 052–060 | Lead source restructure, visit fields on applications, new event types, consolidate event types, add application_id to individual exams, create internal notes, school intro approval, resume fields and documents |
 | 061–068 | Resume profile/talents tables, event application status updates, year group on applications, nullable school_id on representatives, custom_access_token_hook (RBAC), schedule blocker, school_contact_id on representatives, is_active on school contacts |
 | 069–078 | Student intro images bucket, document categories, school documents + bucket, row level security across the public schema, school export fields, county normalisation, current course fee |
-| Timestamped | School document category rounds, permission matrix, record attachments (polymorphic `attachable_type`/`attachable_id` + `external_url` on both document tables) |
+| Timestamped (pre-scheduler) | School document category rounds, permission matrix, record attachments (polymorphic `attachable_type`/`attachable_id` + `external_url` on both document tables) |
+| Timestamped (scheduler, 2026-09-28 to 2026-10-02) | `20260928070928_scheduler_core.sql` (locations, rooms, bookings, attendees, history, view, triggers), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql` (`room_id` FK on exam records), `20260928074722_scheduler_review_hardening.sql` (red-team fixes), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix) |
 
 ---
 
@@ -310,7 +374,7 @@ Source CSVs (`data/`): `AA_Student.csv`, `AA_School.csv`, `AA_Event*.csv`, and o
 | `@supabase/ssr` ^0.5 | Cookie-based SSR sessions |
 | `react-hook-form` ^7.68 | Form state management |
 | `zod` ^3.25 | Schema validation |
-| `@schedule-x/*` v4 | Calendar/scheduler UI |
+| `@fullcalendar/react` 7.1.0 | Scheduler module calendar (Premium, resource views via `@fullcalendar/react-scheduler`) |
 | `@dnd-kit/core` ^6.3 | Drag-and-drop for event scheduler |
 | `recharts` ^2.15 | Charts |
 | `sonner` ^2.0 | Toast notifications |
