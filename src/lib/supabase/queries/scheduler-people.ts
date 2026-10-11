@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
+import { inBatches } from './scheduler-calendar-helpers'
 
 export type SchedulerStaffOption = {
   id: string
@@ -82,4 +83,22 @@ export async function getStudentApplications(studentId: string): Promise<Schedul
     return []
   }
   return (data ?? []) as unknown as SchedulerStudentApplication[]
+}
+
+/** Names of specific students, used to label their columns in the team view. */
+export async function getStudentsByIds(ids: string[]): Promise<SchedulerStudentOption[]> {
+  if (ids.length === 0) return []
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+
+  const results = await Promise.all(
+    inBatches(ids).map(batch => supabase.from('students').select('id, first_name, surname, student_code').in('id', batch)),
+  )
+
+  const students: SchedulerStudentOption[] = []
+  for (const { data, error } of results) {
+    if (error) console.error('Error fetching scheduler students by id:', error)
+    students.push(...((data ?? []) as SchedulerStudentOption[]))
+  }
+  return students
 }
