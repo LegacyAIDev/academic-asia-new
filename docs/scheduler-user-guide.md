@@ -1,6 +1,6 @@
 # Scheduler — Quick Guide for Staff
 
-**Last updated:** 2026-10-09
+**Last updated:** 2026-10-12
 
 ## Who can do what
 
@@ -50,3 +50,14 @@ Shortcuts:
 
 - **Copy details** puts a plain-text summary on the clipboard (date, time in Hong Kong time, location and address, room, seats, people, notes).
 - **Copy for family** (exams only) gives the family version: student, school, assessment, date, time, address, room and instructions, plus the seat when one has been assigned.
+
+## Exam desk
+
+**Exams** opens the exam desk, the list for the day of the exams. It shows examination and group examination bookings that are not cancelled.
+
+- **Dates:** it starts on today (Hong Kong time). Change **From** and **To** to look at other days; up to 62 days at once.
+- **Two lists:** **Booked list** shows who is still waiting; **Showed up list** shows who has arrived. A group exam is one row listing all its candidates.
+- **Filter and search:** narrow by room, school and entry year (the choices come from the exams in your dates), or type a student name or code, school, assessment or title.
+- **Sort:** click any column heading; click again to reverse. Your dates, filters and sorting stay in the page address, so you can bookmark or share it.
+- **Buttons** (need Exams edit access): **Confirm** on a booking awaiting confirmation. **Showed up** or **No show** on a confirmed booking. If someone marked No show arrives late, press **Showed up**. Showed up completes the student's exam request and cannot be undone. **Open booking** opens the booking page.
+- **Past exams and scores:** choose **All exams** for the full exam list with status tabs, score entry and Schedule / Reschedule. It has its own From / To filter on the scheduled date. Exam requests that were never booked in the scheduler appear only there.

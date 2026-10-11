@@ -94,6 +94,12 @@
 - [x] `scheduler` permission module (0/3/4/6 write, 7/8 read; confirm + rooms/locations CRUD require EXAMS WRITE)
 - [x] Customer feedback round 1 (2026-10-09): team person columns, copy details + family exam text, right-click menu, date picker, cancelled filter fix, return-to-calendar state, view-only hint, staff guide (`docs/scheduler-user-guide.md`) — see changelog
 
+**Exam desk (plan `261012-0011-exam-desk-papers-cover-slip`):**
+- [x] Phase 1 (2026-10-12): `/exams` exam desk with date range, filters, sorting, Booked / Showed up lists, Confirm / Showed up / No show; previous list kept as `/exams?view=all` with a date filter. Unit tested; not yet checked in a browser with real exam bookings
+- [ ] Phase 2: restrict exam paper files to the exam team
+- [ ] Phase 3: choose papers on the booking, paper availability, "Print available"
+- [ ] Phase 4: cover slip PDF
+
 **Deferred to v2 backlog** (customer scope cut, 2026-09-26):
 - Recurring availability rules / lunch-break blocked times
 - Legacy `AA_Scheduler.csv` import (folded into the data-migration workstream)
@@ -185,3 +191,16 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   - Bug fix: FullCalendar v7 ignored event colours and state classes (v6 field names
     `backgroundColor`/`borderColor`/`classNames` are stored as custom data in v7; now `color` +
     space-separated `className`) and resource order (`resourceOrder="order"`).
+- **2026-10-12** — Exam desk, phase 1 of 4 (`/exams`):
+  - New default view for the day of the exam: scheduler exam bookings for a From/To range (today in
+    Hong Kong time, up to 62 days), filters for room, school, entry year, free-text search, click-to-sort
+    headings, all in the URL. "Booked list" and "Showed up list"; a group exam is one row.
+  - Row buttons: Confirm, Showed up, No show (Showed up stays available after No show). Showed up
+    completes the linked exam request; no undo.
+  - Previous list moved to `/exams?view=all` (old `?status=` links still work), with a new
+    From/To filter on the scheduled date.
+  - Filtering, sorting and splitting are pure tested helpers in `src/lib/exams/`; new reusable
+    `SortableTableHead`; `/exams` now refreshes after any exam-type booking change. No schema change.
+  - Status: unit tests, type-check and review pass; not yet checked in a browser with real exam
+    bookings. Known gaps: group rows show no school/entry year; exam records without a scheduler
+    booking appear only under All exams. Phases 2-4 (paper access, paper choice and print, cover slip) not started.

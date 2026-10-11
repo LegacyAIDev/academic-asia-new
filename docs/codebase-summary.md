@@ -131,8 +131,15 @@ src/app/
     │               ├── representative-tabs.tsx
     │               └── drag-overlay.tsx
     ├── exams/
-    │   ├── page.tsx
-    │   └── exam-management-table.tsx
+    │   ├── page.tsx                # Picks desk vs all view (?view=), loads data, checks Exams access
+    │   ├── exam-desk-view.tsx      # Exam desk: date range, filters, Booked / Showed up lists
+    │   ├── exam-desk-filters.tsx   # Room, school, entry year, search
+    │   ├── exam-desk-table.tsx     # Sortable table (SortableTableHead)
+    │   ├── exam-desk-row-actions.tsx  # Confirm / Showed up / No show / Open booking
+    │   ├── exam-date-range-filter.tsx # From/To inputs, shared by both views
+    │   ├── exam-list-view.tsx      # "All exams" view (status tabs, paging)
+    │   ├── use-exams-url.ts        # Client URL updates for exam page params
+    │   └── exam-management-table.tsx  # Full exam list table (score entry, Schedule/Reschedule)
     └── scheduler/                  # Rooms, bookings, exam scheduling (added 2026-09-28)
         ├── page.tsx                # My / team / rooms calendar (FullCalendar v7)
         ├── scheduler-shell.tsx     # Client shell: view state, dialogs orchestration
@@ -168,7 +175,8 @@ src/app/api/                       # Route Handlers — file downloads only
 src/components/
 ├── ui/                           # 53 shadcn/ui primitives
 │   ├── button.tsx, input.tsx, select.tsx, dialog.tsx, ...
-│   └── sonner.tsx                # Toast wrapper
+│   ├── sonner.tsx                # Toast wrapper
+│   └── sortable-table-head.tsx   # Link-based sortable column heading (URL sort/dir)
 ├── features/                     # Cross-route feature components
 │   ├── document-manager.tsx      # Owner-level Documents tab: batch upload, rename, download
 │   ├── attachment-field.tsx      # Inline attach file/link next to a text field
@@ -230,6 +238,11 @@ src/lib/
 │   └── __tests__/                # 49 tests: shaping + workbook round-trip
 ├── students/
 │   └── parse-list-filters.ts     # URL params → list filters, shared by list + export picker
+├── exams/                        # Exam desk pure helpers (2026-10-12) — unit tested, no I/O
+│   ├── exam-page-search-params.ts  # URL params for /exams: view, desk (from/to/room/school/year/q/sort/dir), list; hrefs, nextSort
+│   ├── exam-desk-rows.ts         # Bookings → desk rows (group = one row), split Booked/Showed up, row action rules
+│   ├── exam-desk-filter-sort.ts  # Filter options from rows, filtering, search, sorting
+│   └── __tests__/                # 5 files: params, rows, filter-sort, edge cases, fixture
 ├── scheduler/                    # Scheduler pure helpers (added 2026-09-28) — unit tested, no I/O
 │   ├── config.ts                 # SCHEDULER_TIMEZONE, FULLCALENDAR_LICENSE_KEY, slot constants
 │   ├── booking-schema.ts         # zod schemas per booking type (discriminated union)
@@ -250,6 +263,7 @@ src/lib/
 │   ├── booking-text-formatters.ts  # Copy text: booking details (CAL-09), family exam text (CAL-10)
 │   ├── booking-defaults.ts       # Default form values per booking type
 │   ├── exam-booking-defaults.ts  # Default form values for exam-linked bookings
+│   ├── booking-revalidation-paths.ts  # bookingRevalidationPaths: pages to refresh after a booking changes (/exams for exam types)
 │   ├── action-helpers.ts         # Shared RPC-call/error-mapping helpers for actions
 │   └── __tests__/                # 23 test files, 334 tests: booking-permissions, person-name, uuid, booking-schema, booking-defaults, booking-text-formatters,
 │                                  # family-exam-text, calendar-adapter (+ person-columns), cancelled-items, colors,
@@ -328,6 +342,7 @@ src/lib/
         ├── scheduler-bookings.ts    # Calendar data via scheduler_calendar_items view
         ├── scheduler-calendar-helpers.ts  # Attendee attach, people→booking ids (range-bounded), fetchCancelledRows
         ├── scheduler-exams.ts       # Exam bookings for Exams page + student tab
+        ├── exam-desk.ts             # getExamDeskBookings: exam bookings in a date range (exam desk)
         ├── scheduler-history.ts     # scheduler_booking_history reads
         └── scheduler-stats.ts       # Rooms-view / dashboard counts
 ```

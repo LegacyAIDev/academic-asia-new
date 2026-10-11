@@ -88,7 +88,7 @@ src/
 │   │   ├── schools/         # School list, detail, new, edit
 │   │   ├── staff/           # Staff list, detail, new, edit
 │   │   ├── events/[type]/   # Type-parameterized event pages + event scheduler
-│   │   ├── exams/           # Exam management table
+│   │   ├── exams/           # Exam desk (day view, attendance) + full exam list
 │   │   └── scheduler/       # Rooms, bookings, exam scheduling (FullCalendar v7)
 │   │       ├── rooms/       # Rooms + locations admin
 │   │       └── bookings/[id]/  # Booking detail route
