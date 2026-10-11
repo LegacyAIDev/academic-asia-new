@@ -2,22 +2,28 @@
 
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { useMemo, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import type { CalendarItem } from '@/lib/supabase/queries/scheduler-bookings'
 import type { SchedulerRoom } from '@/lib/supabase/queries/scheduler-rooms'
 import type { SchedulerStaffOption } from '@/lib/supabase/queries/scheduler-people'
-import { fullCalendarViewType, serialiseSchedulerParams, type SchedulerParams } from '@/lib/scheduler/search-params'
-import { toCalendarEvents, toRoomResources, type CalendarEventProps } from '@/lib/scheduler/calendar-adapter'
-import { colorForIndex } from '@/lib/scheduler/colors'
+import { schedulerHref, todayInBusinessTz, type SchedulerParams } from '@/lib/scheduler/search-params'
+import type { CalendarEvent, CalendarEventProps } from '@/lib/scheduler/calendar-adapter'
 import type { BookingFormInput } from '@/lib/scheduler/booking-schema'
+import { bookingDetailPeopleLabels, bookingDetailToFormInput } from '@/lib/scheduler/booking-defaults'
+import { prefillFromSelection, type SlotSelection } from '@/lib/scheduler/selection-prefill'
 import { moveBooking } from '@/lib/supabase/actions/scheduler-bookings'
-import type { EventMove, SelectedRange } from '@/components/scheduler/scheduler-calendar'
+import { getBookingDetailsAction } from '@/lib/supabase/actions/scheduler-details'
+import type { EventMove } from '@/components/scheduler/scheduler-calendar'
 import { BookingDialog } from '@/components/scheduler/booking-dialog'
+import { BookingCancelDialog } from '@/components/scheduler/booking-cancel-dialog'
 import { SchedulerToolbar } from './scheduler-toolbar'
 import { SchedulerFilterBar } from './scheduler-filter-bar'
 import { BookingDetailsSheet } from './booking-details-sheet'
 import { MoveConfirmDialog } from './move-confirm-dialog'
+import { CalendarContextMenu } from './calendar-context-menu'
+import { useCalendarModel } from './use-calendar-model'
+import { useBookingActions } from './use-booking-actions'
 
 const SchedulerCalendar = dynamic(() => import('@/components/scheduler/scheduler-calendar'), {
   ssr: false,
@@ -29,6 +35,7 @@ export type SchedulerShellProps = {
   items: CalendarItem[]
   rooms: SchedulerRoom[]
   staff: SchedulerStaffOption[]
+  studentLabels: Record<string, string>
   currentProfileId: string
   canWrite: boolean
   canConfirm: boolean
@@ -37,58 +44,35 @@ export type SchedulerShellProps = {
 type DialogState = { open: boolean; initial?: Partial<BookingFormInput>; peopleLabels?: Record<string, string> }
 type SelectedItem = { id: string; props: CalendarEventProps }
 
+const WIDE_TEAM_WEEK = 5
+
 /** Client state for the scheduler page: URL-driven params, selection, dialogs and drag moves. */
-export function SchedulerShell({ params, items, rooms, staff, currentProfileId, canWrite, canConfirm }: SchedulerShellProps) {
+export function SchedulerShell({ params, items, rooms, staff, studentLabels, currentProfileId, canWrite, canConfirm }: SchedulerShellProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [selected, setSelected] = useState<SelectedItem | null>(null)
   const [dialog, setDialog] = useState<DialogState>({ open: false })
   const [pendingMove, setPendingMove] = useState<EventMove | null>(null)
-
-  const personColors = useMemo(() => {
-    const ids = params.view === 'my' ? [currentProfileId] : [...params.profileIds, ...params.studentIds]
-    return Object.fromEntries(ids.map((id, i) => [id, colorForIndex(i)]))
-  }, [params.view, params.profileIds, params.studentIds, currentProfileId])
-
-  const peopleLabels = useMemo(() => {
-    const labels: Record<string, string> = {}
-    for (const s of staff) labels[s.id] = `${s.first_name ?? ''} ${s.surname ?? ''}`.trim()
-    return labels
-  }, [staff])
-
-  const events = useMemo(
-    () =>
-      toCalendarEvents(items, {
-        colorBy: params.view === 'team' ? 'person' : 'type',
-        personColors,
-        resourceBy: params.view === 'rooms' ? 'room' : undefined,
-        canEdit: canWrite,
-      }),
-    [items, params.view, personColors, canWrite],
-  )
-
-  const resources = useMemo(() => {
-    if (params.view !== 'rooms') return undefined
-    const visible = params.roomIds.length ? rooms.filter(r => params.roomIds.includes(r.id)) : rooms
-    return toRoomResources(visible)
-  }, [params.view, params.roomIds, rooms])
+  const [cancelId, setCancelId] = useState<string | null>(null)
+  const actions = useBookingActions()
+  const model = useCalendarModel({ params, items, rooms, staff, studentLabels, canWrite })
+  const returnTo = schedulerHref(params)
+  const teamWithoutPeople = params.view === 'team' && model.people.length === 0
 
   const updateParams = (patch: Partial<SchedulerParams>) => {
-    const next = { ...params, ...patch }
-    startTransition(() => router.replace(`/scheduler?${serialiseSchedulerParams(next)}`))
+    startTransition(() => router.replace(schedulerHref({ ...params, ...patch })))
   }
 
-  const openCreate = (range?: SelectedRange) => {
+  const openCreate = (slot?: SlotSelection) => {
     if (!canWrite) return
-    setDialog({
-      open: true,
-      initial: {
-        start_at: range?.start,
-        end_at: range?.end,
-        room_id: range?.resourceId ?? null,
-        location_type: range?.resourceId ? 'room' : undefined,
-      },
-    })
+    setDialog({ open: true, initial: prefillFromSelection(slot, params.view, currentProfileId), peopleLabels: model.peopleLabels })
+  }
+
+  const openEdit = async (bookingId: string) => {
+    const result = await getBookingDetailsAction(bookingId)
+    if (!result.success || !result.data) return toast.error(result.error ?? 'Could not load the booking')
+    const { booking } = result.data
+    setDialog({ open: true, initial: bookingDetailToFormInput(booking), peopleLabels: { ...model.peopleLabels, ...bookingDetailPeopleLabels(booking) } })
   }
 
   const handleMove = async (reason: string) => {
@@ -96,7 +80,7 @@ export function SchedulerShell({ params, items, rooms, staff, currentProfileId, 
     const result = await moveBooking(pendingMove.props.bookingId, {
       start_at: pendingMove.start,
       end_at: pendingMove.end,
-      room_id: pendingMove.resourceId ?? pendingMove.props.roomId,
+      room_id: params.view === 'rooms' ? pendingMove.resourceId ?? pendingMove.props.roomId : pendingMove.props.roomId,
       reason,
     })
     if (!result.success) {
@@ -111,30 +95,49 @@ export function SchedulerShell({ params, items, rooms, staff, currentProfileId, 
 
   return (
     <div className="space-y-3">
-      <SchedulerToolbar
-        params={params}
-        staff={staff}
-        pending={isPending}
-        canWrite={canWrite}
-        onChange={updateParams}
-        onNewBooking={() => openCreate()}
-      />
+      <SchedulerToolbar params={params} staff={staff} pending={isPending} canWrite={canWrite} onChange={updateParams} onNewBooking={() => openCreate()} />
       <SchedulerFilterBar params={params} rooms={rooms} staff={staff} onChange={updateParams} />
 
       <div className="rounded-xl border border-border bg-card p-2 shadow-sm sm:p-3">
-        <SchedulerCalendar
-          viewType={fullCalendarViewType(params)}
-          date={params.date}
-          events={events}
-          resources={resources}
-          editable={canWrite}
-          onSelectRange={openCreate}
-          onEventClick={(id, props) => setSelected({ id, props })}
-          onEventMove={move => {
-            if (!move.props.bookingId) return move.revert()
-            setPendingMove(move)
-          }}
-        />
+        {teamWithoutPeople ? (
+          <div className="flex h-[40vh] flex-col items-center justify-center gap-1 text-center">
+            <p className="text-sm font-medium">Choose colleagues or students to compare their calendars</p>
+            <p className="text-sm text-muted-foreground">
+              Use People in the bar above.{model.personColumns ? ' In Day and Week each person gets their own column.' : ''}
+            </p>
+          </div>
+        ) : (
+          <>
+            {model.personColumns && params.mode === 'week' && model.people.length > WIDE_TEAM_WEEK && (
+              <p className="px-1 pb-2 text-xs text-muted-foreground">Tip: switch to Day to compare more than {WIDE_TEAM_WEEK} people comfortably.</p>
+            )}
+            <CalendarContextMenu
+              events={model.events}
+              canWrite={canWrite}
+              canConfirm={canConfirm}
+              returnTo={returnTo}
+              onOpenDetails={(event: CalendarEvent) => setSelected({ id: event.id, props: event.extendedProps })}
+              onNewBooking={openCreate}
+              onEdit={openEdit}
+              onConfirm={actions.confirm}
+              onCancel={setCancelId}
+              onToday={() => updateParams({ date: todayInBusinessTz() })}
+            >
+              <SchedulerCalendar
+                viewType={model.viewType}
+                date={params.date}
+                events={model.events}
+                resources={model.resources}
+                editable={canWrite}
+                datesAboveResources={model.personColumns && params.mode === 'week'}
+                resourceEditable={params.view === 'rooms'}
+                onSelectRange={openCreate}
+                onEventClick={(id, props) => setSelected({ id, props })}
+                onEventMove={move => (move.props.bookingId ? setPendingMove(move) : move.revert())}
+              />
+            </CalendarContextMenu>
+          </>
+        )}
       </div>
 
       <BookingDetailsSheet
@@ -142,9 +145,10 @@ export function SchedulerShell({ params, items, rooms, staff, currentProfileId, 
         onClose={() => setSelected(null)}
         canWrite={canWrite}
         canConfirm={canConfirm}
+        returnTo={returnTo}
         onEdit={(initial, labels) => {
           setSelected(null)
-          setDialog({ open: true, initial, peopleLabels: { ...peopleLabels, ...labels } })
+          setDialog({ open: true, initial, peopleLabels: { ...model.peopleLabels, ...labels } })
         }}
       />
 
@@ -152,13 +156,25 @@ export function SchedulerShell({ params, items, rooms, staff, currentProfileId, 
         open={dialog.open}
         onOpenChange={open => setDialog(d => ({ ...d, open }))}
         initial={dialog.initial}
-        peopleLabels={dialog.peopleLabels ?? peopleLabels}
+        peopleLabels={dialog.peopleLabels ?? model.peopleLabels}
         rooms={rooms}
         staff={staff}
         currentProfileId={currentProfileId}
         canConfirm={canConfirm}
         onSaved={() => router.refresh()}
       />
+
+      {cancelId && (
+        <BookingCancelDialog
+          bookingId={cancelId}
+          open
+          onOpenChange={open => !open && setCancelId(null)}
+          onCancelled={() => {
+            setCancelId(null)
+            router.refresh()
+          }}
+        />
+      )}
 
       <MoveConfirmDialog
         move={pendingMove}

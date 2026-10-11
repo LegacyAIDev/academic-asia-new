@@ -3,12 +3,12 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { EXAM_BOOKING_TYPES, type BookingType } from '@/lib/scheduler/config'
+import { isExamBooking, type BookingType } from '@/lib/scheduler/config'
 import type { BookingForm } from './booking-dialog'
 
 /** Assessment snapshot (for exam types), notes and instructions. */
 export function BookingFormDetails({ form, bookingType }: { form: BookingForm; bookingType: BookingType }) {
-  const isExamType = (EXAM_BOOKING_TYPES as string[]).includes(bookingType)
+  const isExamType = isExamBooking(bookingType)
 
   return (
     <div className="space-y-4">

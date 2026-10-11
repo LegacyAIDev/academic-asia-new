@@ -37,6 +37,10 @@ export const BOOKING_TYPE_LABELS: Record<BookingType, string> = {
 /** Exam types start as pending and are confirmed by the examination team. */
 export const EXAM_BOOKING_TYPES: BookingType[] = ['examination', 'group_examination']
 
+export function isExamBooking(bookingType: string): boolean {
+  return (EXAM_BOOKING_TYPES as string[]).includes(bookingType)
+}
+
 export const BOOKING_STATUSES = ['pending', 'confirmed', 'cancelled'] as const
 export type BookingStatus = (typeof BOOKING_STATUSES)[number]
 

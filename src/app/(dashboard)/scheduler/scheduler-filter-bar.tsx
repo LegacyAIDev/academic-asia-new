@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BOOKING_TYPES, BOOKING_TYPE_LABELS, type BookingType } from '@/lib/scheduler/config'
 import { colorForType } from '@/lib/scheduler/colors'
+import { personName } from '@/lib/scheduler/person-name'
 import { STATUS_FILTERS, type SchedulerParams, type StatusFilter } from '@/lib/scheduler/search-params'
 import type { SchedulerRoom } from '@/lib/supabase/queries/scheduler-rooms'
 import type { SchedulerStaffOption } from '@/lib/supabase/queries/scheduler-people'
@@ -23,10 +24,7 @@ const CHIP = 'h-9 w-auto min-w-[120px] rounded-full border-border bg-card text-x
 /** Type, room and status filters as a quiet chip row; each choice is written straight to the URL. */
 export function SchedulerFilterBar({ params, rooms, staff, onChange }: Props) {
   const activeCount = params.types.length + params.roomIds.length + (params.status ? 1 : 0)
-  const staffName = (id: string) => {
-    const s = staff.find(p => p.id === id)
-    return s ? `${s.first_name ?? ''} ${s.surname ?? ''}`.trim() : id
-  }
+  const staffName = (id: string) => personName(staff.find(person => person.id === id)) || id
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-1 text-sm">

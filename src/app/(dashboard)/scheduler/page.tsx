@@ -3,7 +3,8 @@ import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { getCurrentUser } from '@/lib/supabase/auth'
 import { getCalendarItems } from '@/lib/supabase/queries/scheduler-bookings'
 import { getRooms } from '@/lib/supabase/queries/scheduler-rooms'
-import { listActiveStaff } from '@/lib/supabase/queries/scheduler-people'
+import { getStudentsByIds, listActiveStaff } from '@/lib/supabase/queries/scheduler-people'
+import { personName } from '@/lib/scheduler/person-name'
 import { parseSchedulerParams, visibleRange, type RawSearchParams } from '@/lib/scheduler/search-params'
 import { SchedulerShell } from './scheduler-shell'
 
@@ -20,7 +21,7 @@ export default async function SchedulerPage({ searchParams }: PageProps) {
   const profileIds = params.view === 'my' ? [me] : params.view === 'team' ? params.profileIds : []
   const studentIds = params.view === 'team' ? params.studentIds : []
 
-  const [items, rooms, staff, canWrite, canConfirm] = await Promise.all([
+  const [items, rooms, staff, students, canWrite, canConfirm] = await Promise.all([
     getCalendarItems({
       from: range.from,
       to: range.to,
@@ -32,6 +33,7 @@ export default async function SchedulerPage({ searchParams }: PageProps) {
     }),
     getRooms({ includeInactive: false }),
     listActiveStaff(),
+    getStudentsByIds(studentIds),
     canAccess(MODULES.SCHEDULER, ACCESS.WRITE),
     canAccess(MODULES.EXAMS, ACCESS.WRITE),
   ])
@@ -50,6 +52,7 @@ export default async function SchedulerPage({ searchParams }: PageProps) {
         items={items}
         rooms={rooms}
         staff={staff}
+        studentLabels={Object.fromEntries(students.map(student => [student.id, personName(student)]))}
         currentProfileId={me}
         canWrite={canWrite}
         canConfirm={canConfirm}

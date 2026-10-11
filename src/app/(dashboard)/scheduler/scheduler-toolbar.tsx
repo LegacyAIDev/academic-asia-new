@@ -1,16 +1,18 @@
 'use client'
 
 import { TZDate } from '@date-fns/tz'
-import { addDays, addMonths, format } from 'date-fns'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { addDays, addMonths, format, startOfWeek } from 'date-fns'
+import { ChevronLeft, ChevronRight, Eye, Plus } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { cn } from '@/lib/utils'
-import { SCHEDULER_TIMEZONE, TIMEZONE_LABEL } from '@/lib/scheduler/config'
+import { SCHEDULER_TIMEZONE } from '@/lib/scheduler/config'
 import { todayInBusinessTz, type SchedulerMode, type SchedulerParams, type SchedulerView } from '@/lib/scheduler/search-params'
 import type { SchedulerStaffOption } from '@/lib/supabase/queries/scheduler-people'
 import { PeoplePicker } from './people-picker'
+import { SchedulerDatePicker } from './scheduler-date-picker'
 
 type Props = {
   params: SchedulerParams
@@ -33,7 +35,7 @@ function dateLabel(date: string, mode: SchedulerMode): string {
   const anchor = new TZDate(y, m - 1, d, SCHEDULER_TIMEZONE)
   if (mode === 'month') return format(anchor, 'MMMM yyyy')
   if (mode === 'day') return format(anchor, 'EEEE dd/MM/yyyy')
-  return `Week of ${format(anchor, 'dd/MM/yyyy')}`
+  return `Week of ${format(startOfWeek(anchor, { weekStartsOn: 1 }), 'dd/MM/yyyy')}`
 }
 
 /** Command bar: view tabs, date navigation with the mode switch, people picker and the primary action. */
@@ -43,7 +45,7 @@ export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, o
   return (
     <div className="rounded-xl border border-border bg-card p-2 shadow-sm sm:p-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Tabs value={params.view} onValueChange={v => onChange({ view: v as SchedulerView, mode: v === 'rooms' && params.mode === 'month' ? 'day' : params.mode })}>
+        <Tabs value={params.view} onValueChange={v => onChange({ view: v as SchedulerView, mode: v === 'rooms' && params.mode === 'month' ? 'week' : params.mode })}>
           <TabsList className="h-9">
             <TabsTrigger value="my">My calendar</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
@@ -62,10 +64,12 @@ export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, o
             </Button>
           </div>
 
-          <div className={cn('min-w-[150px] px-1 leading-tight', pending && 'opacity-60')} aria-live="polite">
-            <p className="text-sm font-semibold tabular-nums">{dateLabel(params.date, params.mode)}</p>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{TIMEZONE_LABEL}</p>
-          </div>
+          <SchedulerDatePicker
+            date={params.date}
+            label={dateLabel(params.date, params.mode)}
+            pending={pending}
+            onSelect={date => onChange({ date })}
+          />
 
           <ToggleGroup type="single" value={params.mode} onValueChange={v => v && onChange({ mode: v as SchedulerMode })} variant="outline" className="h-9">
             {modes.map(mode => (
@@ -85,13 +89,36 @@ export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, o
               onChange={(profileIds, studentIds) => onChange({ profileIds, studentIds })}
             />
           )}
-          {canWrite && (
+          {canWrite ? (
             <Button className="h-9" onClick={onNewBooking}>
               <Plus className="mr-1 h-4 w-4" /> New booking
             </Button>
+          ) : (
+            <ViewOnlyNotice />
           )}
         </div>
       </div>
     </div>
+  )
+}
+
+/** Shown instead of New booking so view-only staff know why they cannot book. */
+function ViewOnlyNotice() {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span tabIndex={0} className="flex items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <Badge variant="outline" className="h-7 gap-1 rounded-full px-2.5">
+            <Eye className="h-3.5 w-3.5" /> View only
+          </Badge>
+          <Button className="pointer-events-none h-9" disabled>
+            <Plus className="mr-1 h-4 w-4" /> New booking
+          </Button>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs">
+        You can view the scheduler. Ask a manager for Scheduler edit access to create bookings.
+      </TooltipContent>
+    </Tooltip>
   )
 }

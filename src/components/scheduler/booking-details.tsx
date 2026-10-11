@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { TIMEZONE_LABEL } from '@/lib/scheduler/config'
 import { formatHkDate, formatHkTime } from '@/lib/scheduler/time-utils'
+import { personName, type NamedPerson } from '@/lib/scheduler/person-name'
 import type { BookingDetail } from '@/lib/supabase/queries/scheduler-bookings'
 import { BookingDetailsRibbon } from './booking-details-ribbon'
 
-const fullName = (p: { first_name: string | null; surname: string | null } | null | undefined) =>
-  p ? `${p.first_name ?? ''} ${p.surname ?? ''}`.trim() || '—' : '—'
+const fullName = (person: NamedPerson | null | undefined) => personName(person) || '—'
 
 function Fact({ label, children, wide }: { label: string; children: React.ReactNode; wide?: boolean }) {
   return (

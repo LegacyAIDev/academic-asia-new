@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
-import { EXAM_BOOKING_TYPES } from '@/lib/scheduler/config'
+import { isExamBooking } from '@/lib/scheduler/config'
 import { findAvailableRooms } from '@/lib/supabase/actions/scheduler-availability'
 import type { AvailableRoom } from '@/lib/supabase/queries/scheduler-availability'
 import { RoomChip } from './room-chip'
@@ -35,7 +35,7 @@ export function BookingFormLocation({
   const isExclusive = useWatch({ control: form.control, name: 'is_exclusive' }) ?? false
 
   const [availableRooms, setAvailableRooms] = useState<AvailableRoom[]>([])
-  const examOnly = (EXAM_BOOKING_TYPES as string[]).includes(bookingType)
+  const examOnly = isExamBooking(bookingType)
 
   const search = useDebouncedCallback(async () => {
     if (locationType !== 'room' || !startAt || !endAt) return

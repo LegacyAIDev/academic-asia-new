@@ -1,41 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import type { CalendarItem } from '@/lib/supabase/queries/scheduler-bookings'
-import { eventLabel, roomLabel, toCalendarEvents, toRoomResources } from '../calendar-adapter'
+import { eventLabel, roomLabel, toCalendarEvents, toEventInputFields, toRoomResources } from '../calendar-adapter'
 import { colorForType } from '../colors'
-
-/** Every nullable view column defaulted to null, so each test only sets what it needs. */
-function makeItem(overrides: Partial<CalendarItem> = {}): CalendarItem {
-  return {
-    application_id: null,
-    booking_id: 'booking-1',
-    booking_type: 'internal_meeting',
-    created_by: null,
-    end_at: '2026-03-15T02:00:00.000Z',
-    exam_id: null,
-    floor: null,
-    is_exclusive: null,
-    local_date: '2026-03-15',
-    location_name: null,
-    location_type: null,
-    notes: null,
-    online_link: null,
-    organiser_id: null,
-    room_id: null,
-    room_name: null,
-    room_number: null,
-    school_id: null,
-    seats_required: null,
-    source: 'booking',
-    source_id: 'source-1',
-    start_at: '2026-03-15T01:00:00.000Z',
-    status: 'confirmed',
-    student_id: null,
-    title: 'Weekly sync',
-    attendee_profile_ids: [],
-    attendee_student_ids: [],
-    ...overrides,
-  }
-}
+import { makeItem } from './calendar-item-fixture'
 
 describe('roomLabel', () => {
   it('combines floor + room number when both exist', () => {
@@ -189,5 +155,52 @@ describe('toRoomResources', () => {
     ])
     expect(resources[0].order).toBe(5)
     expect(resources[1].order).toBe(1)
+  })
+})
+
+describe('toEventInputFields', () => {
+  // FullCalendar v7 reads `color` and `className` (a string). The v6 spellings
+  // `classNames`, `backgroundColor` and `borderColor` are kept as custom data and
+  // would silently drop the colours and state classes, so guard against them.
+  const pending = () =>
+    toCalendarEvents([makeItem({ booking_type: 'examination', status: 'pending', room_id: 'room-9' })], {
+      colorBy: 'type',
+      resourceBy: 'room',
+      canEdit: true,
+    })[0]
+
+  it('gives FullCalendar v7 the colour and a space-joined class string', () => {
+    const fields = toEventInputFields(pending())
+    expect(fields.color).toBe(colorForType('examination'))
+    expect(fields.className).toBe('type-examination is-pending')
+  })
+
+  it('has no v6-style keys', () => {
+    const fields = toEventInputFields(pending())
+    for (const key of ['classNames', 'backgroundColor', 'borderColor']) {
+      expect(fields).not.toHaveProperty(key)
+    }
+  })
+
+  it('passes id, title, times, resource, editable and extended props through', () => {
+    const event = pending()
+    expect(toEventInputFields(event)).toEqual({
+      id: event.id,
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      resourceId: 'room-9',
+      color: event.color,
+      editable: true,
+      className: 'type-examination is-pending',
+      extendedProps: event.extendedProps,
+    })
+  })
+
+  it('joins every state class for a cancelled read-only row', () => {
+    const [event] = toCalendarEvents([makeItem({ source: 'external_block', status: 'cancelled' })], { colorBy: 'type' })
+    expect(toEventInputFields(event).className.split(' ').sort()).toEqual(
+      ['is-cancelled', 'is-readonly', 'type-internal_meeting'].sort(),
+    )
   })
 })

@@ -4,6 +4,7 @@ import { TZDate } from '@date-fns/tz'
 import { Button } from '@/components/ui/button'
 import { BOOKING_TYPE_LABELS, SCHEDULER_TIMEZONE, TIMEZONE_LABEL, type BookingType } from '@/lib/scheduler/config'
 import { colorForType } from '@/lib/scheduler/colors'
+import { bookingPageHref } from '@/lib/scheduler/return-path'
 import { formatHkDate, formatHkTime } from '@/lib/scheduler/time-utils'
 import { getCalendarItems, type CalendarItem } from '@/lib/supabase/queries/scheduler-bookings'
 import { ScheduleBookingButton } from '@/components/scheduler/schedule-booking-button'
@@ -79,7 +80,7 @@ export async function StudentCalendarSection({ studentId, canBook }: Props) {
                     <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: colorForType(item.booking_type ?? 'other') }} aria-hidden />
                     <span className="flex min-w-0 flex-1 basis-[160px] flex-col">
                       {item.booking_id ? (
-                        <Link href={`/scheduler/bookings/${item.booking_id}`} className="truncate font-medium underline-offset-2 hover:text-primary hover:underline">
+                        <Link href={bookingPageHref(item.booking_id, `/students/${studentId}?tab=calendar`)} className="truncate font-medium underline-offset-2 hover:text-primary hover:underline">
                           {item.title}
                         </Link>
                       ) : (

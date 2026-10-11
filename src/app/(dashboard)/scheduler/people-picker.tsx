@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
+import { personName } from '@/lib/scheduler/person-name'
 import { searchStudentsAction } from '@/lib/supabase/actions/scheduler-people'
 import type { SchedulerStaffOption, SchedulerStudentOption } from '@/lib/supabase/queries/scheduler-people'
 
@@ -17,7 +18,6 @@ type Props = {
   onChange: (profileIds: string[], studentIds: string[]) => void
 }
 
-const fullName = (p: { first_name: string | null; surname: string | null }) => `${p.first_name ?? ''} ${p.surname ?? ''}`.trim()
 
 /** Multi-select of colleagues (preloaded) and students (searched) whose calendars overlay the team view. */
 export function PeoplePicker({ staff, profileIds, studentIds, onChange }: Props) {
@@ -52,12 +52,12 @@ export function PeoplePicker({ staff, profileIds, studentIds, onChange }: Props)
             <CommandEmpty>No matches.</CommandEmpty>
             <CommandGroup heading="Colleagues">
               {staff
-                .filter(s => !query || fullName(s).toLowerCase().includes(query.toLowerCase()))
+                .filter(s => !query || personName(s).toLowerCase().includes(query.toLowerCase()))
                 .slice(0, 30)
                 .map(s => (
                   <CommandItem key={s.id} value={`p:${s.id}`} onSelect={() => onChange(toggle(profileIds, s.id), studentIds)}>
                     <Check className={cn('mr-2 h-4 w-4', profileIds.includes(s.id) ? 'opacity-100' : 'opacity-0')} />
-                    {fullName(s)}
+                    {personName(s)}
                   </CommandItem>
                 ))}
             </CommandGroup>
@@ -66,7 +66,7 @@ export function PeoplePicker({ staff, profileIds, studentIds, onChange }: Props)
                 {students.map(s => (
                   <CommandItem key={s.id} value={`s:${s.id}`} onSelect={() => onChange(profileIds, toggle(studentIds, s.id))}>
                     <Check className={cn('mr-2 h-4 w-4', studentIds.includes(s.id) ? 'opacity-100' : 'opacity-0')} />
-                    {fullName(s)} <span className="ml-1 text-muted-foreground">{s.student_code}</span>
+                    {personName(s)} <span className="ml-1 text-muted-foreground">{s.student_code}</span>
                   </CommandItem>
                 ))}
               </CommandGroup>

@@ -15,6 +15,7 @@ import { updateExamFields } from "@/lib/supabase/actions/student-individual-exam
 import type { ExamManagementRecord } from "@/lib/supabase/queries/exam-management"
 import type { ExamBookingLink } from "@/lib/supabase/queries/scheduler-exams"
 import { ScheduleBookingButton } from "@/components/scheduler/schedule-booking-button"
+import { bookingPageHref } from "@/lib/scheduler/return-path"
 import { BookingStatusBadge } from "@/components/scheduler/booking-status-badge"
 
 type Props = {
@@ -92,7 +93,7 @@ export function ExamManagementTable({ exams, links, canSchedule, currentStatus, 
                 </TableCell>
               </TableRow>
             ) : (
-              exams.map((exam) => <ExamRow key={exam.id} exam={exam} link={links[exam.id]} canSchedule={canSchedule} />)
+              exams.map((exam) => <ExamRow key={exam.id} exam={exam} link={links[exam.id]} canSchedule={canSchedule} returnTo={buildUrl(currentStatus, page)} />)
             )}
           </TableBody>
         </Table>
@@ -117,7 +118,7 @@ export function ExamManagementTable({ exams, links, canSchedule, currentStatus, 
   )
 }
 
-function ExamRow({ exam, link, canSchedule }: { exam: ExamManagementRecord; link?: ExamBookingLink; canSchedule: boolean }) {
+function ExamRow({ exam, link, canSchedule, returnTo }: { exam: ExamManagementRecord; link?: ExamBookingLink; canSchedule: boolean; returnTo: string }) {
   const [isPending, startTransition] = useTransition()
   const status = statusMap[exam.status_id] ?? statusMap[1]
   const studentName = [exam.student?.first_name, exam.student?.surname].filter(Boolean).join(" ")
@@ -175,7 +176,7 @@ function ExamRow({ exam, link, canSchedule }: { exam: ExamManagementRecord; link
         <div className="flex items-center gap-2">
           {link && (
             <BookingStatusBadge asChild status={link.status} className="text-[11px]">
-              <Link href={`/scheduler/bookings/${link.booking_id}`} title="Open booking">{link.status}</Link>
+              <Link href={bookingPageHref(link.booking_id, returnTo)} title="Open booking">{link.status}</Link>
             </BookingStatusBadge>
           )}
           {canSchedule && exam.status_id !== 3 && exam.status_id !== 4 && (

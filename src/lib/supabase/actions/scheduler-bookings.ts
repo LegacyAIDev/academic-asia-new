@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
-import { EXAM_BOOKING_TYPES } from '@/lib/scheduler/config'
+import { isExamBooking } from '@/lib/scheduler/config'
 import {
   bookingFormSchema,
   cancelReasonSchema,
@@ -24,10 +24,6 @@ import type { Json } from '@/types/database'
 export type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 export type SaveBookingResult = ActionResult<{ id?: string; conflicts?: ConflictSummary }>
-
-function isExamType(type: string): boolean {
-  return (EXAM_BOOKING_TYPES as string[]).includes(type)
-}
 
 function revalidateBookingPaths(studentId?: string | null, examId?: string | null) {
   revalidatePath('/scheduler')
@@ -132,7 +128,7 @@ export async function cancelBooking(id: string, input: { reason: string }): Prom
   try {
     const booking = await getBooking(id)
     if (!booking) return { success: false, error: 'Booking not found.' }
-    if (booking.status === 'confirmed' && isExamType(booking.booking_type)) {
+    if (booking.status === 'confirmed' && isExamBooking(booking.booking_type)) {
       const examDenied = await assertAccess(MODULES.EXAMS, ACCESS.WRITE)
       if (examDenied) return examDenied
     }

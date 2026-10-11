@@ -1,5 +1,6 @@
 import { addMinutes } from 'date-fns'
 import { DEFAULT_BOOKING_MINUTES } from './config'
+import { personName, type NamedPerson } from './person-name'
 import { roundUpToSlot } from './time-utils'
 import type { AttendeeInput, BookingFormInput } from './booking-schema'
 import type { BookingDetail } from '@/lib/supabase/queries/scheduler-bookings'
@@ -10,7 +11,9 @@ import type { BookingDetail } from '@/lib/supabase/queries/scheduler-bookings'
  * internal meeting starting at the next 15-minute HK slot.
  */
 export function defaultBookingInput(partial: Partial<BookingFormInput>, currentProfileId: string): BookingFormInput {
-  const start = partial.start_at ?? roundUpToSlot(new Date()).toISOString()
+  // Keys passed as undefined must not wipe out the defaults below.
+  const prefill = Object.fromEntries(Object.entries(partial).filter(([, value]) => value !== undefined)) as Partial<BookingFormInput>
+  const start = partial.start_at ?? new Date(roundUpToSlot(new Date()).getTime()).toISOString()
   const end = partial.end_at ?? addMinutes(new Date(start), DEFAULT_BOOKING_MINUTES).toISOString()
 
   return {
@@ -32,7 +35,7 @@ export function defaultBookingInput(partial: Partial<BookingFormInput>, currentP
     instructions: null,
     attendees: [],
     override_person_conflicts: false,
-    ...partial,
+    ...prefill,
     start_at: start,
     end_at: end,
   }
@@ -74,16 +77,11 @@ export function bookingDetailToFormInput(detail: BookingDetail): BookingFormInpu
   }
 }
 
-function personName(person: { first_name: string | null; surname: string | null } | null): string | null {
-  if (!person) return null
-  return [person.first_name, person.surname].filter(Boolean).join(' ') || null
-}
-
 /** id -> display name for everyone already attached to a booking (organiser, student, attendees). */
 export function bookingDetailPeopleLabels(detail: BookingDetail): Record<string, string> {
   const labels: Record<string, string> = {}
 
-  const add = (id: string | null | undefined, person: { first_name: string | null; surname: string | null } | null) => {
+  const add = (id: string | null | undefined, person: NamedPerson | null) => {
     if (!id) return
     const name = personName(person)
     if (name) labels[id] = name

@@ -1,10 +1,12 @@
 import { TZDate } from '@date-fns/tz'
-import { SCHEDULER_TIMEZONE, SLOT_MINUTES } from './config'
+import { addMinutes } from 'date-fns'
+import { DAY_START_TIME, DEFAULT_BOOKING_MINUTES, SCHEDULER_TIMEZONE, SLOT_MINUTES } from './config'
 
 /**
- * Pure HK wall-clock <-> ISO instant conversions shared by the booking dialog.
- * The form keeps times as ISO strings with an offset; only the inputs the user
- * sees (date picker, time selects) work in Hong Kong local time.
+ * Pure Hong Kong wall-clock <-> ISO instant conversions for the scheduler:
+ * the booking dialog's date and time inputs, read-only date and time labels,
+ * and turning a calendar selection into a booking slot. Everything is stored
+ * and passed around as ISO instants; only what the user sees is Hong Kong time.
  */
 
 export type HkParts = { date: Date; time: string }
@@ -72,4 +74,20 @@ export function buildTimeOptions(startTime = '07:00', endTime = '22:00', step = 
     }
   }
   return options
+}
+
+/**
+ * Turns a calendar selection into a sensible booking slot. Month-view
+ * selections cover whole days, so they start at the beginning of that business
+ * day; a single click in the time grid only covers one 15-minute slot, so it is
+ * stretched to the default booking length. Longer drags pass through unchanged.
+ */
+export function normaliseSelection<T extends { start: string; end: string; allDay?: boolean }>(range: T): T {
+  if (range.allDay) {
+    const start = fromHkParts(toHkParts(range.start).date, DAY_START_TIME)
+    return { ...range, start, end: addMinutes(new Date(start), DEFAULT_BOOKING_MINUTES).toISOString(), allDay: false }
+  }
+  const minutes = (new Date(range.end).getTime() - new Date(range.start).getTime()) / 60000
+  if (minutes > SLOT_MINUTES) return range
+  return { ...range, end: addMinutes(new Date(range.start), DEFAULT_BOOKING_MINUTES).toISOString() }
 }

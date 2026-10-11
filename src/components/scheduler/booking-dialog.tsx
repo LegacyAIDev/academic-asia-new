@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { bookingFormSchema, type BookingFormInput, type BookingFormValues } from '@/lib/scheduler/booking-schema'
 import { defaultBookingInput } from '@/lib/scheduler/booking-defaults'
+import { canCancelBooking } from '@/lib/scheduler/booking-permissions'
 import { saveBooking, confirmBooking, type SaveBookingResult } from '@/lib/supabase/actions/scheduler-bookings'
 import { BookingFormSection } from './booking-form-section'
 import { BookingFormBasics } from './booking-form-basics'
@@ -130,6 +131,10 @@ export function BookingDialog({
   }
 
   const showConfirm = isEditing && canConfirm && initial?.status === 'pending'
+  // The dialog only opens for staff with scheduler edit access; a confirmed exam also needs exam access.
+  const showCancel =
+    isEditing &&
+    canCancelBooking({ canWrite: true, canConfirm, status: initial?.status ?? 'confirmed', bookingType: initial?.booking_type ?? 'other' })
   const bookingType = useWatch({ control: form.control, name: 'booking_type' })
 
   return (
@@ -158,7 +163,7 @@ export function BookingDialog({
             <BookingConflictBanner conflicts={conflicts} form={form} />
 
             <DialogFooter className="gap-2">
-              {isEditing && (
+              {showCancel && (
                 <Button type="button" variant="outline" className="mr-auto" onClick={() => setCancelOpen(true)} disabled={isPending}>
                   Cancel booking
                 </Button>

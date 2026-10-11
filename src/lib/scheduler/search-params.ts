@@ -1,6 +1,7 @@
 import { TZDate } from '@date-fns/tz'
 import { addDays, endOfMonth, format, startOfMonth, startOfWeek } from 'date-fns'
 import { BOOKING_TYPES, SCHEDULER_TIMEZONE, type BookingType } from './config'
+import { isUuid } from './uuid'
 
 /**
  * The scheduler keeps its state in the URL so views are shareable and the
@@ -31,10 +32,9 @@ export type SchedulerParams = {
 export type RawSearchParams = Record<string, string | string[] | undefined>
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
-/** Ids come straight from the URL and end up in PostgREST filters, so anything that is not a uuid is dropped. */
-const uuids = (values: string[]) => values.filter(v => UUID_RE.test(v))
+/** Ids come straight from the URL and end up in database filters: keep valid uuids, once each. */
+const uuids = (values: string[]) => [...new Set(values.filter(isUuid))]
 
 function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value
@@ -57,9 +57,12 @@ export function todayInBusinessTz(now: Date = new Date()): string {
 export function parseSchedulerParams(raw: RawSearchParams, now: Date = new Date()): SchedulerParams {
   const people = list(raw.people)
   const dateRaw = first(raw.date)
+  const view = pick(first(raw.view), SCHEDULER_VIEWS, 'my')
+  const mode = pick(first(raw.mode), SCHEDULER_MODES, 'week')
   return {
-    view: pick(first(raw.view), SCHEDULER_VIEWS, 'my'),
-    mode: pick(first(raw.mode), SCHEDULER_MODES, 'week'),
+    view,
+    // The Rooms view has no month layout; a month link falls back to the week.
+    mode: view === 'rooms' && mode === 'month' ? 'week' : mode,
     date: dateRaw && DATE_RE.test(dateRaw) ? dateRaw : todayInBusinessTz(now),
     profileIds: uuids(people.filter(p => p.startsWith('p:')).map(p => p.slice(2))),
     studentIds: uuids(people.filter(p => p.startsWith('s:')).map(p => p.slice(2))),
@@ -99,8 +102,20 @@ export function visibleRange(date: string, mode: SchedulerMode): { from: string;
   return { from: fmt(weekStart), to: fmt(addDays(weekStart, 6)) }
 }
 
+/** Full scheduler URL for a set of params; also used as the "back to calendar" target. */
+export function schedulerHref(params: SchedulerParams): string {
+  return `/scheduler?${serialiseSchedulerParams(params)}`
+}
+
+/** Team day and week views give every selected person a column; month stays an overlay. */
+export function usesPersonColumns(params: SchedulerParams): boolean {
+  return params.view === 'team' && params.mode !== 'month'
+}
+
 export function fullCalendarViewType(params: SchedulerParams): string {
-  if (params.view === 'rooms') return params.mode === 'day' ? 'resourceTimeGridDay' : 'resourceTimeGridWeek'
+  if (params.view === 'rooms' || usesPersonColumns(params)) {
+    return params.mode === 'day' ? 'resourceTimeGridDay' : 'resourceTimeGridWeek'
+  }
   if (params.mode === 'day') return 'timeGridDay'
   if (params.mode === 'month') return 'dayGridMonth'
   return 'timeGridWeek'
