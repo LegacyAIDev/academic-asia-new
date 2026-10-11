@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { ATTACH_POINTS, ATTACH_POINT_KEYS, ownerConfig, ownerConfigFor } from '../attach-points'
-import { MODULES } from '@/lib/permissions/modules'
+import { ATTACH_POINTS, ATTACH_POINT_KEYS, attachAccess, ownerConfig, ownerConfigFor } from '../attach-points'
+import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
 /**
  * The same knowledge lives in three places — this registry, the CHECK
@@ -87,5 +87,22 @@ describe('ownerConfig', () => {
   it('resolves the same config when addressed by owner directly', () => {
     expect(ownerConfigFor('student')).toEqual(ownerConfig('student_visa'))
     expect(ownerConfigFor('school')).toEqual(ownerConfig('school_note'))
+  })
+})
+
+describe('attachAccess', () => {
+  it('follows the owner module for ordinary attachments', () => {
+    expect(attachAccess('school_fee')).toEqual({ module: MODULES.SCHOOLS, read: ACCESS.READ, write: ACCESS.WRITE, restricted: false })
+    expect(attachAccess('student_visa')).toEqual({ module: MODULES.STUDENTS, read: ACCESS.READ, write: ACCESS.WRITE, restricted: false })
+  })
+
+  it('keeps entrance exam papers to the examination team, for reading as well', () => {
+    expect(attachAccess('school_entrance_exam_paper')).toEqual({ module: MODULES.EXAMS, read: ACCESS.WRITE, write: ACCESS.WRITE, restricted: true })
+  })
+
+  it('is the only attach point with its own rule', () => {
+    const special = ATTACH_POINT_KEYS.filter(key => attachAccess(key).module !== ownerConfig(key).module)
+    expect(special).toEqual(['school_entrance_exam_paper'])
+    expect(ATTACH_POINT_KEYS.filter(key => attachAccess(key).restricted)).toEqual(['school_entrance_exam_paper'])
   })
 })

@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { deleteAttachmentsForRecord } from '@/lib/supabase/actions/record-attachments'
+import { EXAM_PAPER_ACCESS } from '@/lib/attachments/exam-paper-access'
+import { countExamPapers } from '@/lib/supabase/queries/school-documents'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -107,7 +109,18 @@ export async function deleteSchoolEntranceExam(
 
     // Attachments are polymorphic, so no foreign key cascades them. Remove them
     // first: an orphaned storage object is invisible and never cleaned up.
-    await deleteAttachmentsForRecord('school_entrance_exam_paper', examId, schoolId)
+    // Papers belong to the examination team, so a user without that right can
+    // only delete an exam that has no papers attached.
+    const paperDenied = await assertAccess(EXAM_PAPER_ACCESS.module, EXAM_PAPER_ACCESS.write)
+    if (paperDenied) {
+      // An unknown count is treated as "has papers": refusing is the safe side.
+      if ((await countExamPapers(supabase, { examId })) !== 0) {
+        return { success: false, error: 'This exam has papers attached. Ask the examination team to remove it.' }
+      }
+    } else {
+      const cleanup = await deleteAttachmentsForRecord('school_entrance_exam_paper', examId, schoolId)
+      if (!cleanup.success) return cleanup
+    }
 
     const { error } = await supabase
       .from('school_entrance_exams')

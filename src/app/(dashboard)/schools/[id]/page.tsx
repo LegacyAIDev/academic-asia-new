@@ -75,6 +75,7 @@ import { SchoolVisitsSection } from "./school-visits"
 import { SchoolEventsSection } from "./school-events"
 import { SchoolDocumentsSection } from "./school-documents"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { EXAM_PAPER_ACCESS } from "@/lib/attachments/exam-paper-access"
 import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
@@ -86,6 +87,7 @@ type SchoolDetailPageParams = {
 export default async function SchoolDetailPage({ params, searchParams }: SchoolDetailPageParams) {
   await requireAccess(MODULES.SCHOOLS)
   const canWrite = await canAccess(MODULES.SCHOOLS, ACCESS.WRITE)
+  const canManagePapers = await canAccess(EXAM_PAPER_ACCESS.module, EXAM_PAPER_ACCESS.write)
 
   const { id } = await params
   const { tab = "basic", supPage = "1" } = await searchParams
@@ -734,7 +736,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
 
         {/* Entrance Exams Tab */}
         <TabsContent value="entrance-exams" className="space-y-6">
-          <SchoolEntranceExamsSection schoolId={id} exams={entranceExams} referenceData={entranceExamRefData} attachmentsByExam={examAttachments} canWrite={canWrite} />
+          <SchoolEntranceExamsSection schoolId={id} exams={entranceExams} referenceData={entranceExamRefData} attachmentsByExam={examAttachments} canWrite={canWrite} canManagePapers={canManagePapers} />
         </TabsContent>
 
         {/* Academic Results Tab */}

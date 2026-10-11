@@ -7,6 +7,8 @@ import { normaliseCounty } from '@/lib/schools/county'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { purgeOwnerStorage } from '@/lib/supabase/actions/record-attachments'
+import { EXAM_PAPER_ACCESS } from '@/lib/attachments/exam-paper-access'
+import { countExamPapers } from '@/lib/supabase/queries/school-documents'
 
 export type CreateSchoolInput = {
   name: string
@@ -132,6 +134,13 @@ export async function deleteSchool(id: string): Promise<ActionResult> {
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    // Deleting a school removes all its files, exam papers included. Papers belong to
+    // the examination team, so anyone else can only delete a school that holds none.
+    const paperDenied = await assertAccess(EXAM_PAPER_ACCESS.module, EXAM_PAPER_ACCESS.write)
+    if (paperDenied && (await countExamPapers(supabase, { schoolId: id })) !== 0) {
+      return { success: false, error: 'This school has exam papers. Ask the examination team to remove them first.' }
+    }
 
     // Storage is outside Postgres, so the row cascade does not reach the files.
     await purgeOwnerStorage('school', id)

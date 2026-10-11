@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { ATTACH_POINTS, ownerConfig, type AttachPointKey } from '@/lib/attachments/attach-points'
+import { canAccess } from '@/lib/permissions/guard'
+import { ATTACH_POINTS, attachAccess, ownerConfig, type AttachPointKey } from '@/lib/attachments/attach-points'
 
 export type AttachmentRecord = {
   id: string
@@ -19,6 +20,10 @@ const COLUMNS = 'id, file_name, file_path, file_size, mime_type, external_url, t
  *
  * Batched on purpose: the fees and entrance exam tabs render dozens of rows and
  * a per-row query would be dozens of round trips on every page load.
+ *
+ * The right to see the files is checked here rather than in each page, so no
+ * caller can forget it: a user without it simply gets no attachments back, and
+ * neither file names nor paths reach the browser.
  */
 export async function getAttachmentsForMany(
   point: AttachPointKey,
@@ -26,6 +31,9 @@ export async function getAttachmentsForMany(
 ): Promise<Map<string, AttachmentRecord[]>> {
   const result = new Map<string, AttachmentRecord[]>()
   if (attachableIds.length === 0) return result
+
+  const access = attachAccess(point)
+  if (!(await canAccess(access.module, access.read))) return result
 
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)

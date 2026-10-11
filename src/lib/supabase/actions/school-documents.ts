@@ -4,14 +4,24 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { buildDocumentPath } from '@/lib/supabase/storage-paths'
-import { getCategoryCode } from '@/lib/supabase/document-categories'
+import { getCategoryCode, getCategoryId } from '@/lib/supabase/document-categories'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { ALLOWED_MIME, MAX_BYTES } from '@/lib/attachments/constraints'
+import { EXAM_PAPER_ACCESS, EXAM_PAPER_CATEGORY_CODE, isExamPaperRow } from '@/lib/attachments/exam-paper-access'
+import { findStoredSchoolDocument } from '@/lib/supabase/queries/school-documents'
 
 type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 const BUCKET = 'school-documents'
+
+/** Download links normally last an hour; a link to an exam paper only long enough to open it. */
+const LINK_SECONDS = { paper: 300, other: 3600 }
+
+/** Exam papers share this table with ordinary school documents, but only the examination team may touch them. */
+function assertPaperAccess() {
+  return assertAccess(EXAM_PAPER_ACCESS.module, EXAM_PAPER_ACCESS.write)
+}
 
 export type SchoolBatchItem = { category_id: number; title?: string | null }
 export type SchoolBatchResult = { uploaded: number; failed: number; errors: string[] }
@@ -31,6 +41,10 @@ export async function uploadSchoolDocuments(
 
     let uploaded = 0
     const errors: string[] = []
+    // Papers are recognised by the category id sent with the file. If that id cannot be
+    // resolved, every file counts as a possible paper: "could not check" must not mean "allowed".
+    const paperCategoryId = await getCategoryId(supabase, EXAM_PAPER_CATEGORY_CODE)
+    const paperDenied = await assertPaperAccess()
 
     for (let i = 0; i < items.length; i++) {
       const file = formData.get(`file_${i}`) as File | null
@@ -40,6 +54,10 @@ export async function uploadSchoolDocuments(
       if (!ALLOWED_MIME.includes(file.type)) { errors.push(`${label}: only PDF and image files are allowed`); continue }
       if (file.size > MAX_BYTES) { errors.push(`${label}: exceeds 10 MB limit`); continue }
 
+      if (paperDenied && (paperCategoryId === null || items[i].category_id === paperCategoryId)) {
+        errors.push(`${label}: ${paperCategoryId === null ? 'the document category could not be checked, please try again' : 'exam papers can only be added by the examination team'}`)
+        continue
+      }
       const categoryCode = await getCategoryCode(supabase, items[i].category_id)
       const filePath = buildDocumentPath({
         ownerId: schoolId, categoryCode, fileName: file.name,
@@ -91,6 +109,10 @@ export async function renameSchoolDocument(
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+    if (isExamPaperRow(await findStoredSchoolDocument(supabase, 'id', documentId))) {
+      const paperDenied = await assertPaperAccess()
+      if (paperDenied) return paperDenied
+    }
     const { error } = await supabase
       .from('school_documents')
       .update({ title: title.trim() || null } as never)
@@ -113,8 +135,11 @@ export async function deleteSchoolDocument(documentId: string, schoolId: string)
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const { data: doc } = await supabase
-      .from('school_documents').select('file_path').eq('id', documentId).single()
+    const doc = await findStoredSchoolDocument(supabase, 'id', documentId)
+    if (isExamPaperRow(doc)) {
+      const paperDenied = await assertPaperAccess()
+      if (paperDenied) return paperDenied
+    }
 
     const { error } = await supabase.from('school_documents').delete().eq('id', documentId)
     if (error) return { success: false, error: error.message }
@@ -128,7 +153,11 @@ export async function deleteSchoolDocument(documentId: string, schoolId: string)
   }
 }
 
-/** Signed URL for downloading a school document. */
+/**
+ * Signed URL for downloading a school document. The path comes from the
+ * browser, so it is only signed when it is the stored path of a document, and
+ * an exam paper additionally needs the examination team's right.
+ */
 export async function getSchoolDocumentSignedUrl(filePath: string): Promise<ActionResult<{ url: string }>> {
   const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.READ)
   if (denied) return denied
@@ -136,7 +165,14 @@ export async function getSchoolDocumentSignedUrl(filePath: string): Promise<Acti
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
-    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(filePath, 3600)
+    const doc = await findStoredSchoolDocument(supabase, 'file_path', filePath)
+    if (!doc?.file_path) return { success: false, error: 'Document not found' }
+    const isPaper = isExamPaperRow(doc)
+    // Same answer as for a path that does not exist, so a guessed paper path cannot be confirmed.
+    if (isPaper && (await assertPaperAccess())) return { success: false, error: 'Document not found' }
+    const { data, error } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(doc.file_path, LINK_SECONDS[isPaper ? 'paper' : 'other'])
     if (error) return { success: false, error: error.message }
     return { success: true, data: { url: data.signedUrl } }
   } catch (err) {

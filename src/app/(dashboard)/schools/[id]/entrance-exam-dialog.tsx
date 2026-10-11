@@ -66,6 +66,8 @@ type EntranceExamDialogProps = {
   trigger?: React.ReactNode
   attachments?: AttachmentRecord[]
   canWrite?: boolean
+  /** Papers are for the examination team only; everyone else sees the exam format without them. */
+  canManagePapers?: boolean
 }
 
 function FormSection({
@@ -126,6 +128,7 @@ export function EntranceExamDialog({
   trigger,
   attachments = [],
   canWrite = true,
+  canManagePapers = false,
 }: EntranceExamDialogProps) {
   const [open, setOpen] = useState(false)
   const attachRef = useRef<AttachmentFieldHandle>(null)
@@ -285,14 +288,18 @@ export function EntranceExamDialog({
 
             <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
               <FormField label="Exam paper (file or link)">
-                <AttachmentField
-                  ref={attachRef}
-                  attachPoint="school_entrance_exam_paper"
-                  ownerId={schoolId}
-                  attachableId={mode === "edit" ? exam?.id ?? null : null}
-                  attachments={attachments}
-                  canWrite={canWrite}
-                />
+                {canManagePapers ? (
+                  <AttachmentField
+                    ref={attachRef}
+                    attachPoint="school_entrance_exam_paper"
+                    ownerId={schoolId}
+                    attachableId={mode === "edit" ? exam?.id ?? null : null}
+                    attachments={attachments}
+                    canWrite={canWrite}
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground">Papers are kept by the examination team.</p>
+                )}
               </FormField>
             </FormSection>
 
@@ -320,9 +327,9 @@ export function EntranceExamDialog({
   )
 }
 
-export function EditEntranceExamButton({ exam, schoolId, referenceData, attachments = [], canWrite = true }: { exam: SchoolEntranceExamWithJoins; schoolId: string; referenceData: EntranceExamReferenceData; attachments?: AttachmentRecord[]; canWrite?: boolean }) {
+export function EditEntranceExamButton({ exam, schoolId, referenceData, attachments = [], canWrite = true, canManagePapers = false }: { exam: SchoolEntranceExamWithJoins; schoolId: string; referenceData: EntranceExamReferenceData; attachments?: AttachmentRecord[]; canWrite?: boolean; canManagePapers?: boolean }) {
   return (
-    <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="edit" exam={exam} attachments={attachments} canWrite={canWrite}
+    <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="edit" exam={exam} attachments={attachments} canWrite={canWrite} canManagePapers={canManagePapers}
       trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )

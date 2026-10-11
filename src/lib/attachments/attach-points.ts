@@ -1,4 +1,5 @@
 import { ACCESS, MODULES, type ModuleKey } from '@/lib/permissions/modules'
+import { EXAM_PAPER_ACCESS, EXAM_PAPER_ATTACHABLE_TYPE, EXAM_PAPER_CATEGORY_CODE, type AttachAccess } from './exam-paper-access'
 
 /**
  * Every place in the app where a record can carry a file or a link.
@@ -23,6 +24,8 @@ type AttachPoint = {
   categoryCode: string
   /** Shown on the attach button and used in toasts. */
   label: string
+  /** Set only when the files need other rights than the record they hang off. */
+  access?: AttachAccess
 }
 
 export const ATTACH_POINTS = {
@@ -70,9 +73,10 @@ export const ATTACH_POINTS = {
   },
   school_entrance_exam_paper: {
     owner: 'school',
-    attachableType: 'school_entrance_exams',
-    categoryCode: 'school_entrance_exam_paper',
+    attachableType: EXAM_PAPER_ATTACHABLE_TYPE,
+    categoryCode: EXAM_PAPER_CATEGORY_CODE,
     label: 'Exam paper',
+    access: EXAM_PAPER_ACCESS,
   },
   school_fee: {
     owner: 'school',
@@ -134,6 +138,15 @@ export function ownerConfigFor(owner: AttachOwner): OwnerConfig {
   return OWNERS[owner]
 }
 
-/** Attachments inherit the parent entity's rights — there is no separate module. */
+/** Attachments normally inherit the parent entity's rights — there is no separate module. */
 export const ATTACH_WRITE = ACCESS.WRITE
 export const ATTACH_READ = ACCESS.READ
+
+/**
+ * The rights needed to see and to change the files of an attach point: the
+ * owner's module by default, or the point's own rule (exam papers).
+ */
+export function attachAccess(point: AttachPointKey): AttachAccess {
+  const override = (ATTACH_POINTS[point] as AttachPoint).access
+  return override ?? { module: ownerConfig(point).module, read: ATTACH_READ, write: ATTACH_WRITE, restricted: false }
+}

@@ -22,6 +22,7 @@ type SchoolEntranceExamsSectionProps = {
   referenceData: EntranceExamReferenceData
   attachmentsByExam?: Map<string, AttachmentRecord[]>
   canWrite?: boolean
+  canManagePapers?: boolean
 }
 
 function BoolIndicator({ value }: { value: boolean | null }) {
@@ -35,6 +36,7 @@ export function SchoolEntranceExamsSection({
   referenceData,
   attachmentsByExam,
   canWrite = true,
+  canManagePapers = false,
 }: SchoolEntranceExamsSectionProps) {
   if (exams.length === 0) {
     return (
@@ -45,7 +47,7 @@ export function SchoolEntranceExamsSection({
               <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
               Entrance Exams
             </CardTitle>
-            <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+            <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -69,7 +71,7 @@ export function SchoolEntranceExamsSection({
             <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
             Entrance Exams ({exams.length})
           </CardTitle>
-          <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+          <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -132,6 +134,7 @@ export function SchoolEntranceExamsSection({
                         referenceData={referenceData}
                         attachments={attachmentsByExam?.get(exam.id) ?? []}
                         canWrite={canWrite}
+                        canManagePapers={canManagePapers}
                       />
                       <DeleteEntranceExamButton
                         examId={exam.id}

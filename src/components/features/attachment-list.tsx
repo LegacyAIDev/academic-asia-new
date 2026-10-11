@@ -6,7 +6,8 @@ import { Download, ExternalLink, FileText, Link2, Loader2, Trash2 } from "lucide
 import { toast } from "sonner"
 import { formatFileSize, isSafeExternalUrl, urlHostname } from "@/lib/attachments/constraints"
 import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
-import { getAttachmentSignedUrl, deleteAttachment } from "@/lib/supabase/actions/record-attachments"
+import { deleteAttachment } from "@/lib/supabase/actions/record-attachments"
+import { getAttachmentSignedUrl } from "@/lib/supabase/actions/record-attachment-signed-url"
 import type { AttachPointKey } from "@/lib/attachments/attach-points"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 

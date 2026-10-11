@@ -7,7 +7,7 @@ import { buildDocumentPath } from '@/lib/supabase/storage-paths'
 import { getCategoryId } from '@/lib/supabase/document-categories'
 import { assertAccess } from '@/lib/permissions/guard'
 import {
-  ATTACH_POINTS, ATTACH_READ, ATTACH_WRITE, ownerConfig, ownerConfigFor,
+  ATTACH_POINTS, ATTACH_WRITE, attachAccess, ownerConfig, ownerConfigFor,
   type AttachOwner, type AttachPointKey,
 } from '@/lib/attachments/attach-points'
 import { ALLOWED_MIME, MAX_BYTES, isSafeExternalUrl, urlHostname } from '@/lib/attachments/constraints'
@@ -29,7 +29,8 @@ export async function attachFileToRecord(
   formData: FormData,
 ): Promise<ActionResult<{ id: string }>> {
   const cfg = ownerConfig(point)
-  const denied = await assertAccess(cfg.module, ATTACH_WRITE)
+  const access = attachAccess(point)
+  const denied = await assertAccess(access.module, access.write)
   if (denied) return denied
 
   try {
@@ -99,7 +100,8 @@ export async function attachLinkToRecord(
   label?: string | null,
 ): Promise<ActionResult<{ id: string }>> {
   const cfg = ownerConfig(point)
-  const denied = await assertAccess(cfg.module, ATTACH_WRITE)
+  const access = attachAccess(point)
+  const denied = await assertAccess(access.module, access.write)
   if (denied) return denied
 
   try {
@@ -146,21 +148,31 @@ export async function deleteAttachment(
   ownerId: string,
 ): Promise<ActionResult> {
   const cfg = ownerConfig(point)
-  const denied = await assertAccess(cfg.module, ATTACH_WRITE)
+  const access = attachAccess(point)
+  const denied = await assertAccess(access.module, access.write)
   if (denied) return denied
 
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
+    // The id must belong to this attach point. Otherwise a point with looser
+    // rights could be named to remove a file that needs stricter ones.
+    const { attachableType } = ATTACH_POINTS[point]
     const { data: row, error: fetchError } = await supabase
       .from(cfg.table)
       .select('file_path')
       .eq('id', attachmentId)
-      .single()
+      .eq('attachable_type', attachableType)
+      .maybeSingle()
     if (fetchError) return { success: false, error: fetchError.message }
+    if (!row) return { success: false, error: 'Attachment not found' }
 
-    const { error } = await supabase.from(cfg.table).delete().eq('id', attachmentId)
+    const { error } = await supabase
+      .from(cfg.table)
+      .delete()
+      .eq('id', attachmentId)
+      .eq('attachable_type', attachableType)
     if (error) return { success: false, error: error.message }
 
     const filePath = (row as { file_path: string | null } | null)?.file_path
@@ -187,7 +199,8 @@ export async function deleteAttachmentsForRecord(
   ownerId: string,
 ): Promise<ActionResult> {
   const cfg = ownerConfig(point)
-  const denied = await assertAccess(cfg.module, ATTACH_WRITE)
+  const access = attachAccess(point)
+  const denied = await assertAccess(access.module, access.write)
   if (denied) return denied
 
   try {
@@ -219,29 +232,6 @@ export async function deleteAttachmentsForRecord(
   } catch (err) {
     console.error('Error in deleteAttachmentsForRecord:', err)
     return { success: false, error: 'Failed to remove attachments' }
-  }
-}
-
-/** Short-lived download URL for a file attachment. */
-export async function getAttachmentSignedUrl(
-  point: AttachPointKey,
-  filePath: string,
-): Promise<ActionResult<{ url: string }>> {
-  const cfg = ownerConfig(point)
-  const denied = await assertAccess(cfg.module, ATTACH_READ)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { data, error } = await supabase.storage.from(cfg.bucket).createSignedUrl(filePath, 3600)
-    if (error || !data) return { success: false, error: error?.message ?? 'Could not create link' }
-
-    return { success: true, data: { url: data.signedUrl } }
-  } catch (err) {
-    console.error('Error in getAttachmentSignedUrl:', err)
-    return { success: false, error: 'Failed to create download link' }
   }
 }
 
