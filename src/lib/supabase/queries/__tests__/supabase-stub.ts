@@ -19,7 +19,7 @@ export function makeSupabaseStub(respond: (rec: Recorded) => Result = () => ({ d
         then: (resolve: (value: Result) => unknown, reject?: (reason: unknown) => unknown) =>
           Promise.resolve(respond(rec)).then(resolve, reject),
       }
-      for (const method of ['select', 'eq', 'neq', 'gte', 'lte', 'in', 'or', 'order']) {
+      for (const method of ['select', 'eq', 'neq', 'gte', 'lte', 'in', 'or', 'order', 'limit']) {
         chain[method] = (...args: unknown[]) => {
           rec.calls.push({ method, args })
           return chain

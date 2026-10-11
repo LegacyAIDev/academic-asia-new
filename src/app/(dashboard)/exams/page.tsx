@@ -1,68 +1,43 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { ClipboardCheck, Clock, CheckCircle2, AlertCircle } from "lucide-react"
-import { getAllExams, getExamStats } from "@/lib/supabase/queries/exam-management"
-import { ExamManagementTable } from "./exam-management-table"
-import { canAccess, requireAccess } from "@/lib/permissions/guard"
-import { ACCESS, MODULES } from "@/lib/permissions/modules"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { requireAccess } from "@/lib/permissions/guard"
+import { MODULES } from "@/lib/permissions/modules"
+import { resolveExamView, type ExamView } from "@/lib/exams/exam-page-search-params"
+import type { RawSearchParams } from "@/lib/scheduler/search-params"
+import { ExamDeskView } from "./exam-desk-view"
+import { ExamListView } from "./exam-list-view"
 
-import { getExamBookingLinks } from "@/lib/supabase/queries/scheduler-exams"
+type PageParams = { searchParams: Promise<RawSearchParams> }
 
-type PageParams = { searchParams: Promise<{ status?: string; page?: string }> }
+const VIEWS: { view: ExamView; label: string; href: string; hint: string }[] = [
+  { view: "desk", label: "Exam desk", href: "/exams", hint: "Who sits an examination on the chosen dates, and who has arrived" },
+  { view: "all", label: "All exams", href: "/exams?view=all", hint: "Requests to schedule, scores and the record of past exams" },
+]
 
 export default async function ExamManagementPage({ searchParams }: PageParams) {
   await requireAccess(MODULES.EXAMS)
 
-  const { status, page: pageStr } = await searchParams
-  const statusId = status ? parseInt(status, 10) : undefined
-  const page = pageStr ? parseInt(pageStr, 10) : 1
-
-  const [result, stats] = await Promise.all([
-    getAllExams({ statusId, page, pageSize: 50 }),
-    getExamStats(),
-  ])
-
-  const { exams, totalCount, totalPages } = result
-  const [links, canSchedule] = await Promise.all([
-    getExamBookingLinks(exams.map((exam) => exam.id)),
-    canAccess(MODULES.SCHEDULER, ACCESS.WRITE),
-  ])
+  const raw = await searchParams
+  const current = resolveExamView(raw)
+  const hint = VIEWS.find(v => v.view === current)?.hint
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Exam Management</h1>
-        <p className="text-sm text-muted-foreground mt-1">Confirm dates, enter scores, and manage all exam bookings</p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={AlertCircle} label="Pending" value={stats.pending} bg="bg-amber-500/10" color="text-amber-600" />
-        <StatCard icon={Clock} label="Confirmed" value={stats.confirmed} bg="bg-blue-500/10" color="text-blue-600" />
-        <StatCard icon={CheckCircle2} label="Completed" value={stats.completed} bg="bg-emerald-500/10" color="text-emerald-600" />
-        <StatCard icon={ClipboardCheck} label="Total" value={stats.total} bg="bg-primary/10" color="text-primary" />
-      </div>
-
-      <ExamManagementTable exams={exams} links={links} canSchedule={canSchedule} currentStatus={statusId} page={page} totalPages={totalPages} totalCount={totalCount} />
-    </div>
-  )
-}
-
-function StatCard({ icon: Icon, label, value, bg, color }: {
-  icon: React.ElementType; label: string; value: number; bg: string; color: string
-}) {
-  return (
-    <Card className="border-0 shadow-sm">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${bg}`}>
-            <Icon className={`h-5 w-5 ${color}`} />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold">{value.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground">{label}</p>
-          </div>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Exam Management</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{hint}</p>
         </div>
-      </CardContent>
-    </Card>
+        <nav aria-label="Exam views" className="flex items-center gap-1">
+          {VIEWS.map(({ view, label, href }) => (
+            <Button key={view} variant={view === current ? "default" : "ghost"} size="sm" asChild>
+              <Link href={href} aria-current={view === current ? "page" : undefined}>{label}</Link>
+            </Button>
+          ))}
+        </nav>
+      </div>
+
+      {current === "desk" ? <ExamDeskView raw={raw} /> : <ExamListView raw={raw} />}
+    </div>
   )
 }

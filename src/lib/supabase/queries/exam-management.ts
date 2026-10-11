@@ -30,9 +30,18 @@ export type ExamListResult = {
   totalPages: number
 }
 
-/** Fetch paginated exams with student + type joins, optional status filter */
-export async function getAllExams(params: { statusId?: number; page?: number; pageSize?: number }): Promise<ExamListResult> {
-  const { statusId, page = 1, pageSize = 50 } = params
+type ExamListFilters = {
+  statusId?: number
+  page?: number
+  pageSize?: number
+  /** Scheduled (confirmed) date range, YYYY-MM-DD, either end optional. */
+  from?: string | null
+  to?: string | null
+}
+
+/** Fetch paginated exams with student + type joins, optionally narrowed by status and scheduled date */
+export async function getAllExams(params: ExamListFilters): Promise<ExamListResult> {
+  const { statusId, page = 1, pageSize = 50, from, to } = params
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const offset = (page - 1) * pageSize
@@ -53,6 +62,8 @@ export async function getAllExams(params: { statusId?: number; page?: number; pa
   if (statusId) {
     query = query.eq('status_id', statusId)
   }
+  if (from) query = query.gte('confirmed_date', from)
+  if (to) query = query.lte('confirmed_date', to)
 
   const { data, error, count } = await query
   if (error) {

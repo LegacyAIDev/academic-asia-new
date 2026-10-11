@@ -44,10 +44,11 @@ function candidateSeat(booking: BookingDetail): number | null {
   return candidate?.seat_no ?? null
 }
 
-function assessmentLabel(booking: BookingDetail): string | null {
-  const snapshot = booking.assessment_snapshot
-  if (snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot) && typeof snapshot.label === 'string') {
-    return snapshot.label
+/** The assessment name stored with a booking, read defensively because the column is free-form JSON. */
+export function assessmentLabel(snapshot: unknown): string | null {
+  if (snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot)) {
+    const label = (snapshot as { label?: unknown }).label
+    if (typeof label === 'string' && label.trim()) return label.trim()
   }
   return null
 }
@@ -82,7 +83,7 @@ export function formatBookingText(booking: BookingDetail): string {
 /** Examination details written for the student's family. */
 export function formatFamilyExamText(booking: BookingDetail): string {
   const seat = candidateSeat(booking)
-  const assessment = assessmentLabel(booking)
+  const assessment = assessmentLabel(booking.assessment_snapshot)
 
   return [
     'Examination details',

@@ -31,12 +31,12 @@ export type SchedulerParams = {
 
 export type RawSearchParams = Record<string, string | string[] | undefined>
 
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
+export const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
 /** Ids come straight from the URL and end up in database filters: keep valid uuids, once each. */
 const uuids = (values: string[]) => [...new Set(values.filter(isUuid))]
 
-function first(value: string | string[] | undefined): string | undefined {
+export function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value
 }
 
@@ -45,7 +45,7 @@ function list(value: string | string[] | undefined): string[] {
   return raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : []
 }
 
-function pick<T extends string>(value: string | undefined, allowed: readonly T[], fallback: T): T {
+export function pick<T extends string>(value: string | undefined, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback
 }
 

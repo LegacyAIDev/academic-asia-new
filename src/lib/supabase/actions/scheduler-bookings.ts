@@ -14,6 +14,7 @@ import {
   type BookingFormValues,
   type MoveBookingInput,
 } from '@/lib/scheduler/booking-schema'
+import { bookingRevalidationPaths } from '@/lib/scheduler/booking-revalidation-paths'
 import { findConflicts, type ConflictSummary } from '@/lib/scheduler/conflicts'
 import { mapSchedulerError } from '@/lib/scheduler/error-messages'
 import { getFreeBusy } from '@/lib/supabase/queries/scheduler-availability'
@@ -25,10 +26,8 @@ export type ActionResult<T = void> = { success: boolean; data?: T; error?: strin
 
 export type SaveBookingResult = ActionResult<{ id?: string; conflicts?: ConflictSummary }>
 
-function revalidateBookingPaths(studentId?: string | null, examId?: string | null) {
-  revalidatePath('/scheduler')
-  if (studentId) revalidatePath(`/students/${studentId}`)
-  if (examId) revalidatePath('/exams')
+function revalidateBookingPaths(booking: Parameters<typeof bookingRevalidationPaths>[0]) {
+  for (const path of bookingRevalidationPaths(booking)) revalidatePath(path)
 }
 
 /** Busy people among the attendees, or null when nobody is double-booked. */
@@ -89,7 +88,7 @@ export async function saveBooking(input: BookingFormInput): Promise<SaveBookingR
     const { data, error } = await supabase.rpc('scheduler_save_booking', toRpcPayload(values))
     if (error) return { success: false, error: mapSchedulerError(error) }
 
-    revalidateBookingPaths(values.student_id, values.exam_id)
+    revalidateBookingPaths(values)
     return { success: true, data: { id: data } }
   } catch (error) {
     console.error('saveBooking failed:', error)
@@ -109,7 +108,7 @@ export async function confirmBooking(id: string): Promise<ActionResult> {
     if (error) return { success: false, error: mapSchedulerError(error) }
 
     const booking = await getBooking(id)
-    revalidateBookingPaths(booking?.student_id, booking?.exam_id)
+    revalidateBookingPaths(booking)
     return { success: true }
   } catch (error) {
     console.error('confirmBooking failed:', error)
@@ -138,7 +137,7 @@ export async function cancelBooking(id: string, input: { reason: string }): Prom
     const { error } = await supabase.rpc('scheduler_cancel_booking', { p_id: id, p_reason: parsed.data.reason })
     if (error) return { success: false, error: mapSchedulerError(error) }
 
-    revalidateBookingPaths(booking.student_id, booking.exam_id)
+    revalidateBookingPaths(booking)
     return { success: true }
   } catch (error) {
     console.error('cancelBooking failed:', error)
@@ -158,7 +157,7 @@ export async function recordAttendance(id: string, attendance: 'show_up' | 'no_s
     if (error) return { success: false, error: mapSchedulerError(error) }
 
     const booking = await getBooking(id)
-    revalidateBookingPaths(booking?.student_id, booking?.exam_id)
+    revalidateBookingPaths(booking)
     return { success: true }
   } catch (error) {
     console.error('recordAttendance failed:', error)

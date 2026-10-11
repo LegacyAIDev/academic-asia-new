@@ -17,12 +17,15 @@ import type { ExamBookingLink } from "@/lib/supabase/queries/scheduler-exams"
 import { ScheduleBookingButton } from "@/components/scheduler/schedule-booking-button"
 import { bookingPageHref } from "@/lib/scheduler/return-path"
 import { BookingStatusBadge } from "@/components/scheduler/booking-status-badge"
+import { examListHref } from "@/lib/exams/exam-page-search-params"
 
 type Props = {
   exams: ExamManagementRecord[]
   links: Record<string, ExamBookingLink>
   canSchedule: boolean
   currentStatus?: number
+  /** Scheduled-date range chosen above the table; tabs and paging must not lose it. */
+  range: { from: string | null; to: string | null }
   page: number
   totalPages: number
   totalCount: number
@@ -42,21 +45,15 @@ const tabs = [
   { label: "Completed", value: 3 },
 ]
 
-function buildUrl(status?: number, page?: number) {
-  const params = new URLSearchParams()
-  if (status) params.set("status", status.toString())
-  if (page && page > 1) params.set("page", page.toString())
-  const qs = params.toString()
-  return qs ? `/exams?${qs}` : "/exams"
-}
-
 function formatDate(d: string | null) {
   if (!d) return "—"
   return new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" })
 }
 
 /** Exam list: scheduling fields are read-only here and change only through the scheduler dialog. */
-export function ExamManagementTable({ exams, links, canSchedule, currentStatus, page, totalPages, totalCount }: Props) {
+export function ExamManagementTable({ exams, links, canSchedule, currentStatus, range, page, totalPages, totalCount }: Props) {
+  const buildUrl = (status?: number, toPage?: number) => examListHref({ status, page: toPage, ...range })
+
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="border-b bg-muted/30 px-6 py-3">
