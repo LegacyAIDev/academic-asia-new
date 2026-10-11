@@ -294,10 +294,12 @@ will ever find again.
 **Code layout:**
 
 ```
-lib/attachments/attach-points.ts   ← registry: owner, attachable_type, category, label
+lib/attachments/attach-points.ts   ← registry: owner, attachable_type, category, label; attachAccess(point)
+lib/attachments/exam-paper-access.ts ← exam-team-only rule for entrance exam papers
 lib/attachments/constraints.ts     ← ALLOWED_MIME, MAX_BYTES, isSafeExternalUrl
 queries/record-attachments.ts      ← batched reads keyed by attachable_id
-actions/record-attachments.ts      ← attach file/link, delete, purge, signed URL
+actions/record-attachments.ts      ← attach file/link, delete, purge
+actions/record-attachment-signed-url.ts ← download link for an attachment (path from the database)
 components/features/attachment-field.tsx  ← inline control; stages on create, flushes after insert
 ```
 
@@ -305,8 +307,43 @@ components/features/attachment-field.tsx  ← inline control; stages on create, 
 agrees with the CHECK lists and the category seeds — the three copies of that
 knowledge will otherwise drift.
 
-**Permissions:** attachments have no module of their own; they inherit the parent
-entity's rights via `assertAccess(STUDENTS|SCHOOLS, WRITE)`.
+**Permissions:** attachments have no module of their own. By default they inherit the
+parent entity's rights (Students or Schools). `attachAccess(point)` in `attach-points.ts`
+returns the rights for any attach point; every action and query goes through it, never
+through `ownerConfig(point).module` directly. One attach point deviates, see below.
+
+**Exam papers are exam-team only.** A school's entrance exam paper files do not follow
+the Schools rights. Listing, opening, attaching, renaming and deleting them needs the
+Exams module at WRITE (`EXAM_PAPER_ACCESS`). Everyone with Schools read still sees the
+exam format (subject, duration, instructions, "has paper"), just not the papers.
+
+- **One definition:** `lib/attachments/exam-paper-access.ts` holds the rule, the paper
+  category code and `isExamPaperRow` (paper category OR attached to an entrance exam).
+  `attachAccess` returns it for `school_entrance_exam_paper`.
+- **Reads:** `getAttachmentsForMany` checks the right itself and returns nothing without
+  it, so no page can forget. `getSchoolDocuments` leaves papers out of the Documents tab
+  for non-team users.
+- **Download links:** `getAttachmentSignedUrl` (`actions/record-attachment-signed-url.ts`)
+  and `getSchoolDocumentSignedUrl` sign only a path stored for a document, never the
+  string sent by the browser. A path shared with a paper counts as a paper. Paper links
+  last 5 minutes, others 60. A paper refused to a non-team user reads as "Document not found".
+- **Writes:** attach file/link, delete one or all attachments of a record, Documents-tab
+  upload into the paper category, rename and delete are refused without the right.
+  `deleteAttachment` only acts on an attachment of the attach point it was called with.
+- **Parent deletes:** an entrance exam with papers, and a whole school holding papers
+  (`deleteSchool`), can only be deleted by the exam team. If the paper count cannot be
+  established the delete is refused.
+- **Fails closed:** "could not check" is treated as "may be a paper".
+- **UI:** the entrance exam dialog shows the paper control only to the exam team; others
+  see "Papers are kept by the examination team." An exam officer needs Schools write as
+  well as Exams write to reach that dialog.
+
+> **LIMIT: application-layer protection only.** Row-level security is enabled but its
+> policies are permissive, and the `school-documents` bucket is readable by any signed-in
+> user. Someone calling the Supabase API directly with the browser key could still read
+> paper files. Database-level policies (part B of exam desk phase 2) were postponed by
+> decision of the product owner. No paper files exist yet. Not yet checked in a browser
+> with two accounts.
 
 ---
 

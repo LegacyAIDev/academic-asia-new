@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-10-11
+**Last updated:** 2026-10-12
 **Current phase:** Phase 2 — Feature Completion
 
 > Items marked as "Inferred" are based on codebase signals (sidebar links, migration patterns, absence of test/CI config) and not from explicit specifications.
@@ -96,7 +96,7 @@
 
 **Exam desk (plan `261012-0011-exam-desk-papers-cover-slip`):**
 - [x] Phase 1 (2026-10-12): `/exams` exam desk with date range, filters, sorting, Booked / Showed up lists, Confirm / Showed up / No show; previous list kept as `/exams?view=all` with a date filter. Unit tested; not yet checked in a browser with real exam bookings
-- [ ] Phase 2: restrict exam paper files to the exam team
+- [x] Phase 2 (2026-10-12), part A, app layer: exam paper files restricted to the exam team (Exams WRITE). Not yet checked in a browser with two accounts; database policies (part B) postponed. Limit: Supabase API access with the browser key could still read papers, see `docs/system-architecture.md` §5.7
 - [ ] Phase 3: choose papers on the booking, paper availability, "Print available"
 - [ ] Phase 4: cover slip PDF
 
@@ -204,3 +204,14 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   - Status: unit tests, type-check and review pass; not yet checked in a browser with real exam
     bookings. Known gaps: group rows show no school/entry year; exam records without a scheduler
     booking appear only under All exams. Phases 2-4 (paper access, paper choice and print, cover slip) not started.
+- **2026-10-12** — Exam desk, phase 2 of 4, part A (exam paper files, exam team only):
+  - A school's entrance exam paper files can only be listed, opened, attached, renamed or deleted
+    with the Exams module at WRITE. Schools read still shows the exam format, not the papers.
+    Download links sign only stored paths (papers expire after 5 minutes); deleting an exam or school
+    that holds papers is exam-team only and refused when the paper count cannot be established.
+  - Code: `exam-paper-access.ts`, `attachAccess(point)`, `record-attachment-signed-url.ts`. Tests: 47
+    files / 710 tests pass; type-check and permission coverage clean. Not yet checked in a browser
+    with two accounts.
+  - **Limit:** application layer only. RLS policies are permissive and the storage bucket is readable
+    by any signed-in user, so direct Supabase API use with the browser key could still read papers.
+    Database policies (part B) postponed by the product owner. No paper files exist yet.

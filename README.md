@@ -171,5 +171,5 @@ Individual migration scripts live in `scripts/` and are numbered in dependency o
 ## Known Gotchas
 
 - **Env var naming**: The server client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`, not the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Both must be set if other tooling expects the old name.
-- **RLS**: Row-Level Security policies are not yet enabled at the database level. Access control is enforced at the application layer (middleware + RBAC). This is a known security gap — see `docs/system-architecture.md`.
+- **RLS**: Row-Level Security is enabled but its policies are permissive (any signed-in user), so access control is enforced at the application layer (middleware + RBAC). Exam paper files are the case where this matters: only the exam team may open them in the app, but the storage bucket is still readable by any signed-in user via the Supabase API. See `docs/system-architecture.md` §5.7.
 - **Settings/Reports pages**: Sidebar links for `/settings` and `/reports` exist but no pages are implemented yet.

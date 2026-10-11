@@ -221,10 +221,11 @@ src/lib/
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
 ├── attachments/                  # Record attachments — file or link on a specific row
-│   ├── attach-points.ts          # ATTACH_POINTS registry: owner, attachable_type, category
+│   ├── attach-points.ts          # ATTACH_POINTS registry: owner, attachable_type, category; attachAccess(point)
+│   ├── exam-paper-access.ts      # EXAM_PAPER_ACCESS (Exams WRITE), paper category code, isExamPaperRow
 │   ├── constraints.ts            # ALLOWED_MIME, MAX_BYTES, isSafeExternalUrl, formatFileSize
 │   ├── open-in-new-tab.ts        # Post-await open that Safari does not block
-│   └── __tests__/                # 38 tests: registry/DB/seed parity, URL validation
+│   └── __tests__/                # registry/DB/seed parity, URL validation, exam-paper-access
 ├── rich-text.ts                  # sanitizeRichText() — cleans editor HTML before storage
 ├── pdf/
 │   └── render-document-pdf.ts    # Shared headless-Chromium renderer (HTML string → PDF)
@@ -305,6 +306,8 @@ src/lib/
     │   ├── school-courses.ts
     │   ├── school-fees.ts
     │   ├── school-entrance-exams.ts
+    │   ├── record-attachment-signed-url.ts  # getAttachmentSignedUrl: signs stored paths only, 5 min for exam papers
+    │   ├── __tests__/                 # exam-paper-file-access, exam-paper-write-access (exam-team-only papers)
     │   ├── school-academic-results.ts
     │   ├── school-bank-details.ts
     │   ├── school-notes.ts
@@ -316,7 +319,7 @@ src/lib/
     │   └── scheduler-availability.ts  # Wraps scheduler_free_busy / scheduler_available_rooms
     └── queries/                  # Read-only data fetching for Server Components
         ├── scheduler-calendar-helpers.ts  # peopleOrFilter lookups, fetchCancelledRows, attachAttendees, inBatches (100-id batches)
-        ├── __tests__/                # Scheduler query tests against a stubbed query builder (supabase-stub.ts)
+        ├── __tests__/                # Scheduler query tests against a stubbed query builder (supabase-stub.ts); exam-paper-listing-access.test.ts covers papers hidden from non-team users
         ├── students.ts
         ├── schools.ts
         ├── staff.ts

@@ -305,6 +305,13 @@ if (denied) return denied
 `assertAccess` returns an `ActionResult`-shaped error, never throws (see §11). It also
 covers the signed-out case — an anonymous caller resolves to all-`NONE`.
 
+### Attachment rights
+
+When an attachment type needs other rights than its parent record, set `access` on its
+attach point and always go through `attachAccess(point)`; never check
+`ownerConfig(point).module` directly in a new action or query. Example:
+`src/lib/attachments/exam-paper-access.ts` (see `docs/system-architecture.md` §5.7).
+
 ### Conditional rendering
 
 ```typescript
