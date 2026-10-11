@@ -1,6 +1,6 @@
 # Codebase Summary
 
-**Last updated:** 2026-10-02
+**Last updated:** 2026-10-09
 **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase
 
 ---
@@ -16,7 +16,7 @@
 | Query files | 43+ |
 | shadcn/ui primitives | 53 |
 | Legacy migration scripts | 34 |
-| Test files | 17 (305 tests) |
+| Test files | 36 (543 tests) |
 
 ---
 
@@ -31,6 +31,7 @@ aa-new/
 ├── scripts/              # 34 data migration TypeScript scripts (run via tsx)
 ├── data/                 # Source CSVs + migration output artifacts
 ├── requirements/         # Legacy spec documents (Word/PDF) + DB exports
+├── docs/                 # Project docs; scheduler-user-guide.md is the staff-facing Scheduler guide
 ├── public/               # Static assets
 ├── components.json       # shadcn/ui config
 ├── next.config.ts
@@ -135,9 +136,13 @@ src/app/
     └── scheduler/                  # Rooms, bookings, exam scheduling (added 2026-09-28)
         ├── page.tsx                # My / team / rooms calendar (FullCalendar v7)
         ├── scheduler-shell.tsx     # Client shell: view state, dialogs orchestration
-        ├── scheduler-toolbar.tsx
+        ├── scheduler-toolbar.tsx   # Command bar; "View only" badge + disabled New booking without WRITE
+        ├── scheduler-date-picker.tsx  # Date label that opens a month picker
         ├── scheduler-filter-bar.tsx
         ├── people-picker.tsx
+        ├── use-calendar-model.ts   # URL params + rows → FullCalendar view type, events, resources (person/room columns)
+        ├── use-booking-actions.ts  # Confirm/attendance actions shared by details panel + right-click menu
+        ├── calendar-context-menu.tsx  # Right-click menu on bookings and empty slots
         ├── booking-details-sheet.tsx
         ├── move-confirm-dialog.tsx # Drag/resize reschedule confirmation
         ├── bookings/[id]/page.tsx  # Booking detail route (kept per Tab rule)
@@ -179,6 +184,8 @@ src/components/
 │   ├── booking-conflict-banner.tsx / use-booking-conflicts.ts
 │   ├── booking-cancel-dialog.tsx  # Reason-required cancel
 │   ├── booking-details.tsx        # Read view for booking detail route
+│   ├── booking-copy-buttons.tsx   # "Copy details" / "Copy for family" buttons
+│   ├── copy-booking.ts            # Clipboard copy of booking text (ClipboardItem promise fallback)
 │   ├── booking-details-ribbon.tsx # Type badge + status badge + room chip row atop details sheet
 │   ├── booking-form-section.tsx   # Form section wrapper (When · Where · Who · Details eyebrows)
 │   ├── booking-form-reason.tsx    # Cancel/reschedule reason field
@@ -231,13 +238,24 @@ src/lib/
 │   ├── error-messages.ts         # Maps SQLSTATE codes (SR001–SR006, 23P01) → user messages
 │   ├── calendar-adapter.ts       # PURE: bookings/exams/event_schedules → FullCalendar events
 │   ├── colors.ts                 # Booking type/status → calendar color mapping
-│   ├── search-params.ts          # URL query param parsing for calendar filters
-│   ├── time-utils.ts             # Temporal/date-fns helpers, HKT-aware
+│   ├── search-params.ts          # URL query param parsing for calendar filters; usesPersonColumns, fullCalendarViewType
+│   ├── time-utils.ts             # Temporal/date-fns helpers, HKT-aware; normaliseSelection (slot → booking length)
+│   ├── cancelled-items.ts        # Cancelled booking row → calendar view-row shape (Cancelled filter)
+│   ├── people-filter.ts          # peopleOrFilter: shared PostgREST `or` for active + cancelled queries
+│   ├── return-path.ts            # safeReturnPath (open-redirect safe `?from=`: scheduler, exams, student), returnLabel, bookingPageHref
+│   ├── booking-permissions.ts    # canCancelBooking: single UI cancel rule, mirrors server check
+│   ├── person-name.ts            # personName: display name from first_name/surname
+│   ├── uuid.ts                   # isUuid: shared id check (search-params, people-filter)
+│   ├── selection-prefill.ts      # Picked slot + column → booking dialog defaults; slotFromGridAttributes
+│   ├── booking-text-formatters.ts  # Copy text: booking details (CAL-09), family exam text (CAL-10)
 │   ├── booking-defaults.ts       # Default form values per booking type
 │   ├── exam-booking-defaults.ts  # Default form values for exam-linked bookings
 │   ├── action-helpers.ts         # Shared RPC-call/error-mapping helpers for actions
-│   └── __tests__/                # 7 test files: booking-schema, calendar-adapter, colors,
-│                                  # conflicts, error-messages, exam-booking-defaults, search-params
+│   └── __tests__/                # 23 test files, 334 tests: booking-permissions, person-name, uuid, booking-schema, booking-defaults, booking-text-formatters,
+│                                  # family-exam-text, calendar-adapter (+ person-columns), cancelled-items, colors,
+│                                  # conflicts, error-messages, exam-booking-defaults, people-filter, return-path,
+│                                  # search-params (+ team-and-href), selection-prefill, time-utils;
+│                                  # fixtures: booking-detail-fixture, calendar-item-fixture
 └── supabase/
     ├── client.ts                 # Browser Supabase client (anon/publishable key)
     ├── server.ts                 # Server component client (cookie SSR)
@@ -283,6 +301,8 @@ src/lib/
     │   ├── scheduler-exams.ts         # Exam scheduling via the same RPCs (single write path)
     │   └── scheduler-availability.ts  # Wraps scheduler_free_busy / scheduler_available_rooms
     └── queries/                  # Read-only data fetching for Server Components
+        ├── scheduler-calendar-helpers.ts  # peopleOrFilter lookups, fetchCancelledRows, attachAttendees, inBatches (100-id batches)
+        ├── __tests__/                # Scheduler query tests against a stubbed query builder (supabase-stub.ts)
         ├── students.ts
         ├── schools.ts
         ├── staff.ts
@@ -306,6 +326,7 @@ src/lib/
         ├── school-visits.ts
         ├── scheduler-rooms.ts       # Room list for filters/booking dialog
         ├── scheduler-bookings.ts    # Calendar data via scheduler_calendar_items view
+        ├── scheduler-calendar-helpers.ts  # Attendee attach, people→booking ids (range-bounded), fetchCancelledRows
         ├── scheduler-exams.ts       # Exam bookings for Exams page + student tab
         ├── scheduler-history.ts     # scheduler_booking_history reads
         └── scheduler-stats.ts       # Rooms-view / dashboard counts

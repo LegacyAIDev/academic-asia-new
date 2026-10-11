@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-09-28
+**Last updated:** 2026-10-11
 **Current phase:** Phase 2 — Feature Completion
 
 > Items marked as "Inferred" are based on codebase signals (sidebar links, migration patterns, absence of test/CI config) and not from explicit specifications.
@@ -71,7 +71,7 @@
 
 **Status: In Progress**
 
-- [x] Test runner: Vitest, scoped to `src/**` (76 tests passing)
+- [x] Test runner: Vitest, scoped to `src/**` (36 files, 543 tests passing)
 - [x] Unit + integration tests for the permission layer (30 tests)
 - [ ] Unit tests for remaining utilities: `getAdminLevel`, `cn`, time-slot utils
 - [ ] Unit tests for Server Action input validation (zod schemas)
@@ -92,13 +92,12 @@
 - [x] Student detail calendar tab (`student-calendar-section.tsx`)
 - [x] Booking history / audit trail (`scheduler_booking_history`, trigger-written)
 - [x] `scheduler` permission module (0/3/4/6 write, 7/8 read; confirm + rooms/locations CRUD require EXAMS WRITE)
+- [x] Customer feedback round 1 (2026-10-09): team person columns, copy details + family exam text, right-click menu, date picker, cancelled filter fix, return-to-calendar state, view-only hint, staff guide (`docs/scheduler-user-guide.md`) — see changelog
 
 **Deferred to v2 backlog** (customer scope cut, 2026-09-26):
 - Recurring availability rules / lunch-break blocked times
 - Legacy `AA_Scheduler.csv` import (folded into the data-migration workstream)
 - Excel exports (rooms list, bookings-in-range)
-- Copy-as-text (booking text, family-ready exam text)
-- Team view people-as-columns layout (overlay view covers this in v1)
 - Resource timeline week view
 - Microsoft 365 calendar sync — feasibility note only, not implemented
 
@@ -168,3 +167,21 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   "pending exam bookings" card (spec NOT-01); room chip design system (`room-chip.tsx`,
   `booking-status-badge.tsx`, `booking-form-section.tsx`) rolled out across rooms admin, booking
   dialogs, and the details ribbon.
+- **2026-10-11** — Scheduler review hardening: dashboard card links to the Rooms week of the earliest pending exam; shared cancel rule (`canCancelBooking`); logged, batched people/attendee lookups; return links from Exams and student pages; query-wiring tests; helper consolidation (`personName`, `isUuid`, `isExamBooking`); date picker month/year dropdowns.
+- **2026-10-09** — Scheduler customer feedback round 1:
+  - Cancelled status filter now shows cancelled bookings (read from `scheduler_bookings`, the
+    calendar view only holds active ones); people filter shared between both queries.
+  - "Back to calendar" keeps view, mode, date and filters (`?from=`, scheduler paths only).
+  - Month-day click books 09:00-10:00; a single click in the time grid books 60 minutes.
+  - Team day/week views show one column per selected person; clicking a column pre-fills the
+    colleague or student. Month stays an overlay.
+  - Date label opens a month picker.
+  - Right-click menu on bookings (open, edit, confirm, cancel, copy) and empty slots (new booking
+    here, go to today), role-aware.
+  - Copy details (CAL-09) and Copy for family on exams (CAL-10), on the details panel, booking
+    page and right-click menu.
+  - "View only" badge + disabled New booking with tooltip for users without scheduler write.
+  - Staff-facing guide added: `docs/scheduler-user-guide.md`.
+  - Bug fix: FullCalendar v7 ignored event colours and state classes (v6 field names
+    `backgroundColor`/`borderColor`/`classNames` are stored as custom data in v7; now `color` +
+    space-separated `className`) and resource order (`resourceOrder="order"`).

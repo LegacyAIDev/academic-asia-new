@@ -152,6 +152,7 @@ The `admin_level` is injected into JWT `app_metadata` via a Postgres `custom_acc
 | [docs/project-roadmap.md](docs/project-roadmap.md) | Development roadmap |
 | [docs/deployment-guide.md](docs/deployment-guide.md) | Deployment instructions |
 | [docs/design-guidelines.md](docs/design-guidelines.md) | UI/UX design guidelines |
+| [docs/scheduler-user-guide.md](docs/scheduler-user-guide.md) | Scheduler quick guide for staff |
 
 ---
 

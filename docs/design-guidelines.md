@@ -255,7 +255,7 @@ Full mobile QA has not been completed — treat mobile as best-effort for the cu
 
 ## 10. Calendar & Scheduler UI
 
-The event scheduler uses `@schedule-x` with the `theme-shadcn` theme package, ensuring it blends with the existing design system. The scheduler's visual configuration (colors, fonts) should be adjusted through the `@schedule-x/theme-shadcn` API rather than overriding CSS directly.
+The event scheduler (one-to-one interview slots under `events/[type]/[id]/scheduler/`) is a hand-built slot grid using `@dnd-kit/core` and shadcn primitives, so it follows the normal Tailwind tokens. The Scheduler module calendar uses FullCalendar v7; its theme variables are mapped to the shadcn tokens in `src/components/scheduler/scheduler-calendar.css` (see Scheduler conventions).
 
 Drag-and-drop behavior uses `@dnd-kit/core`. The `drag-overlay.tsx` component renders a floating preview of the dragged item — keep this visually simple (student name + exam type label).
 
@@ -269,6 +269,15 @@ Subject: physical seats in physical rooms on Hong Kong office floors. Every scre
 - **Shared booking pieces:** `booking-status-badge.tsx` (status pill, tokens only), `booking-form-section.tsx` (form section wrapper driving the When · Where · Who · Details eyebrow rhythm), `booking-details-ribbon.tsx` (type badge + status badge + room chip row atop the details sheet), `booking-form-reason.tsx` (cancel/reschedule reason field).
 - **Command bar:** one rounded-xl card holding view tabs, date navigation + mode segmented control, people picker, and New booking. Filters live as a quiet chip row beneath, with an active-filter count and Clear — reuse this pattern for other scheduler-style toolbars.
 - **Calendar cards:** 3px left accent in type colour, 6px radius, 12px text; dashed border for pending; struck + faded for cancelled. Motion is removed under `prefers-reduced-motion` (enforced in `scheduler-calendar.css`).
+- **Date label = month picker.** The date label in the command bar is a button (`scheduler-date-picker.tsx`) that opens a popover month calendar (Monday first) to jump to any day (month and year dropdowns in the caption); the timezone eyebrow stays under the label. Keep the prev/next/today arrows next to it for the common short hops.
+- **Back link follows the origin.** Booking page back link wording comes from `returnLabel` ("Back to calendar" / "Back to exams" / "Back to student"); never hard-code it.
+- **Offer only what is allowed.** An action appears only when the shared permission helper allows it (`canCancelBooking`, same rule in menu and edit dialog); never show an action that the server then refuses.
+- **Right-click menu** (`calendar-context-menu.tsx`, shadcn `ContextMenu`). Two target types, items filtered by role, never shown-then-failing:
+  - On a booking: Open details, Open in new tab (always); Edit… (scheduler WRITE, active booking); Confirm (`EXAMS WRITE`, pending only); Cancel booking… (WRITE, active; confirmed exams also need `EXAMS WRITE`; destructive text colour); then a separator and Copy details, plus Copy for family on examinations.
+  - On an empty slot: "New booking on DD/MM/YYYY at HH:mm" (WRITE) plus Go to today. Without WRITE the first row becomes a quiet "View only" hint instead.
+  - Items that open a dialog are deferred one tick so the menu closes first. The menu is off on touch screens (long press is select/drag). It is a shortcut layer only: every action must also exist in the details panel or toolbar.
+- **View-only state.** Users without scheduler WRITE see a "View only" outline badge beside a disabled New booking button, with a tooltip explaining how to get access (Ask a manager for Scheduler edit access). Never hide the primary action silently; explain why it is unavailable. The wrapper is focusable so keyboard users can reach the tooltip.
+- **Copy buttons.** Ghost buttons labelled "Copy details" (every booking) and "Copy for family" (examinations only), `booking-copy-buttons.tsx`, shown on the details panel and booking page and mirrored in the right-click menu. Result is confirmed with a sonner toast ("Booking details copied" / "Family details copied"); failure toast tells the user to select the text instead.
 - **History:** a dot-and-line timeline, reason shown as a quiet quote — see `booking-history-list.tsx`.
 - **Rejected as generic:** gradient headers, raw-colour status pills, icon-in-circle decoration, shadows as hierarchy, dashboard-style stat tiles for rooms, hover scale effects, per-room custom colour swatches as primary identifier.
 - **Quality floor:** `focus-visible:ring-2 ring-ring` on custom interactive elements, targets >= 36px, wraps correctly at 400px, dark mode via tokens only.
