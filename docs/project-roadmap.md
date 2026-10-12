@@ -97,7 +97,7 @@
 **Exam desk (plan `261012-0011-exam-desk-papers-cover-slip`):**
 - [x] Phase 1 (2026-10-12): `/exams` exam desk with date range, filters, sorting, Booked / Showed up lists, Confirm / Showed up / No show; previous list kept as `/exams?view=all` with a date filter. Unit tested; not yet checked in a browser with real exam bookings
 - [x] Phase 2 (2026-10-12), part A, app layer: exam paper files restricted to the exam team (Exams WRITE). Not yet checked in a browser with two accounts; database policies (part B) postponed. Limit: Supabase API access with the browser key could still read papers, see `docs/system-architecture.md` §5.7
-- [ ] Phase 3: choose papers on the booking, paper availability, "Print available"
+- [x] Phase 3 (2026-10-12): choose papers on the booking, paper availability on the desk, "Print available", "Do not store – request from school" (migration `20261011234555`). Implemented; not yet checked in a browser
 - [ ] Phase 4: cover slip PDF
 
 **Deferred to v2 backlog** (customer scope cut, 2026-09-26):
@@ -204,6 +204,20 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   - Status: unit tests, type-check and review pass; not yet checked in a browser with real exam
     bookings. Known gaps: group rows show no school/entry year; exam records without a scheduler
     booking appear only under All exams. Phases 2-4 (paper access, paper choice and print, cover slip) not started.
+- **2026-10-12** — Exam desk, phase 3 of 4 (papers on the booking, availability, print):
+  - School side: an entrance exam can be marked "Do not store – request from school" (new column
+    `school_entrance_exams.paper_request_from_school`, migration `20261011234555_school_entrance_exam_paper_request_from_school.sql`);
+    separate from `has_paper`. Nothing is uploaded, the list shows "On request"; earlier uploads stay stored but are not offered for printing.
+  - Booking dialog (examination, group examination): "Papers" block filtered by entry year and year level,
+    up to 20 papers, copied into `assessment_snapshot.papers`; Assessment label named after the subjects until typed over.
+  - Exam desk: new Entry point and Paper availability columns (uploaded / online / request from school / not uploaded,
+    read live; "Could not be checked" with an alert if the lookup fails); sort by most not-uploaded; "Print available" for the
+    exam team with five-minute links.
+  - Fix: an examination booking with the Assessment field empty could not be saved and showed no error; it now saves.
+  - Tests: 53 files / 769 tests pass, type-check clean, permission coverage passes, code review approved.
+    **Not yet checked in a browser.** Known limits: group exam with candidates from several schools offers only the first
+    school's papers; booking end time not derived from total paper duration; `entrance-exam-dialog.tsx` is 397 lines (over the 200-line guideline).
+    Phase 4 (cover slip PDF) waits for the customer's template.
 - **2026-10-12** — Exam desk, phase 2 of 4, part A (exam paper files, exam team only):
   - A school's entrance exam paper files can only be listed, opened, attached, renamed or deleted
     with the Exams module at WRITE. Schools read still shows the exam format, not the papers.

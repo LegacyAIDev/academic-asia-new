@@ -135,7 +135,8 @@ src/app/
     │   ├── exam-desk-view.tsx      # Exam desk: date range, filters, Booked / Showed up lists
     │   ├── exam-desk-filters.tsx   # Room, school, entry year, search
     │   ├── exam-desk-table.tsx     # Sortable table (SortableTableHead)
-    │   ├── exam-desk-row-actions.tsx  # Confirm / Showed up / No show / Open booking
+    │   ├── exam-desk-row-actions.tsx  # Confirm / Showed up / No show / Open booking / Print available
+    │   ├── exam-desk-print-papers.tsx # "Print available" dialog: one Open link per paper file, papers to request from the school
     │   ├── exam-date-range-filter.tsx # From/To inputs, shared by both views
     │   ├── exam-list-view.tsx      # "All exams" view (status tabs, paging)
     │   ├── use-exams-url.ts        # Client URL updates for exam page params
@@ -188,6 +189,7 @@ src/components/
 │   ├── booking-dialog.tsx         # Type-specific booking create/edit dialog
 │   ├── booking-form-basics.tsx / booking-form-location.tsx / booking-form-people.tsx
 │   ├── booking-form-staff-attendees.tsx / booking-form-candidates.tsx / booking-form-details.tsx
+│   ├── booking-form-papers.tsx    # "Papers" block for exam bookings: choose a school's entrance exam papers
 │   ├── booking-student-search.tsx
 │   ├── booking-conflict-banner.tsx / use-booking-conflicts.ts
 │   ├── booking-cancel-dialog.tsx  # Reason-required cancel
@@ -243,10 +245,13 @@ src/lib/
 │   ├── exam-page-search-params.ts  # URL params for /exams: view, desk (from/to/room/school/year/q/sort/dir), list; hrefs, nextSort
 │   ├── exam-desk-rows.ts         # Bookings → desk rows (group = one row), split Booked/Showed up, row action rules
 │   ├── exam-desk-filter-sort.ts  # Filter options from rows, filtering, search, sorting
-│   └── __tests__/                # 5 files: params, rows, filter-sort, edge cases, fixture
+│   ├── exam-paper-selection.ts   # Booking dialog helpers: toSnapshotPaper, year levels, total minutes, entry-year/year-level filters
+│   ├── exam-paper-availability.ts  # summarisePaperAvailability: uploaded / online / request from school / not uploaded; UNCHECKED_AVAILABILITY
+│   └── __tests__/                # 7 files: params, rows, filter-sort, edge cases, fixture, exam-desk-papers, exam-papers
 ├── scheduler/                    # Scheduler pure helpers (added 2026-09-28) — unit tested, no I/O
 │   ├── config.ts                 # SCHEDULER_TIMEZONE, FULLCALENDAR_LICENSE_KEY, slot constants
 │   ├── booking-schema.ts         # zod schemas per booking type (discriminated union)
+│   ├── assessment-snapshot.ts    # assessment_snapshot schema (label, version, notes, papers), label-from-papers rule, snapshotPapers, normaliseAssessmentSnapshot
 │   ├── room-schema.ts            # zod schema for room/location forms
 │   ├── conflicts.ts              # Overlap/capacity/seat conflict detection (client-side pre-check)
 │   ├── error-messages.ts         # Maps SQLSTATE codes (SR001–SR006, 23P01) → user messages
@@ -266,7 +271,7 @@ src/lib/
 │   ├── exam-booking-defaults.ts  # Default form values for exam-linked bookings
 │   ├── booking-revalidation-paths.ts  # bookingRevalidationPaths: pages to refresh after a booking changes (/exams for exam types)
 │   ├── action-helpers.ts         # Shared RPC-call/error-mapping helpers for actions
-│   └── __tests__/                # 23 test files, 334 tests: booking-permissions, person-name, uuid, booking-schema, booking-defaults, booking-text-formatters,
+│   └── __tests__/                # 24+ test files incl. assessment-snapshot (papers, label rule, empty Assessment saves): booking-permissions, person-name, uuid, booking-schema, booking-defaults, booking-text-formatters,
 │                                  # family-exam-text, calendar-adapter (+ person-columns), cancelled-items, colors,
 │                                  # conflicts, error-messages, exam-booking-defaults, people-filter, return-path,
 │                                  # search-params (+ team-and-href), selection-prefill, time-utils;
@@ -305,9 +310,10 @@ src/lib/
     │   ├── school-contacts.ts
     │   ├── school-courses.ts
     │   ├── school-fees.ts
-    │   ├── school-entrance-exams.ts
+    │   ├── school-entrance-exams.ts   # includes paper_request_from_school
+    │   ├── exam-papers.ts             # getSchoolExamPaperOptionsAction (Scheduler READ, format only); getBookingPaperFilesAction (exam team, takes booking id)
     │   ├── record-attachment-signed-url.ts  # getAttachmentSignedUrl: signs stored paths only, 5 min for exam papers
-    │   ├── __tests__/                 # exam-paper-file-access, exam-paper-write-access (exam-team-only papers)
+    │   ├── __tests__/                 # exam-paper-file-access, exam-paper-write-access (exam-team-only papers), exam-papers-actions, exam-papers-print-failures
     │   ├── school-academic-results.ts
     │   ├── school-bank-details.ts
     │   ├── school-notes.ts
@@ -318,6 +324,7 @@ src/lib/
     │   ├── scheduler-exams.ts         # Exam scheduling via the same RPCs (single write path)
     │   └── scheduler-availability.ts  # Wraps scheduler_free_busy / scheduler_available_rooms
     └── queries/                  # Read-only data fetching for Server Components
+        ├── exam-papers.ts            # getSchoolExamPaperOptions; getExamPaperStatuses (live counts per paper, null on failure)
         ├── scheduler-calendar-helpers.ts  # peopleOrFilter lookups, fetchCancelledRows, attachAttendees, inBatches (100-id batches)
         ├── __tests__/                # Scheduler query tests against a stubbed query builder (supabase-stub.ts); exam-paper-listing-access.test.ts covers papers hidden from non-team users
         ├── students.ts

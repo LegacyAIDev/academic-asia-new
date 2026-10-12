@@ -25,6 +25,8 @@ Click or drag on an empty slot, right-click an empty slot and choose **New booki
 | A group exam | Group examination | Add each candidate; seat numbers are optional. |
 | A room only | Room reservation | Pick the room and describe the purpose. |
 
+**Choosing papers for an examination** (Examination and Group examination): pick the application first, which sets the school. A **Papers** block then lists that school's entrance exam papers. Narrow them by **entry year** (the newest is preselected) and **year level**, and tick up to 20. Chosen papers appear below the list and can be removed with their cross. Changing the school clears the chosen papers. If you leave **Assessment** empty it is named after the subjects, for example "English, Mathematics and Reasoning", and follows your papers until you type your own. The list shows the format only (subject, year level, length, "Request from school"), not the papers themselves. For a group exam with candidates from different schools, only the first school's papers are offered.
+
 Every booking is either **in a room** or **online**. Room suggestions show how many seats are left at that time.
 
 Shortcuts:
@@ -60,4 +62,17 @@ Shortcuts:
 - **Filter and search:** narrow by room, school and entry year (the choices come from the exams in your dates), or type a student name or code, school, assessment or title.
 - **Sort:** click any column heading; click again to reverse. Your dates, filters and sorting stay in the page address, so you can bookmark or share it.
 - **Buttons** (need Exams edit access): **Confirm** on a booking awaiting confirmation. **Showed up** or **No show** on a confirmed booking. If someone marked No show arrives late, press **Showed up**. Showed up completes the student's exam request and cannot be undone. **Open booking** opens the booking page.
+- **Columns:** Time, Student, School, Entry point (year level of the chosen papers and entry year, for example "2027 entry"), Assessment format, Paper availability, Room / seat, Status, Actions.
+- **Paper availability** is checked each time the page opens, because papers are often uploaded after the booking. Each chosen paper is counted once:
+  - **uploaded:** a file is stored and can be printed.
+  - **online:** only a link is stored (an online test or a paper kept elsewhere).
+  - **request from school:** the school keeps the paper and sends it for each sitting.
+  - **not uploaded:** nothing is stored yet.
+  
+  Example: "2 uploaded · 1 request from school · 1 not uploaded". "No papers chosen" means the booking has none. Sorting this column puts the bookings with the most missing papers first. "Could not be checked" (with a red message) means the lookup failed; reload the page, and do not read it as missing papers. Only the exam team sees the paper files themselves.
+- **Print available** (exam team, Exams edit access; shown when at least one paper has a file or link): opens a window with one **Open** link per paper, the papers to request from the school, and a link to the school's entrance exams. The links stop working after five minutes; close and reopen the window for fresh ones.
 - **Past exams and scores:** choose **All exams** for the full exam list with status tabs, score entry and Schedule / Reschedule. It has its own From / To filter on the scheduled date. Exam requests that were never booked in the scheduler appear only there.
+
+## Marking a paper "Do not store – request from school"
+
+Some schools ask us not to keep their paper. On the school's page, open **Entrance exams**, edit the exam and choose **Do not store – request from school: Yes**. Nothing is uploaded for it and the list shows an **On request** badge. On the exam desk it counts as "request from school", not as missing. Files uploaded earlier stay stored but are no longer offered for printing. This is separate from "paper held in the office", which means a physical copy is kept at the centre. Only the examination team can add or open paper files.
