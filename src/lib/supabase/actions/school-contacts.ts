@@ -58,6 +58,8 @@ export async function getContactsForSchools(schoolIds: string[]): Promise<School
       .from('school_contacts')
       .select('id, school_id, first_name, surname, position, school:schools(name)')
       .in('school_id', schoolIds)
+      // Only people who are still at the school can represent it.
+      .eq('is_active', true)
       .order('first_name')
 
     if (error) {
@@ -130,6 +132,8 @@ export async function updateSchoolContact(
       .from('school_contacts')
       .update(input as never)
       .eq('id', contactId)
+      // The contact must belong to the school the caller is working on.
+      .eq('school_id', schoolId)
 
     if (error) {
       console.error('Error updating school contact:', error)

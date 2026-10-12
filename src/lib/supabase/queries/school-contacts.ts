@@ -50,7 +50,7 @@ export async function getSchoolContacts(schoolId: string): Promise<SchoolContact
   return (data ?? []) as SchoolContactWithJoins[]
 }
 
-/** Count contacts for a school */
+/** Count a school's active contacts; inactive ones are kept but not shown by default. */
 export async function getSchoolContactCount(schoolId: string): Promise<number> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
@@ -59,6 +59,7 @@ export async function getSchoolContactCount(schoolId: string): Promise<number> {
     .from('school_contacts')
     .select('*', { count: 'exact', head: true })
     .eq('school_id', schoolId)
+    .eq('is_active', true)
 
   if (error) {
     console.error('Error fetching school contact count:', error)

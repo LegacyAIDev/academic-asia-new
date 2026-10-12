@@ -612,7 +612,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
 
         {/* Contacts Tab */}
         <TabsContent value="contacts" className="space-y-6">
-          <SchoolContactsSection schoolId={id} contacts={schoolContacts} />
+          <SchoolContactsSection schoolId={id} contacts={schoolContacts} canWrite={canWrite} />
         </TabsContent>
 
         {/* Supplementary Info Tab */}

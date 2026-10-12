@@ -10,17 +10,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { Contact, Mail, Phone as PhoneIcon } from "lucide-react"
 import { SchoolContactDialog, EditSchoolContactButton, DeleteSchoolContactButton } from "./contact-dialog"
+import { ContactActiveToggle } from "./contact-active-toggle"
+import { countInactive, visibleContacts } from "@/lib/schools/contact-visibility"
 import type { SchoolContactWithJoins } from "@/lib/supabase/queries/school-contacts"
 
 type SchoolContactsSectionProps = {
   schoolId: string
   contacts: SchoolContactWithJoins[]
+  canWrite: boolean
 }
 
-export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSectionProps) {
+/** A school's contacts. Only active ones are listed until "Show inactive" is switched on. */
+export function SchoolContactsSection({ schoolId, contacts, canWrite }: SchoolContactsSectionProps) {
+  const [showInactive, setShowInactive] = useState(false)
+  const inactive = countInactive(contacts)
+  const listed = visibleContacts(contacts, showInactive)
+
   if (contacts.length === 0) {
     return (
       <Card className="border-0 shadow-sm">
@@ -30,7 +41,7 @@ export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSect
               <Contact className="h-4 w-4 text-muted-foreground" />
               Contacts
             </CardTitle>
-            <SchoolContactDialog schoolId={schoolId} mode="create" />
+            {canWrite && <SchoolContactDialog schoolId={schoolId} mode="create" />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -52,9 +63,17 @@ export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSect
         <div className="flex items-center justify-between flex-wrap gap-3">
           <CardTitle className="text-base font-medium flex items-center gap-2">
             <Contact className="h-4 w-4 text-muted-foreground" />
-            Contacts ({contacts.length})
+            Contacts ({contacts.length - inactive})
           </CardTitle>
-          <SchoolContactDialog schoolId={schoolId} mode="create" />
+          <div className="flex items-center gap-4">
+            {inactive > 0 && (
+              <div className="flex items-center gap-2">
+                <Switch id="show-inactive-contacts" checked={showInactive} onCheckedChange={setShowInactive} />
+                <Label htmlFor="show-inactive-contacts" className="text-sm font-normal text-muted-foreground">Show inactive ({inactive})</Label>
+              </div>
+            )}
+            {canWrite && <SchoolContactDialog schoolId={schoolId} mode="create" />}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -73,10 +92,17 @@ export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSect
               </TableRow>
             </TableHeader>
             <TableBody>
-              {contacts.map((item) => {
+              {listed.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
+                    No active contacts. Switch on &quot;Show inactive&quot; to see earlier ones.
+                  </TableCell>
+                </TableRow>
+              )}
+              {listed.map((item) => {
                 const fullName = [item.title, item.first_name, item.surname].filter(Boolean).join(" ")
                 return (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.id} className={item.is_active ? undefined : "opacity-60"}>
                     <TableCell className="pl-6">
                       {item.priority != null ? (
                         <Badge variant="outline" className="text-xs font-medium tabular-nums">
@@ -151,15 +177,13 @@ export function SchoolContactsSection({ schoolId, contacts }: SchoolContactsSect
                             </a>
                           </Button>
                         )}
-                        <EditSchoolContactButton
-                          contact={item}
-                          schoolId={schoolId}
-                        />
-                        <DeleteSchoolContactButton
-                          contactId={item.id}
-                          schoolId={schoolId}
-                          label={fullName || "this contact"}
-                        />
+                        {canWrite && (
+                          <>
+                            <ContactActiveToggle contactId={item.id} schoolId={schoolId} isActive={item.is_active} label={fullName || "Contact"} />
+                            <EditSchoolContactButton contact={item} schoolId={schoolId} />
+                            <DeleteSchoolContactButton contactId={item.id} schoolId={schoolId} label={fullName || "this contact"} />
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
