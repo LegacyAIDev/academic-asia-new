@@ -94,6 +94,7 @@ src/app/
     │       ├── page.tsx
     │       ├── edit/page.tsx
     │       ├── school-contacts.tsx
+    │       ├── contact-active-toggle.tsx   # one-click mark inactive / reactivate
     │       ├── school-courses.tsx
     │       ├── school-fees.tsx
     │       ├── school-entrance-exams.tsx

@@ -191,6 +191,16 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   - Bug fix: FullCalendar v7 ignored event colours and state classes (v6 field names
     `backgroundColor`/`borderColor`/`classNames` are stored as custom data in v7; now `color` +
     space-separated `className`) and resource order (`resourceOrder="order"`).
+- **2026-10-12** — School contacts, active only (customer item 10):
+  - The Contacts tab of a school lists active contacts by default; a "Show inactive (N)" switch reveals
+    the others, dimmed and badged. Nothing is deleted. Header and tab badge count active contacts.
+  - One-click "Mark inactive" / "Reactivate" on each row (reuses `updateSchoolContact`, which now also
+    requires the contact to belong to the given school).
+  - The event form's representative dropdown (`getContactsForSchools`) offers active contacts only.
+  - Add / Edit / Delete and the new button are hidden from users without Schools write access.
+  - Pure rule in `src/lib/schools/contact-visibility.ts`. No schema change (`is_active` existed).
+  - 58 test files / 825 tests pass. Not yet checked in a browser. All 3,351 contacts are active today,
+    so the list is unchanged until staff mark contacts inactive.
 - **2026-10-12** — Exam desk, phase 4 of 4 (cover slip PDF):
   - New "Cover slip" button on each exam desk row with a candidate (Exams read access). Opens a PDF in
     a new tab, one A4 page per candidate in seat order, to place on the seat. Shows name and code, seat
