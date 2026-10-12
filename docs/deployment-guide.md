@@ -150,6 +150,13 @@ npm run lint
 - `https://your-domain.vercel.app/auth/callback`
 - `https://your-custom-domain.com/auth/callback` (if applicable)
 
+### 7.1 Check the PDF exports after each deploy
+
+The app has three PDF exports (Selected School List, Brief Introduction, exam cover slip), all rendered by headless Chromium on the server. Two problems show up only once deployed, so check on the preview before promoting:
+
+1. **Missing tracing entry.** Every PDF route needs its own `outputFileTracingIncludes` entry in `next.config.ts`. A missing one works locally and fails only on the deployment. Open one cover slip (exam desk, "Cover slip" on a row with a candidate) and confirm a PDF opens.
+2. **Chinese fonts.** No PDF export bundles a Chinese font; they use fonts present on the server. Open a PDF containing a Chinese name (for example a cover slip or Brief Introduction for such a student) and confirm the characters render and are not empty boxes. Not yet verified on a deployment; if boxes appear, a font must be bundled for all three exports.
+
 ---
 
 ## 8. Common Setup Gotchas

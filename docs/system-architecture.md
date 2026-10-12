@@ -431,7 +431,8 @@ All five original RPCs plus `scheduler_record_attendance` are `revoke`d from `pu
 - **Columns (phase 3).** Time, Student, School, Entry point (year level(s) of the chosen papers, then "2027 entry"), Assessment format, Paper availability, Room / seat, Status, Actions. Row fields `papers`, `yearLevels` and `availability` are built in `toExamDeskRows`; free-text search also matches paper subjects.
 - **Paper availability.** The papers on screen are looked up live on every load (`getExamPaperStatuses`, `queries/exam-papers.ts`), because files are uploaded after booking. `summarisePaperAvailability` (`exam-paper-availability.ts`) puts each chosen paper in exactly one group, in this order: request from school, uploaded (has a file), online (link only), not uploaded (also a paper since removed from the school). Label example: "2 uploaded · 1 request from school · 1 not uploaded"; no papers chosen shows "No papers chosen". Sorting the column puts bookings with the most not-uploaded papers first. **Failure:** if the lookup fails, `getExamPaperStatuses` returns null, every row reads "Could not be checked" (`UNCHECKED_AVAILABILITY`, cannot print) and the page shows a `role="alert"` message, so a failed read never looks like missing papers. Only counts reach the page; file names and paths stay with the exam team.
 - **"Print available".** Row button (`exam-desk-print-papers.tsx`) shown only with Exams WRITE and when `availability.canPrint` (at least one file or link). It opens a dialog that calls `getBookingPaperFilesAction(bookingId)` on each opening. Guard: `assertAccess` with the exam-paper attach point (Exams WRITE), the booking id must be a uuid, and the papers are read from the booking's own `assessment_snapshot`, never from ids sent by the browser. Returns one signed link per file (5-minute expiry; reopen for fresh ones), external links that pass `isSafeExternalUrl`, the subjects of "request from school" papers, and the school id for a link to its entrance exams tab. If paper states cannot be read, nothing is listed.
-- **Limits.** Group rows with candidates from different schools use the first school (booking dialog offers only that school's papers); the booking end time is not derived from the papers' total duration (the total is only shown); exam records that never got a scheduler booking appear only under All exams. Paper file protection is application layer only (see §5.7). Status: phases 1-3 implemented and unit-tested (53 files / 769 tests), type-check clean; **not yet checked in a browser**. Phase 4 (cover slip PDF) is not started and waits for the customer's template.
+- **Cover slip (phase 4).** Each row with a candidate has a "Cover slip" action for everyone who can see the desk (Exams read access); it opens the PDF in a new tab (§7.1).
+- **Limits.** Group rows with candidates from different schools use the first school (booking dialog offers only that school's papers); the booking end time is not derived from the papers' total duration (the total is only shown); exam records that never got a scheduler booking appear only under All exams. Paper file protection is application layer only (see §5.7). Status: all four phases implemented and unit-tested (56 files / 813 tests), type-check clean; **not yet checked in a browser, nor on a deployed preview**.
 
 **Papers on a booking (phase 3).** The booking dialog for `examination` and `group_examination` has a "Papers" block (`booking-form-papers.tsx`, helpers in `src/lib/exams/exam-paper-selection.ts`). It lists the entrance exams of the booking's school (`getSchoolExamPaperOptionsAction`, needs Scheduler READ, returns format only: subject, year level, entry year, duration, request-from-school flag), narrowed by entry year (newest preselected) and year level. Up to `MAX_SNAPSHOT_PAPERS` (20) can be chosen; chosen papers show as removable chips. Choosing an application sets `school_id`; changing the school clears the chosen papers. A failed load shows an error, not "no entrance exams".
 - **Snapshot shape.** `scheduler_bookings.assessment_snapshot` (JSON, `assessmentSnapshotSchema` in `src/lib/scheduler/assessment-snapshot.ts`): `{ label, version, notes, papers: [{ id, subject, year_level, entry_year, duration_minutes }] }`. `id` is `school_entrance_exams.id`. Papers are copied in, so a booking survives later edits to the school's exam list; whether a file exists is deliberately not stored. `snapshotPapers` reads the free-form column defensively.
@@ -455,8 +456,8 @@ All five original RPCs plus `scheduler_record_attendance` are `revoke`d from `pu
 
 Two client-facing documents are generated server-side: the Selected School List
 (`src/lib/schools/`) and the student Brief Introduction (`src/lib/brief-intro/`).
-Both follow the same layering, and a third export should copy it rather than invent
-a variant.
+Both follow the same layering. The exam cover slip (§7.1) is a third PDF export that
+copies it, and a fourth should do the same rather than invent a variant.
 
 ```
 queries/<name>-export.ts        ← batched reads, caps, { ok, payload } result
@@ -505,6 +506,47 @@ document-pdf.ts
 
 Modules marked `'server-only'` are aliased to a stub in `vitest.config.ts` so they
 keep the bundling guard while staying unit testable.
+
+### 7.1 Exam cover slip (third PDF export, 2026-10-12)
+
+A sheet placed on the candidate's seat: one A4 page per candidate in seat order (a group
+examination gives one page per student). Opened from the exam desk row action "Cover slip".
+
+- **Route:** `GET /api/exams/cover-slip/pdf?booking=<uuid>` (`src/app/api/exams/cover-slip/pdf/route.ts`).
+  Checks in order: signed in (401), Exams access (403), valid id (400), booking exists (404),
+  an examination or group examination that is not cancelled (400), at least one candidate (400).
+  Refusals are a short readable HTML page, because the route opens in a browser tab. Success:
+  `application/pdf`, `Content-Disposition: inline`, `Cache-Control: private, no-store`. A render
+  failure answers 500 and logs no student data.
+- **Layering** (same as above, no query module of its own): `buildCoverSlips`
+  (`src/lib/exams/cover-slip-shaping.ts`, pure) -> `coverSlipHtml` (`cover-slip-html.ts`, plain
+  strings escaped with the shared `escapeHtml` from `src/lib/pdf/escape-html.ts`, not React) ->
+  `renderDocumentPdf` -> route. The renderer's footer uses the same `escapeHtml`.
+- **Tracing entry:** `next.config.ts` has its own `outputFileTracingIncludes` key
+  `/api/exams/cover-slip/pdf` (rule 2). Without it the route works locally and fails only deployed.
+- **Content per slip:** student name and code, an empty seat box, school, date, start and end
+  time in Hong Kong time, room (or "Online"), invigilator, assessment, chosen papers with durations.
+  Invigilator = staff on the booking with the role "officer"; none, then the organiser; none,
+  then a line to write on. A room without a value also gets a line to write on. School,
+  assessment and papers are left out when unknown.
+- **One sheet per candidate:** `needsCompactLayout` estimates a slip's printed height (Chinese,
+  Japanese and Korean characters count double) and switches that slip to a smaller setting when
+  it would not fit.
+- **Tests:** `src/lib/exams/__tests__/cover-slip.test.ts`, `cover-slip-one-sheet.test.ts`,
+  `src/app/api/exams/cover-slip/pdf/__tests__/route.test.ts`.
+- **Limits:**
+  - Layout and field list are a first version: the customer's own template has not been shared,
+    and one adjustment round is expected.
+  - **Chinese fonts are unverified on the server.** No PDF export here (this one or the two
+    older) bundles a Chinese font; each relies on fonts present where Chromium runs. Works on a
+    developer Mac; on the deployed server Chinese characters may render as empty boxes. Check on
+    a preview (`docs/deployment-guide.md` §7.1).
+  - About 20 papers with very long titles can still spill onto a second page.
+  - School comes from the booking only (bookings saved before the school was stored with them
+    show none). A booking crossing midnight shows only the start date.
+  - Verified: real PDFs rendered locally through the project renderer (ordinary, nearly empty,
+    three worst-case slips = 3 pages, three slips with Chinese text = 3 pages). **Not yet
+    checked:** the button in the running app with a real booking, and a deployed preview.
 
 ---
 

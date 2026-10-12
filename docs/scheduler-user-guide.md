@@ -71,6 +71,10 @@ Shortcuts:
   
   Example: "2 uploaded · 1 request from school · 1 not uploaded". "No papers chosen" means the booking has none. Sorting this column puts the bookings with the most missing papers first. "Could not be checked" (with a red message) means the lookup failed; reload the page, and do not read it as missing papers. Only the exam team sees the paper files themselves.
 - **Print available** (exam team, Exams edit access; shown when at least one paper has a file or link): opens a window with one **Open** link per paper, the papers to request from the school, and a link to the school's entrance exams. The links stop working after five minutes; close and reopen the window for fresh ones.
+- **Cover slip** (every row that has a candidate, anyone who can see the exam desk): opens a page in a new tab, ready to print, to place on the candidate's seat. A group exam gives one page per student. Each page shows the student's name and code, a box for the seat number, school, date, start and end time (Hong Kong time), room (or "Online"), invigilator, assessment and the chosen papers with their durations.
+  - **Invigilator:** add the staff member to the booking with the role **officer**. Without one, the booking's organiser is shown; without either, a blank line is left.
+  - **Blank lines and boxes** (invigilator, room, seat) are for writing by hand. School, assessment and papers are simply left out when not known.
+  - If the page says the slip cannot be made, the booking is cancelled or has no candidate. The layout is a first version and may change once the final template is agreed.
 - **Past exams and scores:** choose **All exams** for the full exam list with status tabs, score entry and Schedule / Reschedule. It has its own From / To filter on the scheduled date. Exam requests that were never booked in the scheduler appear only there.
 
 ## Marking a paper "Do not store – request from school"

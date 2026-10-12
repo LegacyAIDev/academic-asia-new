@@ -135,7 +135,7 @@ src/app/
     │   ├── exam-desk-view.tsx      # Exam desk: date range, filters, Booked / Showed up lists
     │   ├── exam-desk-filters.tsx   # Room, school, entry year, search
     │   ├── exam-desk-table.tsx     # Sortable table (SortableTableHead)
-    │   ├── exam-desk-row-actions.tsx  # Confirm / Showed up / No show / Open booking / Print available
+    │   ├── exam-desk-row-actions.tsx  # Confirm / Showed up / No show / Open booking / Print available / Cover slip (opens PDF in a new tab)
     │   ├── exam-desk-print-papers.tsx # "Print available" dialog: one Open link per paper file, papers to request from the school
     │   ├── exam-date-range-filter.tsx # From/To inputs, shared by both views
     │   ├── exam-list-view.tsx      # "All exams" view (status tabs, paging)
@@ -164,6 +164,7 @@ src/app/
             └── locations-panel.tsx / location-dialog.tsx
 
 src/app/api/                       # Route Handlers — file downloads only
+├── exams/cover-slip/pdf/          # Exam cover slip PDF (one page per candidate; route.ts + __tests__/route.test.ts)
 ├── schools/export/pdf/            # Selected School List PDF
 └── students/brief-intro/export/
     ├── pdf/                       # Brief Introduction booklet
@@ -230,7 +231,8 @@ src/lib/
 │   └── __tests__/                # registry/DB/seed parity, URL validation, exam-paper-access
 ├── rich-text.ts                  # sanitizeRichText() — cleans editor HTML before storage
 ├── pdf/
-│   └── render-document-pdf.ts    # Shared headless-Chromium renderer (HTML string → PDF)
+│   ├── render-document-pdf.ts    # Shared headless-Chromium renderer (HTML string → PDF)
+│   └── escape-html.ts            # escapeHtml: shared by the renderer footer and the cover slip
 ├── schools/                      # Selected School List export — types, shaping, HTML builder
 ├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
 │   ├── export-types.ts           # One payload for single and bulk, PDF and Excel
@@ -247,7 +249,9 @@ src/lib/
 │   ├── exam-desk-filter-sort.ts  # Filter options from rows, filtering, search, sorting
 │   ├── exam-paper-selection.ts   # Booking dialog helpers: toSnapshotPaper, year levels, total minutes, entry-year/year-level filters
 │   ├── exam-paper-availability.ts  # summarisePaperAvailability: uploaded / online / request from school / not uploaded; UNCHECKED_AVAILABILITY
-│   └── __tests__/                # 7 files: params, rows, filter-sort, edge cases, fixture, exam-desk-papers, exam-papers
+│   ├── cover-slip-shaping.ts     # PURE: buildCoverSlips (one slip per candidate, seat order, invigilator rule), coverSlipFilename
+│   ├── cover-slip-html.ts        # coverSlipHtml: A4 page per slip as escaped strings; needsCompactLayout (one-sheet rule)
+│   └── __tests__/                # 9 files: params, rows, filter-sort, edge cases, fixture, exam-desk-papers, exam-papers, cover-slip, cover-slip-one-sheet
 ├── scheduler/                    # Scheduler pure helpers (added 2026-09-28) — unit tested, no I/O
 │   ├── config.ts                 # SCHEDULER_TIMEZONE, FULLCALENDAR_LICENSE_KEY, slot constants
 │   ├── booking-schema.ts         # zod schemas per booking type (discriminated union)

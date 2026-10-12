@@ -98,7 +98,7 @@
 - [x] Phase 1 (2026-10-12): `/exams` exam desk with date range, filters, sorting, Booked / Showed up lists, Confirm / Showed up / No show; previous list kept as `/exams?view=all` with a date filter. Unit tested; not yet checked in a browser with real exam bookings
 - [x] Phase 2 (2026-10-12), part A, app layer: exam paper files restricted to the exam team (Exams WRITE). Not yet checked in a browser with two accounts; database policies (part B) postponed. Limit: Supabase API access with the browser key could still read papers, see `docs/system-architecture.md` §5.7
 - [x] Phase 3 (2026-10-12): choose papers on the booking, paper availability on the desk, "Print available", "Do not store – request from school" (migration `20261011234555`). Implemented; not yet checked in a browser
-- [ ] Phase 4: cover slip PDF
+- [x] Phase 4 (2026-10-12): cover slip PDF from the exam desk row. Implemented, layout provisional (customer template not shared); not yet checked in a browser or on a preview. Chinese fonts on the server unverified. Database protection of paper files (phase 2 part B) remains postponed
 
 **Deferred to v2 backlog** (customer scope cut, 2026-09-26):
 - Recurring availability rules / lunch-break blocked times
@@ -191,6 +191,22 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   - Bug fix: FullCalendar v7 ignored event colours and state classes (v6 field names
     `backgroundColor`/`borderColor`/`classNames` are stored as custom data in v7; now `color` +
     space-separated `className`) and resource order (`resourceOrder="order"`).
+- **2026-10-12** — Exam desk, phase 4 of 4 (cover slip PDF):
+  - New "Cover slip" button on each exam desk row with a candidate (Exams read access). Opens a PDF in
+    a new tab, one A4 page per candidate in seat order, to place on the seat. Shows name and code, seat
+    box, school, date, start/end time (Hong Kong), room or "Online", invigilator (staff with role
+    "officer", else the organiser, else a line to write on), assessment and papers with durations.
+  - Route `GET /api/exams/cover-slip/pdf?booking=<uuid>` (401/403/400/404 refusals as readable HTML,
+    `private, no-store`); own `outputFileTracingIncludes` entry in `next.config.ts`. New shared helper
+    `src/lib/pdf/escape-html.ts`. Details: `docs/system-architecture.md` §7.1. Staff guide updated.
+  - Status: 56 test files / 813 tests, type-check, lint and permission coverage pass; code review
+    approved; real PDFs rendered locally and inspected. **Not yet checked** in the running app with a
+    real booking, nor on a deployed preview. All four phases of the plan are now implemented.
+  - Limits: layout is a first version, one adjustment round expected (customer template not shared).
+    Chinese fonts on the server are unverified for all PDF exports (characters may show as empty
+    boxes when deployed; see `docs/deployment-guide.md` §7.1). About 20 papers with very long titles
+    can spill onto a second page. School comes from the booking only; a booking crossing midnight
+    shows only the start date.
 - **2026-10-12** — Exam desk, phase 1 of 4 (`/exams`):
   - New default view for the day of the exam: scheduler exam bookings for a From/To range (today in
     Hong Kong time, up to 62 days), filters for room, school, entry year, free-text search, click-to-sort
