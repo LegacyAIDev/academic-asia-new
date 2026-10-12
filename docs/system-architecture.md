@@ -248,6 +248,8 @@ Many fields reference small lookup tables rather than storing raw strings. Examp
 
 `school_contacts`, `school_courses`, `school_fees`, `school_entrance_exams`, `school_academic_results`, `school_bank_details`, `school_supplementary_info`, `school_notes`, `school_visits`
 
+**Placement history.** A school's Basic Info tab shows applications, offers, placed students and placement rate per academic year. The counts come from the read-only database function `public.school_placement_history(p_school_id uuid)` (migration `20261012130805`; `security invoker`, signed-in users only, returns counts only), not from the app: one school can have 10,000+ applications and the API returns at most 1,000 rows per request. `getSchoolPlacementHistory` (`src/lib/supabase/queries/school-placement-history.ts`) calls it and `src/lib/schools/placement-history.ts` shapes the rows. Offer and placed are working definitions derived from the live data (offer: Offered/Deposited status, "Joined School but Left After", "Declined", or a deposit record; placed: Deposited or "Joined School but Left After"; enquiry-type statuses not counted). They are not yet confirmed by the customer; changing them means editing the status-code lists in the function. Figures reflect current application status, as there is no status history.
+
 ### 5.6 Student Resume Tables
 
 `student_resume`, `student_resume_profile`, `student_resume_talents`, `student_resume_aa_tests`, `student_legal_documents`

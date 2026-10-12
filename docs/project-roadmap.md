@@ -191,6 +191,26 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   - Bug fix: FullCalendar v7 ignored event colours and state classes (v6 field names
     `backgroundColor`/`borderColor`/`classNames` are stored as custom data in v7; now `color` +
     space-separated `className`) and resource order (`resourceOrder="order"`).
+- **2026-10-12** — School placement history (customer item 9):
+  - New "Placement history" card at the end of a school's Basic Info tab: one row per academic year
+    (newest first, "2026–27" style; applications with no entry year in a last row "No entry year") with
+    Applications, Offers, Students placed and Placement rate, plus an "All years" total whose rate comes
+    from the summed counts. If the lookup fails the card says the history is unavailable.
+  - Counted in the database by the read-only function `public.school_placement_history(p_school_id)`
+    (migration `20261012130805`; `security invoker`, signed-in users only, counts only), because one school
+    can have 10,000+ applications and the API returns at most 1,000 rows per request.
+  - Working definitions, taken from the live data and stated on the card. **Not yet confirmed by the
+    customer**; changing them means changing the status-code lists in that function. Offer = Offered or
+    Deposited status, "Joined School but Left After", "Declined", or any application with a deposit record.
+    Placed = Deposited status or "Joined School but Left After". Not counted: "General Enquiry",
+    "Check Place", "Test Only (Refer)". "Completed" and "Confirmed" are neither. Rate = placed / applications.
+    Academic year starts in September. Figures use each application's current status (no status history).
+  - "Expected commission" from the prototype is **not built**: the system has no commission terms.
+  - Types note: the type generator proposed `PostgrestVersion` "13.0.5" in `src/types/database.ts`; the line
+    was deliberately left at "14.5" and only the function signature was taken. Keep it so when regenerating.
+  - Status: 60 test files / 845 tests, type-check, lint on touched files and permission coverage pass; code
+    review 8.5/10 approved; function checked against live data (largest school: 10,590 applications, 2,327
+    offers, 800 placed). **Not yet checked in a browser.**
 - **2026-10-12** — School contacts, active only (customer item 10):
   - The Contacts tab of a school lists active contacts by default; a "Show inactive (N)" switch reveals
     the others, dimmed and badged. Nothing is deleted. Header and tab badge count active contacts.

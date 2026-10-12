@@ -26,7 +26,7 @@
 aa-new/
 ├── src/                  # Application source
 ├── supabase/
-│   ├── migrations/       # 85 SQL migration files
+│   ├── migrations/       # 87 SQL migration files
 │   └── config.toml       # Supabase project config (project_id: aa-new)
 ├── scripts/              # 34 data migration TypeScript scripts (run via tsx)
 ├── data/                 # Source CSVs + migration output artifacts
@@ -93,6 +93,7 @@ src/app/
     │   └── [id]/
     │       ├── page.tsx
     │       ├── edit/page.tsx
+    │       ├── school-placement-history.tsx  # Basic Info card: applications/offers/placed/rate per academic year
     │       ├── school-contacts.tsx
     │       ├── contact-active-toggle.tsx   # one-click mark inactive / reactivate
     │       ├── school-courses.tsx
@@ -235,6 +236,8 @@ src/lib/
 │   ├── render-document-pdf.ts    # Shared headless-Chromium renderer (HTML string → PDF)
 │   └── escape-html.ts            # escapeHtml: shared by the renderer footer and the cover slip
 ├── schools/                      # Selected School List export — types, shaping, HTML builder
+│   ├── placement-history.ts      # PURE: academicYearLabel, placementRate, toPlacementRows (rows + "All years" total)
+│   └── __tests__/placement-history.test.ts
 ├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
 │   ├── export-types.ts           # One payload for single and bulk, PDF and Excel
 │   ├── export-shaping.ts         # PURE: htmlToPlainText, toCellText/Date, filenames
@@ -353,6 +356,7 @@ src/lib/
         ├── school-notes.ts
         ├── school-supplementary-info.ts
         ├── school-visits.ts
+        ├── school-placement-history.ts  # getSchoolPlacementHistory: calls the school_placement_history RPC, null on failure
         ├── scheduler-rooms.ts       # Room list for filters/booking dialog
         ├── scheduler-bookings.ts    # Calendar data via scheduler_calendar_items view
         ├── scheduler-calendar-helpers.ts  # Attendee attach, people→booking ids (range-bounded), fetchCancelledRows
@@ -381,7 +385,7 @@ src/hooks/
 
 ## Database Migrations Overview
 
-Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped (84 total).
+Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped (87 total).
 
 | Range | Theme |
 |---|---|
@@ -393,6 +397,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | 069–078 | Student intro images bucket, document categories, school documents + bucket, row level security across the public schema, school export fields, county normalisation, current course fee |
 | Timestamped (pre-scheduler) | School document category rounds, permission matrix, record attachments (polymorphic `attachable_type`/`attachable_id` + `external_url` on both document tables) |
 | Timestamped (scheduler, 2026-09-28 to 2026-10-02) | `20260928070928_scheduler_core.sql` (locations, rooms, bookings, attendees, history, view, triggers), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql` (`room_id` FK on exam records), `20260928074722_scheduler_review_hardening.sql` (red-team fixes), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix) |
+| Timestamped (2026-10-12) | `20261012130805_school_placement_history.sql` (read-only function `school_placement_history(p_school_id)`: per-entry-year application/offer/placed counts for a school) |
 
 ---
 
