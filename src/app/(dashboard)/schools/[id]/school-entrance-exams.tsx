@@ -118,6 +118,7 @@ export function SchoolEntranceExamsSection({
                         clip covers digitally attached ones. Staff need both. */}
                     <div className="flex items-center justify-center gap-1.5">
                       <BoolIndicator value={exam.has_paper} />
+                      {exam.paper_request_from_school && <Badge variant="outline" className="text-[10px]">On request</Badge>}
                       {(attachmentsByExam?.get(exam.id)?.length ?? 0) > 0 && (
                         <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
                           <Paperclip className="h-3 w-3" />

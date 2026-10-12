@@ -2628,6 +2628,7 @@ export type Database = {
           legacy_exam_type: string | null
           legacy_last_update: string | null
           legacy_school_id: number | null
+          paper_request_from_school: boolean
           remarks: string | null
           school_id: string
           subject: string | null
@@ -2648,6 +2649,7 @@ export type Database = {
           legacy_exam_type?: string | null
           legacy_last_update?: string | null
           legacy_school_id?: number | null
+          paper_request_from_school?: boolean
           remarks?: string | null
           school_id: string
           subject?: string | null
@@ -2668,6 +2670,7 @@ export type Database = {
           legacy_exam_type?: string | null
           legacy_last_update?: string | null
           legacy_school_id?: number | null
+          paper_request_from_school?: boolean
           remarks?: string | null
           school_id?: string
           subject?: string | null

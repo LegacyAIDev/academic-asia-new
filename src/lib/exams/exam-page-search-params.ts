@@ -12,7 +12,7 @@ import { isUuid } from '@/lib/scheduler/uuid'
 export const EXAM_VIEWS = ['desk', 'all'] as const
 export type ExamView = (typeof EXAM_VIEWS)[number]
 
-export const EXAM_DESK_SORT_KEYS = ['time', 'student', 'school', 'year', 'assessment', 'room', 'status'] as const
+export const EXAM_DESK_SORT_KEYS = ['time', 'student', 'school', 'year', 'assessment', 'papers', 'room', 'status'] as const
 export type ExamDeskSortKey = (typeof EXAM_DESK_SORT_KEYS)[number]
 
 const SORT_DIRECTIONS = ['asc', 'desc'] as const

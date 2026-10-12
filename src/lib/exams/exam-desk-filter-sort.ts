@@ -65,6 +65,8 @@ const SORT_VALUES: Record<ExamDeskSortKey, (row: ExamDeskRow) => SortValue> = {
   school: row => row.schoolName,
   year: row => row.entryYear,
   assessment: row => row.assessment,
+  // Papers still missing come first, which is what the exam team has to chase.
+  papers: row => (row.availability ? -row.availability.notUploaded : null),
   room: row => (row.room ? [row.room.display_name, row.seatLabel].filter(Boolean).join(' ') : row.isOnline ? 'Online' : null),
   status: row => (row.status === 'pending' ? 0 : 1),
 }

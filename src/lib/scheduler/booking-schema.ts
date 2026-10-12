@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { ATTENDEE_ROLES, BOOKING_TYPES, LOCATION_TYPES } from './config'
+import { assessmentSnapshotSchema, normaliseAssessmentSnapshot } from './assessment-snapshot'
 
 /**
  * Shared validation for the booking dialog and the saveBooking action.
@@ -25,12 +26,6 @@ export const attendeeSchema = z
   })
 
 export type AttendeeInput = z.infer<typeof attendeeSchema>
-
-export const assessmentSnapshotSchema = z.object({
-  label: z.string().trim().min(1).max(200),
-  version: z.string().max(50).nullable().optional(),
-  notes: z.string().max(2000).nullable().optional(),
-})
 
 const baseBookingSchema = z.object({
   id: uuid.optional(),
@@ -106,7 +101,7 @@ export const bookingFormSchema = baseBookingSchema.superRefine((v, ctx) => {
   if (new Set(seats).size !== seats.length) issue('attendees', 'Duplicate seat numbers')
 
   TYPE_RULES[v.booking_type](v, issue)
-})
+}).transform(v => ({ ...v, assessment_snapshot: normaliseAssessmentSnapshot(v.assessment_snapshot) }))
 
 export type BookingFormInput = z.input<typeof bookingFormSchema>
 export type BookingFormValues = z.output<typeof bookingFormSchema>

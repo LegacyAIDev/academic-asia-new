@@ -24,6 +24,7 @@ export type CreateSchoolEntranceExamInput = {
   duration_minutes?: number | null
   exam_format?: string | null
   has_paper?: boolean | null
+  paper_request_from_school?: boolean
   remarks?: string | null
   aa_remarks?: string | null
 }

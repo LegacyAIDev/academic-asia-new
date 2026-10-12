@@ -12,6 +12,8 @@ export type SchoolEntranceExamWithJoins = {
   exam_format: string | null
   files: string | null
   has_paper: boolean | null
+  /** The school asked us not to keep this paper; it is requested from them for each sitting. */
+  paper_request_from_school: boolean
   remarks: string | null
   aa_remarks: string | null
   created_at: string | null
@@ -30,7 +32,7 @@ export async function getSchoolEntranceExams(schoolId: string): Promise<SchoolEn
     .from('school_entrance_exams')
     .select(`
       id, school_id, entry_year, exam_type_id, year_level, subject,
-      duration_minutes, exam_format, files, has_paper, remarks, aa_remarks,
+      duration_minutes, exam_format, files, has_paper, paper_request_from_school, remarks, aa_remarks,
       created_at, updated_at,
       exam_type:entrance_exam_types!school_entrance_exams_exam_type_id_fkey(id, code, label)
     `)

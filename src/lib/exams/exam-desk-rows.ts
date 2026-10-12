@@ -1,6 +1,10 @@
+import { snapshotPapers, type SnapshotPaper } from '@/lib/scheduler/assessment-snapshot'
 import { assessmentLabel } from '@/lib/scheduler/booking-text-formatters'
 import { personName } from '@/lib/scheduler/person-name'
 import type { ExamDeskBooking, ExamDeskStudent } from '@/lib/supabase/queries/exam-desk'
+import type { ExamPaperStatus } from '@/lib/supabase/queries/exam-papers'
+import { summarisePaperAvailability, type PaperAvailability } from './exam-paper-availability'
+import { paperYearLevels } from './exam-paper-selection'
 
 /**
  * Turns examination bookings into the rows the exam desk shows. One booking is
@@ -28,6 +32,10 @@ export type ExamDeskRow = {
   schoolName: string | null
   entryYear: number | null
   assessment: string | null
+  /** Papers chosen when the exam was booked, their year levels, and how many can be printed today. */
+  papers: SnapshotPaper[]
+  yearLevels: string[]
+  availability: PaperAvailability | null
   roomId: string | null
   room: { display_name: string; floor: string | null; room_number: string | null } | null
   isOnline: boolean
@@ -75,12 +83,15 @@ function seatLabel(candidates: ExamDeskCandidate[]): string | null {
   return seats.length === 1 ? `Seat ${seats[0]}` : `Seats ${seats.join(', ')}`
 }
 
-function toRow(booking: ExamDeskBooking): ExamDeskRow {
+function toRow(booking: ExamDeskBooking, statusById: Map<string, ExamPaperStatus> | null): ExamDeskRow {
   const candidates = examCandidates(booking)
-  // The booking form has no school field yet, so the linked application is the usual source.
+  // Older bookings carry no school of their own, so the linked application is the fallback.
   const school = booking.school ?? booking.application?.school ?? null
   const assessment = assessmentLabel(booking.assessment_snapshot)
-  const searchable = [...candidates.flatMap(c => [c.name, c.code]), school?.name, assessment, booking.title]
+  const papers = snapshotPapers(booking.assessment_snapshot)
+  const searchable = [
+    ...candidates.flatMap(c => [c.name, c.code]), school?.name, assessment, ...papers.map(p => p.subject), booking.title,
+  ]
 
   return {
     bookingId: booking.id,
@@ -93,6 +104,9 @@ function toRow(booking: ExamDeskBooking): ExamDeskRow {
     schoolName: school?.name ?? null,
     entryYear: booking.application?.entry_year ?? null,
     assessment,
+    papers,
+    yearLevels: paperYearLevels(papers),
+    availability: summarisePaperAvailability(papers, statusById),
     roomId: booking.room?.id ?? null,
     room: booking.room,
     isOnline: booking.location_type === 'online',
@@ -103,8 +117,9 @@ function toRow(booking: ExamDeskBooking): ExamDeskRow {
   }
 }
 
-export function toExamDeskRows(bookings: ExamDeskBooking[]): ExamDeskRow[] {
-  return bookings.map(toRow)
+/** `statusById` is the live state of the chosen papers: null when it could not be read, empty when nothing is known yet. */
+export function toExamDeskRows(bookings: ExamDeskBooking[], statusById: Map<string, ExamPaperStatus> | null = new Map()): ExamDeskRow[] {
+  return bookings.map(booking => toRow(booking, statusById))
 }
 
 /**

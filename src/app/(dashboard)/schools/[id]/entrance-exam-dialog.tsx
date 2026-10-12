@@ -134,6 +134,7 @@ export function EntranceExamDialog({
   const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [requestFromSchool, setRequestFromSchool] = useState(exam?.paper_request_from_school ?? false)
 
   const { examTypes } = referenceData
 
@@ -141,7 +142,9 @@ export function EntranceExamDialog({
 
   const handleOpenChange = (value: boolean) => {
     setOpen(value)
-    if (value) setError(null)
+    if (!value) return
+    setError(null)
+    setRequestFromSchool(exam?.paper_request_from_school ?? false)
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -162,6 +165,7 @@ export function EntranceExamDialog({
         : null,
       exam_format: (formData.get("exam_format") as string) || null,
       has_paper: formData.get("has_paper") === "true",
+      paper_request_from_school: requestFromSchool,
       remarks: (formData.get("remarks") as string) || null,
       aa_remarks: (formData.get("aa_remarks") as string) || null,
     }
@@ -171,7 +175,8 @@ export function EntranceExamDialog({
       if (mode === "create") {
         result = await createSchoolEntranceExam({ ...input, school_id: schoolId })
         // Staged attachments could not be linked before the row existed.
-        if (result?.success && result.data?.id) {
+        // A paper the school does not want stored is not uploaded, even if a file was picked first.
+        if (result?.success && result.data?.id && !requestFromSchool) {
           const failed = await attachRef.current?.flush(result.data.id) ?? 0
           if (failed > 0) setError(`Saved, but ${failed} attachment(s) failed to upload`)
         }
@@ -284,21 +289,36 @@ export function EntranceExamDialog({
                   </SelectContent>
                 </Select>
               </FormField>
+              <FormField label="Do not store – request from school">
+                <Select value={requestFromSchool ? "true" : "false"} onValueChange={v => setRequestFromSchool(v === "true")}>
+                  <SelectTrigger className={selectTriggerStyles}><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="false">No</SelectItem>
+                    <SelectItem value="true">Yes</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormField>
             </FormSection>
 
             <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
               <FormField label="Exam paper (file or link)">
+                {requestFromSchool && (
+                  <p className="text-sm text-muted-foreground">The school asked us not to keep this paper. Request it from the school for each sitting; nothing is uploaded.</p>
+                )}
                 {canManagePapers ? (
-                  <AttachmentField
-                    ref={attachRef}
-                    attachPoint="school_entrance_exam_paper"
-                    ownerId={schoolId}
-                    attachableId={mode === "edit" ? exam?.id ?? null : null}
-                    attachments={attachments}
-                    canWrite={canWrite}
-                  />
+                  // Kept mounted while hidden, so a file picked before choosing "do not store" is still there if that is undone.
+                  <div className={requestFromSchool ? "hidden" : undefined}>
+                    <AttachmentField
+                      ref={attachRef}
+                      attachPoint="school_entrance_exam_paper"
+                      ownerId={schoolId}
+                      attachableId={mode === "edit" ? exam?.id ?? null : null}
+                      attachments={attachments}
+                      canWrite={canWrite}
+                    />
+                  </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Papers are kept by the examination team.</p>
+                  !requestFromSchool && <p className="text-sm text-muted-foreground">Papers are kept by the examination team.</p>
                 )}
               </FormField>
             </FormSection>

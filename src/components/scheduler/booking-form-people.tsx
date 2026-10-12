@@ -38,9 +38,22 @@ export function BookingFormPeople({
   useEffect(() => {
     if (!studentId) return
     getStudentApplicationsAction(studentId).then(result => {
-      if (result.success) setApplications(result.data ?? [])
+      if (!result.success) return
+      const list = result.data ?? []
+      setApplications(list)
+      // Bookings made before the school was stored with them still know their application.
+      const school = list.find(app => app.id === form.getValues('application_id'))?.school
+      if (school && !form.getValues('school_id')) form.setValue('school_id', school.id)
     })
-  }, [studentId])
+  }, [studentId, form])
+
+  /** The school decides which papers can be chosen, so papers picked for another school are dropped with it. */
+  const setSchool = (schoolId: string | null) => {
+    if ((form.getValues('school_id') ?? null) === schoolId) return
+    form.setValue('school_id', schoolId)
+    const snapshot = form.getValues('assessment_snapshot')
+    if (snapshot?.papers?.length) form.setValue('assessment_snapshot', { ...snapshot, papers: [] })
+  }
 
   const showSingleStudent = SINGLE_STUDENT_TYPES.has(bookingType)
   const showCandidates = bookingType === 'group_examination'
@@ -78,6 +91,7 @@ export function BookingFormPeople({
                   onClick={() => {
                     form.setValue('student_id', null, { shouldValidate: true })
                     form.setValue('application_id', null)
+                    setSchool(null)
                     setStudentName(null)
                     setApplications([])
                   }}
@@ -90,6 +104,7 @@ export function BookingFormPeople({
                 onSelect={student => {
                   form.setValue('student_id', student.id, { shouldValidate: true })
                   form.setValue('application_id', null)
+                  setSchool(null)
                   setStudentName(`${student.first_name} ${student.surname}`)
                 }}
               />
@@ -102,7 +117,12 @@ export function BookingFormPeople({
             <Label className="text-xs font-medium text-muted-foreground">Application</Label>
             <Select
               value={applicationId ?? undefined}
-              onValueChange={v => form.setValue('application_id', v, { shouldValidate: true })}
+              onValueChange={v => {
+                form.setValue('application_id', v, { shouldValidate: true })
+                // An application without a school must not wipe a school that came with the exam request.
+                const school = applications.find(app => app.id === v)?.school
+                if (school) setSchool(school.id)
+              }}
               disabled={!studentId}
             >
               <SelectTrigger className="w-full"><SelectValue placeholder="Select application" /></SelectTrigger>

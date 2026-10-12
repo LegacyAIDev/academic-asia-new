@@ -85,7 +85,12 @@ export function BookingFormCandidates({ form, peopleLabels }: { form: BookingFor
                   <TableCell>
                     <Select
                       value={attendee.application_id ?? undefined}
-                      onValueChange={v => updateRow(index, { application_id: v })}
+                      onValueChange={v => {
+                        updateRow(index, { application_id: v })
+                        // A group sits one school's papers; the first application chosen names that school.
+                        const school = applications.find(app => app.id === v)?.school
+                        if (school && !form.getValues('school_id')) form.setValue('school_id', school.id)
+                      }}
                     >
                       <SelectTrigger size="sm" className="w-full"><SelectValue placeholder="Select..." /></SelectTrigger>
                       <SelectContent>

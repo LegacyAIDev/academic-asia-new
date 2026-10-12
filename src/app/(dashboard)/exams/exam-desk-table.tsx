@@ -27,14 +27,17 @@ type Props = {
   canWrite: boolean
   canOpenBooking: boolean
   canOpenStudent: boolean
+  /** Exam team only: may open the paper files of a booking. */
+  canPrintPapers: boolean
 }
 
 const COLUMNS: { key: ExamDeskSortKey; label: string; className: string }[] = [
   { key: "time", label: "Time", className: "pl-6 min-w-[110px]" },
   { key: "student", label: "Student", className: "min-w-[170px]" },
   { key: "school", label: "School", className: "min-w-[150px]" },
-  { key: "year", label: "Entry year", className: "min-w-[100px]" },
-  { key: "assessment", label: "Assessment", className: "min-w-[160px]" },
+  { key: "year", label: "Entry point", className: "min-w-[110px]" },
+  { key: "assessment", label: "Assessment format", className: "min-w-[170px]" },
+  { key: "papers", label: "Paper availability", className: "min-w-[170px]" },
   { key: "room", label: "Room / seat", className: "min-w-[150px]" },
   { key: "status", label: "Status", className: "min-w-[150px]" },
 ]
@@ -46,8 +49,8 @@ const dash = <span className="text-muted-foreground">—</span>
 
 /** One list of the exam desk (booked or showed up). Server-rendered; only the action buttons are interactive. */
 export function ExamDeskTable(props: Props) {
-  const { rows, raw, sort, dir, canWrite, canOpenBooking } = props
-  const showActions = canWrite || canOpenBooking
+  const { rows, raw, sort, dir, canWrite, canOpenBooking, canPrintPapers } = props
+  const showActions = canWrite || canOpenBooking || canPrintPapers
   const returnTo = examsHref(raw)
 
   return (
@@ -110,8 +113,15 @@ export function ExamDeskTable(props: Props) {
                   )}
                 </TableCell>
                 <TableCell className="align-top text-sm">{row.schoolName ?? dash}</TableCell>
-                <TableCell className="align-top text-sm tabular-nums">{row.entryYear ? `${row.entryYear} entry` : dash}</TableCell>
+                <TableCell className="align-top text-sm">
+                  {row.yearLevels.length > 0 && <span className="block font-medium">{row.yearLevels.join(", ")}</span>}
+                  {row.entryYear && <span className="block tabular-nums">{row.entryYear} entry</span>}
+                  {row.yearLevels.length === 0 && !row.entryYear && dash}
+                </TableCell>
                 <TableCell className="align-top text-sm">{row.assessment ?? dash}</TableCell>
+                <TableCell className="align-top text-sm tabular-nums">
+                  {row.availability?.label ?? <span className="text-muted-foreground">No papers chosen</span>}
+                </TableCell>
                 <TableCell className="align-top text-sm">
                   {row.room ? <RoomChip size="sm" {...row.room} /> : row.isOnline ? "Online" : dash}
                   {row.seatLabel && <span className="mt-1 block text-xs text-muted-foreground tabular-nums">{row.seatLabel}</span>}
@@ -128,6 +138,7 @@ export function ExamDeskTable(props: Props) {
                       bookingId={row.bookingId}
                       actions={examDeskActions(row, canWrite)}
                       bookingHref={canOpenBooking ? bookingPageHref(row.bookingId, returnTo) : null}
+                      canPrintPapers={canPrintPapers && Boolean(row.availability?.canPrint)}
                     />
                   </TableCell>
                 )}

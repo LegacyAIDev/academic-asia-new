@@ -5,8 +5,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { isExamBooking, type BookingType } from '@/lib/scheduler/config'
 import type { BookingForm } from './booking-dialog'
+import { BookingFormPapers } from './booking-form-papers'
 
-/** Assessment snapshot (for exam types), notes and instructions. */
+/** Papers and assessment details (for exam types), notes and instructions. */
 export function BookingFormDetails({ form, bookingType }: { form: BookingForm; bookingType: BookingType }) {
   const isExamType = isExamBooking(bookingType)
 
@@ -14,9 +15,13 @@ export function BookingFormDetails({ form, bookingType }: { form: BookingForm; b
     <div className="space-y-4">
       {isExamType && (
         <div className="grid grid-cols-3 gap-3 rounded-lg border border-border p-3">
+          <div className="col-span-3 space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Papers</Label>
+            <BookingFormPapers form={form} />
+          </div>
           <div className="col-span-2 space-y-1.5">
             <Label className="text-xs font-medium text-muted-foreground">Assessment</Label>
-            <Input {...form.register('assessment_snapshot.label')} placeholder="e.g. Maths Entrance Test" />
+            <Input {...form.register('assessment_snapshot.label')} placeholder="Named after the chosen papers when left empty" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-medium text-muted-foreground">Version</Label>
