@@ -50,7 +50,8 @@ const dash = <span className="text-muted-foreground">—</span>
 /** One list of the exam desk (booked or showed up). Server-rendered; only the action buttons are interactive. */
 export function ExamDeskTable(props: Props) {
   const { rows, raw, sort, dir, canWrite, canOpenBooking, canPrintPapers } = props
-  const showActions = canWrite || canOpenBooking || canPrintPapers
+  // Everyone who sees the desk may print a cover slip, so the column appears as soon as a row has a candidate.
+  const showActions = canWrite || canOpenBooking || canPrintPapers || rows.some(row => row.candidates.length > 0)
   const returnTo = examsHref(raw)
 
   return (
@@ -139,6 +140,7 @@ export function ExamDeskTable(props: Props) {
                       actions={examDeskActions(row, canWrite)}
                       bookingHref={canOpenBooking ? bookingPageHref(row.bookingId, returnTo) : null}
                       canPrintPapers={canPrintPapers && Boolean(row.availability?.canPrint)}
+                      coverSlipHref={row.candidates.length > 0 ? `/api/exams/cover-slip/pdf?booking=${row.bookingId}` : null}
                     />
                   </TableCell>
                 )}

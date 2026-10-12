@@ -29,6 +29,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/schools/export/pdf": ["./node_modules/@sparticuz/chromium/bin/**"],
     "/api/students/brief-intro/export/pdf": ["./node_modules/@sparticuz/chromium/bin/**"],
+    "/api/exams/cover-slip/pdf": ["./node_modules/@sparticuz/chromium/bin/**"],
   },
 };
 

@@ -1,4 +1,5 @@
 import type { Browser } from 'puppeteer-core'
+import { escapeHtml } from './escape-html'
 
 /**
  * Render a self-contained HTML document to a PDF with headless Chromium.
@@ -99,10 +100,3 @@ export async function renderDocumentPdf(
     await page.close()
   }
 }
-
-const escapeHtml = (value: string) =>
-  value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')

@@ -14,13 +14,15 @@ type Props = {
   bookingHref: string | null
   /** True for the exam team when at least one chosen paper has a file or link to open. */
   canPrintPapers: boolean
+  /** Address of the cover slip PDF, or null when the booking has no candidate to print one for. */
+  coverSlipHref: string | null
 }
 
 /**
  * Buttons of one exam desk row. Each row has its own instance, so only the row
  * being saved is disabled while the request runs.
  */
-export function ExamDeskRowActions({ bookingId, actions, bookingHref, canPrintPapers }: Props) {
+export function ExamDeskRowActions({ bookingId, actions, bookingHref, canPrintPapers, coverSlipHref }: Props) {
   const { isPending, confirm, recordAttendance } = useBookingActions()
 
   return (
@@ -37,6 +39,12 @@ export function ExamDeskRowActions({ bookingId, actions, bookingHref, canPrintPa
         </Button>
       )}
       {canPrintPapers && <ExamDeskPrintPapers bookingId={bookingId} />}
+      {coverSlipHref && (
+        <Button size="sm" variant="outline" asChild>
+          {/* A plain link on purpose: a prefetching router link would start a PDF render nobody asked for. */}
+          <a href={coverSlipHref} target="_blank" rel="noopener noreferrer">Cover slip</a>
+        </Button>
+      )}
       {bookingHref && (
         <Button size="sm" variant="outline" asChild>
           <Link href={bookingHref}>Open booking</Link>
