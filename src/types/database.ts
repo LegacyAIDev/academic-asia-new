@@ -5748,6 +5748,15 @@ export type Database = {
         Args: { p_attendees?: Json; p_booking: Json }
         Returns: string
       }
+      school_placement_history: {
+        Args: { p_school_id: string }
+        Returns: {
+          academic_year_start: number
+          applications: number
+          offers: number
+          placed: number
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

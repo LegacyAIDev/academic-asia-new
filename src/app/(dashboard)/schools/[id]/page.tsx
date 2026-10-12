@@ -62,6 +62,7 @@ import { getSchoolContacts, getSchoolContactCount } from "@/lib/supabase/queries
 import { getSchoolVisits, getSchoolVisitCount } from "@/lib/supabase/queries/school-visits"
 import { getSchoolEvents } from "@/lib/supabase/queries/events"
 import { getSchoolDocuments } from "@/lib/supabase/queries/school-documents"
+import { getSchoolPlacementHistory } from "@/lib/supabase/queries/school-placement-history"
 import { DeleteSchoolDialog } from "./delete-school-dialog"
 import { SupInfoDialog, EditSupInfoButton, DeleteSupInfoButton } from "./sup-info-dialog"
 import { SchoolFeesSection } from "./school-fees"
@@ -71,6 +72,7 @@ import { SchoolNotesSection } from "./school-notes"
 import { SchoolCoursesSection } from "./school-courses"
 import { SchoolBankDetailsSection } from "./school-bank-details"
 import { SchoolContactsSection } from "./school-contacts"
+import { SchoolPlacementHistory } from "./school-placement-history"
 import { SchoolVisitsSection } from "./school-visits"
 import { SchoolEventsSection } from "./school-events"
 import { SchoolDocumentsSection } from "./school-documents"
@@ -121,6 +123,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
     schoolVisitCount,
     schoolEvents,
     schoolDocuments,
+    placementHistory,
   ] = await Promise.all([
     getSchoolById(id),
     getSchoolSupplementaryInfo({ schoolId: id, page: parseInt(supPage), pageSize: 25 }),
@@ -150,6 +153,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
     getSchoolVisitCount(id),
     getSchoolEvents(id),
     getSchoolDocuments(id),
+    getSchoolPlacementHistory(id),
   ])
 
   if (!school) {
@@ -608,6 +612,8 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
               </CardContent>
             </Card>
           )}
+
+          <SchoolPlacementHistory counts={placementHistory} />
         </TabsContent>
 
         {/* Contacts Tab */}
