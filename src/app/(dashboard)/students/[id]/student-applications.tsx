@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -12,9 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { GraduationCap, Filter } from "lucide-react"
+import { GraduationCap, Filter, Eye } from "lucide-react"
 import { ApplicationDialog, EditApplicationButton, DeleteApplicationButton } from "./application-dialog"
-import { ViewApplicationButton } from "./application-view-dialog"
+import { formatDate, monthYearLabel, statusStyle } from "@/lib/applications/application-display"
 import type { ApplicationWithJoins } from "@/lib/supabase/queries/student-applications"
 import type { ApplicationReferenceData } from "./application-dialog"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
@@ -26,39 +27,6 @@ type StudentApplicationsSectionProps = {
   attachmentsByApplication?: Map<string, AttachmentRecord[]>
   attachmentsByDeposit?: Map<string, AttachmentRecord[]>
   canWrite?: boolean
-}
-
-/** Color map for application status categories */
-const statusCategoryStyles: Record<string, string> = {
-  awaiting: "bg-amber-50 text-amber-700 border-amber-200",
-  offered: "bg-blue-50 text-blue-700 border-blue-200",
-  deposited: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  waiting: "bg-orange-50 text-orange-700 border-orange-200",
-  positive: "bg-green-50 text-green-700 border-green-200",
-  negative: "bg-rose-50 text-rose-700 border-rose-200",
-  unavailable: "bg-slate-100 text-slate-600 border-slate-200",
-  other: "bg-violet-50 text-violet-700 border-violet-200",
-}
-
-function formatCSD(month: number | null, year: number | null) {
-  if (!month && !year) return "—"
-  const monthNames = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-  const m = month ? monthNames[month] : ""
-  const y = year ?? ""
-  return [m, y].filter(Boolean).join("-")
-}
-
-function formatDate(dateStr: string | null) {
-  if (!dateStr) return "—"
-  try {
-    return new Date(dateStr).toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    })
-  } catch {
-    return dateStr
-  }
 }
 
 export function StudentApplicationsSection({
@@ -89,11 +57,13 @@ export function StudentApplicationsSection({
               <GraduationCap className="h-4 w-4 text-muted-foreground" />
               School Applications
             </CardTitle>
-            <ApplicationDialog
-              studentId={studentId}
-              referenceData={referenceData}
-              mode="create"
-            />
+            {canWrite && (
+              <ApplicationDialog
+                studentId={studentId}
+                referenceData={referenceData}
+                mode="create"
+              />
+            )}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -138,11 +108,13 @@ export function StudentApplicationsSection({
                 Suspended
               </Button>
             </div>
-            <ApplicationDialog
-              studentId={studentId}
-              referenceData={referenceData}
-              mode="create"
-            />
+            {canWrite && (
+              <ApplicationDialog
+                studentId={studentId}
+                referenceData={referenceData}
+                mode="create"
+              />
+            )}
           </div>
         </div>
       </CardHeader>
@@ -165,18 +137,20 @@ export function StudentApplicationsSection({
             </TableHeader>
             <TableBody>
               {filtered.map((app) => {
-                const statusStyle = statusCategoryStyles[app.status?.category ?? "other"] ?? statusCategoryStyles.other
+                const href = `/students/${studentId}/applications/${app.id}`
 
                 return (
                   <TableRow key={app.id} className={app.is_archived ? "opacity-60" : ""}>
                     <TableCell className="pl-6 font-medium">
-                      <span className="text-sm">{app.school?.name ?? "—"}</span>
+                      <Link href={href} className="text-sm hover:text-primary hover:underline underline-offset-4">
+                        {app.school?.name ?? "—"}
+                      </Link>
                     </TableCell>
-                    <TableCell className="text-sm">{formatCSD(app.entry_month, app.entry_year)}</TableCell>
-                    <TableCell className="text-sm">{formatCSD(app.course_start_month, app.course_start_year)}</TableCell>
+                    <TableCell className="text-sm">{monthYearLabel(app.entry_month, app.entry_year)}</TableCell>
+                    <TableCell className="text-sm">{monthYearLabel(app.course_start_month, app.course_start_year)}</TableCell>
                     <TableCell>
                       {app.status ? (
-                        <Badge variant="outline" className={`${statusStyle} border text-xs font-medium whitespace-nowrap`}>
+                        <Badge variant="outline" className={`${statusStyle(app.status.category)} border text-xs font-medium whitespace-nowrap`}>
                           {app.status.label}
                         </Badge>
                       ) : "—"}
@@ -200,20 +174,29 @@ export function StudentApplicationsSection({
                     <TableCell className="text-sm">{formatDate(app.registration_date)}</TableCell>
                     <TableCell className="pr-6">
                       <div className="flex items-center justify-end gap-1">
-                        <ViewApplicationButton application={app} />
-                        <EditApplicationButton
-                          application={app}
-                          studentId={studentId}
-                          referenceData={referenceData}
-                          attachments={attachmentsByApplication?.get(app.id) ?? []}
-                          attachmentsByDeposit={attachmentsByDeposit}
-                          canWrite={canWrite}
-                        />
-                        <DeleteApplicationButton
-                          applicationId={app.id}
-                          studentId={studentId}
-                          schoolName={app.school?.name ?? "this school"}
-                        />
+                        <Button asChild variant="ghost" size="icon"
+                          className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                          <Link href={href} title="Open application" aria-label="Open application">
+                            <Eye className="h-3.5 w-3.5" />
+                          </Link>
+                        </Button>
+                        {canWrite && (
+                          <>
+                            <EditApplicationButton
+                              application={app}
+                              studentId={studentId}
+                              referenceData={referenceData}
+                              attachments={attachmentsByApplication?.get(app.id) ?? []}
+                              attachmentsByDeposit={attachmentsByDeposit}
+                              canWrite={canWrite}
+                            />
+                            <DeleteApplicationButton
+                              applicationId={app.id}
+                              studentId={studentId}
+                              schoolName={app.school?.name ?? "this school"}
+                            />
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

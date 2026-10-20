@@ -68,7 +68,7 @@ export function BookingDetails({ booking }: { booking: BookingDetail }) {
             {booking.application_id && (
               <>
                 {' · '}
-                <Link href={`/students/${booking.student.id}?tab=applications#app-${booking.application_id}`} className="text-primary underline underline-offset-2">
+                <Link href={`/students/${booking.student.id}/applications/${booking.application_id}`} className="text-primary underline underline-offset-2">
                   Application
                 </Link>
               </>

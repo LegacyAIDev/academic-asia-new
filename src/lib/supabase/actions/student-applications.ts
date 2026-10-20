@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { deleteAttachmentsForRecord } from '@/lib/supabase/actions/record-attachments'
+import { isUuid } from '@/lib/scheduler/uuid'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -22,6 +23,7 @@ export type CreateApplicationInput = {
   course_start_month?: number | null
   course_start_year?: number | null
   status_id?: number | null
+  sub_status_id?: number | null
   mode_id?: number | null
   is_referral?: boolean | null
   scholarship_detail?: string | null
@@ -73,7 +75,10 @@ export async function createStudentApplication(
 }
 
 /**
- * Update an existing school application
+ * Update an existing school application. Scoped to the student as well as the
+ * application id, so a request naming the wrong student changes nothing. The
+ * student itself is never changed here: the type leaves it out, but a crafted
+ * call could still send it, so it is dropped at runtime too.
  */
 export async function updateStudentApplication(
   applicationId: string,
@@ -82,22 +87,30 @@ export async function updateStudentApplication(
 ): Promise<ActionResult> {
   const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
   if (denied) return denied
+  if (!isUuid(applicationId) || !isUuid(studentId)) return { success: false, error: 'Application not found' }
+
+  const changes: Record<string, unknown> = { ...input }
+  delete changes.student_id
 
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('student_applications')
-      .update(input as never)
+      .update(changes as never)
       .eq('id', applicationId)
+      .eq('student_id', studentId)
+      .select('id')
 
     if (error) {
       console.error('Error updating application:', error)
       return { success: false, error: error.message }
     }
+    if (!data?.length) return { success: false, error: 'Application not found' }
 
     revalidatePath(`/students/${studentId}`)
+    revalidatePath(`/students/${studentId}/applications/${applicationId}`)
     return { success: true }
   } catch (err) {
     console.error('Error in updateStudentApplication:', err)
