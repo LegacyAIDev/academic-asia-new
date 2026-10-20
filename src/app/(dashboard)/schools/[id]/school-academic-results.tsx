@@ -19,6 +19,8 @@ type SchoolAcademicResultsSectionProps = {
   schoolId: string
   results: SchoolAcademicResultWithJoins[]
   referenceData: AcademicResultReferenceData
+  /** Add, edit and delete are shown only to staff who may change school data. */
+  canWrite?: boolean
 }
 
 /** Country-based badge styling for exam type grouping */
@@ -32,6 +34,7 @@ export function SchoolAcademicResultsSection({
   schoolId,
   results,
   referenceData,
+  canWrite = true,
 }: SchoolAcademicResultsSectionProps) {
   if (results.length === 0) {
     return (
@@ -42,7 +45,7 @@ export function SchoolAcademicResultsSection({
               <Trophy className="h-4 w-4 text-muted-foreground" />
               Academic Results
             </CardTitle>
-            <AcademicResultDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+            {canWrite && <AcademicResultDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -66,7 +69,7 @@ export function SchoolAcademicResultsSection({
             <Trophy className="h-4 w-4 text-muted-foreground" />
             Academic Results ({results.length})
           </CardTitle>
-          <AcademicResultDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+          {canWrite && <AcademicResultDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -79,7 +82,7 @@ export function SchoolAcademicResultsSection({
                 <TableHead className="min-w-[120px]">Grade Range</TableHead>
                 <TableHead className="min-w-[100px] text-right">Result %</TableHead>
                 <TableHead className="min-w-[150px]">Remarks</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -108,20 +111,22 @@ export function SchoolAcademicResultsSection({
                     <TableCell className="text-sm text-muted-foreground">
                       <p className="line-clamp-1">{result.remarks || "—"}</p>
                     </TableCell>
-                    <TableCell className="pr-6">
-                      <div className="flex items-center justify-end gap-1">
-                        <EditAcademicResultButton
-                          result={result}
-                          schoolId={schoolId}
-                          referenceData={referenceData}
-                        />
-                        <DeleteAcademicResultButton
-                          resultId={result.id}
-                          schoolId={schoolId}
-                          label={`${result.exam_type?.label ?? "Result"} ${result.exam_year ?? ""}`}
-                        />
-                      </div>
-                    </TableCell>
+                    {canWrite && (
+                      <TableCell className="pr-6">
+                        <div className="flex items-center justify-end gap-1">
+                          <EditAcademicResultButton
+                            result={result}
+                            schoolId={schoolId}
+                            referenceData={referenceData}
+                          />
+                          <DeleteAcademicResultButton
+                            resultId={result.id}
+                            schoolId={schoolId}
+                            label={`${result.exam_type?.label ?? "Result"} ${result.exam_year ?? ""}`}
+                          />
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 )
               })}

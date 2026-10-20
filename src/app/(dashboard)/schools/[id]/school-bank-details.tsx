@@ -40,7 +40,7 @@ export function SchoolBankDetailsSection({
               <Landmark className="h-4 w-4 text-muted-foreground" />
               Bank Details
             </CardTitle>
-            <BankDetailDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+            {canWrite && <BankDetailDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -64,7 +64,7 @@ export function SchoolBankDetailsSection({
             <Landmark className="h-4 w-4 text-muted-foreground" />
             Bank Details ({bankDetails.length})
           </CardTitle>
-          <BankDetailDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+          {canWrite && <BankDetailDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -79,7 +79,7 @@ export function SchoolBankDetailsSection({
                 <TableHead className="min-w-[120px]">Account No.</TableHead>
                 <TableHead className="min-w-[100px]">Sort Code</TableHead>
                 <TableHead className="min-w-[120px]">SWIFT</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -108,22 +108,24 @@ export function SchoolBankDetailsSection({
                   <TableCell className="text-sm font-mono text-muted-foreground">
                     {item.swift_code || "—"}
                   </TableCell>
-                  <TableCell className="pr-6">
-                    <div className="flex items-center justify-end gap-1">
-                      <EditBankDetailButton
-                        bankDetail={item}
-                        schoolId={schoolId}
-                        referenceData={referenceData}
-                        attachments={attachmentsByDetail?.get(item.id) ?? []}
-                        canWrite={canWrite}
-                      />
-                      <DeleteBankDetailButton
-                        detailId={item.id}
-                        schoolId={schoolId}
-                        label={item.bank_name || "this"}
-                      />
-                    </div>
-                  </TableCell>
+                  {canWrite && (
+                    <TableCell className="pr-6">
+                      <div className="flex items-center justify-end gap-1">
+                        <EditBankDetailButton
+                          bankDetail={item}
+                          schoolId={schoolId}
+                          referenceData={referenceData}
+                          attachments={attachmentsByDetail?.get(item.id) ?? []}
+                          canWrite={canWrite}
+                        />
+                        <DeleteBankDetailButton
+                          detailId={item.id}
+                          schoolId={schoolId}
+                          label={item.bank_name || "this"}
+                        />
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

@@ -30,19 +30,6 @@ function formatAmount(amount: string | null) {
   return isNaN(num) ? "—" : `£${num.toLocaleString("en-GB", { minimumFractionDigits: 2 })}`
 }
 
-function formatDate(dateStr: string | null) {
-  if (!dateStr) return "—"
-  try {
-    return new Date(dateStr).toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    })
-  } catch {
-    return dateStr
-  }
-}
-
 export function SchoolFeesSection({
   schoolId,
   fees,
@@ -59,7 +46,7 @@ export function SchoolFeesSection({
               <Banknote className="h-4 w-4 text-muted-foreground" />
               Fees
             </CardTitle>
-            <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+            {canWrite && <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -83,7 +70,7 @@ export function SchoolFeesSection({
             <Banknote className="h-4 w-4 text-muted-foreground" />
             Fees ({fees.length})
           </CardTitle>
-          <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+          {canWrite && <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -96,7 +83,7 @@ export function SchoolFeesSection({
                 <TableHead className="min-w-[120px]">Description</TableHead>
                 <TableHead className="min-w-[120px]">Years</TableHead>
                 <TableHead className="min-w-[100px] text-right">Amount</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -117,22 +104,24 @@ export function SchoolFeesSection({
                   <TableCell className="text-sm text-right font-medium">
                     {formatAmount(fee.amount)}
                   </TableCell>
-                  <TableCell className="pr-6">
-                    <div className="flex items-center justify-end gap-1">
-                      <EditFeeButton
-                        fee={fee}
-                        schoolId={schoolId}
-                        referenceData={referenceData}
-                        attachments={attachmentsByFee?.get(fee.id) ?? []}
-                        canWrite={canWrite}
-                      />
-                      <DeleteFeeButton
-                        feeId={fee.id}
-                        schoolId={schoolId}
-                        label={fee.description || "this fee"}
-                      />
-                    </div>
-                  </TableCell>
+                  {canWrite && (
+                    <TableCell className="pr-6">
+                      <div className="flex items-center justify-end gap-1">
+                        <EditFeeButton
+                          fee={fee}
+                          schoolId={schoolId}
+                          referenceData={referenceData}
+                          attachments={attachmentsByFee?.get(fee.id) ?? []}
+                          canWrite={canWrite}
+                        />
+                        <DeleteFeeButton
+                          feeId={fee.id}
+                          schoolId={schoolId}
+                          label={fee.description || "this fee"}
+                        />
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

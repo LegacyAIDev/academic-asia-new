@@ -47,7 +47,7 @@ export function SchoolEntranceExamsSection({
               <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
               Entrance Exams
             </CardTitle>
-            <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />
+            {canWrite && <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -71,7 +71,7 @@ export function SchoolEntranceExamsSection({
             <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
             Entrance Exams ({exams.length})
           </CardTitle>
-          <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />
+          {canWrite && <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -85,7 +85,7 @@ export function SchoolEntranceExamsSection({
                 <TableHead className="min-w-[180px]">Subject</TableHead>
                 <TableHead className="min-w-[80px]">Duration</TableHead>
                 <TableHead className="min-w-[70px] text-center">Paper</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                {(canWrite || canManagePapers) && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -127,23 +127,28 @@ export function SchoolEntranceExamsSection({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="pr-6">
-                    <div className="flex items-center justify-end gap-1">
-                      <EditEntranceExamButton
-                        exam={exam}
-                        schoolId={schoolId}
-                        referenceData={referenceData}
-                        attachments={attachmentsByExam?.get(exam.id) ?? []}
-                        canWrite={canWrite}
-                        canManagePapers={canManagePapers}
-                      />
-                      <DeleteEntranceExamButton
-                        examId={exam.id}
-                        schoolId={schoolId}
-                        label={exam.subject || "this exam"}
-                      />
-                    </div>
-                  </TableCell>
+                  {/* The examination team opens papers through the edit dialog, so it is offered with either right. */}
+                  {(canWrite || canManagePapers) && (
+                    <TableCell className="pr-6">
+                      <div className="flex items-center justify-end gap-1">
+                        <EditEntranceExamButton
+                          exam={exam}
+                          schoolId={schoolId}
+                          referenceData={referenceData}
+                          attachments={attachmentsByExam?.get(exam.id) ?? []}
+                          canWrite={canWrite}
+                          canManagePapers={canManagePapers}
+                        />
+                        {canWrite && (
+                          <DeleteEntranceExamButton
+                            examId={exam.id}
+                            schoolId={schoolId}
+                            label={exam.subject || "this exam"}
+                          />
+                        )}
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

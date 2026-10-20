@@ -65,22 +65,3 @@ export async function getEntranceExamReferenceData() {
   return { examTypes: data ?? [] }
 }
 
-/**
- * Count entrance exams for a school (for tab badge)
- */
-export async function getSchoolEntranceExamCount(schoolId: string): Promise<number> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { count, error } = await supabase
-    .from('school_entrance_exams')
-    .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
-
-  if (error) {
-    console.error('Error fetching entrance exam count:', error)
-    return 0
-  }
-
-  return count ?? 0
-}

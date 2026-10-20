@@ -54,7 +54,7 @@ export function SchoolNotesSection({
               <StickyNote className="h-4 w-4 text-muted-foreground" />
               Notes
             </CardTitle>
-            <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+            {canWrite && <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -78,7 +78,7 @@ export function SchoolNotesSection({
             <StickyNote className="h-4 w-4 text-muted-foreground" />
             Notes ({notes.length})
           </CardTitle>
-          <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+          {canWrite && <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -88,7 +88,7 @@ export function SchoolNotesSection({
               <TableRow className="hover:bg-transparent">
                 <TableHead className="pl-6 min-w-[150px]">Category</TableHead>
                 <TableHead>Detail</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -106,22 +106,24 @@ export function SchoolNotesSection({
                         {note.detail || "—"}
                       </p>
                     </TableCell>
-                    <TableCell className="pr-6">
-                      <div className="flex items-center justify-end gap-1">
-                        <EditNoteButton
-                          note={note}
-                          schoolId={schoolId}
-                          referenceData={referenceData}
-                          attachments={attachmentsByNote?.get(note.id) ?? []}
-                          canWrite={canWrite}
-                        />
-                        <DeleteNoteButton
-                          noteId={note.id}
-                          schoolId={schoolId}
-                          label={note.category?.label || "this note"}
-                        />
-                      </div>
-                    </TableCell>
+                    {canWrite && (
+                      <TableCell className="pr-6">
+                        <div className="flex items-center justify-end gap-1">
+                          <EditNoteButton
+                            note={note}
+                            schoolId={schoolId}
+                            referenceData={referenceData}
+                            attachments={attachmentsByNote?.get(note.id) ?? []}
+                            canWrite={canWrite}
+                          />
+                          <DeleteNoteButton
+                            noteId={note.id}
+                            schoolId={schoolId}
+                            label={note.category?.label || "this note"}
+                          />
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 )
               })}

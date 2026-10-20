@@ -57,22 +57,3 @@ export async function getAcademicResultReferenceData() {
   return { examTypes: data ?? [] }
 }
 
-/**
- * Count academic results for a school (for tab badge)
- */
-export async function getSchoolAcademicResultCount(schoolId: string): Promise<number> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { count, error } = await supabase
-    .from('school_academic_results')
-    .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
-
-  if (error) {
-    console.error('Error fetching academic result count:', error)
-    return 0
-  }
-
-  return count ?? 0
-}

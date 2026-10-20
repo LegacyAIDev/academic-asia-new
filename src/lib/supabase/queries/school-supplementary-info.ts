@@ -195,22 +195,3 @@ export async function getDistinctSchoolYears(schoolId?: string): Promise<string[
   return uniqueYears as string[]
 }
 
-/**
- * Get supplementary info count for a school
- */
-export async function getSchoolSupInfoCount(schoolId: string): Promise<number> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { count, error } = await supabase
-    .from('school_supplementary_info')
-    .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
-
-  if (error) {
-    console.error('Error fetching sup info count:', error)
-    return 0
-  }
-
-  return count ?? 0
-}

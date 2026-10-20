@@ -17,6 +17,8 @@ import type { SchoolVisitWithJoins } from "@/lib/supabase/queries/school-visits"
 type SchoolVisitsSectionProps = {
   schoolId: string
   visits: SchoolVisitWithJoins[]
+  /** Add, edit and delete are shown only to staff who may change school data. */
+  canWrite?: boolean
 }
 
 function formatDate(dateStr: string | null): string {
@@ -28,7 +30,7 @@ function formatDate(dateStr: string | null): string {
   })
 }
 
-export function SchoolVisitsSection({ schoolId, visits }: SchoolVisitsSectionProps) {
+export function SchoolVisitsSection({ schoolId, visits, canWrite = true }: SchoolVisitsSectionProps) {
   if (visits.length === 0) {
     return (
       <Card className="border-0 shadow-sm">
@@ -38,7 +40,7 @@ export function SchoolVisitsSection({ schoolId, visits }: SchoolVisitsSectionPro
               <CalendarSearch className="h-4 w-4 text-muted-foreground" />
               Visits
             </CardTitle>
-            <SchoolVisitDialog schoolId={schoolId} mode="create" />
+            {canWrite && <SchoolVisitDialog schoolId={schoolId} mode="create" />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -62,7 +64,7 @@ export function SchoolVisitsSection({ schoolId, visits }: SchoolVisitsSectionPro
             <CalendarSearch className="h-4 w-4 text-muted-foreground" />
             Visits ({visits.length})
           </CardTitle>
-          <SchoolVisitDialog schoolId={schoolId} mode="create" />
+          {canWrite && <SchoolVisitDialog schoolId={schoolId} mode="create" />}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -74,7 +76,7 @@ export function SchoolVisitsSection({ schoolId, visits }: SchoolVisitsSectionPro
                 <TableHead className="min-w-[140px]">Contact</TableHead>
                 <TableHead className="min-w-[240px]">Visit Log</TableHead>
                 <TableHead className="min-w-[120px]">Result</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -96,19 +98,21 @@ export function SchoolVisitsSection({ schoolId, visits }: SchoolVisitsSectionPro
                   <TableCell className="text-sm text-muted-foreground">
                     {item.result || "—"}
                   </TableCell>
-                  <TableCell className="pr-6">
-                    <div className="flex items-center justify-end gap-1">
-                      <EditSchoolVisitButton
-                        visit={item}
-                        schoolId={schoolId}
-                      />
-                      <DeleteSchoolVisitButton
-                        visitId={item.id}
-                        schoolId={schoolId}
-                        label={formatDate(item.visit_date)}
-                      />
-                    </div>
-                  </TableCell>
+                  {canWrite && (
+                    <TableCell className="pr-6">
+                      <div className="flex items-center justify-end gap-1">
+                        <EditSchoolVisitButton
+                          visit={item}
+                          schoolId={schoolId}
+                        />
+                        <DeleteSchoolVisitButton
+                          visitId={item.id}
+                          schoolId={schoolId}
+                          label={formatDate(item.visit_date)}
+                        />
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

@@ -203,6 +203,8 @@ export type SchoolWithJoins = {
   accepts_applications: boolean | null
   keywords: string | null
   remarks: string | null
+  current_course_fee: number | null
+  current_course_fee_year: string | null
   created_at: string | null
   updated_at: string | null
   country: { id: number; code: string; label: string } | null

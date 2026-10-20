@@ -9,10 +9,11 @@ import type { SchoolDocumentRecord } from "@/lib/supabase/queries/school-documen
 
 /** School document manager — thin wrapper over the shared DocumentManager. */
 export function SchoolDocumentsSection({
-  schoolId, documents,
+  schoolId, documents, canWrite = true,
 }: {
   schoolId: string
   documents: SchoolDocumentRecord[]
+  canWrite?: boolean
 }) {
   return (
     <DocumentManager
@@ -24,6 +25,7 @@ export function SchoolDocumentsSection({
       deleteAction={deleteSchoolDocument}
       signedUrlAction={getSchoolDocumentSignedUrl}
       getFilePath={(doc) => (doc as SchoolDocumentRecord).file_path}
+      canWrite={canWrite}
     />
   )
 }

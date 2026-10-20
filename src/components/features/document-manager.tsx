@@ -40,13 +40,15 @@ type DocumentManagerProps = {
   signedUrlAction: (filePath: string) => Promise<ActionResult<{ url: string }>>
   /** Passed to signedUrlAction — the stored path for a document. */
   getFilePath: (doc: ManagedDocument) => string
+  /** Without write access only download is offered; upload, rename and delete are hidden. */
+  canWrite?: boolean
 }
 
 /** Reusable multi-file document manager: staged upload with per-file name +
  *  category, plus rename / download / delete of existing documents. */
 export function DocumentManager({
   ownerId, documents, categorySections,
-  uploadAction, renameAction, deleteAction, signedUrlAction, getFilePath,
+  uploadAction, renameAction, deleteAction, signedUrlAction, getFilePath, canWrite = true,
 }: DocumentManagerProps) {
   const [categories, setCategories] = useState<Category[]>([])
   const [staged, setStaged] = useState<Staged[]>([])
@@ -135,6 +137,7 @@ export function DocumentManager({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {canWrite && (
         <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-center transition-colors hover:bg-muted/40">
           <FileUp className="h-6 w-6 text-muted-foreground" />
           <span className="text-sm font-medium">Choose files or drop them here</span>
@@ -142,6 +145,7 @@ export function DocumentManager({
           <input type="file" multiple accept="application/pdf,image/*" className="hidden"
             onChange={(e) => { addFiles(e.target.files); e.target.value = "" }} />
         </label>
+        )}
 
         {staged.length > 0 && (
           <div className="space-y-2 rounded-xl border border-border bg-background p-3">
@@ -196,10 +200,12 @@ export function DocumentManager({
                         <p className="truncate font-medium">{doc.title || doc.file_name}</p>
                         <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
                       </div>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0"
-                        onClick={() => { setRenamingId(doc.id); setRenameValue(doc.title || doc.file_name) }}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
+                      {canWrite && (
+                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0"
+                          onClick={() => { setRenamingId(doc.id); setRenameValue(doc.title || doc.file_name) }}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                       <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0"
                         onClick={() => handleDownload(doc)} disabled={downloadingId === doc.id}
                         aria-label="Download document">
@@ -207,10 +213,12 @@ export function DocumentManager({
                           ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                           : <Download className="h-3.5 w-3.5" />}
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleDelete(doc.id)} disabled={isPending}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      {canWrite && (
+                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                          onClick={() => handleDelete(doc.id)} disabled={isPending}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </>
                   )}
                 </div>

@@ -19,6 +19,8 @@ type SchoolCoursesSectionProps = {
   schoolId: string
   courses: SchoolCourseWithJoins[]
   referenceData: CourseReferenceData
+  /** Add, edit and delete are shown only to staff who may change school data. */
+  canWrite?: boolean
 }
 
 const categoryColors: Record<string, string> = {
@@ -59,6 +61,7 @@ export function SchoolCoursesSection({
   schoolId,
   courses,
   referenceData,
+  canWrite = true,
 }: SchoolCoursesSectionProps) {
   if (courses.length === 0) {
     return (
@@ -69,7 +72,7 @@ export function SchoolCoursesSection({
               <GraduationCap className="h-4 w-4 text-muted-foreground" />
               Courses
             </CardTitle>
-            <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+            {canWrite && <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -93,7 +96,7 @@ export function SchoolCoursesSection({
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
             Courses ({courses.length})
           </CardTitle>
-          <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="create" />
+          {canWrite && <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -106,7 +109,7 @@ export function SchoolCoursesSection({
                 <TableHead className="min-w-[100px]">Year</TableHead>
                 <TableHead className="min-w-[150px]">Description</TableHead>
                 <TableHead className="min-w-[120px]">Subject</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -131,20 +134,22 @@ export function SchoolCoursesSection({
                     <TableCell className="text-sm text-muted-foreground">
                       {item.subject || "—"}
                     </TableCell>
-                    <TableCell className="pr-6">
-                      <div className="flex items-center justify-end gap-1">
-                        <EditCourseButton
-                          course={item}
-                          schoolId={schoolId}
-                          referenceData={referenceData}
-                        />
-                        <DeleteCourseButton
-                          courseId={item.id}
-                          schoolId={schoolId}
-                          label={item.course?.label || "this course"}
-                        />
-                      </div>
-                    </TableCell>
+                    {canWrite && (
+                      <TableCell className="pr-6">
+                        <div className="flex items-center justify-end gap-1">
+                          <EditCourseButton
+                            course={item}
+                            schoolId={schoolId}
+                            referenceData={referenceData}
+                          />
+                          <DeleteCourseButton
+                            courseId={item.id}
+                            schoolId={schoolId}
+                            label={item.course?.label || "this course"}
+                          />
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 )
               })}

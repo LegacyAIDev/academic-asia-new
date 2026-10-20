@@ -53,22 +53,3 @@ export async function getNoteReferenceData() {
   return { categories: data ?? [] }
 }
 
-/**
- * Count notes for a school (for tab badge)
- */
-export async function getSchoolNoteCount(schoolId: string): Promise<number> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { count, error } = await supabase
-    .from('school_notes')
-    .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
-
-  if (error) {
-    console.error('Error fetching note count:', error)
-    return 0
-  }
-
-  return count ?? 0
-}

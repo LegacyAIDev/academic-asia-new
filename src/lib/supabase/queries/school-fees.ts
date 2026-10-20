@@ -59,22 +59,3 @@ export async function getFeeReferenceData() {
   return { feeTypes: data ?? [] }
 }
 
-/**
- * Count fees for a school (for tab badge)
- */
-export async function getSchoolFeeCount(schoolId: string): Promise<number> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { count, error } = await supabase
-    .from('school_fees')
-    .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
-
-  if (error) {
-    console.error('Error fetching fee count:', error)
-    return 0
-  }
-
-  return count ?? 0
-}
