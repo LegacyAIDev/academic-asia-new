@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -11,6 +12,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Banknote } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { feesForYear, financialYearLabel, listFinancialYears, sortFeesForDisplay } from "@/lib/schools/fee-years"
 import { FeeDialog, EditFeeButton, DeleteFeeButton } from "./fee-dialog"
 import type { SchoolFeeWithJoins } from "@/lib/supabase/queries/school-fees"
 import type { FeeReferenceData } from "./fee-dialog"
@@ -37,6 +40,12 @@ export function SchoolFeesSection({
   attachmentsByFee,
   canWrite = true,
 }: SchoolFeesSectionProps) {
+  const years = useMemo(() => listFinancialYears(fees), [fees])
+  // Null until someone picks a year, so a fee added for a newer year becomes the default on refresh.
+  const [picked, setPicked] = useState<string | null>(null)
+  const year = picked === "all" || (picked && years.includes(picked)) ? picked : years[0] ?? "all"
+  const shown = useMemo(() => sortFeesForDisplay(feesForYear(fees, year)), [fees, year])
+
   if (fees.length === 0) {
     return (
       <Card className="border-0 shadow-sm">
@@ -68,9 +77,18 @@ export function SchoolFeesSection({
         <div className="flex items-center justify-between flex-wrap gap-3">
           <CardTitle className="text-base font-medium flex items-center gap-2">
             <Banknote className="h-4 w-4 text-muted-foreground" />
-            Fees ({fees.length})
+            Fees · {year === "all" ? "all years" : financialYearLabel(year)}
           </CardTitle>
-          {canWrite && <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
+          <div className="flex items-center gap-2">
+            <Select value={year} onValueChange={setPicked}>
+              <SelectTrigger className="h-8 w-[150px] text-sm" aria-label="Financial year"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {years.map(option => <SelectItem key={option} value={option}>{financialYearLabel(option)}</SelectItem>)}
+                <SelectItem value="all">All years ({fees.length})</SelectItem>
+              </SelectContent>
+            </Select>
+            {canWrite && <FeeDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -78,8 +96,8 @@ export function SchoolFeesSection({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[100px]">Year</TableHead>
-                <TableHead className="min-w-[120px]">Fee Type</TableHead>
+                {year === "all" && <TableHead className="pl-6 min-w-[100px]">Year</TableHead>}
+                <TableHead className={year === "all" ? "min-w-[120px]" : "pl-6 min-w-[120px]"}>Fee Type</TableHead>
                 <TableHead className="min-w-[120px]">Description</TableHead>
                 <TableHead className="min-w-[120px]">Years</TableHead>
                 <TableHead className="min-w-[100px] text-right">Amount</TableHead>
@@ -87,12 +105,14 @@ export function SchoolFeesSection({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {fees.map((fee) => (
+              {shown.map((fee) => (
                 <TableRow key={fee.id}>
-                  <TableCell className="pl-6 font-medium text-sm">
-                    {fee.financial_year || "—"}
-                  </TableCell>
-                  <TableCell>
+                  {year === "all" && (
+                    <TableCell className="pl-6 font-medium text-sm">
+                      {fee.financial_year || "—"}
+                    </TableCell>
+                  )}
+                  <TableCell className={year === "all" ? undefined : "pl-6"}>
                     <Badge variant="outline" className="text-xs font-medium whitespace-nowrap">
                       {fee.fee_type?.label ?? "—"}
                     </Badge>

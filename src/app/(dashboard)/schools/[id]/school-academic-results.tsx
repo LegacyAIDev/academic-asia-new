@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -14,6 +16,8 @@ import { Trophy } from "lucide-react"
 import { AcademicResultDialog, EditAcademicResultButton, DeleteAcademicResultButton } from "./academic-result-dialog"
 import type { SchoolAcademicResultWithJoins } from "@/lib/supabase/queries/school-academic-results"
 import type { AcademicResultReferenceData } from "./academic-result-dialog"
+import { formatResultValue } from "@/lib/schools/academic-results-summary"
+import { AcademicResultsSummary } from "./academic-results-summary"
 
 type SchoolAcademicResultsSectionProps = {
   schoolId: string
@@ -36,6 +40,8 @@ export function SchoolAcademicResultsSection({
   referenceData,
   canWrite = true,
 }: SchoolAcademicResultsSectionProps) {
+  const [view, setView] = useState<"summary" | "records">("summary")
+
   if (results.length === 0) {
     return (
       <Card className="border-0 shadow-sm">
@@ -43,7 +49,7 @@ export function SchoolAcademicResultsSection({
           <div className="flex items-center justify-between">
             <CardTitle className="text-base font-medium flex items-center gap-2">
               <Trophy className="h-4 w-4 text-muted-foreground" />
-              Academic Results
+              Exam Results
             </CardTitle>
             {canWrite && <AcademicResultDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
           </div>
@@ -67,12 +73,24 @@ export function SchoolAcademicResultsSection({
         <div className="flex items-center justify-between flex-wrap gap-3">
           <CardTitle className="text-base font-medium flex items-center gap-2">
             <Trophy className="h-4 w-4 text-muted-foreground" />
-            Academic Results ({results.length})
+            Exam Results
           </CardTitle>
-          {canWrite && <AcademicResultDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
+          <div className="flex items-center gap-2">
+            <div role="group" aria-label="View" className="flex items-center gap-1 rounded-lg bg-muted/50 p-[3px]">
+              {(["summary", "records"] as const).map(option => (
+                <Button key={option} type="button" size="sm" className="h-7 px-2.5 text-xs"
+                  variant={view === option ? "secondary" : "ghost"} aria-pressed={view === option}
+                  onClick={() => setView(option)}>
+                  {option === "summary" ? "Summary" : `All records (${results.length})`}
+                </Button>
+              ))}
+            </div>
+            {canWrite && <AcademicResultDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
+        {view === "summary" ? <AcademicResultsSummary results={results} /> : (
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -80,7 +98,7 @@ export function SchoolAcademicResultsSection({
                 <TableHead className="pl-6 min-w-[80px]">Year</TableHead>
                 <TableHead className="min-w-[120px]">Exam Type</TableHead>
                 <TableHead className="min-w-[120px]">Grade Range</TableHead>
-                <TableHead className="min-w-[100px] text-right">Result %</TableHead>
+                <TableHead className="min-w-[100px] text-right">Result</TableHead>
                 <TableHead className="min-w-[150px]">Remarks</TableHead>
                 {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
@@ -106,7 +124,7 @@ export function SchoolAcademicResultsSection({
                         : "—"}
                     </TableCell>
                     <TableCell className="text-sm text-right font-semibold">
-                      {result.result_percentage ? `${parseFloat(result.result_percentage)}%` : "—"}
+                      {formatResultValue(result.result_percentage, result.grade_from, result.exam_type?.code)}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       <p className="line-clamp-1">{result.remarks || "—"}</p>
@@ -133,6 +151,7 @@ export function SchoolAcademicResultsSection({
             </TableBody>
           </Table>
         </div>
+        )}
       </CardContent>
     </Card>
   )
