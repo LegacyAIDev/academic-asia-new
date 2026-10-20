@@ -11,7 +11,7 @@
 |---|---|
 | Source files (src/) | ~290 files |
 | Estimated LOC (src/) | ~40,500 |
-| SQL migrations | 85 (numbered 001–078 + timestamped, incl. 6 scheduler migrations) |
+| SQL migrations | 87 (numbered 001–078 + timestamped, incl. 6 scheduler migrations) |
 | Server action files | 37 |
 | Query files | 43+ |
 | shadcn/ui primitives | 53 |
@@ -26,7 +26,7 @@
 aa-new/
 ├── src/                  # Application source
 ├── supabase/
-│   ├── migrations/       # 87 SQL migration files
+│   ├── migrations/       # 89 SQL migration files
 │   └── config.toml       # Supabase project config (project_id: aa-new)
 ├── scripts/              # 34 data migration TypeScript scripts (run via tsx)
 ├── data/                 # Source CSVs + migration output artifacts
@@ -392,7 +392,7 @@ src/hooks/
 
 ## Database Migrations Overview
 
-Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped (87 total).
+Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped (89 total).
 
 | Range | Theme |
 |---|---|
@@ -405,6 +405,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | Timestamped (pre-scheduler) | School document category rounds, permission matrix, record attachments (polymorphic `attachable_type`/`attachable_id` + `external_url` on both document tables) |
 | Timestamped (scheduler, 2026-09-28 to 2026-10-02) | `20260928070928_scheduler_core.sql` (locations, rooms, bookings, attendees, history, view, triggers), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql` (`room_id` FK on exam records), `20260928074722_scheduler_review_hardening.sql` (red-team fixes), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix) |
 | Timestamped (2026-10-12) | `20261012130805_school_placement_history.sql` (read-only function `school_placement_history(p_school_id)`: per-entry-year application/offer/placed counts for a school) |
+| Timestamped (2026-10-20) | `20261020110718_student_application_status_history.sql` (table `student_application_status_history`, trigger `student_applications_status_history`, select-only RLS), `20261020133120_student_application_status_history_revoke_execute.sql` (revokes EXECUTE on the trigger function) |
 
 ---
 

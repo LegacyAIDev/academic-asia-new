@@ -53,7 +53,7 @@ supabase link --project-ref <your-project-ref>
 
 ### 3.1 Push Migrations
 
-Apply all 68 SQL migrations to your Supabase project:
+Apply all 89 SQL migrations to your Supabase project:
 
 ```bash
 npm run db:push
@@ -117,6 +117,16 @@ This runs all 34 scripts in `scripts/` in numbered order via `tsx`. Migration ar
 - `SUPABASE_SERVICE_ROLE_KEY` must be set (migration scripts use the admin client)
 - `NEXT_PUBLIC_SUPABASE_URL` must be set
 - Source CSVs must be present in `data/`
+
+**Application status history trigger.** Every insert or status/sub-status update on `student_applications` writes a row to `student_application_status_history` (trigger `student_applications_status_history`). A bulk import or re-import therefore writes one history row per application dated at import time. Disable the trigger for bulk loads, then re-enable it:
+
+```sql
+alter table public.student_applications disable trigger student_applications_status_history;
+-- ... bulk load ...
+alter table public.student_applications enable trigger student_applications_status_history;
+```
+
+If history rows were already written by an import, delete them before go-live (history is meant to start from real changes).
 
 ---
 
