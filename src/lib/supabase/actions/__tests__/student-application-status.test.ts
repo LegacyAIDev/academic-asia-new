@@ -16,6 +16,7 @@ vi.mock('@/lib/permissions/guard', () => ({
 import { updateStudentApplication } from '../student-applications'
 import { getStudentApplicationById } from '../../queries/student-applications'
 import { getApplicationBookings } from '../../queries/application-bookings'
+import { getApplicationStatusHistory } from '../../queries/application-status-history'
 
 type Result = { data: unknown; error: unknown }
 
@@ -128,5 +129,48 @@ describe('getApplicationBookings', () => {
   it('returns an empty list when the query fails', async () => {
     setup(['scheduler:1'], () => ({ data: null, error: { message: 'boom' } }))
     expect(await getApplicationBookings(APP)).toEqual([])
+  })
+})
+
+describe('getApplicationStatusHistory', () => {
+  it('reads the changes of that application newest first, with labels and the name of who made them', async () => {
+    const { queries } = setup([], () => ({
+      data: [{
+        id: 5, changed_at: '2026-10-21T01:30:00Z',
+        from_status_id: 7, to_status_id: 17, from_sub_status_id: null, to_sub_status_id: 15,
+        from_status: { label: 'Awaiting Offer' }, to_status: { label: 'Offered' },
+        from_sub_status: null, to_sub_status: { label: 'Conditional' },
+        changed_by: { first_name: 'Jane', surname: 'Lee' },
+      }],
+      error: null,
+    }))
+    expect(await getApplicationStatusHistory(APP)).toEqual([{
+      id: 5, changed_at: '2026-10-21T01:30:00Z',
+      from_status_id: 7, to_status_id: 17, from_sub_status_id: null, to_sub_status_id: 15,
+      from_status: 'Awaiting Offer', to_status: 'Offered', from_sub_status: null, to_sub_status: 'Conditional',
+      changed_by_name: 'Jane Lee',
+    }])
+    expect(queries[0].table).toBe('student_application_status_history')
+    expect(callsOf(queries[0], 'eq')).toEqual([['application_id', APP]])
+    expect(callsOf(queries[0], 'order')).toEqual([['changed_at', { ascending: false }], ['id', { ascending: false }]])
+    expect(callsOf(queries[0], 'limit')).toEqual([[100]])
+  })
+
+  it('leaves the name empty for a change without a known user', async () => {
+    setup([], () => ({
+      data: [{
+        id: 6, changed_at: '2026-10-21T01:30:00Z', from_status_id: null, to_status_id: 17,
+        from_sub_status_id: null, to_sub_status_id: null, from_status: null, to_status: { label: 'Offered' },
+        from_sub_status: null, to_sub_status: null, changed_by: null,
+      }],
+      error: null,
+    }))
+    const [change] = await getApplicationStatusHistory(APP)
+    expect(change.changed_by_name).toBeNull()
+  })
+
+  it('returns nothing when the query fails', async () => {
+    setup([], () => ({ data: null, error: { message: 'boom' } }))
+    expect(await getApplicationStatusHistory(APP)).toEqual([])
   })
 })

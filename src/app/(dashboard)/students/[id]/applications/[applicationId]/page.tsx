@@ -6,6 +6,7 @@ import { canAccess, requireAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { getApplicationReferenceData, getStudentApplicationById } from "@/lib/supabase/queries/student-applications"
 import { getApplicationBookings } from "@/lib/supabase/queries/application-bookings"
+import { getApplicationStatusHistory } from "@/lib/supabase/queries/application-status-history"
 import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
 import { getStudentById } from "@/lib/supabase/queries/students"
 import { buildApplicationTimeline } from "@/lib/applications/application-timeline"
@@ -38,14 +39,15 @@ export default async function StudentApplicationPage({ params }: Props) {
   ])
   if (!application || !student) notFound()
 
-  const [bookings, attachments, depositAttachments, referenceData] = await Promise.all([
+  const [bookings, statusChanges, attachments, depositAttachments, referenceData] = await Promise.all([
     canSeeBookings ? getApplicationBookings(application.id) : null,
+    getApplicationStatusHistory(application.id),
     getAttachmentsForMany("student_application", [application.id]),
     canWrite ? getAttachmentsForMany("student_deposit", application.deposits.map(d => d.id)) : null,
     canWrite ? getApplicationReferenceData() : null,
   ])
   const applicationAttachments = attachments.get(application.id) ?? []
-  const timeline = buildApplicationTimeline(application, bookings ?? [])
+  const timeline = buildApplicationTimeline(application, bookings ?? [], statusChanges)
 
   return (
     <div className="space-y-6">

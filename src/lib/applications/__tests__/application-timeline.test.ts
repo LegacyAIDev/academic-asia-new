@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { buildApplicationTimeline, type TimelineApplication, type TimelineBooking } from '../application-timeline'
 import { ageInYears, formatDate, formatTime, monthYearLabel, statusStyle } from '../application-display'
+import type { ApplicationStatusChange } from '@/lib/supabase/queries/application-status-history'
 
 type Exam = TimelineApplication['exams'][number]
 type Deposit = TimelineApplication['deposits'][number]
@@ -128,5 +129,76 @@ describe('application display helpers', () => {
     expect(ageInYears('2012-10-21', today)).toBe(13)
     expect(ageInYears(null, today)).toBeNull()
     expect(ageInYears('2030-01-01', today)).toBeNull()
+  })
+})
+
+describe('buildApplicationTimeline status changes', () => {
+  const change = (overrides: Partial<ApplicationStatusChange>): ApplicationStatusChange => ({
+    id: 1, changed_at: '2026-10-21T01:30:00Z',
+    from_status_id: 7, to_status_id: 17, from_sub_status_id: null, to_sub_status_id: null,
+    from_status: 'Awaiting Offer', to_status: 'Offered', from_sub_status: null, to_sub_status: null,
+    changed_by_name: 'Jane Lee', ...overrides,
+  })
+
+  it('names the old and new status, who changed it and when, in Hong Kong time', () => {
+    const [entry] = buildApplicationTimeline(emptyApplication, [], [change({})])
+    expect(entry).toEqual({
+      date: '2026-10-21', time: '09:30', kind: 'status',
+      title: 'Status: Awaiting Offer → Offered', detail: 'by Jane Lee',
+    })
+  })
+
+  it('dates a late-evening change on the Hong Kong day', () => {
+    const [entry] = buildApplicationTimeline(emptyApplication, [], [change({ changed_at: '2026-10-21T17:00:00Z' })])
+    expect([entry.date, entry.time]).toEqual(['2026-10-22', '01:00'])
+  })
+
+  it('describes the first status of a new application and a system change without a name', () => {
+    const [entry] = buildApplicationTimeline(emptyApplication, [], [change({
+      from_status_id: null, from_status: null, changed_by_name: null,
+    })])
+    expect([entry.title, entry.detail]).toEqual(['Status set to Offered', null])
+  })
+
+  it('uses the sub-status as the title when only the sub-status moved', () => {
+    const [entry] = buildApplicationTimeline(emptyApplication, [], [change({
+      from_status_id: 17, from_status: 'Offered', to_sub_status_id: 15, to_sub_status: 'Conditional',
+    })])
+    expect(entry.title).toBe('Sub-status set to Conditional')
+  })
+
+  it('puts the sub-status in the detail when both moved, and says when one was removed', () => {
+    const [entry] = buildApplicationTimeline(emptyApplication, [], [change({
+      from_sub_status_id: 15, from_sub_status: 'Conditional',
+    })])
+    expect([entry.title, entry.detail]).toEqual(['Status: Awaiting Offer → Offered', 'Sub-status removed (was Conditional) · by Jane Lee'])
+  })
+
+  it('still reads as a change when a status label cannot be loaded', () => {
+    const [entry] = buildApplicationTimeline(emptyApplication, [], [change({ from_status: null })])
+    expect(entry.title).toBe('Status: unknown (#7) → Offered')
+  })
+
+  it('sorts status changes in among the other entries', () => {
+    const entries = buildApplicationTimeline({ ...emptyApplication, registration_date: '2026-10-21' }, [], [
+      change({ id: 2, changed_at: '2026-11-01T02:00:00Z' }),
+      change({ id: 1, changed_at: '2026-10-01T02:00:00Z' }),
+    ])
+    expect(entries.map(e => [e.kind, e.date])).toEqual([
+      ['status', '2026-11-01'], ['registration', '2026-10-21'], ['status', '2026-10-01'],
+    ])
+  })
+
+  it('says when the status itself was removed', () => {
+    const [entry] = buildApplicationTimeline(emptyApplication, [], [change({ to_status_id: null, to_status: null })])
+    expect(entry.title).toBe('Status removed (was Awaiting Offer)')
+  })
+
+  it('shows the later of two changes on the same Hong Kong day first', () => {
+    const entries = buildApplicationTimeline(emptyApplication, [], [
+      change({ id: 1, changed_at: '2026-10-21T01:00:00Z', to_status: 'Early' }),
+      change({ id: 2, changed_at: '2026-10-21T06:00:00Z', to_status: 'Late' }),
+    ])
+    expect(entries.map(e => e.time)).toEqual(['14:00', '09:00'])
   })
 })

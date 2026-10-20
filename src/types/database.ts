@@ -3420,6 +3420,82 @@ export type Database = {
           },
         ]
       }
+      student_application_status_history: {
+        Row: {
+          application_id: string
+          changed_at: string
+          changed_by: string | null
+          from_status_id: number | null
+          from_sub_status_id: number | null
+          id: number
+          to_status_id: number | null
+          to_sub_status_id: number | null
+        }
+        Insert: {
+          application_id: string
+          changed_at?: string
+          changed_by?: string | null
+          from_status_id?: number | null
+          from_sub_status_id?: number | null
+          id?: never
+          to_status_id?: number | null
+          to_sub_status_id?: number | null
+        }
+        Update: {
+          application_id?: string
+          changed_at?: string
+          changed_by?: string | null
+          from_status_id?: number | null
+          from_sub_status_id?: number | null
+          id?: never
+          to_status_id?: number | null
+          to_sub_status_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_application_status_history_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "student_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_application_status_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_application_status_history_from_status_id_fkey"
+            columns: ["from_status_id"]
+            isOneToOne: false
+            referencedRelation: "application_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_application_status_history_from_sub_status_id_fkey"
+            columns: ["from_sub_status_id"]
+            isOneToOne: false
+            referencedRelation: "application_sub_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_application_status_history_to_status_id_fkey"
+            columns: ["to_status_id"]
+            isOneToOne: false
+            referencedRelation: "application_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_application_status_history_to_sub_status_id_fkey"
+            columns: ["to_sub_status_id"]
+            isOneToOne: false
+            referencedRelation: "application_sub_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_applications: {
         Row: {
           aa_remarks: string | null

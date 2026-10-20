@@ -1,17 +1,24 @@
 /**
  * The dated history of one application, built from records that already exist:
- * registration, event, school visit, entrance exams, scheduler bookings and
- * deposits. Anything without a date is left out, since it cannot be placed.
+ * registration, event, school visit, entrance exams, scheduler bookings,
+ * deposits and recorded status changes. Anything without a date is left out,
+ * since it cannot be placed.
  */
 
-import { BOOKING_TYPE_LABELS, type BookingType } from '@/lib/scheduler/config'
+import { TZDate } from '@date-fns/tz'
+import { format } from 'date-fns'
+import { BOOKING_TYPE_LABELS, SCHEDULER_TIMEZONE, type BookingType } from '@/lib/scheduler/config'
 import { assessmentLabel } from '@/lib/scheduler/booking-text-formatters'
 import { formatHkTime } from '@/lib/scheduler/time-utils'
 import type { ApplicationWithJoins } from '@/lib/supabase/queries/student-applications'
 import type { ApplicationBooking } from '@/lib/supabase/queries/application-bookings'
+import type { ApplicationStatusChange } from '@/lib/supabase/queries/application-status-history'
 import { formatMoney } from './application-display'
 
-export type TimelineKind = 'registration' | 'event' | 'visit' | 'exam' | 'booking' | 'deposit'
+/** Day the status history trigger went live; changes before it were never recorded. */
+export const STATUS_HISTORY_START = '2026-10-20'
+
+export type TimelineKind = 'registration' | 'event' | 'visit' | 'exam' | 'booking' | 'deposit' | 'status'
 
 export type TimelineEntry = {
   /** yyyy-mm-dd */
@@ -71,6 +78,52 @@ function bookingEntries(bookings: TimelineBooking[]): TimelineEntry[] {
   }))
 }
 
+/**
+ * "Status: Awaiting Offer → Offered", "Status set to Offered" or "Status removed
+ * (was Offered)". Whether a side is set is decided by its id; the label is only
+ * for display, so a status whose label cannot be read still reads as a change.
+ */
+function describeChange(
+  noun: string,
+  from: { id: number | null; label: string | null },
+  to: { id: number | null; label: string | null },
+): string {
+  const name = (side: { id: number | null; label: string | null }) => side.label ?? `unknown (#${side.id})`
+  if (from.id != null && to.id != null) return `${noun}: ${name(from)} → ${name(to)}`
+  if (to.id != null) return `${noun} set to ${name(to)}`
+  return `${noun} removed (was ${name(from)})`
+}
+
+/**
+ * One entry per recorded change, dated in Hong Kong time like the bookings.
+ * The title names the status change, or the sub-status change when only that
+ * moved; when both moved the sub-status goes into the detail line.
+ */
+function statusEntries(changes: ApplicationStatusChange[]): TimelineEntry[] {
+  return changes.map(change => {
+    const statusMoved = change.from_status_id !== change.to_status_id
+    const subStatusMoved = change.from_sub_status_id !== change.to_sub_status_id
+    const subStatus = describeChange(
+      'Sub-status',
+      { id: change.from_sub_status_id, label: change.from_sub_status },
+      { id: change.to_sub_status_id, label: change.to_sub_status },
+    )
+    const zoned = new TZDate(change.changed_at, SCHEDULER_TIMEZONE)
+    return {
+      date: format(zoned, 'yyyy-MM-dd'),
+      time: format(zoned, 'HH:mm'),
+      kind: 'status' as const,
+      title: statusMoved
+        ? describeChange('Status', { id: change.from_status_id, label: change.from_status }, { id: change.to_status_id, label: change.to_status })
+        : subStatus,
+      detail: joinParts([
+        statusMoved && subStatusMoved ? subStatus : null,
+        change.changed_by_name ? `by ${change.changed_by_name}` : null,
+      ]),
+    }
+  })
+}
+
 /** Newest first; on the same day, timed entries before untimed ones and later times first. */
 function newestFirst(a: TimelineEntry, b: TimelineEntry): number {
   if (a.date !== b.date) return a.date < b.date ? 1 : -1
@@ -80,7 +133,11 @@ function newestFirst(a: TimelineEntry, b: TimelineEntry): number {
   return a.time < b.time ? 1 : -1
 }
 
-export function buildApplicationTimeline(application: TimelineApplication, bookings: TimelineBooking[]): TimelineEntry[] {
+export function buildApplicationTimeline(
+  application: TimelineApplication,
+  bookings: TimelineBooking[],
+  statusChanges: ApplicationStatusChange[] = [],
+): TimelineEntry[] {
   const entries: TimelineEntry[] = []
 
   if (application.registration_date) {
@@ -115,6 +172,6 @@ export function buildApplicationTimeline(application: TimelineApplication, booki
     })
   }
 
-  entries.push(...examEntries(application.exams), ...bookingEntries(bookings))
+  entries.push(...examEntries(application.exams), ...bookingEntries(bookings), ...statusEntries(statusChanges))
   return entries.map(entry => ({ ...entry, date: entry.date.slice(0, 10) })).sort(newestFirst)
 }

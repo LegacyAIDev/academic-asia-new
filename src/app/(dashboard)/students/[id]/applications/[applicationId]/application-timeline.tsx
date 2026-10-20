@@ -1,6 +1,6 @@
-import { CalendarCheck, ClipboardCheck, FileSignature, History, MapPin, Sparkles, Wallet } from "lucide-react"
+import { CalendarCheck, ClipboardCheck, FileSignature, History, MapPin, Sparkles, Tags, Wallet } from "lucide-react"
 import { formatDate } from "@/lib/applications/application-display"
-import type { TimelineEntry, TimelineKind } from "@/lib/applications/application-timeline"
+import { STATUS_HISTORY_START, type TimelineEntry, type TimelineKind } from "@/lib/applications/application-timeline"
 import { Section } from "./application-section"
 
 const KIND_ICONS: Record<TimelineKind, React.ElementType> = {
@@ -10,9 +10,10 @@ const KIND_ICONS: Record<TimelineKind, React.ElementType> = {
   exam: ClipboardCheck,
   booking: CalendarCheck,
   deposit: Wallet,
+  status: Tags,
 }
 
-/** Dated history of the application, newest first. */
+/** Dated history of the application, newest first, with a note on how far back status changes go. */
 export function ApplicationTimeline({ entries }: { entries: TimelineEntry[] }) {
   return (
     <Section icon={History} title="Timeline" count={entries.length} plain>
@@ -37,6 +38,9 @@ export function ApplicationTimeline({ entries }: { entries: TimelineEntry[] }) {
           })}
         </ol>
       )}
+      <p className="mt-4 text-xs text-muted-foreground">
+        Status changes are recorded from {formatDate(STATUS_HISTORY_START)}; earlier ones were not kept.
+      </p>
     </Section>
   )
 }
