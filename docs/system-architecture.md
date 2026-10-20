@@ -476,7 +476,15 @@ All five original RPCs plus `scheduler_record_attendance` are `revoke`d from `pu
 - **Overview** (`school-overview.tsx`). "School details" card (type, gender with co-ed from, phase, religion, pupils, boarders with ages, address block, website / email / telephone as links, fax only when set) and "Admissions" card (accepting applications, status, child visa with minimum age, general visa, current course fee and year), then remarks, keywords and placement history. Quick Actions, the separate Contact Information and Address cards, and the Visa card are gone.
 - **Notes & Info** = notes plus supplementary info (`school-supplementary-info.tsx`, 25 per page, `?tab=notes&supPage=N`).
 - **Write controls.** Hidden without Schools WRITE across the page: header edit / delete, fees, notes, bank details, academic results, courses, visits, documents (`DocumentManager` has an optional `canWrite`, default true, so the student page is unchanged) and supplementary info. Entrance assessments: add / delete need WRITE; edit stays for WRITE or exam-paper rights, because the exam team opens papers there (the exam desk links to `?tab=entrance-exams`). Server actions already enforced WRITE; this only removes dead buttons.
-- **Status.** Unit tested (`src/lib/schools/__tests__/school-tabs.test.ts`, suite 947 tests). Exam results summary and fee years follow in phase 4.
+- **Status.** Unit tested (`src/lib/schools/__tests__/school-tabs.test.ts`, suite 947 tests). Exam results summary and fee years: see 6d.
+
+### 6d. Exam results summary and fee years (2026-10-21, customer item 8 part 2)
+
+No schema or query change; both are pure helpers over the rows the tabs already load.
+
+- **Exam Results opens on a Summary** (`academic-results-summary.tsx`, shaping in `src/lib/schools/academic-results-summary.ts`). One table per exam type (GCSE, A Level, then others by name), one line per exam year newest first, grade bands as columns narrowest first (A*, A*-A, ...; 9, 9-8, ...). Range buttons: Latest 3 years (default), Last 5 years, All years, counted per exam type over years that have results. Several records for the same year and band: the most recently updated one is shown. Records without a band show as "Average points" for IB (plain number, no %) and "Overall" otherwise. "All records (N)" shows the previous list with edit / delete; IB points no longer get a "%".
+- **Fees opens on the newest financial year** (schools publish at different times, so not the calendar year). The select lists all years newest first, then real years in another format, then "No year recorded" (empty or "0"), plus "All years (N)". Card title "Fees · 2024-25". Order within a year: Course, Registration Fee, Deposit, Others, then year level youngest first. Shaping in `src/lib/schools/fee-years.ts` (reuses `year-levels.ts`).
+- **Status.** Unit tested (`academic-results-summary.test.ts`, `fee-years.test.ts`; suite 982 tests). Not yet checked in a browser.
 
 ---
 

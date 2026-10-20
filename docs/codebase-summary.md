@@ -107,9 +107,10 @@ src/app/
     │       ├── school-contacts.tsx
     │       ├── contact-active-toggle.tsx   # one-click mark inactive / reactivate
     │       ├── school-courses.tsx
-    │       ├── school-fees.tsx
+    │       ├── school-fees.tsx               # Opens on newest financial year; year select (lib/schools/fee-years.ts)
     │       ├── school-entrance-exams.tsx
-    │       ├── school-academic-results.tsx
+    │       ├── school-academic-results.tsx   # Summary first, "All records (N)" list with edit/delete
+    │       ├── academic-results-summary.tsx  # Per-exam-type grade-band tables + range buttons
     │       ├── school-bank-details.tsx
     │       ├── school-notes.tsx
     │       ├── school-visits.tsx
@@ -248,7 +249,9 @@ src/lib/
 ├── schools/                      # Selected School List export — types, shaping, HTML builder
 │   ├── school-tabs.ts            # PURE: school page tab keys, labels, order, "More" group, ?tab= resolution (supplementary → notes, unknown → basic)
 │   ├── placement-history.ts      # PURE: academicYearLabel, placementRate, toPlacementRows (rows + "All years" total)
-│   └── __tests__/                # placement-history, school-tabs
+│   ├── academic-results-summary.ts # PURE: exam-type tables, year rows, grade-band columns, range filter, IB average points
+│   ├── fee-years.ts              # PURE: financial-year list/default, fee ordering (reuses year-levels.ts)
+│   └── __tests__/                # placement-history, school-tabs, academic-results-summary, fee-years
 ├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
 │   ├── export-types.ts           # One payload for single and bulk, PDF and Excel
 │   ├── export-shaping.ts         # PURE: htmlToPlainText, toCellText/Date, filenames
