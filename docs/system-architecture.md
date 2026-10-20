@@ -452,6 +452,19 @@ All five original RPCs plus `scheduler_record_attendance` are `revoke`d from `pu
 
 **Migrations:** `20260928070928_scheduler_core.sql` (tables, triggers, view), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql`, `20260928074722_scheduler_review_hardening.sql` (force-pending exam status, inactive-room refusal), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix).
 
+### 6b. Application detail page (2026-10-20, customer item 7 phase 1)
+
+`/students/{studentId}/applications/{applicationId}` (`src/app/(dashboard)/students/[id]/applications/[applicationId]/`) replaces the old application popup. Guard: `MODULES.STUDENTS` READ. `notFound()` when either id is not a uuid or the application does not belong to the student (`getStudentApplicationById(applicationId, studentId)` filters on both).
+
+- **Sections.** Header (school and student links, entry, status plus sub-status badge, Suspended / Referral / Archived), six-step journey, full record (sub-status, course detail, scholarship amount), deposits, entrance exams, linked scheduler bookings, read-only attachments, student card (consultant = student's assigned profile), status control, timeline.
+- **WRITE only.** "Edit application" (opens the existing edit dialog) and the status control. The Applications tab on the student page shows Create / Edit / Delete only with WRITE; school name and eye icon link to the page.
+- **Bookings.** `getApplicationBookings` (`queries/application-bookings.ts`) returns `[]` without `MODULES.SCHEDULER` READ, so the section is hidden; rows link to `/scheduler/bookings/{id}`. The scheduler booking details "Application" link points here.
+- **Journey is derived, not stored.** `src/lib/applications/application-journey.ts` maps the status code to one of six steps (Preparing, Submitted, Assessment / interview, Awaiting decision, Offer received, Family decision) or an outcome: Placed (5 deposited statuses plus `joined_school_left_after`, same rule as placement history) or Closed (rejected, withdrawn, drop, cannot_proceed, tnfa, no_show_interview, full, full_check_later, full_wl, declined). `completed` and `confirmed` have no step. `groupStatusesByStage` feeds the status control. **The mapping of all 50 statuses is a working assumption, customer confirmation pending**; changing it means editing that one file.
+- **Timeline.** `buildApplicationTimeline` (`application-timeline.ts`): newest first, from registration, event, visit, exams (confirmed date else preferred), bookings and deposits.
+- **Status change.** `updateStudentApplication` accepts `sub_status_id`, is scoped by `id` AND `student_id` ("Application not found" on no match), ignores a `student_id` in the input, and revalidates `/students/{id}` and the application page. Status and sub-status are saved together. `getApplicationReferenceData` now also returns `subStatuses`.
+- **Shared display helpers.** `application-display.ts` (status colours, month-year label, UTC date formatting, time, money, age) replaces duplicates in the list and the removed popup.
+- **Status.** Unit tested (suite 927 tests); not yet checked in a browser or on a preview.
+
 ---
 
 ## 7. Document Export Architecture

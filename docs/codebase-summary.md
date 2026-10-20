@@ -73,7 +73,8 @@ src/app/
     │       ├── edit/page.tsx
     │       ├── student-contacts.tsx
     │       ├── student-education.tsx
-    │       ├── student-applications.tsx
+    │       ├── student-applications.tsx   # Applications tab; school name / eye icon link to the detail page; Create/Edit/Delete need WRITE
+    │       ├── applications/[applicationId]/  # Application detail page (journey, record, deposits, exams, bookings, timeline, status control)
     │       ├── student-event-applications.tsx
     │       ├── student-exam-results.tsx
     │       ├── student-resume.tsx
@@ -247,6 +248,11 @@ src/lib/
 │   └── __tests__/                # 49 tests: shaping + workbook round-trip
 ├── students/
 │   └── parse-list-filters.ts     # URL params → list filters, shared by list + export picker
+├── applications/                 # Application detail helpers (2026-10-20) — unit tested, no I/O
+│   ├── application-journey.ts    # journeyFor, stageLabel, groupStatusesByStage: status code → six steps / Placed / Closed (working mapping)
+│   ├── application-display.ts    # Shared status colours, month-year, UTC date, time, money, age
+│   ├── application-timeline.ts   # buildApplicationTimeline: newest-first events
+│   └── __tests__/                # journey, timeline
 ├── exams/                        # Exam desk pure helpers (2026-10-12) — unit tested, no I/O
 │   ├── exam-page-search-params.ts  # URL params for /exams: view, desk (from/to/room/school/year/q/sort/dir), list; hrefs, nextSort
 │   ├── exam-desk-rows.ts         # Bookings → desk rows (group = one row), split Booked/Showed up, row action rules
@@ -342,7 +348,8 @@ src/lib/
         ├── event-scheduler.ts
         ├── event-reference-queries.ts
         ├── exam-management.ts
-        ├── student-applications.ts
+        ├── student-applications.ts   # incl. getStudentApplicationById(applicationId, studentId), getApplicationReferenceData (+ subStatuses)
+        ├── application-bookings.ts   # getApplicationBookings: scheduler bookings of an application, [] without Scheduler READ
         ├── student-application-deposits.ts
         ├── student-education.ts
         ├── student-event-applications.ts

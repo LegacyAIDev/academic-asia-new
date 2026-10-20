@@ -191,6 +191,12 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   - Bug fix: FullCalendar v7 ignored event colours and state classes (v6 field names
     `backgroundColor`/`borderColor`/`classNames` are stored as custom data in v7; now `color` +
     space-separated `className`) and resource order (`resourceOrder="order"`).
+- **2026-10-20** — Application detail page, phase 1 (customer item 7; plan `261012-2115-application-detail-page-and-school-profile-layout`):
+  - New page `/students/{id}/applications/{applicationId}` replaces the application popup (removed). Students READ to view, WRITE to edit or change status; 404 if the application is not the student's.
+  - Header with status and sub-status, six-step journey (Preparing to Family decision; Placed / Closed outcome), full record, deposits, entrance exams, scheduler bookings (Scheduler READ only), read-only attachments, student card, timeline.
+  - Status control groups statuses by journey step and saves status plus sub-status together; `updateStudentApplication` now scoped by application and student.
+  - Student Applications tab: school name and eye icon open the page; Create/Edit/Delete only with WRITE. Scheduler booking "Application" link points to the page.
+  - **Assumption:** the status-to-step mapping (50 statuses) is a working one, customer confirmation pending. Unit tested (927 tests); not yet checked in a browser. Status history and the school profile layout (customer item 8) are later phases of the same plan.
 - **2026-10-12** — School placement history (customer item 9):
   - New "Placement history" card at the end of a school's Basic Info tab: one row per academic year
     (newest first, "2026–27" style; applications with no entry year in a last row "No entry year") with
