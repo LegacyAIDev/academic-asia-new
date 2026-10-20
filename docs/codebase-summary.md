@@ -1,6 +1,6 @@
 # Codebase Summary
 
-**Last updated:** 2026-10-09
+**Last updated:** 2026-10-20
 **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase
 
 ---
@@ -94,7 +94,16 @@ src/app/
     │   └── [id]/
     │       ├── page.tsx
     │       ├── edit/page.tsx
-    │       ├── school-placement-history.tsx  # Basic Info card: applications/offers/placed/rate per academic year
+    │       ├── page.tsx                    # 62 lines: school, write permission, 4 counts, Suspense per tab
+    │       ├── school-header.tsx           # Name, badges, edit/delete (WRITE only)
+    │       ├── school-tab-nav.tsx          # Plain-link tab bar + "More" menu (tabs from lib/schools/school-tabs.ts)
+    │       ├── school-tab-content.tsx      # Async loader per main tab (only the open tab loads)
+    │       ├── school-tab-content-more.tsx # Loaders for Courses, Bank details, Visits
+    │       ├── school-tab-skeleton.tsx     # Suspense fallback
+    │       ├── school-overview.tsx         # School details + Admissions cards, remarks, keywords
+    │       ├── school-placement-history.tsx  # Overview card: applications/offers/placed/rate per academic year
+    │       ├── school-supplementary-info.tsx # Notes & Info tab, 25 per page (?supPage=N)
+    │       ├── school-documents.tsx, school-events.tsx
     │       ├── school-contacts.tsx
     │       ├── contact-active-toggle.tsx   # one-click mark inactive / reactivate
     │       ├── school-courses.tsx
@@ -237,8 +246,9 @@ src/lib/
 │   ├── render-document-pdf.ts    # Shared headless-Chromium renderer (HTML string → PDF)
 │   └── escape-html.ts            # escapeHtml: shared by the renderer footer and the cover slip
 ├── schools/                      # Selected School List export — types, shaping, HTML builder
+│   ├── school-tabs.ts            # PURE: school page tab keys, labels, order, "More" group, ?tab= resolution (supplementary → notes, unknown → basic)
 │   ├── placement-history.ts      # PURE: academicYearLabel, placementRate, toPlacementRows (rows + "All years" total)
-│   └── __tests__/placement-history.test.ts
+│   └── __tests__/                # placement-history, school-tabs
 ├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
 │   ├── export-types.ts           # One payload for single and bulk, PDF and Excel
 │   ├── export-shaping.ts         # PURE: htmlToPlainText, toCellText/Date, filenames

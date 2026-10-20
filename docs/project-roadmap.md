@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-10-12
+**Last updated:** 2026-10-20
 **Current phase:** Phase 2 — Feature Completion
 
 > Items marked as "Inferred" are based on codebase signals (sidebar links, migration patterns, absence of test/CI config) and not from explicit specifications.
@@ -191,15 +191,16 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
   - Bug fix: FullCalendar v7 ignored event colours and state classes (v6 field names
     `backgroundColor`/`borderColor`/`classNames` are stored as custom data in v7; now `color` +
     space-separated `className`) and resource order (`resourceOrder="order"`).
-- **2026-10-20** — Application detail page, phases 1-2 (customer item 7; plan `261012-2115-application-detail-page-and-school-profile-layout`):
+- **2026-10-20** — Application detail page, phases 1-2, and school page restructure, phase 3 (customer items 7 and 8; plan `261012-2115-application-detail-page-and-school-profile-layout`):
   - New page `/students/{id}/applications/{applicationId}` replaces the application popup (removed). Students READ to view, WRITE to edit or change status; 404 if the application is not the student's.
   - Header with status and sub-status, six-step journey (Preparing to Family decision; Placed / Closed outcome), full record, deposits, entrance exams, scheduler bookings (Scheduler READ only), read-only attachments, student card, timeline.
   - Status control groups statuses by journey step and saves status plus sub-status together; `updateStudentApplication` now scoped by application and student.
   - Student Applications tab: school name and eye icon open the page; Create/Edit/Delete only with WRITE. Scheduler booking "Application" link points to the page.
   - **Assumption:** the status-to-step mapping (50 statuses) is a working one, customer confirmation pending. Unit tested; not yet checked in a browser. The school profile layout (customer item 8) is a later phase of the same plan.
   - Phase 2, status history: new table `student_application_status_history` (migrations `20261020110718`, `20261020133120`), filled by a database trigger on every status or sub-status change (who, when, from, to). Timeline shows "Status: A → B" with the person, in Hong Kong time. No backfill: history starts 20 Oct 2026, noted on the page. Select-only RLS. Bulk imports of applications need the trigger disabled (deployment guide). Suite: 939 tests.
+  - Phase 3, school page (customer item 8, part 1): `/schools/{id}` tabs are now plain links in the customer prototype order: Overview, Entrance Assessments, Fees, Exam Results, Contacts, Events, Notes & Info, Documents, and a "More" menu (Courses, Bank details, Visits). URL keys unchanged; `?tab=supplementary` opens Notes & Info. Only the open tab loads (was about 33 queries per view; `page.tsx` 783 to 62 lines). Overview rebuilt as School details and Admissions cards (Quick Actions, Contact, Address and Visa cards removed). Write controls hidden without Schools WRITE; entrance assessment edit stays open to exam-paper rights. Suite: 947 tests. Item 8 results summary and fee years remain for phase 4.
 - **2026-10-12** — School placement history (customer item 9):
-  - New "Placement history" card at the end of a school's Basic Info tab: one row per academic year
+  - New "Placement history" card at the end of a school's Overview tab (was Basic Info): one row per academic year
     (newest first, "2026–27" style; applications with no entry year in a last row "No entry year") with
     Applications, Offers, Students placed and Placement rate, plus an "All years" total whose rate comes
     from the summed counts. If the lookup fails the card says the history is unavailable.
