@@ -11,6 +11,15 @@ const PAGE_SIZE = 25
 
 type Props = { schoolId: string; page: number; canWrite: boolean }
 
+function PageButton({ href, children }: { href: string | null; children: React.ReactNode }) {
+  if (!href) return <Button variant="outline" size="sm" disabled>{children}</Button>
+  return (
+    <Button variant="outline" size="sm" asChild>
+      <Link href={href} scroll={false}>{children}</Link>
+    </Button>
+  )
+}
+
 /** Supplementary information of a school, 25 rows per page, shown under the notes on the "Notes & Info" tab. */
 export async function SchoolSupplementaryInfo({ schoolId, page, canWrite }: Props) {
   const [result, categories] = await Promise.all([
@@ -96,12 +105,9 @@ export async function SchoolSupplementaryInfo({ schoolId, page, canWrite }: Prop
               <div className="flex items-center justify-between pt-4">
                 <p className="text-sm text-muted-foreground">Page {result.page} of {result.totalPages}</p>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" disabled={result.page <= 1} asChild>
-                    <Link href={pageHref(result.page - 1)} scroll={false}>Previous</Link>
-                  </Button>
-                  <Button variant="outline" size="sm" disabled={result.page >= result.totalPages} asChild>
-                    <Link href={pageHref(result.page + 1)} scroll={false}>Next</Link>
-                  </Button>
+                  {/* A link cannot be disabled, so the end of the list gets a plain disabled button. */}
+                  <PageButton href={result.page > 1 ? pageHref(result.page - 1) : null}>Previous</PageButton>
+                  <PageButton href={result.page < result.totalPages ? pageHref(result.page + 1) : null}>Next</PageButton>
                 </div>
               </div>
             )}
