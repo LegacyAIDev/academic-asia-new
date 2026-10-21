@@ -1,8 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { Fragment, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import {
   Table,
   TableBody,
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/table"
 import { Banknote } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { feesForYear, financialYearLabel, listFinancialYears, sortFeesForDisplay } from "@/lib/schools/fee-years"
+import { feesForYear, financialYearLabel, groupFeesForDisplay, listFinancialYears, sortFeesForDisplay } from "@/lib/schools/fee-years"
 import { FeeDialog, EditFeeButton, DeleteFeeButton } from "./fee-dialog"
 import type { SchoolFeeWithJoins } from "@/lib/supabase/queries/school-fees"
 import type { FeeReferenceData } from "./fee-dialog"
@@ -44,7 +43,8 @@ export function SchoolFeesSection({
   // Null until someone picks a year, so a fee added for a newer year becomes the default on refresh.
   const [picked, setPicked] = useState<string | null>(null)
   const year = picked === "all" || (picked && years.includes(picked)) ? picked : years[0] ?? "all"
-  const shown = useMemo(() => sortFeesForDisplay(feesForYear(fees, year)), [fees, year])
+  const groups = useMemo(() => groupFeesForDisplay(sortFeesForDisplay(feesForYear(fees, year)), year === "all"), [fees, year])
+  const columnCount = canWrite ? 4 : 3
 
   if (fees.length === 0) {
     return (
@@ -96,53 +96,42 @@ export function SchoolFeesSection({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                {year === "all" && <TableHead className="pl-6 min-w-[100px]">Year</TableHead>}
-                <TableHead className={year === "all" ? "min-w-[120px]" : "pl-6 min-w-[120px]"}>Fee Type</TableHead>
-                <TableHead className="min-w-[120px]">Description</TableHead>
+                <TableHead className="pl-6 min-w-[160px]">Description</TableHead>
                 <TableHead className="min-w-[120px]">Years</TableHead>
                 <TableHead className="min-w-[100px] text-right">Amount</TableHead>
                 {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {shown.map((fee) => (
-                <TableRow key={fee.id}>
-                  {year === "all" && (
-                    <TableCell className="pl-6 font-medium text-sm">
-                      {fee.financial_year || "—"}
+              {groups.map((group) => (
+                <Fragment key={group.key}>
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={columnCount} className="bg-muted/40 py-1.5 pl-6 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {group.label}<span className="ml-1.5 tabular-nums text-muted-foreground/70">{group.fees.length}</span>
                     </TableCell>
-                  )}
-                  <TableCell className={year === "all" ? undefined : "pl-6"}>
-                    <Badge variant="outline" className="text-xs font-medium whitespace-nowrap">
-                      {fee.fee_type?.label ?? "—"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm">{fee.description || "—"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {fee.year_levels || "—"}
-                  </TableCell>
-                  <TableCell className="text-sm text-right font-medium">
-                    {formatAmount(fee.amount)}
-                  </TableCell>
-                  {canWrite && (
-                    <TableCell className="pr-6">
-                      <div className="flex items-center justify-end gap-1">
-                        <EditFeeButton
-                          fee={fee}
-                          schoolId={schoolId}
-                          referenceData={referenceData}
-                          attachments={attachmentsByFee?.get(fee.id) ?? []}
-                          canWrite={canWrite}
-                        />
-                        <DeleteFeeButton
-                          feeId={fee.id}
-                          schoolId={schoolId}
-                          label={fee.description || "this fee"}
-                        />
-                      </div>
-                    </TableCell>
-                  )}
-                </TableRow>
+                  </TableRow>
+                  {group.fees.map((fee) => (
+                    <TableRow key={fee.id}>
+                      <TableCell className="pl-6 text-sm">{fee.description || "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{fee.year_levels || "—"}</TableCell>
+                      <TableCell className="text-right text-sm font-medium tabular-nums">{formatAmount(fee.amount)}</TableCell>
+                      {canWrite && (
+                        <TableCell className="pr-6">
+                          <div className="flex items-center justify-end gap-1">
+                            <EditFeeButton
+                              fee={fee}
+                              schoolId={schoolId}
+                              referenceData={referenceData}
+                              attachments={attachmentsByFee?.get(fee.id) ?? []}
+                              canWrite={canWrite}
+                            />
+                            <DeleteFeeButton feeId={fee.id} schoolId={schoolId} label={fee.description || "this fee"} />
+                          </div>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
+                </Fragment>
               ))}
             </TableBody>
           </Table>

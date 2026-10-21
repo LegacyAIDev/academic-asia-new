@@ -1,40 +1,66 @@
-import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
-/** One label/value pair; empty values show a dash. */
+/**
+ * Building blocks of the application page, in the visual language of the
+ * scheduler screens: card surfaces with hairline borders, small uppercase
+ * eyebrows instead of icon headings, and figures in tabular numerals.
+ */
+
+const eyebrowClass = "text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
+
+/** Uppercase section label with an optional count. */
+export function Eyebrow({ children, count, as: Tag = "h2", className }: {
+  children: React.ReactNode
+  count?: number
+  as?: "h2" | "h3" | "p"
+  className?: string
+}) {
+  return (
+    <Tag className={cn(eyebrowClass, className)}>
+      {children}
+      {count != null && <span className="ml-1.5 tabular-nums text-muted-foreground/70">{count}</span>}
+    </Tag>
+  )
+}
+
+/** One label/value pair inside a `<dl>`; empty values show a muted dash. */
 export function Field({ label, value, wide }: { label: string; value: React.ReactNode; wide?: boolean }) {
   return (
-    <div className={wide ? "space-y-0.5 sm:col-span-2" : "space-y-0.5"}>
-      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-      <div className="whitespace-pre-line break-words text-sm">{value || "—"}</div>
+    <div className={cn("min-w-0", wide && "sm:col-span-2")}>
+      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 whitespace-pre-line break-words text-sm">
+        {value || <span className="text-muted-foreground">—</span>}
+      </dd>
     </div>
   )
 }
 
-/** Icon-led group heading, shared by the field sections and the sub-record lists. */
-export function SectionHead({ icon: Icon, title, count }: { icon: React.ElementType; title: string; count?: number }) {
-  return (
-    <div className="mb-3 flex items-center gap-2">
-      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10">
-        <Icon className="h-3.5 w-3.5 text-primary" />
-      </div>
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</h2>
-      {count != null && <Badge variant="secondary" className="h-5 rounded-full px-1.5 text-[10px]">{count}</Badge>}
-    </div>
-  )
-}
-
-/** Titled box. Children are laid out as a two-column field grid unless `plain` is set. */
-export function Section({ icon, title, count, plain, children }: {
-  icon: React.ElementType
+/** Card surface with an eyebrow. Children form a two-column field list unless `plain` is set. */
+export function Section({ title, count, plain, children }: {
   title: string
   count?: number
   plain?: boolean
   children: React.ReactNode
 }) {
   return (
-    <section className="rounded-xl border bg-card p-4 shadow-sm">
-      <SectionHead icon={icon} title={title} count={count} />
-      {plain ? children : <div className="grid gap-4 sm:grid-cols-2">{children}</div>}
+    <section className="rounded-xl border bg-card p-4">
+      <Eyebrow count={count} className="mb-3">{title}</Eyebrow>
+      {plain ? children : <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">{children}</dl>}
     </section>
   )
+}
+
+/** A group inside a card, set off by a hairline so a long record reads as one list. */
+export function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-3 border-t pt-4 first:border-t-0 first:pt-0">
+      <Eyebrow as="h3">{title}</Eyebrow>
+      <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">{children}</dl>
+    </section>
+  )
+}
+
+/** Shown in place of a list with no rows. */
+export function NoneYet({ children }: { children: React.ReactNode }) {
+  return <p className="text-sm text-muted-foreground">{children}</p>
 }

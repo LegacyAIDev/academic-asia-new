@@ -4,6 +4,10 @@
  * server/client boundary and can be unit-tested.
  */
 
+import { TZDate } from '@date-fns/tz'
+import { format } from 'date-fns'
+import { SCHEDULER_TIMEZONE } from '@/lib/scheduler/config'
+
 const MONTH_NAMES = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 /** Badge colours keyed by the category column of application_statuses. */
@@ -63,4 +67,9 @@ export function ageInYears(dateOfBirth: string | null, today: Date = new Date())
     (today.getUTCMonth() === born.getUTCMonth() && today.getUTCDate() < born.getUTCDate())
   if (beforeBirthday) age -= 1
   return age >= 0 ? age : null
+}
+
+/** "21 Oct 2026" for a timestamp, on the Hong Kong calendar day like bookings and status changes. */
+export function formatHkDay(iso: string): string {
+  return format(new TZDate(iso, SCHEDULER_TIMEZONE), 'd MMM yyyy')
 }

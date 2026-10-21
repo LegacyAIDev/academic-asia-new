@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { GraduationCap, Pencil } from "lucide-react"
+import { Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -8,6 +8,7 @@ import type { ApplicationWithJoins } from "@/lib/supabase/queries/student-applic
 import type { StudentWithJoins } from "@/lib/supabase/queries/students"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import { ApplicationDialog, type ApplicationReferenceData } from "../../application-dialog"
+import { Eyebrow } from "./application-section"
 
 type Props = {
   application: ApplicationWithJoins
@@ -29,38 +30,32 @@ export function ApplicationHeader({ application: app, student, edit }: Props) {
   ].filter(Boolean).join(" · ")
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border bg-gradient-to-r from-primary/5 via-transparent to-transparent p-5 sm:flex-row sm:items-start sm:justify-between">
-      <div className="flex min-w-0 items-start gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-sm">
-          <GraduationCap className="h-5 w-5 text-primary" />
-        </div>
-        <div className="min-w-0 space-y-1">
-          <h1 className="text-xl font-semibold leading-tight">
-            {app.school ? (
-              <Link href={`/schools/${app.school.id}`} className="hover:underline underline-offset-4">{app.school.name}</Link>
-            ) : "School application"}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            <Link href={`/students/${student.id}`} className="font-medium text-foreground hover:underline underline-offset-4">
-              {student.first_name} {student.surname}
-            </Link>
-            {student.student_code && <span> ({student.student_code})</span>}
-            {entry && <span> · {entry}</span>}
-          </p>
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            {app.status ? (
-              <Badge variant="outline" className={cn("border text-xs font-medium", statusStyle(app.status.category))}>
-                {app.status.label}{app.sub_status && <span className="font-normal"> · {app.sub_status.label}</span>}
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-xs">No status</Badge>
-            )}
-            {app.mode?.code === "suspended" && (
-              <Badge variant="outline" className="border-rose-200 bg-rose-50 text-xs text-rose-700">Suspended</Badge>
-            )}
-            {app.is_referral && <Badge variant="outline" className="text-xs">Referral</Badge>}
-            {app.is_archived && <Badge variant="secondary" className="text-xs">Archived</Badge>}
-          </div>
+    <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="min-w-0 space-y-1.5">
+        <Eyebrow as="p">School application</Eyebrow>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {app.school ? (
+            <Link href={`/schools/${app.school.id}`} className="underline-offset-4 hover:underline">{app.school.name}</Link>
+          ) : "Unknown school"}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          <Link href={`/students/${student.id}`} className="font-medium text-foreground underline-offset-4 hover:underline">
+            {student.first_name} {student.surname}
+          </Link>
+          {student.student_code && <span className="tabular-nums"> · {student.student_code}</span>}
+          {entry && <span className="tabular-nums"> · {entry}</span>}
+        </p>
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          {app.status ? (
+            <Badge variant="outline" className={cn("border text-xs font-medium", statusStyle(app.status.category))}>
+              {app.status.label}{app.sub_status && <span className="font-normal opacity-80"> · {app.sub_status.label}</span>}
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="text-xs text-muted-foreground">No status</Badge>
+          )}
+          {app.mode?.code === "suspended" && <Badge variant="destructive" className="text-xs">Suspended</Badge>}
+          {app.is_referral && <Badge variant="outline" className="text-xs">Referral</Badge>}
+          {app.is_archived && <Badge variant="secondary" className="text-xs">Archived</Badge>}
         </div>
       </div>
 
@@ -79,6 +74,6 @@ export function ApplicationHeader({ application: app, student, edit }: Props) {
           }
         />
       )}
-    </div>
+    </header>
   )
 }

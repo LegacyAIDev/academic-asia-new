@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { NO_YEAR, feesForYear, financialYearLabel, financialYearStart, listFinancialYears, sortFeesForDisplay } from '../fee-years'
+import { NO_YEAR, feesForYear, financialYearLabel, financialYearStart, groupFeesForDisplay, listFinancialYears, sortFeesForDisplay } from '../fee-years'
 
 const fee = (financial_year: string | null, code: string | null, description: string | null, id = description ?? '') => ({
   id, financial_year, description, fee_type: code ? { code } : null,
@@ -87,5 +87,42 @@ describe('sortFeesForDisplay', () => {
   it('keeps fees without a type and without a description last in their year', () => {
     const sorted = sortFeesForDisplay([fee('2025-26', null, null, 'x'), fee('2025-26', 'others', null, 'y'), fee('2025-26', 'course', null, 'z')])
     expect(sorted.map(f => f.id)).toEqual(['z', 'y', 'x'])
+  })
+})
+
+describe('groupFeesForDisplay', () => {
+  const typed = (year: string | null, code: string, label: string, description: string) => ({
+    id: description, financial_year: year, description, fee_type: { code, label },
+  })
+
+  it('puts each fee type of the year under one heading, in display order', () => {
+    const groups = groupFeesForDisplay(sortFeesForDisplay([
+      typed('2025-26', 'deposit', 'Deposit', 'Deposit'),
+      typed('2025-26', 'course', 'Course', 'Year 10'),
+      typed('2025-26', 'course', 'Course', 'Year 9'),
+    ]), false)
+    expect(groups.map(g => [g.label, g.fees.map(f => f.id)])).toEqual([
+      ['Course', ['Year 9', 'Year 10']],
+      ['Deposit', ['Deposit']],
+    ])
+  })
+
+  it('names the year as well when all years are shown, including fees without a year', () => {
+    const groups = groupFeesForDisplay(sortFeesForDisplay([
+      typed('2024-25', 'course', 'Course', 'a'), typed('2025-26', 'course', 'Course', 'b'), typed('0', 'course', 'Course', 'c'),
+    ]), true)
+    expect(groups.map(g => g.label)).toEqual(['2025-26 · Course', '2024-25 · Course', 'No year recorded · Course'])
+  })
+
+  it('keeps one heading per type even when the order interleaves unusual types', () => {
+    const groups = groupFeesForDisplay([
+      typed('2025-26', 'boarding', 'Boarding', 'A'), typed('2025-26', 'uniform', 'Uniform', 'B'), typed('2025-26', 'boarding', 'Boarding', 'C'),
+    ], false)
+    expect(groups.map(g => [g.label, g.fees.map(f => f.id)])).toEqual([['Boarding', ['A', 'C']], ['Uniform', ['B']]])
+  })
+
+  it('labels fees without a type as Other and returns nothing for no fees', () => {
+    expect(groupFeesForDisplay([{ financial_year: '2025-26', description: 'x', fee_type: null }], false)[0].label).toBe('Other')
+    expect(groupFeesForDisplay([], true)).toEqual([])
   })
 })

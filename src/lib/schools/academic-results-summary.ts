@@ -53,6 +53,22 @@ export function formatResultValue(value: string | null, gradeFrom: string | null
   return !gradeFrom && isIb(examCode) ? String(number) : `${number}%`
 }
 
+/** Highest IB diploma score; the average point score is shown against it. */
+const IB_MAX_POINTS = 45
+
+/**
+ * How full a summary cell is, from 0 to 1, for the tint behind it: a
+ * percentage of 100, or IB points out of 45. Null for anything that is not a
+ * figure, so dashes and free text stay untinted.
+ */
+export function displayShare(display: string | null): number | null {
+  if (!display) return null
+  const percent = display.endsWith('%')
+  const number = Number(percent ? display.slice(0, -1) : display)
+  if (Number.isNaN(number)) return null
+  return Math.min(1, Math.max(0, percent ? number / 100 : number / IB_MAX_POINTS))
+}
+
 function compareGrades(a: string | null, b: string | null): number {
   if (a === b) return 0
   if (a === null) return -1 // a single grade ("A*") comes before the ranges that start with it

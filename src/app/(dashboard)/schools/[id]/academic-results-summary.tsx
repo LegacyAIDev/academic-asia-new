@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { summariseAcademicResults, type ResultsYearRange } from "@/lib/schools/academic-results-summary"
+import { displayShare, summariseAcademicResults, type ResultsYearRange } from "@/lib/schools/academic-results-summary"
 import type { SchoolAcademicResultWithJoins } from "@/lib/supabase/queries/school-academic-results"
 
 const RANGES: { value: ResultsYearRange; label: string }[] = [
@@ -11,6 +11,17 @@ const RANGES: { value: ResultsYearRange; label: string }[] = [
   { value: "last5", label: "Last 5 years" },
   { value: "all", label: "All years" },
 ]
+
+/**
+ * Background for a figure: the primary colour mixed in up to 22%, in proportion
+ * to the result, so strong and weak years stand out without reading every
+ * number. Built from the theme token, so it follows light and dark mode.
+ */
+function tint(value: string | null): React.CSSProperties | undefined {
+  const share = displayShare(value)
+  if (share == null) return undefined
+  return { backgroundColor: `color-mix(in oklch, var(--primary) ${Math.round(share * 22)}%, transparent)` }
+}
 
 /**
  * Exam results as the customer's prototype shows them: one table per exam type
@@ -38,7 +49,7 @@ export function AcademicResultsSummary({ results }: { results: SchoolAcademicRes
 
       {blocks.map(block => (
         <section key={block.code} aria-label={`${block.examType} results`}>
-          <h3 className="mb-2 text-sm font-semibold">{block.examType}</h3>
+          <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{block.examType}</h3>
           <div className="overflow-x-auto rounded-lg border">
             <Table>
               <TableHeader>
@@ -54,7 +65,7 @@ export function AcademicResultsSummary({ results }: { results: SchoolAcademicRes
                   <TableRow key={row.year}>
                     <TableHead scope="row" className="font-medium text-foreground tabular-nums">{row.year}</TableHead>
                     {row.values.map((value, index) => (
-                      <TableCell key={block.bands[index]} className="text-right tabular-nums">
+                      <TableCell key={block.bands[index]} className="text-right tabular-nums" style={tint(value)}>
                         {value ?? <span className="text-muted-foreground">—</span>}
                       </TableCell>
                     ))}

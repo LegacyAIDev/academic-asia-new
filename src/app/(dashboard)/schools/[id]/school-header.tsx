@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowLeft, Building2, CheckCircle, Edit, XCircle } from "lucide-react"
+import { ArrowLeft, Edit } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,27 +25,19 @@ export function SchoolHeader({ school, canWrite }: { school: SchoolWithJoins; ca
       </Breadcrumb>
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex items-start gap-4">
-          <Button variant="ghost" size="icon" asChild className="mt-1">
+        <div className="flex min-w-0 items-start gap-3">
+          <Button variant="ghost" size="icon" asChild className="mt-4 shrink-0">
             <Link href="/schools" aria-label="Back to schools"><ArrowLeft className="h-5 w-5" /></Link>
           </Button>
-          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 text-primary shadow-lg">
-            <Building2 className="h-8 w-8" />
-          </div>
-          <div>
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="min-w-0 space-y-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">School</p>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <h1 className="text-2xl font-semibold tracking-tight">{school.name}</h1>
-              {school.accepts_applications ? (
-                <Badge className="border-0 bg-emerald-50 text-emerald-700">
-                  <CheckCircle className="mr-1 h-3 w-3" /> Accepting Applications
-                </Badge>
-              ) : (
-                <Badge variant="secondary"><XCircle className="mr-1 h-3 w-3" /> Not Accepting</Badge>
-              )}
+              {school.accepts_applications
+                ? <Badge variant="secondary" className="text-xs">Accepting applications</Badge>
+                : <Badge variant="outline" className="text-xs text-muted-foreground">Not accepting applications</Badge>}
             </div>
-            {facts.length > 0 && (
-              <p className="mt-2 text-sm text-muted-foreground">{facts.join(" · ")}</p>
-            )}
+            {facts.length > 0 && <p className="text-sm text-muted-foreground">{facts.join(" · ")}</p>}
           </div>
         </div>
         {canWrite && (

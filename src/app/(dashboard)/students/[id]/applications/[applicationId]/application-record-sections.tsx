@@ -1,55 +1,107 @@
-import { Award, CalendarClock, GraduationCap, MapPin, MessageSquare, Sparkles } from "lucide-react"
 import type { ApplicationWithJoins } from "@/lib/supabase/queries/student-applications"
 import { formatDate, formatMoney, formatTime, monthYearLabel } from "@/lib/applications/application-display"
-import { Field, Section } from "./application-section"
+import { Eyebrow, Field, SubSection } from "./application-section"
 
-/** Every field of the application record, grouped as in the edit dialog. */
+type Group = { title: string; filled: boolean; fields: React.ReactNode }
+
+/**
+ * Every field of the application record in one card, grouped as in the edit
+ * dialog. Groups with nothing recorded are folded into one line at the end, so
+ * the card shows what is known instead of rows of dashes.
+ */
 export function ApplicationRecordSections({ application: app }: { application: ApplicationWithJoins }) {
+  const csd = monthYearLabel(app.course_start_month, app.course_start_year)
+  const yearApply = monthYearLabel(app.entry_month, app.entry_year)
+
+  const groups: Group[] = [
+    {
+      title: "Status",
+      filled: true,
+      fields: (
+        <>
+          <Field label="Enrol status" value={app.status?.label} />
+          <Field label="Sub-status" value={app.sub_status?.label} />
+          <Field label="Mode" value={app.mode?.code === "suspended" ? "Suspended" : "Normal"} />
+          <Field label="Year group" value={app.year_group?.toString()} />
+          {app.result_remarks && <Field label="Enrol status remarks" value={app.result_remarks} wide />}
+        </>
+      ),
+    },
+    {
+      title: "Course & entry",
+      filled: Boolean(app.entry_year || app.entry_month || app.course_start_year || app.course_start_month || app.registration_date || app.course_detail),
+      fields: (
+        <>
+          <Field label="Year apply" value={yearApply === "—" ? null : yearApply} />
+          <Field label="Course start (C.S.D.)" value={csd === "—" ? null : csd} />
+          <Field label="Registration date" value={app.registration_date && formatDate(app.registration_date)} />
+          {app.course_detail && <Field label="Course detail" value={app.course_detail} wide />}
+        </>
+      ),
+    },
+    {
+      title: "Referral & scholarship",
+      filled: Boolean(app.is_referral || app.scholarship_types?.length || app.scholarship_amount != null || app.scholarship_detail),
+      fields: (
+        <>
+          <Field label="Referral" value={app.is_referral ? "Yes" : "No"} />
+          <Field label="Scholarship types" value={
+            app.scholarship_types?.length ? <span className="capitalize">{app.scholarship_types.join(", ")}</span> : null
+          } />
+          {app.scholarship_amount != null && <Field label="Scholarship amount" value={<span className="tabular-nums">{formatMoney(app.scholarship_amount)}</span>} />}
+          {app.scholarship_detail && <Field label="Scholarship detail" value={app.scholarship_detail} wide />}
+        </>
+      ),
+    },
+    {
+      title: "Event & audition",
+      filled: Boolean(app.event || app.event_date || app.music_audition),
+      fields: (
+        <>
+          <Field label="Event" value={app.event?.name} />
+          <Field label="Date and time" value={app.event_date && `${formatDate(app.event_date)}${app.event_time ? ` · ${formatTime(app.event_time)}` : ""}`} />
+          {app.music_audition && <Field label="Music audition" value={app.music_audition} wide />}
+        </>
+      ),
+    },
+    {
+      title: "School visit",
+      filled: Boolean(app.visit_date || app.school_contact || app.visit_remarks),
+      fields: (
+        <>
+          <Field label="Date and time" value={app.visit_date && `${formatDate(app.visit_date)}${app.visit_time ? ` · ${formatTime(app.visit_time)}` : ""}`} />
+          <Field label="School contact" value={app.school_contact} />
+          {app.visit_remarks && <Field label="Visit remarks" value={app.visit_remarks} wide />}
+        </>
+      ),
+    },
+    {
+      title: "Remarks",
+      filled: Boolean(app.aa_remarks || app.remarks_to_school),
+      fields: (
+        <>
+          <Field label="AA remarks" value={app.aa_remarks} wide />
+          <Field label="Remarks to school" value={app.remarks_to_school} wide />
+        </>
+      ),
+    },
+  ]
+
+  const empty = groups.filter(group => !group.filled)
+
   return (
-    <div className="space-y-4">
-      <Section icon={GraduationCap} title="School & Status">
-        <Field label="School" value={app.school?.name} />
-        <Field label="Enrol Status" value={app.status?.label} />
-        <Field label="Sub-status" value={app.sub_status?.label} />
-        <Field label="Mode" value={app.mode?.code === "suspended" ? "Suspended" : "Normal"} />
-        <Field label="Year Group" value={app.year_group?.toString()} />
-        <Field label="Enrol Status Remarks" value={app.result_remarks} wide />
-      </Section>
-
-      <Section icon={CalendarClock} title="Course & Entry">
-        <Field label="Year Apply" value={monthYearLabel(app.entry_month, app.entry_year)} />
-        <Field label="Course Start Date (C.S.D.)" value={monthYearLabel(app.course_start_month, app.course_start_year)} />
-        <Field label="Registration Date" value={formatDate(app.registration_date)} />
-        {app.course_detail && <Field label="Course Detail" value={app.course_detail} wide />}
-      </Section>
-
-      <Section icon={Award} title="Referral & Scholarship">
-        <Field label="Referral" value={app.is_referral ? "Yes" : "No"} />
-        <Field label="Scholarship Types" value={
-          app.scholarship_types?.length ? <span className="capitalize">{app.scholarship_types.join(", ")}</span> : null
-        } />
-        {app.scholarship_amount != null && <Field label="Scholarship Amount" value={formatMoney(app.scholarship_amount)} />}
-        <Field label="Scholarship Detail" value={app.scholarship_detail} wide />
-      </Section>
-
-      <Section icon={Sparkles} title="Event & Audition">
-        <Field label="Event" value={app.event?.name} />
-        <Field label="Event Date" value={formatDate(app.event_date)} />
-        <Field label="Event Time" value={formatTime(app.event_time)} />
-        <Field label="Music Audition" value={app.music_audition} wide />
-      </Section>
-
-      <Section icon={MapPin} title="School Visit">
-        <Field label="Visit Date" value={formatDate(app.visit_date)} />
-        <Field label="Visit Time" value={formatTime(app.visit_time)} />
-        <Field label="School Contact" value={app.school_contact} />
-        <Field label="Visit Remarks" value={app.visit_remarks} wide />
-      </Section>
-
-      <Section icon={MessageSquare} title="Remarks">
-        <Field label="AA Remarks" value={app.aa_remarks} wide />
-        <Field label="Remarks to School" value={app.remarks_to_school} wide />
-      </Section>
-    </div>
+    <section aria-label="Application record" className="space-y-4 rounded-xl border bg-card p-4 sm:p-5">
+      <Eyebrow>Record</Eyebrow>
+      <div className="space-y-4">
+        {groups.filter(group => group.filled).map(group => (
+          <SubSection key={group.title} title={group.title}>{group.fields}</SubSection>
+        ))}
+      </div>
+      {empty.length > 0 && (
+        <p className="border-t pt-3 text-xs text-muted-foreground">
+          Not recorded: {empty.map(group => group.title).join(", ")}
+        </p>
+      )}
+    </section>
   )
 }

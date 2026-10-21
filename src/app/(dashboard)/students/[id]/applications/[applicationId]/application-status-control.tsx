@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Loader2, Tags } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
@@ -73,7 +73,7 @@ export function ApplicationStatusControl({ applicationId, studentId, status, sub
   }
 
   return (
-    <Section icon={Tags} title="Change Status" plain>
+    <Section title="Change status" plain>
       <div className="space-y-3">
         <div className="space-y-1.5">
           <Label htmlFor="application-status" className="text-xs text-muted-foreground">Status</Label>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { bandLabel, formatResultValue, summariseAcademicResults } from '../academic-results-summary'
+import { bandLabel, displayShare, formatResultValue, summariseAcademicResults } from '../academic-results-summary'
 
 type Row = Parameters<typeof summariseAcademicResults>[0][number]
 
@@ -43,6 +43,22 @@ describe('formatResultValue', () => {
     expect(formatResultValue('  ', 'A*', 'a_level')).toBe('—')
     expect(formatResultValue('n/a', 'A*', 'a_level')).toBe('n/a')
     expect(formatResultValue('12abc', 'A*', 'a_level')).toBe('12abc')
+  })
+})
+
+describe('displayShare', () => {
+  it('reads a percentage out of 100 and IB points out of 45', () => {
+    expect(displayShare('80%')).toBe(0.8)
+    expect(displayShare('36')).toBe(0.8)
+  })
+  it('keeps the share between 0 and 1', () => {
+    expect(displayShare('120%')).toBe(1)
+    expect(displayShare('-5%')).toBe(0)
+  })
+  it('gives no share for dashes, free text or nothing', () => {
+    expect(displayShare(null)).toBeNull()
+    expect(displayShare('—')).toBeNull()
+    expect(displayShare('n/a')).toBeNull()
   })
 })
 

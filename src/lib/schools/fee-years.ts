@@ -50,7 +50,7 @@ export function feesForYear<T extends WithYear>(fees: T[], year: string | 'all')
   return year === 'all' ? fees : fees.filter(f => feeYearKey(f) === year)
 }
 
-type DisplayFee = WithYear & { description: string | null; fee_type: { code: string } | null }
+type DisplayFee = WithYear & { description: string | null; fee_type: { code: string; label?: string } | null }
 
 const FEE_TYPE_ORDER = ['course', 'registration_fee', 'deposit', 'others']
 
@@ -71,4 +71,25 @@ export function sortFeesForDisplay<T extends DisplayFee>(fees: T[]): T[] {
     || compareYearLevel(parseYearLevelRange(a.description)?.from ?? null, parseYearLevelRange(b.description)?.from ?? null)
     || (a.description ?? '').localeCompare(b.description ?? '', 'en', { numeric: true }),
   )
+}
+
+export type FeeGroup<T> = { key: string; label: string; fees: T[] }
+
+/**
+ * Sorted fees under one heading per fee type, and per year as well when every
+ * year is shown, so the table needs no type column. Groups keep the order in
+ * which their first fee appears, and each key appears once even if the sort
+ * interleaves fees of unusual types or year formats.
+ */
+export function groupFeesForDisplay<T extends DisplayFee>(sortedFees: T[], withYear: boolean): FeeGroup<T>[] {
+  const groups = new Map<string, FeeGroup<T>>()
+  for (const fee of sortedFees) {
+    const type = fee.fee_type?.label ?? 'Other'
+    const year = financialYearLabel(feeYearKey(fee))
+    const key = withYear ? `${year}|${type}` : type
+    const group = groups.get(key)
+    if (group) group.fees.push(fee)
+    else groups.set(key, { key, label: withYear ? `${year} · ${type}` : type, fees: [fee] })
+  }
+  return [...groups.values()]
 }

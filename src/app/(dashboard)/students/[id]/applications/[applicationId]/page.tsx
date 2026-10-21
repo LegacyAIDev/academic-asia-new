@@ -48,6 +48,9 @@ export default async function StudentApplicationPage({ params }: Props) {
   ])
   const applicationAttachments = attachments.get(application.id) ?? []
   const timeline = buildApplicationTimeline(application, bookings ?? [], statusChanges)
+  // Newest first, so the first change into the current status is when it was reached (sub-status-only changes skipped).
+  const statusSince = statusChanges.find(change =>
+    change.to_status_id === application.status_id && change.from_status_id !== change.to_status_id)?.changed_at ?? null
 
   return (
     <div className="space-y-6">
@@ -75,7 +78,7 @@ export default async function StudentApplicationPage({ params }: Props) {
         } : null}
       />
 
-      <ApplicationJourney status={application.status} />
+      <ApplicationJourney status={application.status} since={statusSince} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
