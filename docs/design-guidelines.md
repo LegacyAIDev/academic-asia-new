@@ -284,3 +284,15 @@ Subject: physical seats in physical rooms on Hong Kong office floors. Every scre
 - **Copy:** sentence case, plain verbs. Empty states invite the next action ("Add your first room", "Book a consultation to add the first one").
 
 Source: `plans/260912-0136-scheduler-rooms-meetings-exams/design-notes.md`.
+
+## 12. Application and School Profile Conventions
+
+The application page (`students/[id]/applications/[applicationId]/`) and the school page tabs follow the scheduler conventions above (tokens only, system sans, eyebrows, `tabular-nums`, no gradient headers, icon tiles or shadows as hierarchy).
+
+- **Building blocks:** `application-section.tsx` holds `Eyebrow` (11px uppercase label with an optional count), `Field` (label/value inside a `<dl>`), `Section` (card surface with an eyebrow) and `SubSection` (hairline-separated group inside a card).
+- **One record card:** the application record is a single card with hairline groups (Status, Course & entry, Referral & scholarship, Event & audition, School visit, Remarks). Groups with nothing recorded are folded into one "Not recorded: …" line instead of rows of dashes.
+- **Journey route — the application page's signature** (`application-journey.tsx`): six stops on one line, filled in `primary` up to the current step (`destructive` when the application is closed), with "since {date}" when the status change was recorded. Below `sm` it becomes a progress bar with "Step n of 6".
+- **Timeline:** the same dot-and-line pattern as `booking-history-list.tsx`; the newest entry carries the accent dot, status changes a darker dot.
+- **Results tint — the school page's signature** (`academic-results-summary.tsx`): each summary cell is tinted with `color-mix(in oklch, var(--primary) n%, transparent)`, n up to 22% in proportion to the figure (percentages of 100, IB points of 45), so strong years stand out at a glance in both themes.
+- **Fees:** grouped under eyebrow rows per fee type (and per year in "All years") instead of a type badge on every row; amounts in `tabular-nums`.
+- **Headers:** an eyebrow ("School application", "School") above the name; status badges keep the shared category colours from `src/lib/applications/application-display.ts` so the list and the page match.

@@ -11,7 +11,7 @@
 |---|---|
 | Source files (src/) | ~290 files |
 | Estimated LOC (src/) | ~40,500 |
-| SQL migrations | 87 (numbered 001–078 + timestamped, incl. 6 scheduler migrations) |
+| SQL migrations | 89 (numbered 001–078 + timestamped, incl. 6 scheduler migrations) |
 | Server action files | 37 |
 | Query files | 43+ |
 | shadcn/ui primitives | 53 |
