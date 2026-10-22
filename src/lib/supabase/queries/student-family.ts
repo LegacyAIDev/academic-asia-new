@@ -82,3 +82,27 @@ export async function getLinkedStudent(id: string): Promise<LinkedStudent | null
   if (error) throw new Error(error.message)
   return data
 }
+
+/** A student whose family shares a mobile or email with this student's family: likely a brother or sister. */
+export type FamilySuggestion = LinkedStudent & {
+  /** What the two families share, e.g. "Mother's mobile, Father's email". */
+  matched_on: string
+}
+
+/**
+ * Up to five students who are possibly family (student_family_suggestions in
+ * the database): a hint for staff to confirm, never linked automatically.
+ * Empty on error, since the Family tab works without them.
+ */
+export async function getFamilySuggestions(studentId: string, limit = 5): Promise<FamilySuggestion[]> {
+  const supabase = createClient(await cookies())
+  const { data, error } = await supabase.rpc('student_family_suggestions', { p_student_id: studentId }).limit(limit)
+
+  if (error) {
+    console.error('Error fetching family suggestions:', error)
+    return []
+  }
+  // The function names the id student_id; the app calls it id like every other student.
+  const rows = (data ?? []) as (Omit<FamilySuggestion, 'id'> & { student_id: string })[]
+  return rows.map(({ student_id, ...student }) => ({ id: student_id, ...student }))
+}

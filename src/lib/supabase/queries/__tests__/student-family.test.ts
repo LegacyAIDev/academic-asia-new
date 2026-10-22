@@ -6,7 +6,7 @@ const state = vi.hoisted(() => ({ client: null as unknown }))
 vi.mock('next/headers', () => ({ cookies: vi.fn(async () => ({})) }))
 vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn(() => state.client) }))
 
-import { getFamilyLinksToStudent, getLinkedStudent, searchStudentsForFamily } from '../student-family'
+import { getFamilyLinksToStudent, getFamilySuggestions, getLinkedStudent, searchStudentsForFamily } from '../student-family'
 import { getStudentContacts } from '../students'
 
 type Result = { data: unknown; error: unknown }
@@ -90,5 +90,45 @@ describe('getLinkedStudent', () => {
     expect(await getLinkedStudent('gone')).toBeNull()
     setup({ data: null, error: { message: 'timeout' } })
     await expect(getLinkedStudent('s2')).rejects.toThrow('timeout')
+  })
+})
+
+describe('getFamilySuggestions', () => {
+  /** The shared stub has no rpc(); this one records the call and the limit. */
+  function setupRpc(result: Result) {
+    const calls: { fn: string; args: unknown; limit?: number }[] = []
+    state.client = {
+      rpc: (fn: string, args: unknown) => {
+        const call: { fn: string; args: unknown; limit?: number } = { fn, args }
+        calls.push(call)
+        return { limit: async (n: number) => { call.limit = n; return result } }
+      },
+    }
+    return calls
+  }
+
+  it('asks the database for up to five students and names their id like every other student', async () => {
+    const { id, ...rest } = student
+    const calls = setupRpc({ data: [{ student_id: id, ...rest, matched_on: "Mother's mobile" }], error: null })
+    expect(await getFamilySuggestions('s1')).toEqual([{ ...student, matched_on: "Mother's mobile" }])
+    expect(calls).toEqual([{ fn: 'student_family_suggestions', args: { p_student_id: 's1' }, limit: 5 }])
+  })
+
+  it('returns nothing when the database cannot answer, since the tab works without suggestions', async () => {
+    setupRpc({ data: null, error: { message: 'timeout' } })
+    expect(await getFamilySuggestions('s1')).toEqual([])
+  })
+
+  it('keeps every row in order, honours another limit, and copes with an empty answer', async () => {
+    const { id, ...rest } = student
+    const calls = setupRpc({ data: [
+      { student_id: id, ...rest, matched_on: "Mother's mobile" },
+      { student_id: 's3', ...rest, first_name: 'Sophie', gender: 'F', matched_on: "Father's email" },
+    ], error: null })
+    const rows = await getFamilySuggestions('s1', 3)
+    expect(rows.map((r) => [r.id, r.first_name])).toEqual([[id, 'Edward'], ['s3', 'Sophie']])
+    expect(calls[0].limit).toBe(3)
+    setupRpc({ data: null, error: null })
+    expect(await getFamilySuggestions('s1')).toEqual([])
   })
 })

@@ -5902,6 +5902,20 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      student_family_suggestions: {
+        Args: { p_student_id: string }
+        Returns: {
+          chinese_name: string
+          date_of_birth: string
+          first_name: string
+          gender: string
+          matched_on: string
+          present_school: string
+          student_code: string
+          student_id: string
+          surname: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

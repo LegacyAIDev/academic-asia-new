@@ -17,3 +17,8 @@ export function linkedStudentDetails(
     .filter(Boolean)
     .join(' · ')
 }
+
+/** "Same mother's mobile, father's email": why a student is suggested as possibly family. */
+export function sharedDetailsText(matchedOn: string): string {
+  return matchedOn ? `Same ${matchedOn.toLowerCase()}` : ''
+}

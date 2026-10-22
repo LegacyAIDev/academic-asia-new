@@ -38,7 +38,7 @@ import {
   Users,
 } from "lucide-react"
 import { getStudentById, getStudentContacts, getContactReferenceData } from "@/lib/supabase/queries/students"
-import { getFamilyLinksToStudent } from "@/lib/supabase/queries/student-family"
+import { getFamilyLinksToStudent, getFamilySuggestions } from "@/lib/supabase/queries/student-family"
 import { getStudentApplications, getApplicationReferenceData } from "@/lib/supabase/queries/student-applications"
 import { getStudentEducation, getEducationReferenceData } from "@/lib/supabase/queries/student-education"
 import { getStudentVisas, getVisaReferenceData } from "@/lib/supabase/queries/student-visas"
@@ -119,6 +119,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     resumeProfile, resumeTalents, resumeDocuments, aaTests, legalDocuments,
     allDocuments,
     familyLinks,
+    familySuggestions,
   ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
@@ -147,6 +148,8 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     getStudentDocuments(id, 'legal_documents'),
     getStudentDocuments(id),
     getFamilyLinksToStudent(id),
+    // Suggestions only help someone who can link them.
+    canWrite ? getFamilySuggestions(id) : Promise.resolve([]),
   ])
 
   if (!student) {
@@ -646,6 +649,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               contacts={contacts}
               linksToStudent={familyLinks}
+              suggestions={familySuggestions}
               referenceData={contactReferenceData}
               studentAddress={student.address_line_1}
               canWrite={canWrite}

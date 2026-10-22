@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { groupFamily, type FamilyEntry, type FamilyGroup } from "@/lib/students/family-relationships"
 import { linkedStudentName } from "@/lib/students/linked-student-label"
 import type { StudentContactWithRelations } from "@/lib/supabase/queries/students"
-import type { FamilyLinkToStudent } from "@/lib/supabase/queries/student-family"
+import type { FamilyLinkToStudent, FamilySuggestion } from "@/lib/supabase/queries/student-family"
 import { ContactDialog, DeleteContactButton, EditContactButton } from "./contact-dialog"
 import { FamilyMemberCard, type ContactReferenceData } from "./family-member-card"
+import { FamilySuggestions } from "./family-suggestions"
 import { LinkedStudentCard } from "./linked-student-card"
 
 type StudentFamilySectionProps = {
@@ -15,6 +16,8 @@ type StudentFamilySectionProps = {
   contacts: StudentContactWithRelations[]
   /** Links other students made to this one; shown here too, edited on their profile. */
   linksToStudent: FamilyLinkToStudent[]
+  /** Students who are possibly family; loaded only for staff who may link them. */
+  suggestions: FamilySuggestion[]
   referenceData: ContactReferenceData
   studentAddress?: string | null
   canWrite: boolean
@@ -32,7 +35,7 @@ const GROUPS: { key: FamilyGroup; label: string }[] = [
  * as student cards linking to their profile, from both students' side.
  */
 export function StudentFamilySection({
-  studentId, contacts, linksToStudent, referenceData, studentAddress, canWrite,
+  studentId, contacts, linksToStudent, suggestions, referenceData, studentAddress, canWrite,
 }: StudentFamilySectionProps) {
   const groups = groupFamily(contacts, linksToStudent)
   const total = GROUPS.reduce((n, g) => n + groups[g.key].length, 0)
@@ -101,6 +104,9 @@ export function StudentFamilySection({
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{groups[group.key].map(renderEntry)}</div>
             </section>
           ))
+        )}
+        {canWrite && (
+          <FamilySuggestions studentId={studentId} suggestions={suggestions} relationships={referenceData.relationships} />
         )}
       </CardContent>
     </Card>
