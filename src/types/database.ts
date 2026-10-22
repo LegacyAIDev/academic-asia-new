@@ -1653,6 +1653,53 @@ export type Database = {
         }
         Relationships: []
       }
+      present_schools: {
+        Row: {
+          aliases: string[]
+          created_at: string
+          created_by: string | null
+          id: number
+          is_active: boolean
+          match_key: string
+          name: string
+          search_keys: string[]
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          aliases?: string[]
+          created_at?: string
+          created_by?: string | null
+          id?: never
+          is_active?: boolean
+          match_key: string
+          name: string
+          search_keys?: string[]
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          aliases?: string[]
+          created_at?: string
+          created_by?: string | null
+          id?: never
+          is_active?: boolean
+          match_key?: string
+          name?: string
+          search_keys?: string[]
+          source?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "present_schools_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_permission_overrides: {
         Row: {
           access: number
@@ -5481,6 +5528,7 @@ export type Database = {
           placement_id: number | null
           placement_remarks: string | null
           present_school: string | null
+          present_school_id: number | null
           present_school_type_id: number | null
           remarks: string | null
           sixth_form: string | null
@@ -5535,6 +5583,7 @@ export type Database = {
           placement_id?: number | null
           placement_remarks?: string | null
           present_school?: string | null
+          present_school_id?: number | null
           present_school_type_id?: number | null
           remarks?: string | null
           sixth_form?: string | null
@@ -5589,6 +5638,7 @@ export type Database = {
           placement_id?: number | null
           placement_remarks?: string | null
           present_school?: string | null
+          present_school_id?: number | null
           present_school_type_id?: number | null
           remarks?: string | null
           sixth_form?: string | null
@@ -5640,6 +5690,13 @@ export type Database = {
             columns: ["placement_id"]
             isOneToOne: false
             referencedRelation: "placement_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "students_present_school_id_fkey"
+            columns: ["present_school_id"]
+            isOneToOne: false
+            referencedRelation: "present_schools"
             referencedColumns: ["id"]
           },
           {
