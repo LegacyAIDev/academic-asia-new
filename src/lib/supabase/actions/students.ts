@@ -7,6 +7,7 @@ import type { StudentInsert, StudentUpdate } from '@/types/database.types'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { purgeOwnerStorage } from '@/lib/supabase/actions/record-attachments'
+import { getPresentSchoolName } from '@/lib/supabase/queries/present-schools'
 
 export type CreateStudentInput = {
   surname: string
@@ -23,6 +24,7 @@ export type CreateStudentInput = {
   address_line_1?: string | null
   chinese_address?: string | null
   present_school?: string | null
+  present_school_id?: number | null
   present_school_type_id?: number | null
   course_id?: number | null
   entry_year?: number | null
@@ -45,6 +47,25 @@ export type ActionResult<T = void> = {
   data?: T
   error?: string
 }
+
+/**
+ * A current school chosen from the list is stored twice: its id, and its list
+ * name in present_school, which the student list, search and exports read. The
+ * name always comes from the table, so a posted name can never drift from the
+ * id. Without an id the posted text is kept as it is: a student typed in before
+ * the list existed keeps that text through unrelated edits. Text sent without
+ * any id is not a list school, so it drops an old link rather than sit beside it.
+ */
+async function withListSchoolName<T extends Partial<CreateStudentInput>>(input: T): Promise<T | null> {
+  if (input.present_school_id === undefined) {
+    return 'present_school' in input ? { ...input, present_school_id: null } : input
+  }
+  if (input.present_school_id === null) return input
+  const name = await getPresentSchoolName(input.present_school_id)
+  return name === null ? null : { ...input, present_school: name }
+}
+
+const UNKNOWN_SCHOOL: ActionResult<never> = { success: false, error: 'Choose a school from the list' }
 
 /**
  * Create a new student with auto-generated student code
@@ -72,8 +93,11 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
       newCode = `S${String(num + 1).padStart(6, '0')}`
     }
 
+    const withSchool = await withListSchoolName(input)
+    if (!withSchool) return UNKNOWN_SCHOOL
+
     const studentData: StudentInsert = {
-      ...input,
+      ...withSchool,
       student_code: newCode,
       status_id: input.status_id ?? 1, // Default to 'new' status
     }
@@ -108,7 +132,10 @@ export async function updateStudent(id: string, input: Partial<CreateStudentInpu
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const updateData: StudentUpdate = { ...input }
+    const withSchool = await withListSchoolName(input)
+    if (!withSchool) return UNKNOWN_SCHOOL
+
+    const updateData: StudentUpdate = { ...withSchool }
 
     const { error } = await supabase
       .from('students')

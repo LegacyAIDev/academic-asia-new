@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { ArrowLeft } from "lucide-react"
 import { getReferenceData } from "@/lib/supabase/queries/students"
+import { getPresentSchools } from "@/lib/supabase/queries/present-schools"
 import { StudentForm } from "../student-form"
 import { requireAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
@@ -17,7 +18,7 @@ import { ACCESS, MODULES } from "@/lib/permissions/modules"
 export default async function NewStudentPage() {
   await requireAccess(MODULES.STUDENTS, ACCESS.WRITE)
 
-  const referenceData = await getReferenceData()
+  const [referenceData, presentSchools] = await Promise.all([getReferenceData(), getPresentSchools()])
 
   return (
     <div className="space-y-6">
@@ -54,7 +55,7 @@ export default async function NewStudentPage() {
       </div>
 
       {/* Form */}
-      <StudentForm mode="create" referenceData={referenceData} />
+      <StudentForm mode="create" referenceData={referenceData} presentSchools={presentSchools} />
     </div>
   )
 }

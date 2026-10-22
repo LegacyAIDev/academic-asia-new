@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cleanSchoolName, parseSchoolListLine, presentSchoolKey, schoolSearchKeys } from '../present-school-name'
+import { cleanSchoolName, filterPresentSchools, indexPresentSchools, parseSchoolListLine, presentSchoolKey, schoolSearchKeys } from '../present-school-name'
 
 describe('presentSchoolKey', () => {
   it('gives every common spelling of a school the same key', () => {
@@ -82,5 +82,55 @@ describe('schoolSearchKeys', () => {
       'BUDDHIST LAM BING YIM MEMORIAL SCHOOL (SPONSORED BY THE HONG KONG BUDDHIST ASSOCIATION)',
       'BUDDHIST LAM BING YIM MEMORIAL SCHOOL (SPSD BY HKBA)',
     ])
+  })
+})
+
+describe('filterPresentSchools', () => {
+  const school = (id: number, name: string, aliases: string[] = []) => ({ id, name, aliases })
+  const index = indexPresentSchools([
+    school(1, 'DIOCESAN BOYS\' SCHOOL (SECONDARY)'),
+    school(2, 'DIOCESAN GIRLS\' SCHOOL'),
+    school(3, 'HARROW INTERNATIONAL SCHOOL HONG KONG (SECONDARY)'),
+    school(4, 'ST. PAUL\'S CO-EDUCATIONAL COLLEGE'),
+    school(5, 'ST. PAUL\'S COLLEGE'),
+    school(6, 'THE CHURCH OF CHRIST IN CHINA KEI YUEN COLLEGE', ['CCC KEI YUEN COLLEGE']),
+  ])
+  const ids = (query: string, limit?: number) => filterPresentSchools(index, query, limit).matches.map((s) => s.id)
+
+  it('ignores case and punctuation', () => {
+    expect(ids('st pauls')).toEqual([4, 5])
+    expect(ids("St. Paul's College")).toEqual([5, 4])
+  })
+  it('puts the exact spelling first and reports it', () => {
+    const result = filterPresentSchools(index, 'st pauls college')
+    expect(result.exact?.id).toBe(5)
+    expect(result.matches.map((s) => s.id)).toEqual([5, 4])
+    expect(filterPresentSchools(index, 'st pauls').exact).toBeNull()
+  })
+  it('finds a school by its alternative spelling', () => {
+    expect(ids('ccc kei')).toEqual([6])
+    expect(filterPresentSchools(index, 'CCC Kei Yuen College').exact?.id).toBe(6)
+  })
+  it('ranks spellings that start with the query before ones that contain it', () => {
+    expect(ids('college')).toEqual([4, 5, 6])
+    expect(ids('kei yuen')).toEqual([6])
+    expect(ids('christ')).toEqual([6])
+  })
+  it('falls back to every typed word appearing somewhere', () => {
+    expect(ids('harrow secondary')).toEqual([3])
+    expect(ids('diocesan secondary')).toEqual([1])
+  })
+  it('caps the matches and says when there are more', () => {
+    const result = filterPresentSchools(index, 'school', 1)
+    expect(result.matches).toHaveLength(1)
+    expect(result.more).toBe(true)
+    expect(filterPresentSchools(index, 'school').more).toBe(false)
+  })
+  it('lists the first schools in name order for an empty query', () => {
+    expect(ids('  ', 2)).toEqual([1, 2])
+    expect(filterPresentSchools(index, '', 2).more).toBe(true)
+  })
+  it('finds nothing for a school not on the list', () => {
+    expect(filterPresentSchools(index, 'Macau Anglican College')).toEqual({ matches: [], more: false, exact: null })
   })
 })

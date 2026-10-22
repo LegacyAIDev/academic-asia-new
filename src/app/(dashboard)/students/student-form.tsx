@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useTransition, useMemo } from "react"
+import { useRef, useState, useTransition } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -37,6 +37,8 @@ import { createStudent, updateStudent, type CreateStudentInput} from "@/lib/supa
 import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import type { StudentWithJoins } from "@/lib/supabase/queries/students"
+import type { PresentSchoolOption } from "@/lib/supabase/queries/present-schools"
+import { PresentSchoolPicker } from "./present-school-picker"
 
 type ReferenceItem = {
   id: number
@@ -58,17 +60,19 @@ export type StudentFormProps = {
     events: { id: string; name: string }[]
     profiles: { id: string; first_name: string | null; surname: string | null }[]
   }
+  presentSchools: PresentSchoolOption[]
   examPaperAttachments?: AttachmentRecord[]
   canWrite?: boolean
 }
 
 export function StudentForm({
-  mode, student, referenceData, examPaperAttachments = [], canWrite = true,
+  mode, student, referenceData, presentSchools, examPaperAttachments = [], canWrite = true,
 }: StudentFormProps) {
   const router = useRouter()
   const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [addingSchool, setAddingSchool] = useState(false)
   const [dobOpen, setDobOpen] = useState(false)
   const [dob, setDob] = useState<Date | undefined>(
     student?.date_of_birth ? new Date(student.date_of_birth + "T00:00:00") : undefined
@@ -98,6 +102,7 @@ export function StudentForm({
       address_line_1: (formData.get("address_line_1") as string) || null,
       chinese_address: (formData.get("chinese_address") as string) || null,
       present_school: (formData.get("present_school") as string) || null,
+      present_school_id: formData.get("present_school_id") ? parseInt(formData.get("present_school_id") as string, 10) : null,
       present_school_type_id: formData.get("present_school_type_id") ? parseInt(formData.get("present_school_type_id") as string, 10) : null,
       course_id: formData.get("course_id") ? parseInt(formData.get("course_id") as string, 10) : null,
       entry_year: formData.get("entry_year") ? parseInt(formData.get("entry_year") as string, 10) : null,
@@ -371,11 +376,13 @@ export function StudentForm({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="present_school">Current School</Label>
-              <Input
+              <PresentSchoolPicker
                 id="present_school"
-                name="present_school"
-                placeholder="e.g. Wah Yan College, Hong Kong"
-                defaultValue={student?.present_school ?? ""}
+                schools={presentSchools}
+                value={student?.present_school_id ?? null}
+                legacyText={student?.present_school ?? ""}
+                canAdd={canWrite}
+                onAddingChange={setAddingSchool}
               />
             </div>
             <div className="space-y-2">
@@ -588,7 +595,7 @@ export function StudentForm({
             Cancel
           </Link>
         </Button>
-        <Button type="submit" disabled={isPending} className="gap-2">
+        <Button type="submit" disabled={isPending || addingSchool} className="gap-2">
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />

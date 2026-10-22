@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
-import type { StudentStatus, PlacementStatus, Course, Nationality, LeadSource, SchoolType } from '@/types/database.types'
+import type { StudentStatus, PlacementStatus, Course } from '@/types/database.types'
 
 type SupabaseServerClient = ReturnType<typeof createClient>
 
@@ -264,6 +264,7 @@ export type StudentWithJoins = {
   address_line_1: string | null
   chinese_address: string | null
   present_school: string | null
+  present_school_id: number | null
   entry_year: number | null
   entry_month: number | null
   enrollment_date: string | null

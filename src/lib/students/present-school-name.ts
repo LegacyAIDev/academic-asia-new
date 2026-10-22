@@ -14,6 +14,9 @@
 
 const CURLY_APOSTROPHES = /[\u2018\u2019\u02BC]/g
 
+/** Longest name staff may add; the longest name on the list is under 200 characters. */
+export const PRESENT_SCHOOL_NAME_MAX = 200
+
 /**
  * Trimmed, single-spaced and upper case, the way names appear in the list.
  * NFC first, because text pasted on a Mac can spell "Õ" as two characters.
@@ -47,4 +50,45 @@ export function parseSchoolListLine(line: string): { name: string; aliases: stri
 /** Every key a school can be found by, each once: its name's key first. */
 export function schoolSearchKeys(name: string, aliases: string[]): string[] {
   return [...new Set([name, ...aliases].map(presentSchoolKey).filter(Boolean))]
+}
+
+/** A school as the student form's picker needs it. */
+export type PresentSchoolOption = { id: number; name: string; aliases: string[] }
+
+export type IndexedPresentSchool = { school: PresentSchoolOption; keys: string[] }
+
+/** Keys worked out once per list, so filtering on each keystroke only compares strings. */
+export function indexPresentSchools(schools: PresentSchoolOption[]): IndexedPresentSchool[] {
+  return schools.map((school) => ({ school, keys: schoolSearchKeys(school.name, school.aliases) }))
+}
+
+/**
+ * Schools matching what staff typed, best first: the school spelled exactly so,
+ * then spellings that start with the query, then ones containing it, then ones
+ * holding every typed word ("harrow secondary" finds "HARROW INTERNATIONAL
+ * SCHOOL HONG KONG (SECONDARY)"). Within a rank the list keeps its name order.
+ * `exact` is the school one of whose spellings is the query; without one the
+ * picker offers to add what was typed as a new school.
+ */
+export function filterPresentSchools(index: IndexedPresentSchool[], query: string, limit = 50) {
+  const q = presentSchoolKey(query)
+  if (!q) return { matches: index.slice(0, limit).map((e) => e.school), more: index.length > limit, exact: null }
+
+  const words = q.split(' ')
+  const ranked: { school: PresentSchoolOption; rank: number }[] = []
+  for (const { school, keys } of index) {
+    const rank = keys.includes(q) ? 0
+      : keys.some((k) => k.startsWith(q)) ? 1
+      : keys.some((k) => k.includes(q)) ? 2
+      : keys.some((k) => words.every((w) => k.includes(w))) ? 3
+      : -1
+    if (rank >= 0) ranked.push({ school, rank })
+  }
+  ranked.sort((a, b) => a.rank - b.rank)
+
+  return {
+    matches: ranked.slice(0, limit).map((r) => r.school),
+    more: ranked.length > limit,
+    exact: ranked[0]?.rank === 0 ? ranked[0].school : null,
+  }
 }

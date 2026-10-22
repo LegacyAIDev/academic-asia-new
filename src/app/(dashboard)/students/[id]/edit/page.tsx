@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { ArrowLeft } from "lucide-react"
 import { getStudentById, getReferenceData } from "@/lib/supabase/queries/students"
+import { getPresentSchools } from "@/lib/supabase/queries/present-schools"
 import { StudentForm } from "../../student-form"
 import { requireAccess } from "@/lib/permissions/guard"
 import { getAttachmentsFor } from "@/lib/supabase/queries/record-attachments"
@@ -23,9 +24,10 @@ export default async function EditStudentPage({ params }: EditStudentPageParams)
 
   const { id } = await params
 
-  const [student, referenceData, examPaperAttachments] = await Promise.all([
+  const [student, referenceData, presentSchools, examPaperAttachments] = await Promise.all([
     getStudentById(id),
     getReferenceData(),
+    getPresentSchools(),
     getAttachmentsFor('student_exam_paper', id),
   ])
 
@@ -85,6 +87,7 @@ export default async function EditStudentPage({ params }: EditStudentPageParams)
         mode="edit"
         student={student}
         referenceData={referenceData}
+        presentSchools={presentSchools}
         examPaperAttachments={examPaperAttachments}
       />
     </div>
