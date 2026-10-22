@@ -47,18 +47,42 @@ export function parseSchoolListLine(line: string): { name: string; aliases: stri
   return name ? { name, aliases } : null
 }
 
+/** A name worth saving holds a letter or digit: the old data used "-" and "N/A" style placeholders. */
+export function isUsableSchoolName(name: string): boolean {
+  return /[\p{L}\p{N}]/u.test(presentSchoolKey(name))
+}
+
 /** Every key a school can be found by, each once: its name's key first. */
 export function schoolSearchKeys(name: string, aliases: string[]): string[] {
   return [...new Set([name, ...aliases].map(presentSchoolKey).filter(Boolean))]
 }
 
+/**
+ * Other spellings as staff type them (one per line): cleaned like names, with
+ * blanks, repeats and anything that is only the name again dropped by key.
+ */
+export function cleanOtherSpellings(name: string, spellings: string[]): string[] {
+  const seen = new Set([presentSchoolKey(name)])
+  const kept: string[] = []
+  for (const spelling of spellings.map(cleanSchoolName)) {
+    const key = presentSchoolKey(spelling)
+    if (!key || seen.has(key)) continue
+    seen.add(key)
+    kept.push(spelling)
+  }
+  return kept
+}
+
+/** Where a school came from: the imported Hong Kong list, or added by staff. */
+export type PresentSchoolSource = 'hk_list' | 'staff'
+
 /** A school as the student form's picker needs it. */
 export type PresentSchoolOption = { id: number; name: string; aliases: string[] }
 
-export type IndexedPresentSchool = { school: PresentSchoolOption; keys: string[] }
+export type IndexedPresentSchool<T extends PresentSchoolOption = PresentSchoolOption> = { school: T; keys: string[] }
 
 /** Keys worked out once per list, so filtering on each keystroke only compares strings. */
-export function indexPresentSchools(schools: PresentSchoolOption[]): IndexedPresentSchool[] {
+export function indexPresentSchools<T extends PresentSchoolOption>(schools: T[]): IndexedPresentSchool<T>[] {
   return schools.map((school) => ({ school, keys: schoolSearchKeys(school.name, school.aliases) }))
 }
 
@@ -68,14 +92,17 @@ export function indexPresentSchools(schools: PresentSchoolOption[]): IndexedPres
  * holding every typed word ("harrow secondary" finds "HARROW INTERNATIONAL
  * SCHOOL HONG KONG (SECONDARY)"). Within a rank the list keeps its name order.
  * `exact` is the school one of whose spellings is the query; without one the
- * picker offers to add what was typed as a new school.
+ * picker offers to add what was typed as a new school. `total` counts every
+ * match, `matches` holds at most `limit` of them.
  */
-export function filterPresentSchools(index: IndexedPresentSchool[], query: string, limit = 50) {
+export function filterPresentSchools<T extends PresentSchoolOption>(index: IndexedPresentSchool<T>[], query: string, limit = 50) {
   const q = presentSchoolKey(query)
-  if (!q) return { matches: index.slice(0, limit).map((e) => e.school), more: index.length > limit, exact: null }
+  if (!q) {
+    return { matches: index.slice(0, limit).map((e) => e.school), more: index.length > limit, total: index.length, exact: null }
+  }
 
   const words = q.split(' ')
-  const ranked: { school: PresentSchoolOption; rank: number }[] = []
+  const ranked: { school: T; rank: number }[] = []
   for (const { school, keys } of index) {
     const rank = keys.includes(q) ? 0
       : keys.some((k) => k.startsWith(q)) ? 1
@@ -89,6 +116,7 @@ export function filterPresentSchools(index: IndexedPresentSchool[], query: strin
   return {
     matches: ranked.slice(0, limit).map((r) => r.school),
     more: ranked.length > limit,
+    total: ranked.length,
     exact: ranked[0]?.rank === 0 ? ranked[0].school : null,
   }
 }

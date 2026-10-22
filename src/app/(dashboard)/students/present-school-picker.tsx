@@ -13,7 +13,7 @@ import {
   cleanSchoolName,
   filterPresentSchools,
   indexPresentSchools,
-  presentSchoolKey,
+  isUsableSchoolName,
   type PresentSchoolOption,
 } from "@/lib/students/present-school-name"
 
@@ -52,7 +52,7 @@ export function PresentSchoolPicker({ id, schools, value, legacyText, canAdd, on
   const typed = cleanSchoolName(query)
   const label = options.find((s) => s.id === selectedId)?.name ?? text
   const unlinked = selectedId === null && text !== ""
-  const offerAdd = canAdd && !exact && presentSchoolKey(query) !== "" && typed.length <= PRESENT_SCHOOL_NAME_MAX
+  const offerAdd = canAdd && !exact && isUsableSchoolName(query) && typed.length <= PRESENT_SCHOOL_NAME_MAX
 
   function openChange(next: boolean) {
     // Start an unlinked student's search from their old text: the matching list

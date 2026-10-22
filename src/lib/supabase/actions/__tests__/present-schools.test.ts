@@ -65,6 +65,7 @@ describe('addPresentSchool', () => {
     })
     expect(callsOf(queries[1], 'insert')).toEqual([[{
       name: 'MACAU ANGLICAN COLLEGE',
+      aliases: [],
       match_key: 'MACAU ANGLICAN COLLEGE',
       search_keys: ['MACAU ANGLICAN COLLEGE'],
       source: 'staff',

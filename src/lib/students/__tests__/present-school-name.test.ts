@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cleanSchoolName, filterPresentSchools, indexPresentSchools, parseSchoolListLine, presentSchoolKey, schoolSearchKeys } from '../present-school-name'
+import { cleanOtherSpellings, cleanSchoolName, filterPresentSchools, indexPresentSchools, isUsableSchoolName, parseSchoolListLine, presentSchoolKey, schoolSearchKeys } from '../present-school-name'
 
 describe('presentSchoolKey', () => {
   it('gives every common spelling of a school the same key', () => {
@@ -131,6 +131,30 @@ describe('filterPresentSchools', () => {
     expect(filterPresentSchools(index, '', 2).more).toBe(true)
   })
   it('finds nothing for a school not on the list', () => {
-    expect(filterPresentSchools(index, 'Macau Anglican College')).toEqual({ matches: [], more: false, exact: null })
+    expect(filterPresentSchools(index, 'Macau Anglican College')).toEqual({ matches: [], more: false, total: 0, exact: null })
+  })
+  it('counts every match even when it shows fewer', () => {
+    expect(filterPresentSchools(index, 'school', 1).total).toBe(3)
+    expect(filterPresentSchools(index, '', 2).total).toBe(6)
+  })
+  it('hands back the rows it was given, extra fields included', () => {
+    const rows = indexPresentSchools([{ id: 1, name: 'KELLETT SCHOOL (PRIMARY)', aliases: [], student_count: 152 }])
+    expect(filterPresentSchools(rows, 'kellett').matches[0].student_count).toBe(152)
+  })
+})
+
+describe('isUsableSchoolName', () => {
+  it('needs a letter or digit', () => {
+    expect(isUsableSchoolName('St. Paul’s')).toBe(true)
+    expect(isUsableSchoolName('CAMÕES')).toBe(true)
+    expect(isUsableSchoolName('-')).toBe(false)
+    expect(isUsableSchoolName(" .' ")).toBe(false)
+  })
+})
+
+describe('cleanOtherSpellings', () => {
+  it('cleans each spelling and drops blanks, repeats and the name itself', () => {
+    expect(cleanOtherSpellings('MACAU ANGLICAN COLLEGE', ['  mac ', '', 'MAC', 'Macau Anglican College.', 'M.A.C.', 'Colégio Anglicano de Macau']))
+      .toEqual(['MAC', 'COLÉGIO ANGLICANO DE MACAU'])
   })
 })

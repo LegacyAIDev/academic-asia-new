@@ -37,6 +37,7 @@ export const navigation: NavItem[] = [
       {
         items: [
           { name: "All Students", href: "/students", icon: Users },
+          { name: "Current Schools", href: "/students/present-schools", icon: School },
           { name: "Brief Intro Export", href: "/students/brief-intros/export", icon: Languages },
         ],
       },
@@ -92,3 +93,16 @@ export const navigation: NavItem[] = [
   { name: "Settings", href: "/settings", icon: Settings },
 ]
 
+/**
+ * The child entry for the current page: the longest href the path is under, so
+ * "All Students" is not lit up next to "Current Schools" on that page, while a
+ * student's own page still lights up "All Students".
+ */
+export function activeChildHref(children: NavGroup[] | undefined, pathname: string): string | null {
+  let best: string | null = null
+  for (const { href } of (children ?? []).flatMap((group) => group.items)) {
+    const under = pathname === href || pathname.startsWith(`${href}/`)
+    if (under && href.length > (best?.length ?? 0)) best = href
+  }
+  return best
+}

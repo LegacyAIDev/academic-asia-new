@@ -6,7 +6,7 @@ const state = vi.hoisted(() => ({ client: null as unknown }))
 vi.mock('next/headers', () => ({ cookies: vi.fn(async () => ({})) }))
 vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn(() => state.client) }))
 
-import { getPresentSchoolName, getPresentSchools } from '../present-schools'
+import { getPresentSchoolName, getPresentSchools, getPresentSchoolsWithCounts } from '../present-schools'
 
 type Result = { data: unknown; error: unknown }
 
@@ -50,6 +50,32 @@ describe('getPresentSchools', () => {
   it('returns nothing rather than a cut-off list when a page fails', async () => {
     setup([page(1000), { data: null, error: { message: 'timeout' } }])
     expect(await getPresentSchools()).toEqual([])
+  })
+})
+
+describe('getPresentSchoolsWithCounts', () => {
+  it('lists every school, inactive ones too, with how many students attend it', async () => {
+    const queries = setup([{ data: [
+      { id: 1, name: 'KELLETT SCHOOL (PRIMARY)', aliases: [], source: 'hk_list', students: [{ count: 152 }] },
+      { id: 2, name: 'SHA TIN COLLEGE', aliases: ['STC'], source: 'staff', students: [{ count: 0 }] },
+    ], error: null }])
+    expect(await getPresentSchoolsWithCounts()).toEqual([
+      { id: 1, name: 'KELLETT SCHOOL (PRIMARY)', aliases: [], source: 'hk_list', student_count: 152 },
+      { id: 2, name: 'SHA TIN COLLEGE', aliases: ['STC'], source: 'staff', student_count: 0 },
+    ])
+    expect(callsOf(queries[0], 'select')).toEqual([['id, name, aliases, source, students(count)']])
+    expect(callsOf(queries[0], 'eq')).toEqual([])
+    expect(callsOf(queries[0], 'order')).toEqual([['name'], ['id']])
+  })
+
+  it('reads past the 1,000-row cap and fails loudly rather than show an empty list', async () => {
+    const rows = (n: number, from: number) => Array.from({ length: n }, (_, i) => ({ id: from + i, name: 'X', aliases: [], source: 'hk_list', students: [] }))
+    setup([{ data: rows(1000, 0), error: null }, { data: rows(230, 1000), error: null }])
+    const all = await getPresentSchoolsWithCounts()
+    expect(all).toHaveLength(1230)
+    expect(all[0].student_count).toBe(0)
+    setup([{ data: rows(1000, 0), error: null }, { data: null, error: { message: 'timeout' } }])
+    await expect(getPresentSchoolsWithCounts()).rejects.toThrow('Could not load the list of current schools')
   })
 })
 

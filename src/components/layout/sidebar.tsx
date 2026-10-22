@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { ACCESS, type PermissionMap } from "@/lib/permissions/modules"
 import { moduleForPath } from "@/lib/permissions/route-map"
 import { ChevronDown } from "lucide-react"
-import { navigation, type NavGroup } from "./sidebar-navigation"
+import { activeChildHref, navigation, type NavGroup } from "./sidebar-navigation"
 
 type SidebarProps = {
   /** Resolved server-side in the dashboard layout. */
@@ -95,9 +95,7 @@ export function Sidebar({ permissions }: SidebarProps) {
                             )}
                             <ul className="space-y-0.5">
                               {group.items.map((child) => {
-                                const childIsActive = child.href === "/events"
-                                  ? pathname === "/events"
-                                  : pathname.startsWith(child.href)
+                                const childIsActive = child.href === activeChildHref(item.children, pathname)
                                 return (
                                   <li key={child.href}>
                                     <Link
