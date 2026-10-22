@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { familyGroup, relationshipSeenFrom, siblingCodeFor } from '../family-relationships'
+import { familyGroup, groupFamily, relationshipSeenFrom, siblingCodeFor } from '../family-relationships'
 import { studentSearchFilter, studentSearchWords } from '../student-search'
 
 describe('familyGroup', () => {
@@ -22,6 +22,41 @@ describe('relationshipSeenFrom', () => {
     expect(relationshipSeenFrom('friend', 'F')).toEqual({ group: 'others', label: 'Friend' })
     expect(relationshipSeenFrom('uncle', 'M')).toEqual({ group: 'others', label: 'Family' })
     expect(relationshipSeenFrom(null, 'M')).toEqual({ group: 'others', label: 'Family' })
+  })
+})
+
+describe('groupFamily', () => {
+  const contact = (id: string, code: string | null, related: string | null = null) =>
+    ({ id, relationship: code ? { code } : null, related_student_id: related })
+  const link = (id: string, code: string | null, gender: string | null) =>
+    ({ contactId: `l-${id}`, relationshipCode: code, student: { id, gender } })
+
+  it('sorts contacts into parents, brothers and sisters, and everyone else', () => {
+    const groups = groupFamily([contact('m', 'mother'), contact('b', 'brother', 's2'), contact('u', 'uncle'), contact('x', null)], [])
+    expect(groups.parents.map((e) => e.kind === 'contact' && e.contact.id)).toEqual(['m'])
+    expect(groups.siblings.map((e) => e.kind === 'contact' && e.contact.id)).toEqual(['b'])
+    expect(groups.others.map((e) => e.kind === 'contact' && e.contact.id)).toEqual(['u', 'x'])
+  })
+
+  it('adds links from other students with the relationship turned round', () => {
+    const groups = groupFamily([], [link('s3', 'brother', 'F'), link('s4', 'cousin', 'M'), link('s5', 'uncle', 'M')])
+    expect(groups.siblings).toEqual([{ kind: 'link', link: link('s3', 'brother', 'F'), label: 'Sister' }])
+    expect(groups.others.map((e) => e.kind === 'link' && e.label)).toEqual(['Cousin', 'Family'])
+  })
+
+  it('shows a student once when both students linked each other', () => {
+    const groups = groupFamily([contact('b', 'brother', 's2')], [link('s2', 'sister', 'M')])
+    expect(groups.siblings).toHaveLength(1)
+    expect(groups.siblings[0].kind).toBe('contact')
+  })
+
+  it('keeps the order it was given and drops a double link in any group', () => {
+    const groups = groupFamily(
+      [contact('f', 'father'), contact('m', 'mother'), contact('c', 'cousin', 's4')],
+      [link('s4', 'cousin', 'M'), link('s5', 'friend', 'F')],
+    )
+    expect(groups.parents.map((e) => e.kind === 'contact' && e.contact.id)).toEqual(['f', 'm'])
+    expect(groups.others.map((e) => (e.kind === 'contact' ? e.contact.id : e.label))).toEqual(['c', 'Friend'])
   })
 })
 

@@ -41,3 +41,29 @@ export function relationshipSeenFrom(
 export function siblingCodeFor(gender: string | null | undefined): 'brother' | 'sister' | null {
   return gender === 'M' ? 'brother' : gender === 'F' ? 'sister' : null
 }
+
+type ContactLike = { relationship: { code: string } | null; related_student_id: string | null }
+type LinkLike = { relationshipCode: string | null; student: { id: string; gender: string | null } }
+
+/** One card on the Family tab: a contact of this student, or a link another student made to them. */
+export type FamilyEntry<C, L> =
+  | { kind: 'contact'; contact: C }
+  | { kind: 'link'; link: L; label: string }
+
+/**
+ * The Family tab's three groups. A link another student made shows in the group
+ * its turned-round relationship belongs to, unless this student already links
+ * back to the same student themself, which would show them twice.
+ */
+export function groupFamily<C extends ContactLike, L extends LinkLike>(contacts: C[], links: L[]) {
+  const groups: Record<FamilyGroup, FamilyEntry<C, L>[]> = { parents: [], siblings: [], others: [] }
+  for (const contact of contacts) groups[familyGroup(contact.relationship?.code)].push({ kind: 'contact', contact })
+
+  const linkedHere = new Set(contacts.map((c) => c.related_student_id).filter(Boolean))
+  for (const link of links) {
+    if (linkedHere.has(link.student.id)) continue
+    const seen = relationshipSeenFrom(link.relationshipCode, link.student.gender)
+    groups[seen.group].push({ kind: 'link', link, label: seen.label })
+  }
+  return groups
+}

@@ -50,6 +50,9 @@ import {
   deleteStudentContact,
   type CreateContactInput,
 } from "@/lib/supabase/actions/students"
+import type { StudentContactWithRelations as ContactWithRelations } from "@/lib/supabase/queries/students"
+import type { LinkedStudent } from "@/lib/supabase/queries/student-family"
+import { FamilyStudentPicker } from "./family-student-picker"
 
 type ReferenceItem = {
   id: number
@@ -57,31 +60,6 @@ type ReferenceItem = {
   label: string
 }
 
-type ContactWithRelations = {
-  id: string
-  student_id: string
-  first_name: string | null
-  surname: string | null
-  mobile: string | null
-  telephone: string | null
-  fax: string | null
-  email_1: string | null
-  email_2: string | null
-  email_3: string | null
-  address_1: string | null
-  address_2: string | null
-  occupation: string | null
-  office_telephone: string | null
-  office_fax: string | null
-  priority: number | null
-  gender: string | null
-  status: string | null
-  remarks: string | null
-  relationship_id: number | null
-  title_id: number | null
-  relationship: { id: number; code: string; label: string } | null
-  title: { id: number; code: string; label: string } | null
-}
 
 type ContactDialogProps = {
   studentId: string
@@ -168,6 +146,7 @@ export function ContactDialog({
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [address, setAddress] = useState(contact?.address_1 ?? "")
+  const [linkedStudent, setLinkedStudent] = useState<LinkedStudent | null>(contact?.related_student ?? null)
 
   const { relationships, titles } = referenceData
 
@@ -194,6 +173,17 @@ export function ContactDialog({
       office_telephone: (formData.get("office_telephone") as string) || null,
       priority: formData.get("priority") ? parseInt(formData.get("priority") as string, 10) : null,
       remarks: (formData.get("remarks") as string) || null,
+      // Always sent, so picking "Remove link" really removes it.
+      related_student_id: linkedStudent?.id ?? null,
+    }
+    // While linked, the personal fields are hidden: leave them out so the saved
+    // title and occupation stay as they are (name and gender come from the student).
+    if (linkedStudent) {
+      delete input.title_id
+      delete input.first_name
+      delete input.surname
+      delete input.gender
+      delete input.occupation
     }
 
     startTransition(async () => {
@@ -218,13 +208,17 @@ export function ContactDialog({
   return (
     <Dialog open={open} onOpenChange={(v) => {
       setOpen(v)
-      if (v) setAddress(contact?.address_1 ?? "")
+      if (v) {
+        setAddress(contact?.address_1 ?? "")
+        setLinkedStudent(contact?.related_student ?? null)
+        setError(null)
+      }
     }}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
             <Plus className="h-4 w-4" />
-            Add Contact
+            Add family member
           </Button>
         )}
       </DialogTrigger>
@@ -253,12 +247,12 @@ export function ContactDialog({
 
             <DialogHeader className="flex-1 space-y-1">
               <DialogTitle className="text-xl font-semibold tracking-tight">
-                {mode === "create" ? "Add New Contact" : "Edit Contact"}
+                {mode === "create" ? "Add family member" : "Edit family member"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground">
                 {mode === "create"
                   ? "Add a family member, guardian, or emergency contact"
-                  : "Update contact details and information"}
+                  : "Update family member details"}
               </p>
             </DialogHeader>
 
@@ -319,8 +313,11 @@ export function ContactDialog({
                     </Select>
                   </FormField>
                 </div>
+                <FamilyStudentPicker studentId={studentId} value={linkedStudent} onChange={setLinkedStudent} />
               </FormSection>
 
+              {/* A linked student's name and gender come from their own record. */}
+              {!linkedStudent && (
               <FormSection icon={User} title="Personal Details" accentColor="primary">
                 <div className="grid grid-cols-3 gap-3">
                   <FormField label="Title">
@@ -359,6 +356,7 @@ export function ContactDialog({
                   </FormField>
                 </div>
               </FormSection>
+              )}
 
               <FormSection icon={Phone} title="Contact Details" accentColor="teal">
                 <FormField label="Mobile">

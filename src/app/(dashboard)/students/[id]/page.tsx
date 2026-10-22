@@ -34,10 +34,11 @@ import {
   Plane,
   FileCheck,
   Files,
-  Plus,
   CalendarClock,
+  Users,
 } from "lucide-react"
 import { getStudentById, getStudentContacts, getContactReferenceData } from "@/lib/supabase/queries/students"
+import { getFamilyLinksToStudent } from "@/lib/supabase/queries/student-family"
 import { getStudentApplications, getApplicationReferenceData } from "@/lib/supabase/queries/student-applications"
 import { getStudentEducation, getEducationReferenceData } from "@/lib/supabase/queries/student-education"
 import { getStudentVisas, getVisaReferenceData } from "@/lib/supabase/queries/student-visas"
@@ -50,7 +51,7 @@ import { getStudentResumeProfile, getStudentResumeTalents, getStudentDocuments }
 import { getStudentAATests } from "@/lib/supabase/queries/student-individual-exams"
 import { StudentCalendarSection } from "./student-calendar-section"
 import { getStudentInternalNotes } from "@/lib/supabase/queries/student-internal-notes"
-import { StudentContactsSection } from "./student-contacts"
+import { StudentFamilySection } from "./student-family"
 import { StudentApplicationsSection } from "./student-applications"
 import { StudentEducationSection } from "./student-education"
 import { StudentVisasSection } from "./student-visas"
@@ -97,9 +98,11 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
 
   const { id } = await params
   const { tab: rawTab } = await searchParams
-  // Normalise the tab param, mapping the legacy "profile" value to "overview"
-  const validTabs = ["overview", "resume", "contacts", "education", "documents", "applications", "events", "immigration"]
-  const tab = validTabs.includes(rawTab ?? "") ? (rawTab as string) : "overview"
+  // Normalise the tab param, mapping the legacy "profile" value to "overview" and
+  // the old "contacts" tab (renamed Family) to "family", so saved links still work
+  const validTabs = ["overview", "resume", "family", "education", "documents", "applications", "events", "immigration"]
+  const requestedTab = rawTab === "contacts" ? "family" : rawTab
+  const tab = validTabs.includes(requestedTab ?? "") ? (requestedTab as string) : "overview"
 
   // Fetch student, contacts, applications, and reference data in parallel
   const [
@@ -115,6 +118,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     internalNotes,
     resumeProfile, resumeTalents, resumeDocuments, aaTests, legalDocuments,
     allDocuments,
+    familyLinks,
   ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
@@ -142,6 +146,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     getStudentAATests(id),
     getStudentDocuments(id, 'legal_documents'),
     getStudentDocuments(id),
+    getFamilyLinksToStudent(id),
   ])
 
   if (!student) {
@@ -543,10 +548,10 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
                   Resume
                 </Link>
               </TabsTrigger>
-              <TabsTrigger value="contacts" asChild>
-                <Link href={`/students/${id}?tab=contacts`} scroll={false} className="gap-1.5">
-                  <Phone className="h-4 w-4" />
-                  Contacts
+              <TabsTrigger value="family" asChild>
+                <Link href={`/students/${id}?tab=family`} scroll={false} className="gap-1.5">
+                  <Users className="h-4 w-4" />
+                  Family
                 </Link>
               </TabsTrigger>
               <TabsTrigger value="education" asChild>
@@ -635,13 +640,15 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
             />
           </TabsContent>
 
-          {/* Contacts: family / next-of-kin */}
-          <TabsContent value="contacts" className="space-y-6">
-            <StudentContactsSection
+          {/* Family: parents, brothers and sisters (linked when they are students too), other contacts */}
+          <TabsContent value="family" className="space-y-6">
+            <StudentFamilySection
               studentId={id}
               contacts={contacts}
+              linksToStudent={familyLinks}
               referenceData={contactReferenceData}
               studentAddress={student.address_line_1}
+              canWrite={canWrite}
             />
           </TabsContent>
 

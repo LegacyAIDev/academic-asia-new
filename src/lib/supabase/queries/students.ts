@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import type { StudentStatus, PlacementStatus, Course } from '@/types/database.types'
+import type { LinkedStudent } from '@/lib/supabase/queries/student-family'
 
 type SupabaseServerClient = ReturnType<typeof createClient>
 
@@ -319,10 +320,40 @@ export async function getStudentById(id: string): Promise<StudentWithJoins | nul
   return data as unknown as StudentWithJoins
 }
 
+/** A family member or other contact of a student, with what the Family tab and its dialog show. */
+export type StudentContactWithRelations = {
+  id: string
+  student_id: string
+  first_name: string | null
+  surname: string | null
+  mobile: string | null
+  telephone: string | null
+  fax: string | null
+  email_1: string | null
+  email_2: string | null
+  email_3: string | null
+  address_1: string | null
+  address_2: string | null
+  occupation: string | null
+  office_telephone: string | null
+  office_fax: string | null
+  priority: number | null
+  gender: string | null
+  status: string | null
+  remarks: string | null
+  relationship_id: number | null
+  title_id: number | null
+  related_student_id: string | null
+  relationship: { id: number; code: string; label: string } | null
+  title: { id: number; code: string; label: string } | null
+  /** Set when this family member is a student too. */
+  related_student: LinkedStudent | null
+}
+
 /**
  * Fetch student contacts for a specific student
  */
-export async function getStudentContacts(studentId: string) {
+export async function getStudentContacts(studentId: string): Promise<StudentContactWithRelations[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
@@ -342,7 +373,7 @@ export async function getStudentContacts(studentId: string) {
     return []
   }
 
-  return data ?? []
+  return (data ?? []) as unknown as StudentContactWithRelations[]
 }
 
 /**
