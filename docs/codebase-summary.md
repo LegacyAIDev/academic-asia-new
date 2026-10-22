@@ -69,8 +69,9 @@ src/app/
     │   ├── present-school-picker.tsx  # Current School picker (client): self-filtered Command, "Add to list", legacy-text hint
     │   ├── present-schools/       # "Current Schools" list management (/students/present-schools)
     │   │   ├── page.tsx           # Loads getPresentSchoolsWithCounts(); Students READ to view, WRITE to add/edit
-    │   │   ├── present-schools-table.tsx  # Toolbar (search, source filter, count, Add) + list card; filters in the browser, 100 rows + Show more
-    │   │   ├── present-school-row.tsx     # Row: name, other spellings, "Added by staff" badge, student count, Edit
+    │   │   ├── present-schools-table.tsx  # Toolbar (search, source filter, count, Add); A–Z directory without a search, ranked matches (100 + Show more) with one
+    │   │   ├── present-schools-directory.tsx # A–Z register: letter bar, sticky letter headings, every school (groupByInitial)
+    │   │   ├── present-school-row.tsx     # Row: name, other spellings, "Added by staff", student count, Edit (memoised)
     │   │   └── present-school-dialog.tsx  # Add/edit dialog: name + other spellings; live "N students will show the new name" note
     │   ├── new/page.tsx
     │   ├── brief-intros/export/   # Bulk Brief Introduction export — picker + controls + print CSS
