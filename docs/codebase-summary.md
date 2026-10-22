@@ -77,7 +77,11 @@ src/app/
     │   └── [id]/
     │       ├── page.tsx           # Student detail — assembles all sections
     │       ├── edit/page.tsx
-    │       ├── student-contacts.tsx
+    │       ├── student-family.tsx         # Family tab: Parents and guardians / Brothers and sisters / Other family and contacts (groupFamily); Add/Edit/Delete need WRITE
+    │       ├── family-member-card.tsx     # Card for a typed-in family member
+    │       ├── linked-student-card.tsx    # Card for a linked student; "View profile" to their ?tab=family; "Linked from their profile" when the other student made the link
+    │       ├── family-student-picker.tsx  # "Already a student?" picker in contact-dialog.tsx; server search as staff type
+    │       ├── contact-dialog.tsx         # Add/edit family member; hosts the picker, always sends related_student_id
     │       ├── student-education.tsx
     │       ├── student-applications.tsx   # Applications tab; school name / eye icon link to the detail page; Create/Edit/Delete need WRITE
     │       ├── applications/[applicationId]/  # Application detail page (journey, record, deposits, exams, bookings, timeline, status control)
@@ -243,7 +247,8 @@ src/lib/
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
 ├── students/
-│   ├── family-relationships.ts   # familyGroup (parents, siblings, others), relationshipSeenFrom (link read from the other student's side), siblingCodeFor (pure; tested in __tests__/family-relationships.test.ts)
+│   ├── linked-student-label.ts   # linkedStudentName, linkedStudentDetails (picker and Family tab cards; tested in __tests__/linked-student-label.test.ts)
+│   ├── family-relationships.ts   # familyGroup (parents, siblings, others), groupFamily (Family tab groups; skips a link when the student links back), relationshipSeenFrom (link read from the other student's side), siblingCodeFor (pure; tested in __tests__/family-relationships.test.ts)
 │   ├── student-search.ts         # studentSearchWords, studentSearchFilter (every word matches surname, first name, Chinese name or code)
 │   └── present-school-name.ts    # cleanSchoolName, presentSchoolKey, parseSchoolListLine, schoolSearchKeys, PresentSchoolOption, indexPresentSchools, filterPresentSchools, PRESENT_SCHOOL_NAME_MAX, isUsableSchoolName, cleanOtherSpellings, PresentSchoolSource (pure; generic filter returns `total`; tested in __tests__/present-school-name.test.ts)
 ├── attachments/                  # Record attachments — file or link on a specific row

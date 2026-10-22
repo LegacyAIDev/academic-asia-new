@@ -171,7 +171,7 @@ feature with non-trivial pure logic rather than burying it inside a Server Actio
 ### 7.1 Large entity detail pages
 
 Student and school detail pages follow a section + dialog split pattern. Each sub-entity (contacts, applications, visas, etc.) has:
-- A **section component** (e.g., `student-contacts.tsx`) — renders the data table/list for that sub-entity on the detail page.
+- A **section component** (e.g., `student-family.tsx` with its `family-member-card.tsx`) — renders the data table/list for that sub-entity on the detail page.
 - A **dialog component** (e.g., `contact-dialog.tsx`) — modal for creating or editing a single record.
 
 This keeps individual files well under the 200-line target. `students/[id]/page.tsx` composes all section components.
