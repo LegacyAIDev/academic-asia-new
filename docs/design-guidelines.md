@@ -302,4 +302,5 @@ The application page (`students/[id]/applications/[applicationId]/`) and the sch
 - **Long-list picker** (`present-school-picker.tsx`): a Popover with a cmdk `Command` using `shouldFilter={false}` and the app's own filter, for lists over 1,000 rows. At most 50 rows are rendered, with a quiet "Keep typing to narrow down" line.
 - **Add to list** is the last item, only when the user may add, nothing matches the typed name exactly and the name is valid. Save stays disabled while the add runs.
 - **Legacy text** (not yet on the list) is shown as typed with a muted hint, and the search starts from it. A "Clear" item unlinks.
+- **List-management page** (`students/present-schools`): a toolbar card (search, source filter, count, Add button) above a list card with an eyebrow header. The full list loads once and filters in the browser; 100 rows then "Show more". The edit dialog shows a live "N students will show the new name" note. Add/Edit buttons are hidden without WRITE.
 - Tokens only; no new colours.

@@ -148,6 +148,8 @@ npx tsx scripts/43_import-present-schools.ts
 - The students `updated_at` trigger fires when a student is linked.
 - Undo links: `update students set present_school_id = null where ...;`
 
+**Warning:** once list schools have been renamed on the Current Schools page, do not re-run this script as-is. A rename replaces the old name, so the import would add the original list names again as new schools.
+
 Result on 2026-10-22: 1,230 schools; 11,938 of 23,547 students with a school linked.
 
 ---
