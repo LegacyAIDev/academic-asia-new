@@ -80,6 +80,7 @@ src/app/
     │       ├── student-family.tsx         # Family tab: Parents and guardians / Brothers and sisters / Other family and contacts (groupFamily); Add/Edit/Delete need WRITE
     │       ├── family-member-card.tsx     # Card for a typed-in family member
     │       ├── linked-student-card.tsx    # Card for a linked student; "View profile" to their ?tab=family; "Linked from their profile" when the other student made the link
+    │       ├── family-suggestions.tsx     # "Possibly family in the system" card (WRITE only); one-click link, "Not family" hides for the visit
     │       ├── family-student-picker.tsx  # "Already a student?" picker in contact-dialog.tsx; server search as staff type
     │       ├── contact-dialog.tsx         # Add/edit family member; hosts the picker, always sends related_student_id
     │       ├── student-education.tsx
@@ -247,7 +248,7 @@ src/lib/
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
 ├── students/
-│   ├── linked-student-label.ts   # linkedStudentName, linkedStudentDetails (picker and Family tab cards; tested in __tests__/linked-student-label.test.ts)
+│   ├── linked-student-label.ts   # linkedStudentName, linkedStudentDetails, sharedDetailsText (suggestion "matched on" text) (picker, Family tab cards and suggestions; tested in __tests__/linked-student-label.test.ts)
 │   ├── family-relationships.ts   # familyGroup (parents, siblings, others), groupFamily (Family tab groups; skips a link when the student links back), relationshipSeenFrom (link read from the other student's side), siblingCodeFor (pure; tested in __tests__/family-relationships.test.ts)
 │   ├── student-search.ts         # studentSearchWords, studentSearchFilter (every word matches surname, first name, Chinese name or code)
 │   └── present-school-name.ts    # cleanSchoolName, presentSchoolKey, parseSchoolListLine, schoolSearchKeys, PresentSchoolOption, indexPresentSchools, filterPresentSchools, PRESENT_SCHOOL_NAME_MAX, isUsableSchoolName, cleanOtherSpellings, PresentSchoolSource (pure; generic filter returns `total`; tested in __tests__/present-school-name.test.ts)
@@ -372,7 +373,7 @@ src/lib/
         ├── scheduler-calendar-helpers.ts  # peopleOrFilter lookups, fetchCancelledRows, attachAttendees, inBatches (100-id batches)
         ├── __tests__/                # Scheduler query tests against a stubbed query builder (supabase-stub.ts); exam-paper-listing-access.test.ts covers papers hidden from non-team users
         ├── students.ts
-        ├── student-family.ts         # searchStudentsForFamily (20 results, throws), getFamilyLinksToStudent, getLinkedStudent; test in __tests__/student-family.test.ts. getStudentContacts (students.ts) embeds related_student via the named FK
+        ├── student-family.ts         # searchStudentsForFamily (20 results, throws), getFamilyLinksToStudent, getLinkedStudent, getFamilySuggestions (rpc `student_family_suggestions`, limit 5, [] on error); test in __tests__/student-family.test.ts. getStudentContacts (students.ts) embeds related_student via the named FK
         ├── present-schools.ts        # getPresentSchools (active, pages of 1,000, [] on error), getPresentSchoolsWithCounts (all, with source and students(count); throws), getPresentSchoolName (throws); test in __tests__/present-schools.test.ts
         ├── schools.ts
         ├── staff.ts
@@ -439,6 +440,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | Timestamped (2026-10-12) | `20261012130805_school_placement_history.sql` (read-only function `school_placement_history(p_school_id)`: per-entry-year application/offer/placed counts for a school) |
 | Timestamped (2026-10-21) | `20261021204752_present_schools.sql` (table `present_schools`, `students.present_school_id` FK, select/insert/update RLS, no delete) |
 | Timestamped (2026-10-22) | `20261022152919_student_contacts_related_student.sql` (`student_contacts.related_student_id` FK to `students`, no self-link check, partial index, unique per student and link) |
+| Timestamped (2026-10-22) | `20261022165842_student_family_suggestions.sql` (function `student_family_suggestions(p_student_id)` plus two partial expression indexes on contact mobile digits and `lower(btrim(email_1))`; execute for `authenticated` only) |
 | Timestamped (2026-10-20) | `20261020110718_student_application_status_history.sql` (table `student_application_status_history`, trigger `student_applications_status_history`, select-only RLS), `20261020133120_student_application_status_history_revoke_execute.sql` (revokes EXECUTE on the trigger function) |
 
 ---

@@ -132,7 +132,8 @@ Plan `261022-1715-family-members-linked-to-students`.
 
 - [x] Phase 1 (2026-10-22): data and server side. `student_contacts.related_student_id`, student search for the picker, link-aware create/update/delete contact, both-ways read query. See system-architecture 5.2b.
 - [x] Phase 2 (2026-10-22): Family tab (parents, siblings, others; renamed from Contacts) and the "Already a student?" picker in the contact form. Browser check by the user pending. See system-architecture 5.2b.
-- [ ] Phase 3: possibly-family suggestions.
+- [x] Phase 3 (2026-10-22): "Possibly family in the system" suggestions on the Family tab (shared mobile or email; WRITE only). Browser check by the user pending. See system-architecture 5.2b.
+- Open question for Jack: should "Not family" be remembered permanently? Today it hides the row for the visit only.
 
 ---
 
@@ -187,6 +188,7 @@ Open questions for Jack:
 
 ## Changelog
 
+- **2026-10-22** — Family members linked to students, phase 3 (customer item 5): migration `20261022165842` adds `student_family_suggestions(p_student_id)` (matches family contacts' mobile or email_1 with other students; skips numbers shared by more than 6 students, same-name students and existing links; never returns the phone/email). Family tab card "Possibly family in the system" with one-click "Link as brother/sister" and "Not family" (visit only); Students WRITE only. 104 of 300 sampled students get suggestions. Not matched: 852-prefixed mobiles, email_2.
 - **2026-10-22** — Exam Results tab restyled to Jack's year-first layout (school page): the Summary is one block per exam year, newest first, with a line per exam type and figure tiles narrowest band first; range counts the most recent years with results across all exam types; "Copy summary" copies one line per year. Number grades read "Grade 9" / "Grades 9-8". The per-cell heat tint is gone. `summariseAcademicResults` replaced by `summariseResultsByYear` and `resultsSummaryText`. Details: system-architecture, design-guidelines.
 - **2026-10-22** — Fix: Exam Results tab crashed for every school with results (`result_percentage` is numeric and arrives as a JSON number; `formatResultValue` now takes a number). Commit 4588eba.
 - **2026-10-22** — Family members linked to students, phase 2 (customer item 5): student page tab "Contacts" is now "Family" (`?tab=family`; `?tab=contacts` still works). Grouped into Parents and guardians, Brothers and sisters, Other family and contacts; linked students show as cards with "View profile", links made from the other student's side show once with the turned-round relationship ("Linked from their profile"). Contact dialog gains the "Already a student?" server-searched picker; while linked, personal fields are hidden and not saved. `student-contacts.tsx` replaced by `student-family.tsx`, `family-member-card.tsx`, `linked-student-card.tsx`, `family-student-picker.tsx`; new `linked-student-label.ts`, `groupFamily`. Browser check by the user pending. Details: system-architecture 5.2b.
