@@ -48,9 +48,14 @@ describe('formatResultValue', () => {
   })
 })
 
-/** Bands and figures of one year's line for an exam type, for short assertions. */
+/** The published figures of one year's line for an exam type (empty columns left out), for short assertions. */
 const line = (years: ReturnType<typeof summariseResultsByYear>, year: number, examType: string) =>
-  years.find(y => y.year === year)?.lines.find(l => l.examType === examType)?.figures.map(f => `${f.band} ${f.value}`)
+  years.find(y => y.year === year)?.lines.find(l => l.examType === examType)?.figures
+    .filter(f => f.value !== null).map(f => `${f.band} ${f.value}`)
+
+/** Every column of one year's line, empty ones as "—". */
+const columns = (years: ReturnType<typeof summariseResultsByYear>, year: number, examType: string) =>
+  years.find(y => y.year === year)?.lines.find(l => l.examType === examType)?.figures.map(f => `${f.band} ${f.value ?? '—'}`)
 
 describe('summariseResultsByYear', () => {
   it('is empty without results', () => {
@@ -87,10 +92,39 @@ describe('summariseResultsByYear', () => {
     expect(line(years, 2022, 'GCSE')).toEqual(['A* 50%', 'A*–A 80%', 'Grade 9 20%', 'Grades 9–8 45%', 'Grades 9–7 70%', 'Grades 9–4 95%'])
   })
 
-  it('shows each year only the bands published that year', () => {
+  it('gives every year the same columns, so a band sits in the same place each year', () => {
+    const years = summariseResultsByYear([
+      row('a_level', 2025, 'A*', 'A', 60), row('a_level', 2025, 'A*', 'B', 83),
+      row('a_level', 2024, 'A*', null, 24), row('a_level', 2024, 'A*', 'A', 58), row('a_level', 2024, 'A*', 'C', 98),
+    ], 'all')
+    expect(columns(years, 2025, 'A Level')).toEqual(['A* —', 'A*–A 60%', 'A*–B 83%', 'A*–C —'])
+    expect(columns(years, 2024, 'A Level')).toEqual(['A* 24%', 'A*–A 58%', 'A*–B —', 'A*–C 98%'])
+  })
+
+  it('keeps number and letter grades apart, so a year on one scale gets no empty columns for the other', () => {
     const years = summariseResultsByYear([row('gcse', 2022, '9', '7', 66), row('gcse', 2021, 'A*', 'A', 80)], 'all')
-    expect(line(years, 2022, 'GCSE')).toEqual(['Grades 9–7 66%'])
-    expect(line(years, 2021, 'GCSE')).toEqual(['A*–A 80%'])
+    expect(columns(years, 2022, 'GCSE')).toEqual(['Grades 9–7 66%'])
+    expect(columns(years, 2021, 'GCSE')).toEqual(['A*–A 80%'])
+  })
+
+  it('only lines up columns with the years on screen', () => {
+    const rows = [row('a_level', 2025, 'A*', null, 30), row('a_level', 2015, 'A*', 'B', 70)]
+    expect(columns(summariseResultsByYear(rows, 'latest3'), 2025, 'A Level')).toEqual(['A* 30%', 'A*–B —'])
+    expect(columns(summariseResultsByYear([...rows, row('a_level', 2024, 'A*', null, 1), row('a_level', 2023, 'A*', null, 2)], 'latest3'), 2025, 'A Level'))
+      .toEqual(['A* 30%'])
+  })
+
+  it('measures the bar under each figure: a percentage of 100, IB average points of 45', () => {
+    const years = summariseResultsByYear([
+      row('a_level', 2024, 'A*', null, 37), row('a_level', 2024, 'A*', 'B', 120), row('ib', 2024, null, null, 36),
+    ], 'all')
+    const shares = years[0].lines.flatMap(l => l.figures.map(f => f.share))
+    expect(shares).toEqual([0.37, 1, 0.8])
+  })
+
+  it('draws no bar for a value that is not a number', () => {
+    const [year] = summariseResultsByYear([row('a_level', 2024, 'A*', null, Number.NaN)], 'all')
+    expect(year.lines[0].figures[0].share).toBeNull()
   })
 
   it('counts the most recent years that have results, so a gap does not shorten the range', () => {
@@ -163,7 +197,7 @@ describe('summariseResultsByYear', () => {
       row('higher', 2023, 'A', 'C', 90), row('higher', 2023, 'A', null, 40), row('higher', 2023, 'A', 'B', 70),
     ], 'latest3')
     expect(years).toEqual([{ year: 2023, lines: [{ code: 'higher', examType: 'Higher', figures: [
-      { band: 'A', value: '40%' }, { band: 'A–B', value: '70%' }, { band: 'A–C', value: '90%' },
+      { band: 'A', value: '40%', share: 0.4 }, { band: 'A–B', value: '70%', share: 0.7 }, { band: 'A–C', value: '90%', share: 0.9 },
     ] }] }])
   })
 
@@ -198,6 +232,8 @@ describe('resultsSummaryText', () => {
       row('a_level', 2024, 'A*', null, 32),
     ], 'all')
     expect(resultsSummaryText(years)).toBe('2025 — GCSE: Grade 9 47%, Grades 9–8 75% · A Level: A* 37%\n2024 — A Level: A* 32%')
+    const withGap = summariseResultsByYear([row('a_level', 2025, 'A*', 'A', 60), row('a_level', 2024, 'A*', null, 24)], 'all')
+    expect(resultsSummaryText(withGap)).toBe('2025 — A Level: A*–A 60%\n2024 — A Level: A* 24%')
     expect(resultsSummaryText([])).toBe('')
   })
 

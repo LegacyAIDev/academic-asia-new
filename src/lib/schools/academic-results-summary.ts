@@ -9,13 +9,24 @@ import type { SchoolAcademicResultWithJoins } from '@/lib/supabase/queries/schoo
 
 export type ResultsYearRange = 'latest3' | 'last5' | 'all'
 
+export type ResultsFigure = {
+  band: string
+  /** "47%"; null where another year on screen shows this band and this year does not. */
+  value: string | null
+  /** How far the bar under the figure reaches, 0 to 1: a percentage of 100, or IB points of 45. */
+  share: number | null
+}
+
 /** One exam type in one year: "GCSE" with Grade 9 47%, Grades 9–8 75% … */
 export type ResultsLine = {
   /** Exam type code, unique within a year. */
   code: string
   examType: string
-  /** Narrowest band first. */
-  figures: { band: string; value: string }[]
+  /**
+   * Narrowest band first. The same columns in every year shown, so a band sits
+   * in the same place each year and the years can be read down a column.
+   */
+  figures: ResultsFigure[]
 }
 
 export type ResultsYear = { year: number; lines: ResultsLine[] }
@@ -89,6 +100,21 @@ function compareBlocks(a: { code: string; label: string }, b: { code: string; la
   return a.label.localeCompare(b.label)
 }
 
+/** Highest IB diploma score; the average point score is measured against it. */
+const IB_MAX_POINTS = 45
+
+function shareOf(value: number, gradeFrom: string | null, examCode: string): number | null {
+  if (!Number.isFinite(value)) return null
+  const share = !gradeFrom && isIb(examCode) ? value / IB_MAX_POINTS : value / 100
+  return Math.min(1, Math.max(0, share))
+}
+
+/**
+ * Number grades (9–1) and letter grades (A*–G) are different scales: a GCSE
+ * year on one never gets empty columns for the other.
+ */
+const scaleOf = (gradeFrom: string | null) => (!gradeFrom ? 'overall' : /^\d+$/.test(gradeFrom) ? 'number' : 'letter')
+
 const freshness = (row: ResultRow) => row.updated_at ?? row.created_at ?? ''
 
 /** True when `row` should replace `kept` as the shown record; the id settles equal timestamps so the query order does not. */
@@ -115,6 +141,18 @@ export function summariseResultsByYear(results: ResultRow[], range: ResultsYearR
 
   const rows = [...latest.values()]
   const years = [...new Set(rows.map(r => r.exam_year as number))].sort((a, b) => b - a).slice(0, YEARS_IN_RANGE[range])
+  const shown = new Set(years)
+
+  // Every band each exam type uses in the years shown: the shared columns.
+  const columnsByType = new Map<string, Map<string, Band & { scale: ReturnType<typeof scaleOf> }>>()
+  for (const row of rows) {
+    if (!shown.has(row.exam_year as number)) continue
+    const code = row.exam_type?.code ?? 'unknown'
+    const label = bandLabel(row.grade_from, row.grade_to, code)
+    const columns = columnsByType.get(code) ?? new Map()
+    if (!columns.has(label)) columns.set(label, { from: row.grade_from, to: row.grade_to, label, scale: scaleOf(row.grade_from) })
+    columnsByType.set(code, columns)
+  }
 
   return years.map(year => {
     const byType = new Map<string, { code: string; label: string; rows: ResultRow[] }>()
@@ -126,14 +164,23 @@ export function summariseResultsByYear(results: ResultRow[], range: ResultsYearR
       byType.set(code, entry)
     }
 
-    const lines = [...byType.values()].sort(compareBlocks).map(({ code, label, rows: typeRows }) => ({
-      code,
-      examType: label,
-      figures: typeRows
-        .map(row => ({ row, band: { from: row.grade_from, to: row.grade_to, label: bandLabel(row.grade_from, row.grade_to, code) } }))
-        .sort((a, b) => compareBands(a.band, b.band))
-        .map(({ row, band }) => ({ band: band.label, value: formatResultValue(row.result_percentage, row.grade_from, code) })),
-    }))
+    const lines = [...byType.values()].sort(compareBlocks).map(({ code, label, rows: typeRows }) => {
+      const scales = new Set(typeRows.map(r => scaleOf(r.grade_from)))
+      const byBand = new Map(typeRows.map(r => [bandLabel(r.grade_from, r.grade_to, code), r]))
+      const columns = [...(columnsByType.get(code)?.values() ?? [])].filter(c => scales.has(c.scale)).sort(compareBands)
+      return {
+        code,
+        examType: label,
+        figures: columns.map(column => {
+          const row = byBand.get(column.label)
+          return {
+            band: column.label,
+            value: row ? formatResultValue(row.result_percentage, row.grade_from, code) : null,
+            share: row?.result_percentage != null ? shareOf(row.result_percentage, row.grade_from, code) : null,
+          }
+        }),
+      }
+    })
     return { year, lines }
   })
 }
@@ -141,6 +188,8 @@ export function summariseResultsByYear(results: ResultRow[], range: ResultsYearR
 /** Plain text for "Copy summary", one line per year: "2025 — GCSE: Grade 9 47%, Grades 9–8 75% · A Level: A* 37%". */
 export function resultsSummaryText(years: ResultsYear[]): string {
   return years
-    .map(({ year, lines }) => `${year} — ${lines.map(line => `${line.examType}: ${line.figures.map(f => `${f.band} ${f.value}`).join(', ')}`).join(' · ')}`)
+    .map(({ year, lines }) => `${year} — ${lines
+      .map(line => `${line.examType}: ${line.figures.filter(f => f.value !== null).map(f => `${f.band} ${f.value}`).join(', ')}`)
+      .join(' · ')}`)
     .join('\n')
 }
