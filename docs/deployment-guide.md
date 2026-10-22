@@ -128,6 +128,10 @@ alter table public.student_applications enable trigger student_applications_stat
 
 If history rows were already written by an import, delete them before go-live (history is meant to start from real changes).
 
+### 5-family. Family links migration (customer item 5)
+
+Migration `20261022152919_student_contacts_related_student.sql` (adds `student_contacts.related_student_id`) was applied through the Supabase MCP, then renamed to the applied version. Other environments get it with `npm run db:push`. No data import.
+
 ### 5a. Present schools import (customer item 6)
 
 Migration `20261021204752_present_schools.sql` was applied through the Supabase MCP (the CLI login is unavailable), then renamed to the applied version. Other environments get it with `npm run db:push`.

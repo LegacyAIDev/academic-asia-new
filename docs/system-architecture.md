@@ -250,6 +250,18 @@ Hosted Supabase project (`aa-new`). 89 SQL migrations define the schema. Heavy u
   - **Rename replaces.** The old name is not kept as a spelling (decision 2026-10-22). Linked students' `present_school` text is updated to the new name (only rows that differ). If that update fails, the pages still refresh and staff are asked to save again.
 - **Status.** Phases 2-3 done 2026-10-22; browser check pending.
 
+### 5.2b Family links (2026-10-22, customer item 5 phase 1)
+
+A family member of one student can be another student. Migration `20261022152919_student_contacts_related_student.sql` (applied via MCP) adds to `student_contacts`:
+
+- **Column.** `related_student_id` FK to `students(id)`, `on delete set null`; check `related_student_id <> student_id` (no self-link); partial index on `related_student_id`; unique `(student_id, related_student_id)` (a student is linked once per owner).
+- **One row, shown both ways.** Only the owner's `student_contacts` row exists; no mirrored row is written. The other student's Family tab will read the links that point at it (`getFamilyLinksToStudent`) and show the relationship from their side with `relationshipSeenFrom`: brother/sister by the owner's gender, cousin and friend unchanged, anything else as "Family". This avoids two rows drifting apart.
+- **Copied-name fallback.** On save, `withLinkedStudent` (`actions/students.ts`) copies the linked student's `surname`, `first_name` and `gender` into the contact row, so it still reads correctly after that student is deleted (the FK nulls `related_student_id`). A self-link or an unknown student is refused; a duplicate returns "This student is already linked as a family member".
+- **Actions.** Create and update contact go through `withLinkedStudent`. Update and delete are scoped to the owning student; `student_id` and `created_by` are never changed by an update. Both students' pages are refreshed (`revalidateFamilyPages`).
+- **Search.** `searchStudentsForFamilyAction` (Students READ) calls `searchStudentsForFamily`: every typed word must match surname, first name, Chinese name or student code (`studentSearchWords` / `studentSearchFilter`, max 4 words), 20 results, excludes the student being edited, throws on failure.
+- **Embed rule.** `student_contacts` now has two FKs to `students` (`student_id` and `related_student_id`). Any embed between the tables must name the FK, e.g. `getStudentContacts` uses `students!student_contacts_related_student_id_fkey`.
+- **Status.** Data and server side done; the Family tab and picker are phase 2. See roadmap "Customer item 5".
+
 ### 5.3 Reference / Lookup Tables
 
 Many fields reference small lookup tables rather than storing raw strings. Examples: `departments`, `gender_types`, `institution_types`, `phases`, `nationality`, `course_types`, `scholarship_types`, `application_statuses`, `event_types`. This was partially restructured in migrations 036–051 as the legacy data was normalized.

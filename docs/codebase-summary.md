@@ -243,6 +243,8 @@ src/lib/
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
 ├── students/
+│   ├── family-relationships.ts   # familyGroup (parents, siblings, others), relationshipSeenFrom (link read from the other student's side), siblingCodeFor (pure; tested in __tests__/family-relationships.test.ts)
+│   ├── student-search.ts         # studentSearchWords, studentSearchFilter (every word matches surname, first name, Chinese name or code)
 │   └── present-school-name.ts    # cleanSchoolName, presentSchoolKey, parseSchoolListLine, schoolSearchKeys, PresentSchoolOption, indexPresentSchools, filterPresentSchools, PRESENT_SCHOOL_NAME_MAX, isUsableSchoolName, cleanOtherSpellings, PresentSchoolSource (pure; generic filter returns `total`; tested in __tests__/present-school-name.test.ts)
 ├── attachments/                  # Record attachments — file or link on a specific row
 │   ├── attach-points.ts          # ATTACH_POINTS registry: owner, attachable_type, category; attachAccess(point)
@@ -318,7 +320,8 @@ src/lib/
     ├── middleware.ts             # updateSession() — refreshes session cookies per request
     ├── auth.ts                   # getCurrentUser() → { id, email, first_name, surname, department_label, admin_level }
     ├── actions/                  # 'use server' mutation files — one per domain
-    │   ├── students.ts           # createStudent, updateStudent, deleteStudent; ActionResult<T> defined here; withListSchoolName copies the list school name
+    │   ├── students.ts           # createStudent, updateStudent, deleteStudent; ActionResult<T> defined here; withListSchoolName copies the list school name; contact create/update use withLinkedStudent (family link, copies the linked student's name)
+    │   ├── student-family.ts     # searchStudentsForFamilyAction (Students READ); test in __tests__/student-contact-link.test.ts
     │   ├── present-schools.ts    # addPresentSchool (picker, Students WRITE): existing school by search-key overlap or new staff row; createPresentSchool / updatePresentSchool (Current Schools page; rename replaces the old name and updates linked students' present_school); tests in __tests__/present-schools.test.ts, present-schools-manage.test.ts, student-present-school.test.ts
     │   ├── schools.ts
     │   ├── staff.ts
@@ -364,6 +367,7 @@ src/lib/
         ├── scheduler-calendar-helpers.ts  # peopleOrFilter lookups, fetchCancelledRows, attachAttendees, inBatches (100-id batches)
         ├── __tests__/                # Scheduler query tests against a stubbed query builder (supabase-stub.ts); exam-paper-listing-access.test.ts covers papers hidden from non-team users
         ├── students.ts
+        ├── student-family.ts         # searchStudentsForFamily (20 results, throws), getFamilyLinksToStudent, getLinkedStudent; test in __tests__/student-family.test.ts. getStudentContacts (students.ts) embeds related_student via the named FK
         ├── present-schools.ts        # getPresentSchools (active, pages of 1,000, [] on error), getPresentSchoolsWithCounts (all, with source and students(count); throws), getPresentSchoolName (throws); test in __tests__/present-schools.test.ts
         ├── schools.ts
         ├── staff.ts
@@ -429,6 +433,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | Timestamped (scheduler, 2026-09-28 to 2026-10-02) | `20260928070928_scheduler_core.sql` (locations, rooms, bookings, attendees, history, view, triggers), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql` (`room_id` FK on exam records), `20260928074722_scheduler_review_hardening.sql` (red-team fixes), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix) |
 | Timestamped (2026-10-12) | `20261012130805_school_placement_history.sql` (read-only function `school_placement_history(p_school_id)`: per-entry-year application/offer/placed counts for a school) |
 | Timestamped (2026-10-21) | `20261021204752_present_schools.sql` (table `present_schools`, `students.present_school_id` FK, select/insert/update RLS, no delete) |
+| Timestamped (2026-10-22) | `20261022152919_student_contacts_related_student.sql` (`student_contacts.related_student_id` FK to `students`, no self-link check, partial index, unique per student and link) |
 | Timestamped (2026-10-20) | `20261020110718_student_application_status_history.sql` (table `student_application_status_history`, trigger `student_applications_status_history`, select-only RLS), `20261020133120_student_application_status_history_revoke_execute.sql` (revokes EXECUTE on the trigger function) |
 
 ---

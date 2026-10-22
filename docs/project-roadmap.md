@@ -126,6 +126,16 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
 
 ---
 
+### Customer item 5 — Family information: family members linked to students
+
+Plan `261022-1715-family-members-linked-to-students`.
+
+- [x] Phase 1 (2026-10-22): data and server side. `student_contacts.related_student_id`, student search for the picker, link-aware create/update/delete contact, both-ways read query. See system-architecture 5.2b.
+- [ ] Phase 2: Family tab (parents, siblings, others) and student picker in the contact form.
+- [ ] Phase 3: possibly-family suggestions.
+
+---
+
 ### Customer item 6 — Academic History: current school from a predefined list
 
 Plan `261021-2210-current-school-from-predefined-list`.
@@ -177,6 +187,7 @@ Open questions for Jack:
 
 ## Changelog
 
+- **2026-10-22** — Family members linked to students, phase 1 (customer item 5): migration `20261022152919` adds `student_contacts.related_student_id` (FK `students`, on delete set null, no self-link, unique per student and link). One row shown both ways (no mirrored row). The linked student's name is copied into the contact so it survives deletion. New `student-family` query/action (search, links to a student), `family-relationships.ts`, `student-search.ts`; contact actions refuse self-link and duplicates. `student_contacts` now has two FKs to `students`: embeds must name the FK. No UI yet. Details: system-architecture 5.2b.
 - **2026-10-22** — Current school from a predefined list, phase 1 (customer item 6): new table `present_schools` and `students.present_school_id` (migration `20261021204752`), name helper `src/lib/students/present-school-name.ts`, import script `scripts/43_import-present-schools.ts`. Typed `present_school` text unchanged. 1,230 schools loaded; 11,938 of 23,547 students linked. Details: system-architecture 5.2a, deployment guide 5a. 
 - **2026-10-22** — Current school from a predefined list, phase 2 (customer item 6): searchable "Current School" picker in the student form (`present-school-picker.tsx`) with "Add to list" (`addPresentSchool`, Students WRITE). Saving copies the list name into `present_school`; unlinked students keep their old text until chosen. Browser check pending. Details: system-architecture 5.2a.
 - **2026-10-22** — Current school from a predefined list, phase 3 (customer item 6): "Current Schools" page at `/students/present-schools` (Students READ to view, WRITE to add/edit) with search, source filter, student counts, add and rename (`createPresentSchool`, `updatePresentSchool`). A rename replaces the old name and updates linked students' `present_school`. Re-running import script 43 after renames would re-add the original names (deployment guide 5a). Browser check pending. Details: system-architecture 5.2a.
