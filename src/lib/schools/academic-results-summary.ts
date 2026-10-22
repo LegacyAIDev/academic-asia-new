@@ -1,23 +1,24 @@
 /**
- * Shapes a school's exam results into the summary the customer's prototype
- * shows: one block per exam type, one line per year, and the grade bands as
- * columns. Each stored row is one cumulative band ("A*–B: 78%"), so this is a
- * pivot of data we already hold, with no new fields.
+ * Shapes a school's exam results into the summary Jack's prototype shows: one
+ * block per year, newest first, and in it one line per exam type with the grade
+ * bands as figures from narrowest to widest. Each stored row is one cumulative
+ * band ("A*–B: 78%"), so this regroups data we already hold, with no new fields.
  */
 
 import type { SchoolAcademicResultWithJoins } from '@/lib/supabase/queries/school-academic-results'
 
 export type ResultsYearRange = 'latest3' | 'last5' | 'all'
 
-export type ResultsBlock = {
-  /** Exam type code, unique per block. */
+/** One exam type in one year: "GCSE" with Grade 9 47%, Grades 9–8 75% … */
+export type ResultsLine = {
+  /** Exam type code, unique within a year. */
   code: string
   examType: string
-  /** Column headings, narrowest band first. */
-  bands: string[]
-  /** Newest year first; values line up with `bands`, null where the year has no such band. */
-  rows: { year: number; values: (string | null)[] }[]
+  /** Narrowest band first. */
+  figures: { band: string; value: string }[]
 }
+
+export type ResultsYear = { year: number; lines: ResultsLine[] }
 
 type ResultRow = Pick<SchoolAcademicResultWithJoins, 'id' | 'exam_year' | 'grade_from' | 'grade_to' | 'result_percentage' | 'updated_at' | 'created_at' | 'exam_type'>
 
@@ -38,10 +39,15 @@ const GRADE_RANK = new Map(GRADE_ORDER.map((grade, index) => [grade, index]))
 
 const isIb = (examCode: string | null | undefined) => examCode === 'ib'
 
-/** "A*", "A*–B"; a row without a band is the IB average point score or an overall figure. */
+/**
+ * "A*", "A*–B", and "Grade 9", "Grades 9–8" for number grades, as Jack writes
+ * them; a row without a band is the IB average point score or an overall figure.
+ */
 export function bandLabel(gradeFrom: string | null, gradeTo: string | null, examCode: string | null | undefined): string {
   if (!gradeFrom) return isIb(examCode) ? 'Average points' : 'Overall'
-  return gradeTo ? `${gradeFrom}–${gradeTo}` : gradeFrom
+  const band = gradeTo ? `${gradeFrom}–${gradeTo}` : gradeFrom
+  if (!/^\d+$/.test(gradeFrom)) return band
+  return gradeTo ? `Grades ${band}` : `Grade ${band}`
 }
 
 /**
@@ -52,22 +58,6 @@ export function bandLabel(gradeFrom: string | null, gradeTo: string | null, exam
 export function formatResultValue(value: number | null, gradeFrom: string | null, examCode: string | null | undefined): string {
   if (value == null || !Number.isFinite(value)) return '—'
   return !gradeFrom && isIb(examCode) ? String(value) : `${value}%`
-}
-
-/** Highest IB diploma score; the average point score is shown against it. */
-const IB_MAX_POINTS = 45
-
-/**
- * How full a summary cell is, from 0 to 1, for the tint behind it: a
- * percentage of 100, or IB points out of 45. Null for anything that is not a
- * figure, so dashes and free text stay untinted.
- */
-export function displayShare(display: string | null): number | null {
-  if (!display) return null
-  const percent = display.endsWith('%')
-  const number = Number(percent ? display.slice(0, -1) : display)
-  if (Number.isNaN(number)) return null
-  return Math.min(1, Math.max(0, percent ? number / 100 : number / IB_MAX_POINTS))
 }
 
 function compareGrades(a: string | null, b: string | null): number {
@@ -106,51 +96,51 @@ const isNewer = (row: ResultRow, kept: ResultRow) =>
   freshness(row) > freshness(kept) || (freshness(row) === freshness(kept) && row.id > kept.id)
 
 /**
- * Blocks for the summary view: GCSE, then A Level, then the other exam types by
- * name. The range counts the most recent years that have results for that exam
- * type, so a gap in the data does not empty the table. When a year has the same
- * band twice, the most recently updated record is shown.
+ * Year blocks for the summary view, newest first. In each year the lines run
+ * GCSE, A Level, then the other exam types by name; a line holds only the bands
+ * the school published that year. The range counts the most recent years that
+ * have results, so a gap in the data does not shorten it. Records without a
+ * figure are left out (they stay under All records), and when a year has the
+ * same band twice, the most recently updated record is shown.
  */
-export function summariseAcademicResults(results: ResultRow[], range: ResultsYearRange): ResultsBlock[] {
-  const byType = new Map<string, { code: string; label: string; rows: ResultRow[] }>()
+export function summariseResultsByYear(results: ResultRow[], range: ResultsYearRange): ResultsYear[] {
+  const latest = new Map<string, ResultRow>()
   for (const row of results) {
-    if (row.exam_year == null) continue
+    if (row.exam_year == null || row.result_percentage == null) continue
     const code = row.exam_type?.code ?? 'unknown'
-    const entry = byType.get(code) ?? { code, label: row.exam_type?.label ?? 'Other', rows: [] }
-    entry.rows.push(row)
-    byType.set(code, entry)
+    const key = `${row.exam_year}|${code}|${bandLabel(row.grade_from, row.grade_to, code)}`
+    const kept = latest.get(key)
+    if (!kept || isNewer(row, kept)) latest.set(key, row)
   }
 
-  return [...byType.values()].sort(compareBlocks).map(({ code, label, rows }) => {
-    const years = [...new Set(rows.map(r => r.exam_year as number))].sort((a, b) => b - a).slice(0, YEARS_IN_RANGE[range])
-    const yearSet = new Set(years)
-    const shown = rows.filter(r => yearSet.has(r.exam_year as number))
+  const rows = [...latest.values()]
+  const years = [...new Set(rows.map(r => r.exam_year as number))].sort((a, b) => b - a).slice(0, YEARS_IN_RANGE[range])
 
-    const bands = new Map<string, Band>()
-    for (const row of shown) {
-      const bandKey = bandLabel(row.grade_from, row.grade_to, code)
-      if (!bands.has(bandKey)) bands.set(bandKey, { from: row.grade_from, to: row.grade_to, label: bandKey })
-    }
-    const columns = [...bands.values()].sort(compareBands).map(band => band.label)
-
-    const latest = new Map<string, ResultRow>()
-    for (const row of shown) {
-      const key = `${row.exam_year}|${bandLabel(row.grade_from, row.grade_to, code)}`
-      const kept = latest.get(key)
-      if (!kept || isNewer(row, kept)) latest.set(key, row)
+  return years.map(year => {
+    const byType = new Map<string, { code: string; label: string; rows: ResultRow[] }>()
+    for (const row of rows) {
+      if (row.exam_year !== year) continue
+      const code = row.exam_type?.code ?? 'unknown'
+      const entry = byType.get(code) ?? { code, label: row.exam_type?.label ?? 'Other', rows: [] }
+      entry.rows.push(row)
+      byType.set(code, entry)
     }
 
-    return {
+    const lines = [...byType.values()].sort(compareBlocks).map(({ code, label, rows: typeRows }) => ({
       code,
       examType: label,
-      bands: columns,
-      rows: years.map(year => ({
-        year,
-        values: columns.map(column => {
-          const row = latest.get(`${year}|${column}`)
-          return row ? formatResultValue(row.result_percentage, row.grade_from, code) : null
-        }),
-      })),
-    }
+      figures: typeRows
+        .map(row => ({ row, band: { from: row.grade_from, to: row.grade_to, label: bandLabel(row.grade_from, row.grade_to, code) } }))
+        .sort((a, b) => compareBands(a.band, b.band))
+        .map(({ row, band }) => ({ band: band.label, value: formatResultValue(row.result_percentage, row.grade_from, code) })),
+    }))
+    return { year, lines }
   })
+}
+
+/** Plain text for "Copy summary", one line per year: "2025 — GCSE: Grade 9 47%, Grades 9–8 75% · A Level: A* 37%". */
+export function resultsSummaryText(years: ResultsYear[]): string {
+  return years
+    .map(({ year, lines }) => `${year} — ${lines.map(line => `${line.examType}: ${line.figures.map(f => `${f.band} ${f.value}`).join(', ')}`).join(' · ')}`)
+    .join('\n')
 }

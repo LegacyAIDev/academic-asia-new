@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { bandLabel, displayShare, formatResultValue, summariseAcademicResults } from '../academic-results-summary'
+import { bandLabel, formatResultValue, resultsSummaryText, summariseResultsByYear } from '../academic-results-summary'
 
-type Row = Parameters<typeof summariseAcademicResults>[0][number]
+type Row = Parameters<typeof summariseResultsByYear>[0][number]
 
 const TYPES = {
   gcse: { id: 2, code: 'gcse', label: 'GCSE', country: 'UK' },
@@ -22,6 +22,10 @@ describe('bandLabel', () => {
   it('writes a single grade or a cumulative band', () => {
     expect(bandLabel('A*', null, 'a_level')).toBe('A*')
     expect(bandLabel('A*', 'B', 'a_level')).toBe('A*–B')
+  })
+  it('writes number grades as Jack does: Grade 9, Grades 9–8', () => {
+    expect(bandLabel('9', null, 'gcse')).toBe('Grade 9')
+    expect(bandLabel('9', '4', 'gcse')).toBe('Grades 9–4')
   })
   it('names a row without a band: IB average point score, otherwise an overall figure', () => {
     expect(bandLabel(null, null, 'ib')).toBe('Average points')
@@ -44,153 +48,160 @@ describe('formatResultValue', () => {
   })
 })
 
-describe('displayShare', () => {
-  it('reads a percentage out of 100 and IB points out of 45', () => {
-    expect(displayShare('80%')).toBe(0.8)
-    expect(displayShare('36')).toBe(0.8)
-  })
-  it('keeps the share between 0 and 1', () => {
-    expect(displayShare('120%')).toBe(1)
-    expect(displayShare('-5%')).toBe(0)
-  })
-  it('gives no share for dashes, free text or nothing', () => {
-    expect(displayShare(null)).toBeNull()
-    expect(displayShare('—')).toBeNull()
-    expect(displayShare('n/a')).toBeNull()
-  })
-})
+/** Bands and figures of one year's line for an exam type, for short assertions. */
+const line = (years: ReturnType<typeof summariseResultsByYear>, year: number, examType: string) =>
+  years.find(y => y.year === year)?.lines.find(l => l.examType === examType)?.figures.map(f => `${f.band} ${f.value}`)
 
-describe('summariseAcademicResults', () => {
+describe('summariseResultsByYear', () => {
   it('is empty without results', () => {
-    expect(summariseAcademicResults([], 'latest3')).toEqual([])
+    expect(summariseResultsByYear([], 'latest3')).toEqual([])
   })
 
-  it('pivots one line per year with bands as columns, narrowest first, newest year first', () => {
-    const [block] = summariseAcademicResults([
+  it('gives one block per year, newest first, with the bands narrowest first', () => {
+    const years = summariseResultsByYear([
       row('a_level', 2024, 'A*', 'B', 80),
       row('a_level', 2024, 'A*', null, 30),
       row('a_level', 2024, 'A*', 'A', 55),
       row('a_level', 2025, 'A*', null, 32),
       row('a_level', 2025, 'A*', 'E', 99),
     ], 'latest3')
-    expect(block.examType).toBe('A Level')
-    expect(block.bands).toEqual(['A*', 'A*–A', 'A*–B', 'A*–E'])
-    expect(block.rows).toEqual([
-      { year: 2025, values: ['32%', null, null, '99%'] },
-      { year: 2024, values: ['30%', '55%', '80%', null] },
-    ])
+    expect(years.map(y => y.year)).toEqual([2025, 2024])
+    expect(line(years, 2025, 'A Level')).toEqual(['A* 32%', 'A*–E 99%'])
+    expect(line(years, 2024, 'A Level')).toEqual(['A* 30%', 'A*–A 55%', 'A*–B 80%'])
   })
 
-  it('orders GCSE number bands 9, 9–8 … 9–4 and puts letter bands before them when both are shown', () => {
-    const [block] = summariseAcademicResults([
-      row('gcse', 2022, '9', '4', 95), row('gcse', 2022, '9', '7', 70), row('gcse', 2022, '9', null, 20),
-      row('gcse', 2022, '9', '8', 45), row('gcse', 2021, 'A*', 'A', 80), row('gcse', 2021, 'A*', null, 50),
+  it('puts GCSE first, then A Level, then the other exam types by name, and leaves out rows without a year', () => {
+    const [year] = summariseResultsByYear([
+      row('higher', 2023, 'A', null, 40), row('ib', 2023, null, null, 35), row('a_level', 2023, 'A*', null, 30),
+      row('btec', 2023, 'D*', 'D', 50), row('gcse', 2023, '9', null, 20), row('gcse', null, '9', null, 99),
     ], 'all')
-    expect(block.bands).toEqual(['A*', 'A*–A', '9', '9–8', '9–7', '9–4'])
+    expect(year.lines.map(l => l.examType)).toEqual(['GCSE', 'A Level', 'BTEC', 'Higher', 'IB'])
+    expect(line([year], 2023, 'GCSE')).toEqual(['Grade 9 20%'])
   })
 
-  it('limits each exam type to its own most recent years and only shows the columns those years use', () => {
-    const blocks = summariseAcademicResults([
-      row('gcse', 2024, '9', '7', 70), row('gcse', 2023, '9', '7', 68), row('gcse', 2022, '9', '7', 66),
-      row('gcse', 2021, 'A*', 'A', 80),
-      row('a_level', 2019, 'A*', 'B', 85),
-    ], 'latest3')
-    expect(blocks.map(b => [b.examType, b.rows.map(r => r.year), b.bands])).toEqual([
-      ['GCSE', [2024, 2023, 2022], ['9–7']],
-      ['A Level', [2019], ['A*–B']],
-    ])
+  it('orders GCSE number bands 9, 9–8 … 9–4 and letter bands before them', () => {
+    const years = summariseResultsByYear([
+      row('gcse', 2022, '9', '4', 95), row('gcse', 2022, '9', '7', 70), row('gcse', 2022, '9', null, 20),
+      row('gcse', 2022, '9', '8', 45), row('gcse', 2022, 'A*', 'A', 80), row('gcse', 2022, 'A*', null, 50),
+    ], 'all')
+    expect(line(years, 2022, 'GCSE')).toEqual(['A* 50%', 'A*–A 80%', 'Grade 9 20%', 'Grades 9–8 45%', 'Grades 9–7 70%', 'Grades 9–4 95%'])
   })
 
-  it('counts years that have results, so a gap does not shorten the table', () => {
-    const [block] = summariseAcademicResults([
-      row('a_level', 2025, 'A*', null, 1), row('a_level', 2020, 'A*', null, 2),
+  it('shows each year only the bands published that year', () => {
+    const years = summariseResultsByYear([row('gcse', 2022, '9', '7', 66), row('gcse', 2021, 'A*', 'A', 80)], 'all')
+    expect(line(years, 2022, 'GCSE')).toEqual(['Grades 9–7 66%'])
+    expect(line(years, 2021, 'GCSE')).toEqual(['A*–A 80%'])
+  })
+
+  it('counts the most recent years that have results, so a gap does not shorten the range', () => {
+    const rows = [
+      row('a_level', 2025, 'A*', null, 1), row('gcse', 2020, '9', null, 2),
       row('a_level', 2015, 'A*', null, 3), row('a_level', 2010, 'A*', null, 4),
+    ]
+    expect(summariseResultsByYear(rows, 'latest3').map(y => y.year)).toEqual([2025, 2020, 2015])
+    expect(summariseResultsByYear(rows, 'last5')).toHaveLength(4)
+    const sixYears = [2025, 2024, 2023, 2022, 2021, 2020].map((year, i) => row('gcse', year, '9', null, i))
+    expect(summariseResultsByYear(sixYears, 'last5').map(y => y.year)).toEqual([2025, 2024, 2023, 2022, 2021])
+    expect(summariseResultsByYear(sixYears, 'all')).toHaveLength(6)
+  })
+
+  it('does not spend a place in the range on a year whose records have no figure', () => {
+    const years = summariseResultsByYear([
+      row('gcse', 2025, '9', null, null), row('gcse', 2024, '9', null, 1), row('gcse', 2023, '9', null, 2), row('gcse', 2022, '9', null, 3),
     ], 'latest3')
-    expect(block.rows.map(r => r.year)).toEqual([2025, 2020, 2015])
-    expect(summariseAcademicResults([row('a_level', 2025, 'A*', null, 1)], 'last5')[0].rows).toHaveLength(1)
+    expect(years.map(y => y.year)).toEqual([2024, 2023, 2022])
+  })
+
+  it('puts a record without an exam type under "Other", after the named types', () => {
+    const [year] = summariseResultsByYear([{ ...row('gcse', 2023, 'A', null, 10), exam_type: null }, row('ib', 2023, null, null, 35)], 'all')
+    expect(year.lines.map(l => l.examType)).toEqual(['IB', 'Other'])
   })
 
   it('shows the most recently updated record when a year has the same band twice', () => {
-    const [block] = summariseAcademicResults([
+    const years = summariseResultsByYear([
       row('a_level', 2024, 'A*', null, 30, '2025-01-01T00:00:00Z'),
       row('a_level', 2024, 'A*', null, 33, '2025-06-01T00:00:00Z'),
       row('a_level', 2024, 'A*', null, 31, '2025-03-01T00:00:00Z'),
     ], 'all')
-    expect(block.rows[0].values).toEqual(['33%'])
-  })
-
-  it('puts the IB average point score in its own last column, as points', () => {
-    const [block] = summariseAcademicResults([
-      row('ib', 2024, null, null, 36.40), row('ib', 2024, 'HL 7', null, 25), row('ib', 2024, 'SL 7', null, 30),
-    ], 'all')
-    expect(block.bands).toEqual(['HL 7', 'SL 7', 'Average points'])
-    expect(block.rows[0].values).toEqual(['25%', '30%', '36.4'])
-  })
-
-  it('orders blocks GCSE, A Level, then the other exam types by name, and leaves out rows without a year', () => {
-    const blocks = summariseAcademicResults([
-      row('higher', 2023, 'A', null, 40), row('ib', 2023, null, null, 35), row('a_level', 2023, 'A*', null, 30),
-      row('btec', 2019, 'D*', 'D', 50), row('gcse', 2023, '9', null, 20), row('gcse', null, '9', null, 99),
-    ], 'all')
-    expect(blocks.map(b => b.examType)).toEqual(['GCSE', 'A Level', 'BTEC', 'Higher', 'IB'])
-    expect(blocks[0].rows).toEqual([{ year: 2023, values: ['20%'] }])
-  })
-
-  it('handles a school with only Scottish exam types', () => {
-    const blocks = summariseAcademicResults([
-      row('higher', 2023, 'A', 'C', 90), row('higher', 2023, 'A', null, 40), row('higher', 2023, 'A', 'B', 70),
-    ], 'latest3')
-    expect(blocks).toEqual([{ code: 'higher', examType: 'Higher', bands: ['A', 'A–B', 'A–C'], rows: [{ year: 2023, values: ['40%', '70%', '90%'] }] }])
-  })
-
-  it('orders Pre-U words (Distinction first) and points (D1 before M1) by their lower end', () => {
-    const [words] = summariseAcademicResults([
-      row('pre_u', 2020, 'Distinction', 'Pass', 100), row('pre_u', 2020, 'Distinction', null, 56), row('pre_u', 2020, 'Distinction', 'Merit', 92),
-    ], 'all')
-    expect(words.bands).toEqual(['Distinction', 'Distinction–Merit', 'Distinction–Pass'])
-    const [points] = summariseAcademicResults([
-      row('pre_u', 2020, 'D1', 'M2', 1), row('pre_u', 2020, 'D1', 'D3', 2), row('pre_u', 2020, 'D1', 'D2', 3), row('pre_u', 2020, 'D1', null, 4),
-    ], 'all')
-    expect(points.bands).toEqual(['D1', 'D1–D2', 'D1–D3', 'D1–M2'])
-  })
-
-  it('ranks IB higher and standard level grades best first', () => {
-    const [block] = summariseAcademicResults([
-      row('ib', 2020, 'SL 7', null, 1), row('ib', 2020, 'HL 3', null, 2), row('ib', 2020, 'HL 7', null, 3),
-      row('ib', 2020, 'HL 7', 'HL 5', 4), row('ib', 2020, '7', null, 5),
-    ], 'all')
-    expect(block.bands).toEqual(['7', 'HL 7', 'HL 7–HL 5', 'HL 3', 'SL 7'])
-  })
-
-  it('sorts grades that are not on a known scale after known ones, by name', () => {
-    const [block] = summariseAcademicResults([
-      row('btec', 2020, 'Band 10', null, 1), row('btec', 2020, 'Band 2', null, 2), row('btec', 2020, 'A', null, 3),
-    ], 'all')
-    expect(block.bands).toEqual(['A', 'Band 2', 'Band 10'])
+    expect(line(years, 2024, 'A Level')).toEqual(['A* 33%'])
   })
 
   it('settles two records updated at the same moment by id, whatever order the query returned them in', () => {
     const first = { ...row('a_level', 2024, 'A*', null, 30, '2025-05-05'), id: 'b' }
     const second = { ...row('a_level', 2024, 'A*', null, 31, '2025-05-05'), id: 'a' }
-    expect(summariseAcademicResults([first, second], 'all')[0].rows[0].values).toEqual(['30%'])
-    expect(summariseAcademicResults([second, first], 'all')[0].rows[0].values).toEqual(['30%'])
+    expect(line(summariseResultsByYear([first, second], 'all'), 2024, 'A Level')).toEqual(['A* 30%'])
+    expect(line(summariseResultsByYear([second, first], 'all'), 2024, 'A Level')).toEqual(['A* 30%'])
   })
 
   it('keeps a record with a null updated_at but a later created_at against an older updated one', () => {
     const older = row('a_level', 2024, 'A*', null, 30, '2025-01-01')
     const created = { ...row('a_level', 2024, 'A*', null, 35, '2025-01-01'), updated_at: null, created_at: '2025-09-01' }
-    expect(summariseAcademicResults([older, created], 'all')[0].rows[0].values).toEqual(['35%'])
-    expect(summariseAcademicResults([created, older], 'all')[0].rows[0].values).toEqual(['35%'])
+    expect(line(summariseResultsByYear([older, created], 'all'), 2024, 'A Level')).toEqual(['A* 35%'])
+    expect(line(summariseResultsByYear([created, older], 'all'), 2024, 'A Level')).toEqual(['A* 35%'])
   })
 
-  it('shows a dash for a band whose record has no value', () => {
-    const [block] = summariseAcademicResults([row('gcse', 2022, '9', '4', null), row('gcse', 2022, '9', '7', 77)], 'all')
-    expect(block.rows[0].values).toEqual(['77%', '—'])
+  it('leaves out records without a figure, and a year that has nothing else', () => {
+    const years = summariseResultsByYear([row('gcse', 2022, '9', '4', null), row('gcse', 2022, '9', '7', 77), row('gcse', 2021, '9', null, null)], 'all')
+    expect(years.map(y => y.year)).toEqual([2022])
+    expect(line(years, 2022, 'GCSE')).toEqual(['Grades 9–7 77%'])
+  })
+
+  it('puts the IB average point score last, as points', () => {
+    const years = summariseResultsByYear([
+      row('ib', 2024, null, null, 36.40), row('ib', 2024, 'HL 7', null, 25), row('ib', 2024, 'SL 7', null, 30),
+    ], 'all')
+    expect(line(years, 2024, 'IB')).toEqual(['HL 7 25%', 'SL 7 30%', 'Average points 36.4'])
   })
 
   it('gives "Overall" to a non-IB row without a band, after the real bands', () => {
-    const [block] = summariseAcademicResults([row('gcse', 2022, null, null, 60), row('gcse', 2022, '9', null, 20)], 'all')
-    expect(block.bands).toEqual(['9', 'Overall'])
-    expect(block.rows[0].values).toEqual(['20%', '60%'])
+    const years = summariseResultsByYear([row('gcse', 2022, null, null, 60), row('gcse', 2022, '9', null, 20)], 'all')
+    expect(line(years, 2022, 'GCSE')).toEqual(['Grade 9 20%', 'Overall 60%'])
+  })
+
+  it('handles a school with only Scottish exam types', () => {
+    const years = summariseResultsByYear([
+      row('higher', 2023, 'A', 'C', 90), row('higher', 2023, 'A', null, 40), row('higher', 2023, 'A', 'B', 70),
+    ], 'latest3')
+    expect(years).toEqual([{ year: 2023, lines: [{ code: 'higher', examType: 'Higher', figures: [
+      { band: 'A', value: '40%' }, { band: 'A–B', value: '70%' }, { band: 'A–C', value: '90%' },
+    ] }] }])
+  })
+
+  it('orders Pre-U words (Distinction first) and points (D1 before M1) by their lower end', () => {
+    const words = summariseResultsByYear([
+      row('pre_u', 2020, 'Distinction', 'Pass', 100), row('pre_u', 2020, 'Distinction', null, 56), row('pre_u', 2020, 'Distinction', 'Merit', 92),
+    ], 'all')
+    expect(line(words, 2020, 'Pre-U')).toEqual(['Distinction 56%', 'Distinction–Merit 92%', 'Distinction–Pass 100%'])
+    const points = summariseResultsByYear([
+      row('pre_u', 2020, 'D1', 'M2', 1), row('pre_u', 2020, 'D1', 'D3', 2), row('pre_u', 2020, 'D1', 'D2', 3), row('pre_u', 2020, 'D1', null, 4),
+    ], 'all')
+    expect(line(points, 2020, 'Pre-U')?.map(f => f.split(' ')[0])).toEqual(['D1', 'D1–D2', 'D1–D3', 'D1–M2'])
+  })
+
+  it('ranks IB higher and standard level grades best first, and grades off any known scale after them by name', () => {
+    const ib = summariseResultsByYear([
+      row('ib', 2020, 'SL 7', null, 1), row('ib', 2020, 'HL 3', null, 2), row('ib', 2020, 'HL 7', null, 3),
+      row('ib', 2020, 'HL 7', 'HL 5', 4), row('ib', 2020, '7', null, 5),
+    ], 'all')
+    expect(line(ib, 2020, 'IB')?.map(f => f.replace(/ \d+%$/, ''))).toEqual(['Grade 7', 'HL 7', 'HL 7–HL 5', 'HL 3', 'SL 7'])
+    const btec = summariseResultsByYear([
+      row('btec', 2020, 'Band 10', null, 1), row('btec', 2020, 'Band 2', null, 2), row('btec', 2020, 'A', null, 3),
+    ], 'all')
+    expect(line(btec, 2020, 'BTEC')?.map(f => f.replace(/ \d+%$/, ''))).toEqual(['A', 'Band 2', 'Band 10'])
+  })
+})
+
+describe('resultsSummaryText', () => {
+  it('writes one line per year, exam types separated, ready to paste into a message', () => {
+    const years = summariseResultsByYear([
+      row('gcse', 2025, '9', null, 47), row('gcse', 2025, '9', '8', 75), row('a_level', 2025, 'A*', null, 37),
+      row('a_level', 2024, 'A*', null, 32),
+    ], 'all')
+    expect(resultsSummaryText(years)).toBe('2025 — GCSE: Grade 9 47%, Grades 9–8 75% · A Level: A* 37%\n2024 — A Level: A* 32%')
+    expect(resultsSummaryText([])).toBe('')
+  })
+
+  it('copies the IB average point score as points', () => {
+    expect(resultsSummaryText(summariseResultsByYear([row('ib', 2024, null, null, 36.4)], 'all'))).toBe('2024 — IB: Average points 36.4')
   })
 })
