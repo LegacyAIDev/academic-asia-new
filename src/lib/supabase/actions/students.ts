@@ -8,6 +8,7 @@ import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { purgeOwnerStorage } from '@/lib/supabase/actions/record-attachments'
 import { getPresentSchoolName } from '@/lib/supabase/queries/present-schools'
+import { getLinkedStudent } from '@/lib/supabase/queries/student-family'
 
 export type CreateStudentInput = {
   surname: string
@@ -221,6 +222,38 @@ export type CreateContactInput = {
   priority?: number | null
   status?: string | null
   remarks?: string | null
+  related_student_id?: string | null
+}
+
+/**
+ * A family member who is a student too is linked rather than typed: their name
+ * and gender are copied from that student, so the row still reads right if the
+ * student is ever deleted, while the family tab shows the student's live details.
+ * Input without the field leaves an existing link alone.
+ */
+async function withLinkedStudent<T extends Partial<CreateContactInput>>(
+  input: T,
+  studentId: string
+): Promise<{ input: T } | { error: string }> {
+  if (input.related_student_id === undefined) return { input }
+  const relatedId = input.related_student_id || null
+  if (!relatedId) return { input: { ...input, related_student_id: null } }
+  if (relatedId === studentId) return { error: 'A student cannot be their own family member' }
+
+  const linked = await getLinkedStudent(relatedId)
+  if (!linked) return { error: 'That student no longer exists. Choose another one.' }
+  return {
+    input: { ...input, related_student_id: relatedId, surname: linked.surname, first_name: linked.first_name, gender: linked.gender },
+  }
+}
+
+const UNIQUE_VIOLATION = '23505'
+const ALREADY_LINKED = 'This student is already linked as a family member'
+
+/** The student's own page and every linked student's page, which shows the link from the other side. */
+function revalidateFamilyPages(studentId: string, linkedIds: (string | null | undefined)[]) {
+  revalidatePath(`/students/${studentId}`)
+  for (const id of new Set(linkedIds.filter(Boolean))) revalidatePath(`/students/${id}`)
 }
 
 /**
@@ -234,18 +267,22 @@ export async function createStudentContact(input: CreateContactInput): Promise<A
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
+    const linked = await withLinkedStudent(input, input.student_id)
+    if ('error' in linked) return { success: false, error: linked.error }
+
     const { data, error } = await supabase
       .from('student_contacts')
-      .insert(input as never)
+      .insert(linked.input as never)
       .select('id')
       .single()
 
     if (error) {
+      if (error.code === UNIQUE_VIOLATION) return { success: false, error: ALREADY_LINKED }
       console.error('Error creating contact:', error)
       return { success: false, error: error.message }
     }
 
-    revalidatePath(`/students/${input.student_id}`)
+    revalidateFamilyPages(input.student_id, [linked.input.related_student_id])
     return { success: true, data: { id: (data as { id: string }).id } }
   } catch (err) {
     console.error('Error in createStudentContact:', err)
@@ -268,17 +305,38 @@ export async function updateStudentContact(
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
+    // The contact has to belong to the student whose page this is; its current link
+    // is read too, so the previously linked student's page drops it after a change.
+    const { data: current, error: readError } = await supabase
+      .from('student_contacts')
+      .select('related_student_id')
+      .eq('id', contactId)
+      .eq('student_id', studentId)
+      .maybeSingle()
+    if (readError) return { success: false, error: readError.message }
+    if (!current) return { success: false, error: 'Contact not found' }
+
+    const linked = await withLinkedStudent(input, studentId)
+    if ('error' in linked) return { success: false, error: linked.error }
+
+    // Contact details only: which student owns the row and who created it never change here.
+    const fields: Record<string, unknown> = { ...linked.input }
+    delete fields.student_id
+    delete fields.created_by
+
     const { error } = await supabase
       .from('student_contacts')
-      .update(input as never)
+      .update(fields as never)
       .eq('id', contactId)
+      .eq('student_id', studentId)
 
     if (error) {
+      if (error.code === UNIQUE_VIOLATION) return { success: false, error: ALREADY_LINKED }
       console.error('Error updating contact:', error)
       return { success: false, error: error.message }
     }
 
-    revalidatePath(`/students/${studentId}`)
+    revalidateFamilyPages(studentId, [current.related_student_id, linked.input.related_student_id])
     return { success: true }
   } catch (err) {
     console.error('Error in updateStudentContact:', err)
@@ -297,17 +355,19 @@ export async function deleteStudentContact(contactId: string, studentId: string)
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('student_contacts')
       .delete()
       .eq('id', contactId)
+      .eq('student_id', studentId)
+      .select('related_student_id')
 
     if (error) {
       console.error('Error deleting contact:', error)
       return { success: false, error: error.message }
     }
 
-    revalidatePath(`/students/${studentId}`)
+    revalidateFamilyPages(studentId, (data ?? []).map((row) => row.related_student_id))
     return { success: true }
   } catch (err) {
     console.error('Error in deleteStudentContact:', err)

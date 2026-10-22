@@ -331,7 +331,8 @@ export async function getStudentContacts(studentId: string) {
     .select(`
       *,
       relationship:contact_relationships!student_contacts_relationship_id_fkey(id, code, label),
-      title:contact_titles!student_contacts_title_id_fkey(id, code, label)
+      title:contact_titles!student_contacts_title_id_fkey(id, code, label),
+      related_student:students!student_contacts_related_student_id_fkey(id, student_code, first_name, surname, chinese_name, gender, date_of_birth, present_school)
     `)
     .eq('student_id', studentId)
     .order('priority', { ascending: true })

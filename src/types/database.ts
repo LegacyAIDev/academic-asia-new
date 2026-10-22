@@ -3841,6 +3841,7 @@ export type Database = {
           office_fax: string | null
           office_telephone: string | null
           priority: number | null
+          related_student_id: string | null
           relationship_id: number | null
           remarks: string | null
           status: string | null
@@ -3869,6 +3870,7 @@ export type Database = {
           office_fax?: string | null
           office_telephone?: string | null
           priority?: number | null
+          related_student_id?: string | null
           relationship_id?: number | null
           remarks?: string | null
           status?: string | null
@@ -3897,6 +3899,7 @@ export type Database = {
           office_fax?: string | null
           office_telephone?: string | null
           priority?: number | null
+          related_student_id?: string | null
           relationship_id?: number | null
           remarks?: string | null
           status?: string | null
@@ -3912,6 +3915,13 @@ export type Database = {
             columns: ["assigned_to"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_contacts_related_student_id_fkey"
+            columns: ["related_student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
             referencedColumns: ["id"]
           },
           {
