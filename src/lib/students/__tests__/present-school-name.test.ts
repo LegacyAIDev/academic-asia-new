@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cleanOtherSpellings, cleanSchoolName, filterPresentSchools, indexPresentSchools, isUsableSchoolName, parseSchoolListLine, presentSchoolKey, schoolSearchKeys } from '../present-school-name'
+import { cleanOtherSpellings, cleanSchoolName, filterPresentSchools, groupByInitial, indexPresentSchools, isUsableSchoolName, parseSchoolListLine, presentSchoolKey, schoolSearchKeys } from '../present-school-name'
 
 describe('presentSchoolKey', () => {
   it('gives every common spelling of a school the same key', () => {
@@ -156,5 +156,24 @@ describe('cleanOtherSpellings', () => {
   it('cleans each spelling and drops blanks, repeats and the name itself', () => {
     expect(cleanOtherSpellings('MACAU ANGLICAN COLLEGE', ['  mac ', '', 'MAC', 'Macau Anglican College.', 'M.A.C.', 'Colégio Anglicano de Macau']))
       .toEqual(['MAC', 'COLÉGIO ANGLICANO DE MACAU'])
+  })
+})
+
+describe('groupByInitial', () => {
+  it('groups by first letter A to Z, keeps the order inside a letter, and puts other starts under # last', () => {
+    const names = ['ABERDEEN TECHNICAL SCHOOL', 'ALLIANCE PRIMARY SCHOOL', 'BELILIOS PUBLIC SCHOOL', '1ST STREET SCHOOL', 'ÉCOLE FRANÇAISE', ' CHAN SCHOOL']
+    expect(groupByInitial(names.map((name) => ({ name }))).map((g) => [g.letter, g.schools.map((s) => s.name)])).toEqual([
+      ['A', ['ABERDEEN TECHNICAL SCHOOL', 'ALLIANCE PRIMARY SCHOOL']],
+      ['B', ['BELILIOS PUBLIC SCHOOL']],
+      ['C', [' CHAN SCHOOL']],
+      ['E', ['ÉCOLE FRANÇAISE']],
+      ['#', ['1ST STREET SCHOOL']],
+    ])
+  })
+  it('is empty for no schools', () => {
+    expect(groupByInitial([])).toEqual([])
+  })
+  it('files a name in Chinese characters under # with the other non-letters', () => {
+    expect(groupByInitial([{ name: '聖保羅書院' }, { name: 'ST. PAUL\'S COLLEGE' }]).map((g) => g.letter)).toEqual(['S', '#'])
   })
 })

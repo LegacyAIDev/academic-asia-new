@@ -9,15 +9,16 @@ import { filterPresentSchools, indexPresentSchools, type PresentSchoolSource } f
 import type { PresentSchoolListRow } from "@/lib/supabase/queries/present-schools"
 import { PresentSchoolDialog } from "./present-school-dialog"
 import { PresentSchoolRow } from "./present-school-row"
+import { PresentSchoolsDirectory } from "./present-schools-directory"
 
 const PAGE = 100
 
 type SourceFilter = "all" | PresentSchoolSource
 
 /**
- * Every school on the list, searched the same way as the student form's picker
- * so both find the same schools for the same text. The whole list is in the
- * browser (about 1,200 rows), shown 100 at a time.
+ * Every school on the list. Without a search it reads as a register, A to Z;
+ * a search ranks the matches instead (exact spelling first, the same matching
+ * as the student form's picker), 100 at a time.
  */
 export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSchoolListRow[]; canManage: boolean }) {
   const [query, setQuery] = useState("")
@@ -30,6 +31,8 @@ export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSc
     [index, source]
   )
   const { matches, more, total } = useMemo(() => filterPresentSchools(fromSource, query, shown), [fromSource, query, shown])
+  const searching = query.trim() !== ""
+  const everySchool = useMemo(() => fromSource.map((e) => e.school), [fromSource])
 
   return (
     <div className="space-y-4">
@@ -55,8 +58,8 @@ export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSc
           </SelectContent>
         </Select>
         <p className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
-          {more && `Showing ${matches.length.toLocaleString("en-GB")} of `}
-          {total.toLocaleString("en-GB")} {total === 1 ? "school" : "schools"}
+          {searching && more && `Showing ${matches.length.toLocaleString("en-GB")} of `}
+          {total.toLocaleString("en-GB")} {searching ? (total === 1 ? "match" : "matches") : total === 1 ? "school" : "schools"}
         </p>
         {canManage && (
           <div className="ml-auto">
@@ -69,24 +72,30 @@ export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSc
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card px-6 py-14 text-center">
           <School className="h-6 w-6 text-muted-foreground" aria-hidden />
           <div>
-            <p className="text-sm font-semibold">{query ? `No school matches “${query.trim()}”` : "No schools here yet"}</p>
+            <p className="text-sm font-semibold">
+              {searching ? `No school matches “${query.trim()}”` : source === "staff" ? "No schools added by staff yet" : "No schools here yet"}
+            </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {canManage ? "Check the spelling, or add the school so everyone can pick it." : "Check the spelling or try another filter."}
+              {searching
+                ? canManage ? "Check the spelling, or add the school so everyone can pick it." : "Check the spelling or try another filter."
+                : canManage ? "A school missing from the Hong Kong list can be added here or from the student form." : "Schools staff add will show here."}
             </p>
           </div>
-          {canManage && query.trim() && (
+          {canManage && (
             <PresentSchoolDialog mode="create" defaultName={query} trigger={
-              <Button size="sm" className="h-9 gap-2"><Plus className="h-4 w-4" /> Add this school</Button>
+              <Button size="sm" className="h-9 gap-2"><Plus className="h-4 w-4" /> {searching ? "Add this school" : "Add school"}</Button>
             } />
           )}
         </div>
+      ) : !searching ? (
+        <PresentSchoolsDirectory schools={everySchool} canManage={canManage} />
       ) : (
-        <section className="rounded-xl border border-border bg-card shadow-sm">
+        <section aria-label="Matching schools" className="rounded-xl border border-border bg-card">
           <header className="flex items-center justify-between border-b border-border px-4 py-2">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">School</p>
             <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Students</p>
           </header>
-          <ul className="divide-y divide-border">
+          <ul role="list" className="divide-y divide-border">
             {matches.map((school) => (
               <PresentSchoolRow key={school.id} school={school} canManage={canManage} />
             ))}
@@ -94,7 +103,7 @@ export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSc
         </section>
       )}
 
-      {more && (
+      {searching && more && (
         <div className="flex justify-center">
           <Button variant="outline" size="sm" className="h-9" onClick={() => setShown((n) => n + PAGE)}>
             Show more

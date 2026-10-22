@@ -120,3 +120,22 @@ export function filterPresentSchools<T extends PresentSchoolOption>(index: Index
     exact: ranked[0]?.rank === 0 ? ranked[0].school : null,
   }
 }
+
+/**
+ * Schools under their first letter, A to Z, for the directory view. Accents
+ * count as their letter (É under E); names starting with anything else go
+ * under "#", last. Within a letter the given order (by name) is kept.
+ */
+export function groupByInitial<T extends { name: string }>(schools: T[]): { letter: string; schools: T[] }[] {
+  const groups = new Map<string, T[]>()
+  for (const school of schools) {
+    const first = school.name.trim().normalize('NFD').charAt(0).toUpperCase()
+    const letter = /[A-Z]/.test(first) ? first : '#'
+    const group = groups.get(letter) ?? []
+    group.push(school)
+    groups.set(letter, group)
+  }
+  return [...groups]
+    .sort(([a], [b]) => (a === '#' ? 1 : b === '#' ? -1 : a.localeCompare(b)))
+    .map(([letter, list]) => ({ letter, schools: list }))
+}
