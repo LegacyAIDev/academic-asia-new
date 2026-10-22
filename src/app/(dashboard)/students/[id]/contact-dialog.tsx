@@ -482,7 +482,7 @@ export function EditContactButton({
       contact={contact}
       studentAddress={studentAddress}
       trigger={
-        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+        <Button variant="ghost" size="icon" className="size-9 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-colors" aria-label="Edit family member">
           <Pencil className="h-3.5 w-3.5" />
         </Button>
       }
@@ -521,7 +521,7 @@ export function DeleteContactButton({
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+        className="size-9 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted transition-colors"
         onClick={() => setOpen(true)}
       >
         <Trash2 className="h-3.5 w-3.5" />

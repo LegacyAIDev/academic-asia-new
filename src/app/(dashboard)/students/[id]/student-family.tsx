@@ -2,17 +2,20 @@
 
 import { Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { groupFamily, type FamilyEntry, type FamilyGroup } from "@/lib/students/family-relationships"
-import { linkedStudentName } from "@/lib/students/linked-student-label"
+import { groupFamily } from "@/lib/students/family-relationships"
 import type { StudentContactWithRelations } from "@/lib/supabase/queries/students"
 import type { FamilyLinkToStudent, FamilySuggestion } from "@/lib/supabase/queries/student-family"
-import { ContactDialog, DeleteContactButton, EditContactButton } from "./contact-dialog"
-import { FamilyMemberCard, type ContactReferenceData } from "./family-member-card"
+import { ContactDialog } from "./contact-dialog"
+import type { ContactReferenceData } from "./family-contact-bits"
+import { FamilyOthersList } from "./family-others-list"
+import { FamilyParentCard } from "./family-parent-card"
+import { FamilySiblingLine, type FamilyLineStudent } from "./family-sibling-line"
 import { FamilySuggestions } from "./family-suggestions"
-import { LinkedStudentCard } from "./linked-student-card"
 
 type StudentFamilySectionProps = {
   studentId: string
+  /** The student whose page this is: their place on the family line. */
+  student: FamilyLineStudent
   contacts: StudentContactWithRelations[]
   /** Links other students made to this one; shown here too, edited on their profile. */
   linksToStudent: FamilyLinkToStudent[]
@@ -23,90 +26,82 @@ type StudentFamilySectionProps = {
   canWrite: boolean
 }
 
-const GROUPS: { key: FamilyGroup; label: string }[] = [
-  { key: "parents", label: "Parents and guardians" },
-  { key: "siblings", label: "Brothers and sisters" },
-  { key: "others", label: "Other family and contacts" },
-]
+function Eyebrow({ children, count }: { children: React.ReactNode; count?: number }) {
+  return (
+    <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+      {children}
+      {count !== undefined && <span className="tabular-nums"> · {count}</span>}
+    </h3>
+  )
+}
 
 /**
- * The Family tab: parents and guardians first, then brothers and sisters, then
- * everyone else, as agreed with Jack. Family members who are students too show
- * as student cards linking to their profile, from both students' side.
+ * The Family tab. Parents and guardians first, as the people staff call; then
+ * brothers and sisters on one line in birth order with this student among them;
+ * then everyone else, quietly. Family members who are students too link to
+ * their own profile, and show on both students' tabs.
  */
 export function StudentFamilySection({
-  studentId, contacts, linksToStudent, suggestions, referenceData, studentAddress, canWrite,
+  studentId, student, contacts, linksToStudent, suggestions, referenceData, studentAddress, canWrite,
 }: StudentFamilySectionProps) {
   const groups = groupFamily(contacts, linksToStudent)
-  const total = GROUPS.reduce((n, g) => n + groups[g.key].length, 0)
-
-  function renderEntry(entry: FamilyEntry<StudentContactWithRelations, FamilyLinkToStudent>) {
-    if (entry.kind === "link") {
-      return <LinkedStudentCard key={entry.link.contactId} student={entry.link.student} label={entry.label} linkedFromOtherProfile />
-    }
-    const { contact } = entry
-    if (!contact.related_student) {
-      return (
-        <FamilyMemberCard
-          key={contact.id}
-          contact={contact}
-          studentId={studentId}
-          referenceData={referenceData}
-          studentAddress={studentAddress}
-          canWrite={canWrite}
-        />
-      )
-    }
-    return (
-      <LinkedStudentCard
-        key={contact.id}
-        student={contact.related_student}
-        label={contact.relationship?.label ?? "Family"}
-        contactLine={[contact.mobile, contact.email_1].filter(Boolean).join(" · ")}
-        actions={canWrite && (
-          <>
-            <EditContactButton contact={contact} studentId={studentId} referenceData={referenceData} studentAddress={studentAddress} />
-            <DeleteContactButton contactId={contact.id} studentId={studentId} contactName={linkedStudentName(contact.related_student)} />
-          </>
-        )}
-      />
-    )
-  }
+  const total = groups.parents.length + groups.siblings.length + groups.others.length
+  const shared = { studentId, referenceData, studentAddress, canWrite }
 
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between gap-3">
-          <CardTitle className="flex items-center gap-2 text-base font-medium">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            Family {total > 0 && <span className="text-muted-foreground tabular-nums">({total})</span>}
+          <CardTitle className="text-base font-medium">
+            <h2 className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" aria-hidden />
+              Family {total > 0 && <span className="text-muted-foreground tabular-nums">({total})</span>}
+            </h2>
           </CardTitle>
           {canWrite && (
             <ContactDialog studentId={studentId} referenceData={referenceData} mode="create" studentAddress={studentAddress} />
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {total === 0 ? (
-          <div className="py-8 text-center">
-            <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+      <CardContent className="space-y-8">
+        {total === 0 && (
+          <div className="py-6 text-center">
             <h3 className="mb-1 text-sm font-medium">No family members yet</h3>
             <p className="text-sm text-muted-foreground">
-              Add parents, brothers and sisters or other contacts. A brother or sister who is a student too can be picked from the students.
+              {canWrite
+                ? "Add the parents first. A brother or sister who is a student too can be picked from the students."
+                : "No parents, brothers or sisters have been recorded for this student."}
             </p>
           </div>
-        ) : (
-          GROUPS.filter((g) => groups[g.key].length > 0).map((group) => (
-            <section key={group.key} className="space-y-3">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {group.label} <span className="tabular-nums">· {groups[group.key].length}</span>
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{groups[group.key].map(renderEntry)}</div>
-            </section>
-          ))
         )}
+
+        {groups.parents.length > 0 && (
+          <section className="space-y-3">
+            <Eyebrow count={groups.parents.length}>Parents and guardians</Eyebrow>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {groups.parents.map(entry => entry.kind === "contact" && (
+                <FamilyParentCard key={entry.contact.id} contact={entry.contact} {...shared} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {groups.siblings.length > 0 && (
+          <section className="space-y-4">
+            <Eyebrow count={groups.siblings.length}>Brothers and sisters, eldest first</Eyebrow>
+            <FamilySiblingLine student={student} siblings={groups.siblings} {...shared} />
+          </section>
+        )}
+
         {canWrite && (
           <FamilySuggestions studentId={studentId} suggestions={suggestions} relationships={referenceData.relationships} />
+        )}
+
+        {groups.others.length > 0 && (
+          <section className="space-y-3">
+            <Eyebrow count={groups.others.length}>Other family and contacts</Eyebrow>
+            <FamilyOthersList entries={groups.others} {...shared} />
+          </section>
         )}
       </CardContent>
     </Card>

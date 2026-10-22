@@ -647,6 +647,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
           <TabsContent value="family" className="space-y-6">
             <StudentFamilySection
               studentId={id}
+              student={student}
               contacts={contacts}
               linksToStudent={familyLinks}
               suggestions={familySuggestions}

@@ -67,3 +67,29 @@ export function groupFamily<C extends ContactLike, L extends LinkLike>(contacts:
   }
   return groups
 }
+
+/**
+ * "Elder brother", "Younger sister": the relationship with the age told apart
+ * when both birth dates are known (ISO dates compare as text). Same day or an
+ * unknown date keeps the plain label.
+ */
+export function siblingAgeLabel(label: string, siblingBirth: string | null | undefined, studentBirth: string | null | undefined): string {
+  if (!siblingBirth || !studentBirth || siblingBirth === studentBirth) return label
+  return `${siblingBirth < studentBirth ? 'Elder' : 'Younger'} ${label.toLowerCase()}`
+}
+
+/** Eldest first by birth date; anyone without a date keeps their place after the rest. */
+export function eldestFirst<T>(items: T[], birthDate: (item: T) => string | null | undefined): T[] {
+  return [...items].sort((a, b) => {
+    const first = birthDate(a)
+    const second = birthDate(b)
+    if (!first || !second) return first ? -1 : second ? 1 : 0
+    return first < second ? -1 : first > second ? 1 : 0
+  })
+}
+
+/** The priority staff set on a contact ("1 — Primary", "2 — Secondary", then 3 and on), in words. */
+export function contactPriorityLabel(priority: number | null | undefined): string | null {
+  if (priority == null || priority < 1) return null
+  return priority === 1 ? 'Main contact' : priority === 2 ? 'Second contact' : `Contact ${priority}`
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { familyGroup, groupFamily, relationshipSeenFrom, siblingCodeFor } from '../family-relationships'
+import { contactPriorityLabel, eldestFirst, familyGroup, groupFamily, relationshipSeenFrom, siblingAgeLabel, siblingCodeFor } from '../family-relationships'
 import { studentSearchFilter, studentSearchWords } from '../student-search'
 
 describe('familyGroup', () => {
@@ -57,6 +57,35 @@ describe('groupFamily', () => {
     )
     expect(groups.parents.map((e) => e.kind === 'contact' && e.contact.id)).toEqual(['f', 'm'])
     expect(groups.others.map((e) => (e.kind === 'contact' ? e.contact.id : e.label))).toEqual(['c', 'Friend'])
+  })
+})
+
+describe('siblingAgeLabel', () => {
+  it('tells elder from younger when both birth dates are known', () => {
+    expect(siblingAgeLabel('Brother', '2008-05-01', '2010-03-04')).toBe('Elder brother')
+    expect(siblingAgeLabel('Sister', '2012-01-09', '2010-03-04')).toBe('Younger sister')
+  })
+  it('keeps the plain label for twins or an unknown date', () => {
+    expect(siblingAgeLabel('Brother', '2010-03-04', '2010-03-04')).toBe('Brother')
+    expect(siblingAgeLabel('Sibling', null, '2010-03-04')).toBe('Sibling')
+    expect(siblingAgeLabel('Sister', '2012-01-09', null)).toBe('Sister')
+  })
+})
+
+describe('eldestFirst', () => {
+  it('orders by birth date and keeps people without one at the end, in their order', () => {
+    const people = [
+      { name: 'no date 1', born: null }, { name: 'youngest', born: '2012-01-09' },
+      { name: 'eldest', born: '2006-07-01' }, { name: 'no date 2', born: undefined }, { name: 'middle', born: '2010-03-04' },
+    ]
+    expect(eldestFirst(people, (p) => p.born).map((p) => p.name)).toEqual(['eldest', 'middle', 'youngest', 'no date 1', 'no date 2'])
+  })
+})
+
+describe('contactPriorityLabel', () => {
+  it('names the main and second contact, numbers the rest, and says nothing without a priority', () => {
+    expect([1, 2, 3, 10, null, undefined, 0].map(contactPriorityLabel))
+      .toEqual(['Main contact', 'Second contact', 'Contact 3', 'Contact 10', null, null, null])
   })
 })
 

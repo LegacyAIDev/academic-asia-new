@@ -59,7 +59,7 @@ export function FamilySuggestions({ studentId, suggestions, relationships }: Fam
   }
 
   return (
-    <section className="space-y-2 rounded-lg border border-dashed border-border p-4">
+    <section className="space-y-2">
       <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
         Possibly family in the system <span className="tabular-nums">· {shown.length}</span>
       </p>
@@ -71,7 +71,9 @@ export function FamilySuggestions({ studentId, suggestions, relationships }: Fam
           const code = siblingCodeFor(suggestion.gender)
           const relationship = code ?? "family member"
           return (
-            <li key={suggestion.id} className="flex flex-wrap items-center gap-3 py-2">
+            <li key={suggestion.id} className="flex flex-wrap items-start gap-3 py-2">
+              {/* A dashed dot: a brother or sister not confirmed yet, next to the solid ones on the family line. */}
+              <span aria-hidden className="mt-3 size-3 shrink-0 rounded-full border-2 border-dashed border-muted-foreground" />
               <div className="min-w-0 flex-1 basis-[220px]">
                 <Link
                   href={`/students/${suggestion.id}?tab=family`}
