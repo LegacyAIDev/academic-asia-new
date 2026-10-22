@@ -77,9 +77,11 @@ src/app/
     │   └── [id]/
     │       ├── page.tsx           # Student detail — assembles all sections
     │       ├── edit/page.tsx
-    │       ├── student-family.tsx         # Family tab: Parents and guardians / Brothers and sisters / Other family and contacts (groupFamily); Add/Edit/Delete need WRITE
-    │       ├── family-member-card.tsx     # Card for a typed-in family member
-    │       ├── linked-student-card.tsx    # Card for a linked student; "View profile" to their ?tab=family; "Linked from their profile" when the other student made the link
+    │       ├── student-family.tsx         # Family tab: parent cards, the family line, suggestions, other family (groupFamily); Add/Edit/Delete need WRITE
+    │       ├── family-parent-card.tsx     # Parent/guardian card: relationship · Main contact, name, occupation, call/email links
+    │       ├── family-sibling-line.tsx    # Brothers and sisters + this student as dots on one line, eldest first ("Elder brother"); vertical on a phone
+    │       ├── family-others-list.tsx     # Uncles, aunts, cousins, friends: one quiet row each
+    │       ├── family-contact-bits.tsx    # contactName, memberDisplay, ContactLinks (tel:/mailto:), MemberActions (edit/delete)
     │       ├── family-suggestions.tsx     # "Possibly family in the system" card (WRITE only); one-click link, "Not family" hides for the visit
     │       ├── family-student-picker.tsx  # "Already a student?" picker in contact-dialog.tsx; server search as staff type
     │       ├── contact-dialog.tsx         # Add/edit family member; hosts the picker, always sends related_student_id
@@ -248,8 +250,9 @@ src/lib/
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
 ├── students/
+│   ├── phone-link.ts             # telHref: tel: link only for one callable number (pure; tested)
 │   ├── linked-student-label.ts   # linkedStudentName, linkedStudentDetails, sharedDetailsText (suggestion "matched on" text) (picker, Family tab cards and suggestions; tested in __tests__/linked-student-label.test.ts)
-│   ├── family-relationships.ts   # familyGroup (parents, siblings, others), groupFamily (Family tab groups; skips a link when the student links back), relationshipSeenFrom (link read from the other student's side), siblingCodeFor (pure; tested in __tests__/family-relationships.test.ts)
+│   ├── family-relationships.ts   # familyGroup (parents, siblings, others), groupFamily (Family tab groups; skips a link when the student links back), relationshipSeenFrom (link read from the other student's side), siblingCodeFor, siblingAgeLabel ("Elder brother"), eldestFirst, contactPriorityLabel ("Main contact") (pure; tested in __tests__/family-relationships.test.ts)
 │   ├── student-search.ts         # studentSearchWords, studentSearchFilter (every word matches surname, first name, Chinese name or code)
 │   └── present-school-name.ts    # cleanSchoolName, presentSchoolKey, parseSchoolListLine, schoolSearchKeys, PresentSchoolOption, indexPresentSchools, filterPresentSchools, PRESENT_SCHOOL_NAME_MAX, isUsableSchoolName, cleanOtherSpellings, PresentSchoolSource (pure; generic filter returns `total`; tested in __tests__/present-school-name.test.ts)
 ├── attachments/                  # Record attachments — file or link on a specific row
