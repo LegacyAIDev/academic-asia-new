@@ -44,13 +44,14 @@ export function bandLabel(gradeFrom: string | null, gradeTo: string | null, exam
   return gradeTo ? `${gradeFrom}–${gradeTo}` : gradeFrom
 }
 
-/** "91%"; the IB average point score is a number of points (out of 45), never a percentage. */
-export function formatResultValue(value: string | null, gradeFrom: string | null, examCode: string | null | undefined): string {
-  if (value == null || value.trim() === '') return '—'
-  // Number() rather than parseFloat(): "12abc" is shown as typed, not as "12%".
-  const number = Number(value)
-  if (Number.isNaN(number)) return value
-  return !gradeFrom && isIb(examCode) ? String(number) : `${number}%`
+/**
+ * "91%"; the IB average point score is a number of points (out of 45), never a
+ * percentage. The column is numeric, which the API sends as a JSON number (91,
+ * not "91.00"), so there is no text to trim or parse here.
+ */
+export function formatResultValue(value: number | null, gradeFrom: string | null, examCode: string | null | undefined): string {
+  if (value == null || !Number.isFinite(value)) return '—'
+  return !gradeFrom && isIb(examCode) ? String(value) : `${value}%`
 }
 
 /** Highest IB diploma score; the average point score is shown against it. */

@@ -8,7 +8,7 @@ export type SchoolAcademicResultWithJoins = {
   exam_type_id: number | null
   grade_from: string | null
   grade_to: string | null
-  result_percentage: string | null
+  result_percentage: number | null
   remarks: string | null
   created_at: string | null
   updated_at: string | null
