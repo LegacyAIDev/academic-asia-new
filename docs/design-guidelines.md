@@ -296,3 +296,10 @@ The application page (`students/[id]/applications/[applicationId]/`) and the sch
 - **Results tint — the school page's signature** (`academic-results-summary.tsx`): each summary cell is tinted with `color-mix(in oklch, var(--primary) n%, transparent)`, n up to 22% in proportion to the figure (percentages of 100, IB points of 45), so strong years stand out at a glance in both themes.
 - **Fees:** grouped under eyebrow rows per fee type (and per year in "All years") instead of a type badge on every row; amounts in `tabular-nums`.
 - **Headers:** an eyebrow ("School application", "School") above the name; status badges keep the shared category colours from `src/lib/applications/application-display.ts` so the list and the page match.
+
+## 13. Student Form Conventions
+
+- **Long-list picker** (`present-school-picker.tsx`): a Popover with a cmdk `Command` using `shouldFilter={false}` and the app's own filter, for lists over 1,000 rows. At most 50 rows are rendered, with a quiet "Keep typing to narrow down" line.
+- **Add to list** is the last item, only when the user may add, nothing matches the typed name exactly and the name is valid. Save stays disabled while the add runs.
+- **Legacy text** (not yet on the list) is shown as typed with a muted hint, and the search starts from it. A "Clear" item unlinks.
+- Tokens only; no new colours.

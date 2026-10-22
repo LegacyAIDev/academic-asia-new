@@ -131,7 +131,7 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
 Plan `261021-2210-current-school-from-predefined-list`.
 
 - [x] Phase 1 (2026-10-22): table `present_schools`, `students.present_school_id`, name helper, import script 43. 1,230 schools; 11,938 of 23,547 students with a school linked to 517 schools; 11,610 unlinked.
-- [ ] Phase 2: picker in the student form with "Add to list".
+- [x] Phase 2 (2026-10-22): "Current School" picker in the student form with "Add to list"; the list name is copied into `present_school` on save. Browser check by the user pending. See system-architecture 5.2a.
 
 Open questions for Jack:
 1. Keep all 1,230 schools? The requirement said 200-300.
@@ -176,7 +176,8 @@ Open questions for Jack:
 
 ## Changelog
 
-- **2026-10-22** — Current school from a predefined list, phase 1 (customer item 6): new table `present_schools` and `students.present_school_id` (migration `20261021204752`), name helper `src/lib/students/present-school-name.ts`, import script `scripts/43_import-present-schools.ts`. Typed `present_school` text unchanged. 1,230 schools loaded; 11,938 of 23,547 students linked. Details: system-architecture 5.2a, deployment guide 5a. Phase 2 (picker) planned.
+- **2026-10-22** — Current school from a predefined list, phase 1 (customer item 6): new table `present_schools` and `students.present_school_id` (migration `20261021204752`), name helper `src/lib/students/present-school-name.ts`, import script `scripts/43_import-present-schools.ts`. Typed `present_school` text unchanged. 1,230 schools loaded; 11,938 of 23,547 students linked. Details: system-architecture 5.2a, deployment guide 5a. 
+- **2026-10-22** — Current school from a predefined list, phase 2 (customer item 6): searchable "Current School" picker in the student form (`present-school-picker.tsx`) with "Add to list" (`addPresentSchool`, Students WRITE). Saving copies the list name into `present_school`; unlinked students keep their old text until chosen. Browser check pending. Details: system-architecture 5.2a.
 - **2026-09-28** — Scheduler v1: rooms/locations admin, my/team/rooms calendar (FullCalendar v7
   Premium), room + staff bookings with capacity/seat conflict handling, exam scheduling single
   write path, student calendar tab, booking history. See Phase 4a above.

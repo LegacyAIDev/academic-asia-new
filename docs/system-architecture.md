@@ -233,16 +233,19 @@ Hosted Supabase project (`aa-new`). 89 SQL migrations define the schema. Heavy u
 | `student_event_applications` | Student registration for specific events. |
 | `student_internal_notes` | Staff-only notes on a student. |
 
-### 5.2a Present schools (2026-10-22, customer item 6 phase 1)
+### 5.2a Present schools (2026-10-22, customer item 6 phases 1-2)
 
 `public.present_schools` is the predefined list for a student's *current* school (migration `20261021204752_present_schools.sql`, applied via MCP). It is separate from `schools`, which holds the partner schools students apply to.
 
 - **Columns.** `name`, `aliases text[]` (second spellings), `match_key` (unique; `presentSchoolKey(name)`), `search_keys text[]` (GIN index, for picker search), `source` (`hk_list` or `staff`), `is_active`, `created_by` (FK `profiles`, set by the app, no `auth.uid()` default), `created_at` / `updated_at` (`handle_updated_at` trigger).
-- **Link.** `students.present_school_id` FK to `present_schools(id)`, `on delete set null`, indexed. The text column `students.present_school` stays: the list, search, exports and overview still read it. Phase 2 copies the list name into it when a school is chosen.
+- **Link.** `students.present_school_id` FK to `present_schools(id)`, `on delete set null`, indexed. The text column `students.present_school` stays: the list, search, exports and overview still read it. Saving a student with a list school copies the list name into it (see Picker and saving).
 - **RLS.** Signed-in staff can select, insert and update; no delete policy (deactivate with `is_active`); `anon` revoked.
 - **Name helper.** `src/lib/students/present-school-name.ts` (pure, tested) is shared by the import script and, in phase 2, the picker and the add action. `cleanSchoolName` (NFC, curly to straight apostrophes, single spaces, upper case); `presentSchoolKey` (also drops `. , '` and a leading `THE `); `parseSchoolListLine` (BOM, CRLF, `A / B` alternative spellings); `schoolSearchKeys`.
 - **Data.** Loaded by `scripts/43_import-present-schools.ts` (deployment guide section 5a): 1,230 schools, 234 with a second spelling. 11,938 of 23,547 students with a school are linked (517 schools); 11,610 stay unlinked, mostly through-train schools the list splits into PRIMARY / SECONDARY, and schools not on the list.
-- **Status.** Phase 2 (picker with "Add to list" in the student form) is planned.
+- **Picker (phase 2, 2026-10-22).** `students/present-school-picker.tsx` (client; Popover + cmdk `Command` with `shouldFilter={false}`) replaces the free-text field in the student form. `students/new` and `students/[id]/edit` load the list with `getPresentSchools()` (`queries/present-schools.ts`: active schools by name, pages of 1,000, `[]` on error); the list and detail pages do not. The picker filters itself with `filterPresentSchools` (exact spelling, then starts with, then contains, then every typed word; at most 50 shown, "Keep typing to narrow down"), so the 1,230 rows need no server search. "Clear current school" unlinks. A student not yet linked shows the old text with the hint "Not on the list yet…" and the search starts from that text. The form posts hidden `present_school_id` and `present_school`.
+- **Add to list.** The last item, "Add “…” to the list", shows only when the user has Students WRITE (`canAdd`), no school spells the typed name exactly and the cleaned name is valid (at most `PRESENT_SCHOOL_NAME_MAX` = 200 characters). `addPresentSchool` (`actions/present-schools.ts`, Students WRITE) stores the cleaned upper-case name. A school whose search keys overlap is returned instead (`created: false`); otherwise it inserts with `source = 'staff'` and `created_by` from the session. A unique violation (two people adding at once) returns the colleague's row. Save is disabled while a school is being added.
+- **Saving.** `withListSchoolName` in `actions/students.ts`: with `present_school_id` the server copies the list name into `present_school` (unknown id: "Choose a school from the list"); a null id keeps the posted text; text without an id key drops an old link; updates without school fields leave both untouched. `getPresentSchoolName` (throws on read failure) backs the lookup. Students linked by the phase 1 import get the list name (upper case) in `present_school` the first time they are saved.
+- **Status.** Phase 2 done 2026-10-22; browser check pending.
 
 ### 5.3 Reference / Lookup Tables
 

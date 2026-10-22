@@ -66,6 +66,7 @@ src/app/
     │   ├── students-filters.tsx
     │   ├── students-advanced-filters.tsx  # Sheet: sex, DOB, entry year, course, school, event, contact
     │   ├── student-form.tsx       # Shared create/edit form
+    │   ├── present-school-picker.tsx  # Current School picker (client): self-filtered Command, "Add to list", legacy-text hint
     │   ├── new/page.tsx
     │   ├── brief-intros/export/   # Bulk Brief Introduction export — picker + controls + print CSS
     │   └── [id]/
@@ -237,7 +238,7 @@ src/lib/
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
 ├── students/
-│   └── present-school-name.ts    # cleanSchoolName, presentSchoolKey, parseSchoolListLine, schoolSearchKeys (pure; tested in __tests__/present-school-name.test.ts)
+│   └── present-school-name.ts    # cleanSchoolName, presentSchoolKey, parseSchoolListLine, schoolSearchKeys, PresentSchoolOption, indexPresentSchools, filterPresentSchools, PRESENT_SCHOOL_NAME_MAX (pure; tested in __tests__/present-school-name.test.ts)
 ├── attachments/                  # Record attachments — file or link on a specific row
 │   ├── attach-points.ts          # ATTACH_POINTS registry: owner, attachable_type, category; attachAccess(point)
 │   ├── exam-paper-access.ts      # EXAM_PAPER_ACCESS (Exams WRITE), paper category code, isExamPaperRow
@@ -312,7 +313,8 @@ src/lib/
     ├── middleware.ts             # updateSession() — refreshes session cookies per request
     ├── auth.ts                   # getCurrentUser() → { id, email, first_name, surname, department_label, admin_level }
     ├── actions/                  # 'use server' mutation files — one per domain
-    │   ├── students.ts           # createStudent, updateStudent, deleteStudent; ActionResult<T> defined here
+    │   ├── students.ts           # createStudent, updateStudent, deleteStudent; ActionResult<T> defined here; withListSchoolName copies the list school name
+    │   ├── present-schools.ts    # addPresentSchool (Students WRITE): existing school by search-key overlap or new staff row; tests in __tests__/present-schools.test.ts, student-present-school.test.ts
     │   ├── schools.ts
     │   ├── staff.ts
     │   ├── events.ts
@@ -357,6 +359,7 @@ src/lib/
         ├── scheduler-calendar-helpers.ts  # peopleOrFilter lookups, fetchCancelledRows, attachAttendees, inBatches (100-id batches)
         ├── __tests__/                # Scheduler query tests against a stubbed query builder (supabase-stub.ts); exam-paper-listing-access.test.ts covers papers hidden from non-team users
         ├── students.ts
+        ├── present-schools.ts        # getPresentSchools (active, pages of 1,000, [] on error), getPresentSchoolName (throws); test in __tests__/present-schools.test.ts
         ├── schools.ts
         ├── staff.ts
         ├── events.ts
