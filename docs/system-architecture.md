@@ -1,6 +1,6 @@
 # System Architecture
 
-**Last updated:** 2026-08-27
+**Last updated:** 2026-10-22
 
 ---
 
@@ -221,7 +221,8 @@ Hosted Supabase project (`aa-new`). 89 SQL migrations define the schema. Heavy u
 |---|---|
 | `profiles` | Staff/user profiles. `id` FK to Supabase `auth.users`. Has `admin_level` and `department_id`. |
 | `students` | Core student records. Has `student_code` (auto-generated, format `S####`). |
-| `schools` | Partner schools. |
+| `schools` | Partner schools (UK schools students apply to). Not the same as `present_schools`. |
+| `present_schools` | Schools students attend now (Hong Kong list plus staff additions). See 5.2a. |
 | `events` | Recruitment events. Parameterized by event type. |
 | `student_contacts` | Emergency contacts for students. |
 | `student_applications` | Student → School application records. |
@@ -231,6 +232,17 @@ Hosted Supabase project (`aa-new`). 89 SQL migrations define the schema. Heavy u
 | `student_exam_results` | Exam scores per student. |
 | `student_event_applications` | Student registration for specific events. |
 | `student_internal_notes` | Staff-only notes on a student. |
+
+### 5.2a Present schools (2026-10-22, customer item 6 phase 1)
+
+`public.present_schools` is the predefined list for a student's *current* school (migration `20261021204752_present_schools.sql`, applied via MCP). It is separate from `schools`, which holds the partner schools students apply to.
+
+- **Columns.** `name`, `aliases text[]` (second spellings), `match_key` (unique; `presentSchoolKey(name)`), `search_keys text[]` (GIN index, for picker search), `source` (`hk_list` or `staff`), `is_active`, `created_by` (FK `profiles`, set by the app, no `auth.uid()` default), `created_at` / `updated_at` (`handle_updated_at` trigger).
+- **Link.** `students.present_school_id` FK to `present_schools(id)`, `on delete set null`, indexed. The text column `students.present_school` stays: the list, search, exports and overview still read it. Phase 2 copies the list name into it when a school is chosen.
+- **RLS.** Signed-in staff can select, insert and update; no delete policy (deactivate with `is_active`); `anon` revoked.
+- **Name helper.** `src/lib/students/present-school-name.ts` (pure, tested) is shared by the import script and, in phase 2, the picker and the add action. `cleanSchoolName` (NFC, curly to straight apostrophes, single spaces, upper case); `presentSchoolKey` (also drops `. , '` and a leading `THE `); `parseSchoolListLine` (BOM, CRLF, `A / B` alternative spellings); `schoolSearchKeys`.
+- **Data.** Loaded by `scripts/43_import-present-schools.ts` (deployment guide section 5a): 1,230 schools, 234 with a second spelling. 11,938 of 23,547 students with a school are linked (517 schools); 11,610 stay unlinked, mostly through-train schools the list splits into PRIMARY / SECONDARY, and schools not on the list.
+- **Status.** Phase 2 (picker with "Add to list" in the student form) is planned.
 
 ### 5.3 Reference / Lookup Tables
 

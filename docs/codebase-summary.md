@@ -1,6 +1,6 @@
 # Codebase Summary
 
-**Last updated:** 2026-10-20
+**Last updated:** 2026-10-22
 **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase
 
 ---
@@ -236,6 +236,8 @@ src/lib/
 │   ├── guard.ts                  # requireAccess / assertAccess / canAccess / assertNoEscalation
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
 │   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
+├── students/
+│   └── present-school-name.ts    # cleanSchoolName, presentSchoolKey, parseSchoolListLine, schoolSearchKeys (pure; tested in __tests__/present-school-name.test.ts)
 ├── attachments/                  # Record attachments — file or link on a specific row
 │   ├── attach-points.ts          # ATTACH_POINTS registry: owner, attachable_type, category; attachAccess(point)
 │   ├── exam-paper-access.ts      # EXAM_PAPER_ACCESS (Exams WRITE), paper category code, isExamPaperRow
@@ -418,6 +420,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | Timestamped (pre-scheduler) | School document category rounds, permission matrix, record attachments (polymorphic `attachable_type`/`attachable_id` + `external_url` on both document tables) |
 | Timestamped (scheduler, 2026-09-28 to 2026-10-02) | `20260928070928_scheduler_core.sql` (locations, rooms, bookings, attendees, history, view, triggers), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql` (`room_id` FK on exam records), `20260928074722_scheduler_review_hardening.sql` (red-team fixes), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix) |
 | Timestamped (2026-10-12) | `20261012130805_school_placement_history.sql` (read-only function `school_placement_history(p_school_id)`: per-entry-year application/offer/placed counts for a school) |
+| Timestamped (2026-10-21) | `20261021204752_present_schools.sql` (table `present_schools`, `students.present_school_id` FK, select/insert/update RLS, no delete) |
 | Timestamped (2026-10-20) | `20261020110718_student_application_status_history.sql` (table `student_application_status_history`, trigger `student_applications_status_history`, select-only RLS), `20261020133120_student_application_status_history_revoke_execute.sql` (revokes EXECUTE on the trigger function) |
 
 ---
@@ -436,6 +439,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 - `8_migrate-event-school-representatives.ts`
 - `9_migrate-event-applications.ts`
 - `10_migrate-event-results.ts` through `34_migrate-aa-test.ts`
+- `43_import-present-schools.ts` — loads the Hong Kong school list into `present_schools` and links students (not part of `remigrate.sh`; see deployment guide 5a)
 
 Source CSVs (`data/`): `AA_Student.csv`, `AA_School.csv`, `AA_Event*.csv`, and others.
 

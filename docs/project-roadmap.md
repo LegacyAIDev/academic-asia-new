@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-10-21
+**Last updated:** 2026-10-22
 **Current phase:** Phase 2 — Feature Completion
 
 > Items marked as "Inferred" are based on codebase signals (sidebar links, migration patterns, absence of test/CI config) and not from explicit specifications.
@@ -126,6 +126,20 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
 
 ---
 
+### Customer item 6 — Academic History: current school from a predefined list
+
+Plan `261021-2210-current-school-from-predefined-list`.
+
+- [x] Phase 1 (2026-10-22): table `present_schools`, `students.present_school_id`, name helper, import script 43. 1,230 schools; 11,938 of 23,547 students with a school linked to 517 schools; 11,610 unlinked.
+- [ ] Phase 2: picker in the student form with "Add to list".
+
+Open questions for Jack:
+1. Keep all 1,230 schools? The requirement said 200-300.
+2. May any staff with Students WRITE add schools to the list?
+3. Fix the 11,610 unlinked students as staff edit them, or run a one-off mapping of the most common names?
+
+---
+
 ## Phase 6 — CI/CD & DevOps
 
 **Status: Planned** *(Inferred — no `.github/workflows/` found)*
@@ -162,6 +176,7 @@ See `docs/system-architecture.md` §6a and `plans/260912-0136-scheduler-rooms-me
 
 ## Changelog
 
+- **2026-10-22** — Current school from a predefined list, phase 1 (customer item 6): new table `present_schools` and `students.present_school_id` (migration `20261021204752`), name helper `src/lib/students/present-school-name.ts`, import script `scripts/43_import-present-schools.ts`. Typed `present_school` text unchanged. 1,230 schools loaded; 11,938 of 23,547 students linked. Details: system-architecture 5.2a, deployment guide 5a. Phase 2 (picker) planned.
 - **2026-09-28** — Scheduler v1: rooms/locations admin, my/team/rooms calendar (FullCalendar v7
   Premium), room + staff bookings with capacity/seat conflict handling, exam scheduling single
   write path, student calendar tab, booking history. See Phase 4a above.

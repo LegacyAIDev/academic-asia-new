@@ -1,6 +1,6 @@
 # Deployment Guide
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-10-22
 
 ---
 
@@ -127,6 +127,28 @@ alter table public.student_applications enable trigger student_applications_stat
 ```
 
 If history rows were already written by an import, delete them before go-live (history is meant to start from real changes).
+
+### 5a. Present schools import (customer item 6)
+
+Migration `20261021204752_present_schools.sql` was applied through the Supabase MCP (the CLI login is unavailable), then renamed to the applied version. Other environments get it with `npm run db:push`.
+
+Load the Hong Kong school list and link students whose typed school matches exactly. Always dry-run first:
+
+```bash
+npx tsx scripts/43_import-present-schools.ts --dry-run
+npx tsx scripts/43_import-present-schools.ts
+# optional: --file <path>  (default requirements/Hong_Kong_All_Primary_and_Secondary_Schools.txt)
+```
+
+- Needs `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SECRET_KEY` in `.env.local`. Reads in pages of 1,000.
+- Safe to re-run: unchanged schools are not rewritten and linked students are skipped.
+- Links exact key matches only, writes only an empty `present_school_id`, never changes the typed `present_school` text.
+- Aborts if two list schools share a key. A staff-added school with the same `match_key` as a list entry takes the list spelling (`source` becomes `hk_list`).
+- Writes a local report to `data/present-school-import-report.json` (not committed).
+- The students `updated_at` trigger fires when a student is linked.
+- Undo links: `update students set present_school_id = null where ...;`
+
+Result on 2026-10-22: 1,230 schools; 11,938 of 23,547 students with a school linked.
 
 ---
 
