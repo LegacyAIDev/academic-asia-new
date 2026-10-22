@@ -265,7 +265,7 @@ src/lib/
 ├── schools/                      # Selected School List export — types, shaping, HTML builder
 │   ├── school-tabs.ts            # PURE: school page tab keys, labels, order, "More" group, ?tab= resolution (supplementary → notes, unknown → basic)
 │   ├── placement-history.ts      # PURE: academicYearLabel, placementRate, toPlacementRows (rows + "All years" total)
-│   ├── academic-results-summary.ts # PURE: summariseResultsByYear (year blocks, bands narrowest first, range filter), resultsSummaryText, bandLabel, IB average points
+│   ├── academic-results-summary.ts # PURE: summariseResultsByYear (year blocks, aligned band columns per grading scale, bar shares, range filter), resultsSummaryText, bandLabel, IB average points
 │   ├── fee-years.ts              # PURE: financial-year list/default, fee ordering (reuses year-levels.ts)
 │   └── __tests__/                # placement-history, school-tabs, academic-results-summary, fee-years
 ├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
