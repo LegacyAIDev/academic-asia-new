@@ -1,6 +1,6 @@
 # Design Guidelines
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-10-22
 
 This document covers the visual design system, component conventions, and UX patterns used across Academic Asia. It is the reference for anyone building or modifying UI.
 
@@ -293,7 +293,7 @@ The application page (`students/[id]/applications/[applicationId]/`) and the sch
 - **One record card:** the application record is a single card with hairline groups (Status, Course & entry, Referral & scholarship, Event & audition, School visit, Remarks). Groups with nothing recorded are folded into one "Not recorded: …" line instead of rows of dashes.
 - **Journey route — the application page's signature** (`application-journey.tsx`): six stops on one line, filled in `primary` up to the current step (`destructive` when the application is closed), with "since {date}" when the status change was recorded. Below `sm` it becomes a progress bar with "Step n of 6".
 - **Timeline:** the same dot-and-line pattern as `booking-history-list.tsx`; the newest entry carries the accent dot, status changes a darker dot.
-- **Results tint — the school page's signature** (`academic-results-summary.tsx`): each summary cell is tinted with `color-mix(in oklch, var(--primary) n%, transparent)`, n up to 22% in proportion to the figure (percentages of 100, IB points of 45), so strong years stand out at a glance in both themes.
+- **Year blocks — the school page's exam results** (`academic-results-summary.tsx`): one block per exam year, newest first. Year heading, then an eyebrow line per exam type (GCSE, A Level, others), each with figure tiles (`dl`) narrowest band first. "Copy summary" copies one text line per year and confirms with a toast (error toast if the clipboard is blocked); a source note sits below. Tokens only, no colour tint, so it reads the same in both themes.
 - **Fees:** grouped under eyebrow rows per fee type (and per year in "All years") instead of a type badge on every row; amounts in `tabular-nums`.
 - **Headers:** an eyebrow ("School application", "School") above the name; status badges keep the shared category colours from `src/lib/applications/application-display.ts` so the list and the page match.
 

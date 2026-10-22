@@ -120,7 +120,7 @@ src/app/
     │       ├── school-fees.tsx               # Opens on newest financial year; year select (lib/schools/fee-years.ts)
     │       ├── school-entrance-exams.tsx
     │       ├── school-academic-results.tsx   # Summary first, "All records (N)" list with edit/delete
-    │       ├── academic-results-summary.tsx  # Per-exam-type grade-band tables + range buttons
+    │       ├── academic-results-summary.tsx  # Year blocks (figure tiles per exam type), range buttons, Copy summary
     │       ├── school-bank-details.tsx
     │       ├── school-notes.tsx
     │       ├── school-visits.tsx
@@ -264,7 +264,7 @@ src/lib/
 ├── schools/                      # Selected School List export — types, shaping, HTML builder
 │   ├── school-tabs.ts            # PURE: school page tab keys, labels, order, "More" group, ?tab= resolution (supplementary → notes, unknown → basic)
 │   ├── placement-history.ts      # PURE: academicYearLabel, placementRate, toPlacementRows (rows + "All years" total)
-│   ├── academic-results-summary.ts # PURE: exam-type tables, year rows, grade-band columns, range filter, IB average points
+│   ├── academic-results-summary.ts # PURE: summariseResultsByYear (year blocks, bands narrowest first, range filter), resultsSummaryText, bandLabel, IB average points
 │   ├── fee-years.ts              # PURE: financial-year list/default, fee ordering (reuses year-levels.ts)
 │   └── __tests__/                # placement-history, school-tabs, academic-results-summary, fee-years
 ├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
