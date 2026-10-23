@@ -116,7 +116,9 @@ src/app/
     │       ├── school-tab-content-more.tsx # Loaders for Courses, Bank details, Visits
     │       ├── school-tab-skeleton.tsx     # Suspense fallback
     │       ├── school-overview.tsx         # School details + Admissions cards, remarks, keywords
-    │       ├── school-placement-history.tsx  # Overview card: applications/offers/placed/rate per academic year
+    │       ├── school-placement-history.tsx  # Overview card: year select, figures, per-year table (default year picked on the server)
+    │       ├── placement-kpi-tiles.tsx       # Five label-over-figure tiles for the chosen year
+    │       ├── placement-history-table.tsx   # Per-year table with "All years" total, selected year highlighted
     │       ├── school-supplementary-info.tsx # Notes & Info tab, 25 per page (?supPage=N)
     │       ├── school-documents.tsx, school-events.tsx
     │       ├── school-contacts.tsx
@@ -277,10 +279,10 @@ src/lib/
 │   └── escape-html.ts            # escapeHtml: shared by the renderer footer and the cover slip
 ├── schools/                      # Selected School List export — types, shaping, HTML builder
 │   ├── school-tabs.ts            # PURE: school page tab keys, labels, order, "More" group, ?tab= resolution (supplementary → notes, unknown → basic)
-│   ├── placement-history.ts      # PURE: academicYearLabel, placementRate, toPlacementRows (rows + "All years" total)
+│   ├── placement-history.ts      # PURE: academicYearLabel, placementRate (accepted / applications), currentAcademicYearStart, placementYearOptions, defaultPlacementYear, figuresForYear, toPlacementRows
 │   ├── academic-results-summary.ts # PURE: summariseResultsByYear (year blocks, aligned band columns per grading scale, bar shares, range filter), resultsSummaryText, bandLabel, IB average points
 │   ├── fee-years.ts              # PURE: financial-year list/default, fee ordering (reuses year-levels.ts)
-│   └── __tests__/                # placement-history, school-tabs, academic-results-summary, fee-years
+│   └── __tests__/                # placement-history (+ Headington case), school-tabs, academic-results-summary, fee-years
 ├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
 │   ├── export-types.ts           # One payload for single and bulk, PDF and Excel
 │   ├── export-shaping.ts         # PURE: htmlToPlainText, toCellText/Date, filenames
@@ -412,7 +414,7 @@ src/lib/
         ├── school-notes.ts
         ├── school-supplementary-info.ts
         ├── school-visits.ts
-        ├── school-placement-history.ts  # getSchoolPlacementHistory: calls the school_placement_history RPC, null on failure
+        ├── school-placement-history.ts  # getSchoolPlacementHistory: calls the school_placement_history RPC (year, applications, offers, accepted, placed), null on failure
         ├── scheduler-rooms.ts       # Room list for filters/booking dialog
         ├── scheduler-bookings.ts    # Calendar data via scheduler_calendar_items view
         ├── scheduler-calendar-helpers.ts  # Attendee attach, people→booking ids (range-bounded), fetchCancelledRows
@@ -455,6 +457,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | Timestamped (pre-scheduler) | School document category rounds, permission matrix, record attachments (polymorphic `attachable_type`/`attachable_id` + `external_url` on both document tables) |
 | Timestamped (scheduler, 2026-09-28 to 2026-10-02) | `20260928070928_scheduler_core.sql` (locations, rooms, bookings, attendees, history, view, triggers), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql` (`room_id` FK on exam records), `20260928074722_scheduler_review_hardening.sql` (red-team fixes), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix), `20261023190212_scheduler_blocked_times.sql` (blocked times table, occurrence function, SR005) |
 | Timestamped (2026-10-12) | `20261012130805_school_placement_history.sql` (read-only function `school_placement_history(p_school_id)`: per-entry-year application/offer/placed counts for a school) |
+| Timestamped (2026-10-23) | `20261023210635_application_placement_outcomes.sql` (view `application_placement_outcomes`: offer/accepted/placed flags and academic year per application, `security_invoker`; rebuilds `school_placement_history` on it with accepted counts) |
 | Timestamped (2026-10-21) | `20261021204752_present_schools.sql` (table `present_schools`, `students.present_school_id` FK, select/insert/update RLS, no delete) |
 | Timestamped (2026-10-22) | `20261022152919_student_contacts_related_student.sql` (`student_contacts.related_student_id` FK to `students`, no self-link check, partial index, unique per student and link) |
 | Timestamped (2026-10-22) | `20261022165842_student_family_suggestions.sql` (function `student_family_suggestions(p_student_id)` plus two partial expression indexes on contact mobile digits and `lower(btrim(email_1))`; execute for `authenticated` only) |
