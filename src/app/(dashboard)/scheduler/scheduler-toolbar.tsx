@@ -2,7 +2,7 @@
 
 import { TZDate } from '@date-fns/tz'
 import { addDays, addMonths, format, startOfWeek } from 'date-fns'
-import { ChevronLeft, ChevronRight, Eye, Plus } from 'lucide-react'
+import { CalendarOff, ChevronLeft, ChevronRight, Eye, Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -21,6 +21,7 @@ type Props = {
   canWrite: boolean
   onChange: (patch: Partial<SchedulerParams>) => void
   onNewBooking: () => void
+  onBlockedTimes: () => void
 }
 
 function shiftDate(date: string, mode: SchedulerMode, direction: 1 | -1): string {
@@ -39,7 +40,7 @@ function dateLabel(date: string, mode: SchedulerMode): string {
 }
 
 /** Command bar: view tabs, date navigation with the mode switch, people picker and the primary action. */
-export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, onNewBooking }: Props) {
+export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, onNewBooking, onBlockedTimes }: Props) {
   const modes: SchedulerMode[] = params.view === 'rooms' ? ['day', 'week'] : ['day', 'week', 'month']
 
   return (
@@ -90,9 +91,14 @@ export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, o
             />
           )}
           {canWrite ? (
-            <Button className="h-9" onClick={onNewBooking}>
-              <Plus className="mr-1 h-4 w-4" /> New booking
-            </Button>
+            <>
+              <Button variant="outline" className="h-9" onClick={onBlockedTimes}>
+                <CalendarOff className="mr-1 h-4 w-4" /> Blocked times
+              </Button>
+              <Button className="h-9" onClick={onNewBooking}>
+                <Plus className="mr-1 h-4 w-4" /> New booking
+              </Button>
+            </>
           ) : (
             <ViewOnlyNotice />
           )}

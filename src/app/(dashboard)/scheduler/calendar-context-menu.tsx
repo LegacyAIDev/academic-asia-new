@@ -65,7 +65,9 @@ export function CalendarContextMenu({ children, events, canWrite, canConfirm, re
 
   const captureTarget = (e: MouseEvent<HTMLDivElement>) => {
     const element = (e.target as HTMLElement).closest<HTMLElement>('[data-booking-key]')
-    const event = element ? events.find(candidate => candidate.id === element.dataset.bookingKey) : undefined
+    const found = element ? events.find(candidate => candidate.id === element.dataset.bookingKey) : undefined
+    // A blocked time behaves like the empty slot under it.
+    const event = found?.extendedProps.source === 'blocked_time' ? undefined : found
     setTarget(event ? { kind: 'event', event } : { kind: 'slot', slot: slotAt(e.clientX, e.clientY) })
   }
 

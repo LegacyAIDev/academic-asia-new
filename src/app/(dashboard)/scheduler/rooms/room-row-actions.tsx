@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
-import { Loader2, Trash2, Power, PowerOff } from "lucide-react"
+import { CalendarOff, Loader2, Trash2, Power, PowerOff } from "lucide-react"
 import { toast } from "sonner"
 import { setRoomActive, deleteRoom } from "@/lib/supabase/actions/scheduler-rooms"
+import { BlockedTimesSheet } from "@/components/scheduler/blocked-times-sheet"
+import type { BlockedTime } from "@/lib/scheduler/blocked-times"
 import type { SchedulerRoom } from "@/lib/supabase/queries/scheduler-rooms"
 
 const ICON_BUTTON = "h-9 w-9 text-muted-foreground"
@@ -87,5 +89,25 @@ export function DeleteRoomButton({ room }: { room: SchedulerRoom }) {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  )
+}
+
+/** Opens the room's recurring blocked times; the room is not offered or bookable during them. */
+export function BlockedTimesButton({ room, blocks }: { room: SchedulerRoom; blocks: BlockedTime[] }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button variant="ghost" size="icon" className={`${ICON_BUTTON} hover:text-primary`} onClick={() => setOpen(true)} title="Blocked times…" aria-label={`Blocked times for ${room.display_name}`}>
+        <CalendarOff className="h-3.5 w-3.5" />
+      </Button>
+      <BlockedTimesSheet
+        open={open}
+        onOpenChange={setOpen}
+        subject={{ kind: "room", roomId: room.id }}
+        subjectLabel={room.display_name}
+        blocks={blocks}
+        returnTo="/scheduler/rooms"
+      />
+    </>
   )
 }

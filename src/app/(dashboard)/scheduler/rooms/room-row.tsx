@@ -5,12 +5,15 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { RoomChip } from "@/components/scheduler/room-chip"
 import { EditRoomButton } from "./room-dialog"
-import { DeleteRoomButton, ToggleActiveButton } from "./room-row-actions"
+import { BlockedTimesButton, DeleteRoomButton, ToggleActiveButton } from "./room-row-actions"
+import { hasEnded, type BlockedTime } from "@/lib/scheduler/blocked-times"
+import { todayInBusinessTz } from "@/lib/scheduler/search-params"
 import type { SchedulerRoom, SchedulerLocation } from "@/lib/supabase/queries/scheduler-rooms"
 
 /** One location as a card: address eyebrow, name, then its rooms as rows. */
-export function RoomGroup({ location, rooms, canManage, locations }: {
+export function RoomGroup({ location, rooms, canManage, locations, blocksByRoom }: {
   location: SchedulerLocation; rooms: SchedulerRoom[]; canManage: boolean; locations: SchedulerLocation[]
+  blocksByRoom: Record<string, BlockedTime[]>
 }) {
   const eyebrow = [location.building, location.address].filter(Boolean).join(" · ")
   return (
@@ -24,7 +27,7 @@ export function RoomGroup({ location, rooms, canManage, locations }: {
       </header>
       <ul className="divide-y divide-border">
         {rooms.map(room => (
-          <RoomRow key={room.id} room={room} canManage={canManage} locations={locations} />
+          <RoomRow key={room.id} room={room} canManage={canManage} locations={locations} blocks={blocksByRoom[room.id] ?? []} />
         ))}
       </ul>
     </section>
@@ -40,8 +43,12 @@ function FacilityBadge({ icon: Icon, children }: { icon: typeof Users; children:
   )
 }
 
-function RoomRow({ room, canManage, locations }: { room: SchedulerRoom; canManage: boolean; locations: SchedulerLocation[] }) {
+function RoomRow({ room, canManage, locations, blocks }: {
+  room: SchedulerRoom; canManage: boolean; locations: SchedulerLocation[]; blocks: BlockedTime[]
+}) {
   const inactive = !room.is_active
+  const today = todayInBusinessTz()
+  const activeBlocks = blocks.filter(block => !hasEnded(block, today)).length
   return (
     <li className={cn("flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3", inactive && "bg-muted/40 text-muted-foreground")}>
       <div className={cn("flex min-w-0 flex-1 basis-[200px] items-center gap-2", inactive && "line-through opacity-70")}>
@@ -62,10 +69,16 @@ function RoomRow({ room, canManage, locations }: { room: SchedulerRoom; canManag
         <span className="text-xs text-muted-foreground tabular-nums">
           {room.booking_count} booking{room.booking_count === 1 ? "" : "s"}
         </span>
+        {activeBlocks > 0 && (
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {activeBlocks} blocked time{activeBlocks === 1 ? "" : "s"}
+          </span>
+        )}
         {inactive && <Badge variant="outline" className="text-[11px] text-muted-foreground">Inactive</Badge>}
         {canManage && (
           <div className="flex items-center">
             <EditRoomButton room={room} locations={locations} />
+            <BlockedTimesButton room={room} blocks={blocks} />
             <ToggleActiveButton room={room} />
             <DeleteRoomButton room={room} />
           </div>

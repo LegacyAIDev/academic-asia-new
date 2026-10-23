@@ -1903,6 +1903,73 @@ export type Database = {
           },
         ]
       }
+      scheduler_blocked_times: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          end_time: string
+          ends_on: string | null
+          id: string
+          label: string
+          profile_id: string | null
+          room_id: string | null
+          start_time: string
+          starts_on: string
+          updated_at: string
+          weekdays: number[]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          end_time: string
+          ends_on?: string | null
+          id?: string
+          label: string
+          profile_id?: string | null
+          room_id?: string | null
+          start_time: string
+          starts_on: string
+          updated_at?: string
+          weekdays: number[]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          end_time?: string
+          ends_on?: string | null
+          id?: string
+          label?: string
+          profile_id?: string | null
+          room_id?: string | null
+          start_time?: string
+          starts_on?: string
+          updated_at?: string
+          weekdays?: number[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduler_blocked_times_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_blocked_times_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_blocked_times_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "scheduler_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scheduler_booking_history: {
         Row: {
           action: string
@@ -5856,6 +5923,22 @@ export type Database = {
           remaining: number
           room_id: string
           room_number: string
+        }[]
+      }
+      scheduler_blocked_time_occurrences: {
+        Args: {
+          p_from: string
+          p_profile_ids?: string[]
+          p_room_ids?: string[]
+          p_to: string
+        }
+        Returns: {
+          blocked_time_id: string
+          end_at: string
+          label: string
+          profile_id: string
+          room_id: string
+          start_at: string
         }[]
       }
       scheduler_cancel_booking: {

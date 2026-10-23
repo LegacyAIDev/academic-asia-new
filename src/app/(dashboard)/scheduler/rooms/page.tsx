@@ -1,6 +1,8 @@
 import { requireAccess, canAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { listBlockedTimes } from '@/lib/supabase/queries/scheduler-blocked-times'
 import { getLocations, getRooms } from '@/lib/supabase/queries/scheduler-rooms'
+import type { BlockedTime } from '@/lib/scheduler/blocked-times'
 import { RoomsTable } from './rooms-table'
 
 /** Admin page for the rooms and locations that bookings/exams are scheduled into. */
@@ -12,6 +14,11 @@ export default async function SchedulerRoomsPage() {
     getRooms({ includeInactive: true }),
     getLocations({ includeInactive: true }),
   ])
+  const blocks = await listBlockedTimes({ roomIds: rooms.map(room => room.id) })
+  const blocksByRoom: Record<string, BlockedTime[]> = {}
+  for (const block of blocks) {
+    if (block.room_id) (blocksByRoom[block.room_id] ??= []).push(block)
+  }
 
   return (
     <div className="space-y-6">
@@ -22,7 +29,7 @@ export default async function SchedulerRoomsPage() {
         </p>
       </div>
 
-      <RoomsTable rooms={rooms} locations={locations} canManage={canManage} />
+      <RoomsTable rooms={rooms} locations={locations} blocksByRoom={blocksByRoom} canManage={canManage} />
     </div>
   )
 }

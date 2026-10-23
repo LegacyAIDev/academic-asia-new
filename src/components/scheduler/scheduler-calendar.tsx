@@ -49,8 +49,14 @@ const NO_RESOURCES: CalendarResource[] = []
 const PLUGINS = [dayGridPlugin, timeGridPlugin, interactionPlugin, resourceTimeGridPlugin, monarchTheme]
 
 /** Tags each rendered booking so the right-click menu can tell which one was clicked. */
-function tagEventElement(info: { el: HTMLElement; event: { id: string } }) {
+function tagEventElement(info: { el: HTMLElement; event: { id: string; extendedProps: Record<string, unknown> } }) {
+  if (isBlockedTime(info.event.extendedProps)) return
   info.el.dataset.bookingKey = info.event.id
+}
+
+/** Blocked times are shading, not bookings: they never open details or move. */
+function isBlockedTime(props: Record<string, unknown>): boolean {
+  return props.source === 'blocked_time'
 }
 
 /**
@@ -81,7 +87,7 @@ export default function SchedulerCalendar({
 
   const handleChange = (info: EventChangeInfo) => {
     const { event } = info
-    if (!event.start || !event.end) return info.revert()
+    if (!event.start || !event.end || isBlockedTime(event.extendedProps)) return info.revert()
     const newResource = (info as { newResource?: { id: string } }).newResource
     onEventMove?.({
       props: event.extendedProps as CalendarEventProps,
@@ -133,6 +139,7 @@ export default function SchedulerCalendar({
         }}
         eventClick={(info: EventClickInfo) => {
           info.jsEvent.preventDefault()
+          if (isBlockedTime(info.event.extendedProps)) return
           onEventClick?.(info.event.id, info.event.extendedProps as CalendarEventProps)
         }}
         eventDrop={handleChange}

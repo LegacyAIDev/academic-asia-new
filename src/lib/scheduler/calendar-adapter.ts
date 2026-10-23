@@ -1,4 +1,5 @@
 import type { CalendarItem } from '@/lib/supabase/queries/scheduler-bookings'
+import type { BlockedOccurrence } from './blocked-times'
 import { colorForType } from './colors'
 
 /**
@@ -27,6 +28,8 @@ export type CalendarEvent = {
   start: string
   end: string
   resourceId?: string
+  /** 'background' draws the event as shading behind the cards, not as a card. */
+  display?: 'background'
   color: string
   editable: boolean
   classNames: string[]
@@ -122,6 +125,50 @@ export function toCalendarEvents(items: CalendarItem[], opts: AdapterOptions): C
   return events
 }
 
+/**
+ * Blocked times as background shading. They are never clickable or editable
+ * (`source: 'blocked_time'` lets the UI ignore them). In the Rooms view each one
+ * sits in its room's column, in person columns in that person's column; a block
+ * of someone who has no column is left out.
+ */
+export function toBlockedTimeEvents(
+  occurrences: BlockedOccurrence[],
+  opts: Pick<AdapterOptions, 'resourceBy' | 'personResources'>,
+): CalendarEvent[] {
+  const events: CalendarEvent[] = []
+  for (const occurrence of occurrences) {
+    let resourceId: string | undefined
+    if (opts.resourceBy === 'room') resourceId = occurrence.roomId ?? undefined
+    else if (opts.resourceBy === 'person') resourceId = occurrence.profileId ? opts.personResources?.[occurrence.profileId] : undefined
+    if (opts.resourceBy && !resourceId) continue
+
+    events.push({
+      id: `blocked:${occurrence.blockedTimeId}:${occurrence.startAt}`,
+      title: occurrence.label,
+      start: occurrence.startAt,
+      end: occurrence.endAt,
+      resourceId,
+      display: 'background',
+      color: '',
+      editable: false,
+      classNames: ['is-blocked'],
+      extendedProps: {
+        source: 'blocked_time',
+        sourceId: occurrence.blockedTimeId,
+        bookingId: null,
+        bookingType: 'blocked_time',
+        status: 'confirmed',
+        readOnly: true,
+        roomId: occurrence.roomId,
+        roomLabel: null,
+        studentId: null,
+        examId: null,
+      },
+    })
+  }
+  return events
+}
+
 export function toRoomResources(
   rooms: { id: string; display_name: string; floor: string | null; room_number: string | null; sort_order?: number }[],
 ): CalendarResource[] {
@@ -150,7 +197,9 @@ export function toEventInputFields(event: CalendarEvent) {
     start: event.start,
     end: event.end,
     resourceId: event.resourceId,
-    color: event.color,
+    display: event.display,
+    // An empty colour lets the stylesheet shade blocked times with theme tokens.
+    color: event.color || undefined,
     editable: event.editable,
     className: event.classNames.join(' '),
     extendedProps: event.extendedProps,

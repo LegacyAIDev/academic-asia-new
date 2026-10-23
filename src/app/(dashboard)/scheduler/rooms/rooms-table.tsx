@@ -10,16 +10,18 @@ import {
 import { RoomDialog } from "./room-dialog"
 import { LocationsPanel } from "./locations-panel"
 import { RoomGroup } from "./room-row"
+import type { BlockedTime } from "@/lib/scheduler/blocked-times"
 import type { SchedulerRoom, SchedulerLocation } from "@/lib/supabase/queries/scheduler-rooms"
 
 type Props = {
   rooms: SchedulerRoom[]
   locations: SchedulerLocation[]
+  blocksByRoom: Record<string, BlockedTime[]>
   canManage: boolean
 }
 
 /** Rooms grouped into one card per location, with location + inactive filters and admin actions. */
-export function RoomsTable({ rooms, locations, canManage }: Props) {
+export function RoomsTable({ rooms, locations, blocksByRoom, canManage }: Props) {
   const [selectedLocationId, setSelectedLocationId] = useState("all")
   const [showInactive, setShowInactive] = useState(false)
 
@@ -80,7 +82,7 @@ export function RoomsTable({ rooms, locations, canManage }: Props) {
         </div>
       ) : (
         groups.map(({ loc, rooms: groupRooms }) => (
-          <RoomGroup key={loc.id} location={loc} rooms={groupRooms} canManage={canManage} locations={locations} />
+          <RoomGroup key={loc.id} location={loc} rooms={groupRooms} canManage={canManage} locations={locations} blocksByRoom={blocksByRoom} />
         ))
       )}
     </div>

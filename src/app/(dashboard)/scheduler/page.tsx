@@ -2,6 +2,7 @@ import { canAccess, requireAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { getCurrentUser } from '@/lib/supabase/auth'
 import { getCalendarItems } from '@/lib/supabase/queries/scheduler-bookings'
+import { getBlockedTimeOccurrences, listBlockedTimes } from '@/lib/supabase/queries/scheduler-blocked-times'
 import { getRooms } from '@/lib/supabase/queries/scheduler-rooms'
 import { getStudentsByIds, listActiveStaff } from '@/lib/supabase/queries/scheduler-people'
 import { personName } from '@/lib/scheduler/person-name'
@@ -21,7 +22,18 @@ export default async function SchedulerPage({ searchParams }: PageProps) {
   const profileIds = params.view === 'my' ? [me] : params.view === 'team' ? params.profileIds : []
   const studentIds = params.view === 'team' ? params.studentIds : []
 
-  const [items, rooms, staff, students, canWrite, canConfirm] = await Promise.all([
+  const roomsPromise = getRooms({ includeInactive: false })
+  // Blocks are shading on the time grid, which the month view doesn't have. The
+  // Rooms view shades them per room column, so with no room filter it waits for
+  // the room list; the other views load them alongside everything else.
+  const blockedPromise =
+    params.mode === 'month'
+      ? Promise.resolve([])
+      : params.view === 'rooms' && params.roomIds.length === 0
+        ? roomsPromise.then(allRooms => getBlockedTimeOccurrences({ ...range, roomIds: allRooms.map(room => room.id) }))
+        : getBlockedTimeOccurrences({ ...range, profileIds, roomIds: params.view === 'rooms' ? params.roomIds : [] })
+
+  const [items, blockedOccurrences, myBlockedTimes, rooms, staff, students, canWrite, canConfirm] = await Promise.all([
     getCalendarItems({
       from: range.from,
       to: range.to,
@@ -31,7 +43,9 @@ export default async function SchedulerPage({ searchParams }: PageProps) {
       roomIds: params.roomIds,
       status: params.status ?? undefined,
     }),
-    getRooms({ includeInactive: false }),
+    blockedPromise,
+    me ? listBlockedTimes({ profileId: me }) : [],
+    roomsPromise,
     listActiveStaff(),
     getStudentsByIds(studentIds),
     canAccess(MODULES.SCHEDULER, ACCESS.WRITE),
@@ -50,6 +64,8 @@ export default async function SchedulerPage({ searchParams }: PageProps) {
       <SchedulerShell
         params={params}
         items={items}
+        blockedOccurrences={blockedOccurrences}
+        myBlockedTimes={myBlockedTimes}
         rooms={rooms}
         staff={staff}
         studentLabels={Object.fromEntries(students.map(student => [student.id, personName(student)]))}

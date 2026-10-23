@@ -8,6 +8,7 @@ import type { CalendarItem } from '@/lib/supabase/queries/scheduler-bookings'
 import type { SchedulerRoom } from '@/lib/supabase/queries/scheduler-rooms'
 import type { SchedulerStaffOption } from '@/lib/supabase/queries/scheduler-people'
 import { schedulerHref, todayInBusinessTz, type SchedulerParams } from '@/lib/scheduler/search-params'
+import type { BlockedOccurrence, BlockedTime } from '@/lib/scheduler/blocked-times'
 import type { CalendarEvent, CalendarEventProps } from '@/lib/scheduler/calendar-adapter'
 import type { BookingFormInput } from '@/lib/scheduler/booking-schema'
 import { bookingDetailPeopleLabels, bookingDetailToFormInput } from '@/lib/scheduler/booking-defaults'
@@ -17,6 +18,7 @@ import { getBookingDetailsAction } from '@/lib/supabase/actions/scheduler-detail
 import type { EventMove } from '@/components/scheduler/scheduler-calendar'
 import { BookingDialog } from '@/components/scheduler/booking-dialog'
 import { BookingCancelDialog } from '@/components/scheduler/booking-cancel-dialog'
+import { BlockedTimesSheet } from '@/components/scheduler/blocked-times-sheet'
 import { SchedulerToolbar } from './scheduler-toolbar'
 import { SchedulerFilterBar } from './scheduler-filter-bar'
 import { BookingDetailsSheet } from './booking-details-sheet'
@@ -33,6 +35,8 @@ const SchedulerCalendar = dynamic(() => import('@/components/scheduler/scheduler
 export type SchedulerShellProps = {
   params: SchedulerParams
   items: CalendarItem[]
+  blockedOccurrences: BlockedOccurrence[]
+  myBlockedTimes: BlockedTime[]
   rooms: SchedulerRoom[]
   staff: SchedulerStaffOption[]
   studentLabels: Record<string, string>
@@ -47,15 +51,16 @@ type SelectedItem = { id: string; props: CalendarEventProps }
 const WIDE_TEAM_WEEK = 5
 
 /** Client state for the scheduler page: URL-driven params, selection, dialogs and drag moves. */
-export function SchedulerShell({ params, items, rooms, staff, studentLabels, currentProfileId, canWrite, canConfirm }: SchedulerShellProps) {
+export function SchedulerShell({ params, items, blockedOccurrences, myBlockedTimes, rooms, staff, studentLabels, currentProfileId, canWrite, canConfirm }: SchedulerShellProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [selected, setSelected] = useState<SelectedItem | null>(null)
   const [dialog, setDialog] = useState<DialogState>({ open: false })
   const [pendingMove, setPendingMove] = useState<EventMove | null>(null)
   const [cancelId, setCancelId] = useState<string | null>(null)
+  const [blockedOpen, setBlockedOpen] = useState(false)
   const actions = useBookingActions()
-  const model = useCalendarModel({ params, items, rooms, staff, studentLabels, canWrite })
+  const model = useCalendarModel({ params, items, blockedOccurrences, rooms, staff, studentLabels, canWrite })
   const returnTo = schedulerHref(params)
   const teamWithoutPeople = params.view === 'team' && model.people.length === 0
 
@@ -95,7 +100,7 @@ export function SchedulerShell({ params, items, rooms, staff, studentLabels, cur
 
   return (
     <div className="space-y-3">
-      <SchedulerToolbar params={params} staff={staff} pending={isPending} canWrite={canWrite} onChange={updateParams} onNewBooking={() => openCreate()} />
+      <SchedulerToolbar params={params} staff={staff} pending={isPending} canWrite={canWrite} onChange={updateParams} onNewBooking={() => openCreate()} onBlockedTimes={() => setBlockedOpen(true)} />
       <SchedulerFilterBar params={params} rooms={rooms} staff={staff} onChange={updateParams} />
 
       <div className="rounded-xl border border-border bg-card p-2 shadow-sm sm:p-3">
@@ -132,7 +137,7 @@ export function SchedulerShell({ params, items, rooms, staff, studentLabels, cur
                 datesAboveResources={model.personColumns && params.mode === 'week'}
                 resourceEditable={params.view === 'rooms'}
                 onSelectRange={openCreate}
-                onEventClick={(id, props) => setSelected({ id, props })}
+                onEventClick={(id, props) => props.source !== 'blocked_time' && setSelected({ id, props })}
                 onEventMove={move => (move.props.bookingId ? setPendingMove(move) : move.revert())}
               />
             </CalendarContextMenu>
@@ -151,6 +156,15 @@ export function SchedulerShell({ params, items, rooms, staff, studentLabels, cur
           setDialog({ open: true, initial, peopleLabels: { ...model.peopleLabels, ...labels } })
         }}
       />
+
+      {canWrite && (
+        <BlockedTimesSheet
+          open={blockedOpen}
+          onOpenChange={setBlockedOpen}
+          subject={{ kind: 'profile' }}
+          blocks={myBlockedTimes}
+        />
+      )}
 
       <BookingDialog
         open={dialog.open}

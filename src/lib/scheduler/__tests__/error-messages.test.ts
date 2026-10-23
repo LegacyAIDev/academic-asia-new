@@ -19,6 +19,14 @@ describe('mapSchedulerError', () => {
     expect(mapSchedulerError({ code: 'SR002' })).toBe('Room capacity exceeded.')
   })
 
+  it('passes through the DB message for SR005 so the block label shows', () => {
+    expect(mapSchedulerError({ code: 'SR005', message: 'Room is blocked then: Lunch' })).toBe('Room is blocked then: Lunch')
+  })
+
+  it('falls back to a generic blocked-room message for SR005 with no DB message', () => {
+    expect(mapSchedulerError({ code: 'SR005' })).toBe('That room is blocked at this time.')
+  })
+
   it('maps known SQLSTATE codes to friendly text', () => {
     expect(mapSchedulerError({ code: 'SR001' })).toBe('That room is exclusively booked for this time.')
     expect(mapSchedulerError({ code: 'SR003' })).toBe('The seat number is outside the room capacity.')

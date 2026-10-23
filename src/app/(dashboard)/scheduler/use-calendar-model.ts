@@ -4,7 +4,8 @@ import { useMemo } from 'react'
 import type { CalendarItem } from '@/lib/supabase/queries/scheduler-bookings'
 import type { SchedulerRoom } from '@/lib/supabase/queries/scheduler-rooms'
 import type { SchedulerStaffOption } from '@/lib/supabase/queries/scheduler-people'
-import { toCalendarEvents, toPersonResources, toRoomResources } from '@/lib/scheduler/calendar-adapter'
+import type { BlockedOccurrence } from '@/lib/scheduler/blocked-times'
+import { toBlockedTimeEvents, toCalendarEvents, toPersonResources, toRoomResources } from '@/lib/scheduler/calendar-adapter'
 import { colorForIndex } from '@/lib/scheduler/colors'
 import { personName } from '@/lib/scheduler/person-name'
 import { fullCalendarViewType, usesPersonColumns, type SchedulerParams } from '@/lib/scheduler/search-params'
@@ -12,6 +13,7 @@ import { fullCalendarViewType, usesPersonColumns, type SchedulerParams } from '@
 type Input = {
   params: SchedulerParams
   items: CalendarItem[]
+  blockedOccurrences: BlockedOccurrence[]
   rooms: SchedulerRoom[]
   staff: SchedulerStaffOption[]
   studentLabels: Record<string, string>
@@ -25,7 +27,7 @@ type SelectedPerson = { id: string; key: string; title: string }
  * the FullCalendar view, the events, and the columns (rooms in the Rooms view,
  * one per selected person in the Team day and week views).
  */
-export function useCalendarModel({ params, items, rooms, staff, studentLabels, canWrite }: Input) {
+export function useCalendarModel({ params, items, blockedOccurrences, rooms, staff, studentLabels, canWrite }: Input) {
   const personColumns = usesPersonColumns(params)
 
   const peopleLabels = useMemo(() => {
@@ -42,17 +44,16 @@ export function useCalendarModel({ params, items, rooms, staff, studentLabels, c
     ]
   }, [params.view, params.profileIds, params.studentIds, peopleLabels])
 
-  const events = useMemo(
-    () =>
-      toCalendarEvents(items, {
-        colorBy: params.view === 'team' && !personColumns ? 'person' : 'type',
-        personColors: Object.fromEntries(people.map((person, index) => [person.id, colorForIndex(index)])),
-        personResources: personColumns ? Object.fromEntries(people.map(person => [person.id, person.key])) : undefined,
-        resourceBy: params.view === 'rooms' ? 'room' : personColumns ? 'person' : undefined,
-        canEdit: canWrite,
-      }),
-    [items, params.view, personColumns, people, canWrite],
-  )
+  const events = useMemo(() => {
+    const options = {
+      colorBy: params.view === 'team' && !personColumns ? ('person' as const) : ('type' as const),
+      personColors: Object.fromEntries(people.map((person, index) => [person.id, colorForIndex(index)])),
+      personResources: personColumns ? Object.fromEntries(people.map(person => [person.id, person.key])) : undefined,
+      resourceBy: params.view === 'rooms' ? ('room' as const) : personColumns ? ('person' as const) : undefined,
+      canEdit: canWrite,
+    }
+    return [...toCalendarEvents(items, options), ...toBlockedTimeEvents(blockedOccurrences, options)]
+  }, [items, blockedOccurrences, params.view, personColumns, people, canWrite])
 
   const resources = useMemo(() => {
     if (params.view === 'rooms') {
