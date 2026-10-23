@@ -7,6 +7,7 @@
  * keep two fields in step. The mapping below is a working definition taken from
  * the 50 statuses in use; the customer has been asked to confirm it.
  */
+import { PLACED_STATUS_CODES } from './placement-statuses'
 
 export const JOURNEY_STAGES = [
   'preparing',
@@ -62,10 +63,7 @@ const STAGE_BY_STATUS = new Map<string, JourneyStage>(
 )
 
 /** Same set the school's placement history counts as placed. */
-const PLACED_STATUSES = new Set([
-  'deposited', 'deposited_cond', 'deposited_cond_cfmed', 'deposited_scholarship', 'deposited_scholarship_c',
-  'joined_school_left_after',
-])
+const PLACED_STATUSES = new Set<string>(PLACED_STATUS_CODES)
 
 const CLOSED_STATUSES = new Set([
   'rejected', 'withdrawn', 'drop', 'cannot_proceed', 'tnfa', 'no_show_interview',

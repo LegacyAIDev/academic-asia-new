@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SchoolWithJoins } from "@/lib/supabase/queries/schools"
 import { getSchoolPlacementHistory } from "@/lib/supabase/queries/school-placement-history"
 import { SchoolPlacementHistory } from "./school-placement-history"
+import { currentAcademicYearStart, defaultPlacementYear } from "@/lib/schools/placement-history"
 
 function Fact({ label, children, wide }: { label: string; children: React.ReactNode; wide?: boolean }) {
   return (
@@ -43,6 +44,7 @@ function CardBlock({ icon: Icon, title, children }: { icon: React.ElementType; t
  */
 export async function SchoolOverview({ school }: { school: SchoolWithJoins }) {
   const placementHistory = await getSchoolPlacementHistory(school.id)
+  const defaultPlacementYearKey = defaultPlacementYear(placementHistory ?? [], currentAcademicYearStart())
   const address = [school.address, [school.city, school.county].filter(Boolean).join(", "), school.postcode, school.country?.label]
     .filter(Boolean)
   const boarders = school.boarder_count != null
@@ -125,7 +127,7 @@ export async function SchoolOverview({ school }: { school: SchoolWithJoins }) {
         </CardBlock>
       )}
 
-      <SchoolPlacementHistory counts={placementHistory} />
+      <SchoolPlacementHistory counts={placementHistory} defaultYear={defaultPlacementYearKey} />
     </div>
   )
 }

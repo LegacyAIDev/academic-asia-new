@@ -22,8 +22,8 @@ afterEach(() => vi.restoreAllMocks())
 describe('getSchoolPlacementHistory', () => {
   it('asks the database function for the school and returns its rows as they come', async () => {
     const rows = [
-      { academic_year_start: 2026, applications: 24, offers: 16, placed: 12 },
-      { academic_year_start: null, applications: 4, offers: 0, placed: 0 },
+      { academic_year_start: 2026, applications: 24, offers: 16, accepted: 12, placed: 10 },
+      { academic_year_start: null, applications: 4, offers: 0, accepted: 0, placed: 0 },
     ]
     const rpc = setup({ data: rows, error: null })
     await expect(getSchoolPlacementHistory('school-1')).resolves.toEqual(rows)

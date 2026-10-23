@@ -1,43 +1,37 @@
-import { TrendingUp } from "lucide-react"
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { toPlacementRows, type PlacementRow, type PlacementYearCounts } from "@/lib/schools/placement-history"
-
-const COLUMNS = ["Applications", "Offers", "Students placed", "Placement rate"]
-
-function Row({ row, strong = false }: { row: PlacementRow; strong?: boolean }) {
-  const weight = strong ? "font-semibold" : undefined
-  return (
-    <TableRow className={strong ? "bg-muted/30 hover:bg-muted/30" : undefined}>
-      <th scope="row" className={`p-2 pl-6 text-left align-middle text-sm ${weight ?? "font-medium"}`}>{row.label}</th>
-      {[row.applications, row.offers, row.placed, row.rate].map((value, index) => (
-        <TableCell key={COLUMNS[index]} className={`text-right text-sm tabular-nums ${index === 3 ? "pr-6" : ""} ${weight ?? ""}`}>
-          {typeof value === "number" ? value.toLocaleString("en-GB") : value}
-        </TableCell>
-      ))}
-    </TableRow>
-  )
-}
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  figuresForYear,
+  placementYearOptions,
+  toPlacementRows,
+  type PlacementYearCounts,
+} from "@/lib/schools/placement-history"
+import { PlacementHistoryTable } from "./placement-history-table"
+import { PlacementKpiTiles } from "./placement-kpi-tiles"
 
 /**
- * How many of our students applied to this school, got an offer and were placed,
- * per academic year. The card says how each figure is defined, because the
- * application statuses come from the old system and are not self-explanatory.
+ * How many of our students applied to this school, got an offer, accepted it and
+ * were placed. Pick an academic year for its five figures; the table below keeps
+ * every year and the all-years total in view. The default year comes from the
+ * server so the first render matches on the client.
  */
-export function SchoolPlacementHistory({ counts }: { counts: PlacementYearCounts[] | null }) {
+export function SchoolPlacementHistory({ counts, defaultYear }: { counts: PlacementYearCounts[] | null; defaultYear: string }) {
+  const [year, setYear] = useState(defaultYear)
   const { rows, total } = toPlacementRows(counts ?? [])
+  const options = placementYearOptions(counts ?? [])
+  const figures = figuresForYear(counts ?? [], year)
 
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          Placement history
-        </CardTitle>
+        <CardTitle className="text-base font-medium">Placement history</CardTitle>
         <p className="text-xs text-muted-foreground">
-          By current application status. Offers include conditional offers, offers the family declined and any
-          application with a deposit; placed means deposited, or joined the school and left later; enquiries are not
-          counted. Rate = placed ÷ applications.
+          By current application status; enquiries are not counted. Accepted means the family paid a deposit. Placed
+          means still placed and the entry date has arrived. Rate = accepted ÷ applications.
         </p>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -46,21 +40,24 @@ export function SchoolPlacementHistory({ counts }: { counts: PlacementYearCounts
         ) : total === null ? (
           <p className="px-6 pb-6 text-sm text-muted-foreground">No applications to this school yet.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="pl-6 min-w-[130px]">Academic year</TableHead>
-                  {COLUMNS.map((column, index) => (
-                    <TableHead key={column} className={`min-w-[110px] text-right ${index === 3 ? "pr-6" : ""}`}>{column}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map(row => <Row key={row.label} row={row} />)}
-                <Row row={total} strong />
-              </TableBody>
-            </Table>
+          <div className="space-y-6 pb-2">
+            <div className="space-y-4 px-6">
+              <div className="space-y-1.5">
+                <Label htmlFor="placement-year" className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Academic year
+                </Label>
+                <Select value={year} onValueChange={setYear}>
+                  <SelectTrigger id="placement-year" className="h-9 w-full sm:w-56">
+                    <SelectValue>{options.find(option => option.key === year)?.label}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {options.map(option => <SelectItem key={option.key} value={option.key}>{option.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <PlacementKpiTiles figures={figures} />
+            </div>
+            <PlacementHistoryTable rows={rows} total={total} selectedLabel={figures.label} />
           </div>
         )}
       </CardContent>

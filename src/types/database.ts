@@ -5932,6 +5932,22 @@ export type Database = {
       }
     }
     Views: {
+      application_placement_outcomes: {
+        Row: {
+          academic_year_start: number | null
+          application_id: string | null
+          entry_month: number | null
+          entry_year: number | null
+          is_accepted: boolean | null
+          is_offer: boolean | null
+          is_placed: boolean | null
+          school_id: string | null
+          status_id: number | null
+          student_id: string | null
+          year_group: number | null
+        }
+        Relationships: []
+      }
       scheduler_calendar_items: {
         Row: {
           application_id: string | null
@@ -6050,6 +6066,7 @@ export type Database = {
         Args: { p_school_id: string }
         Returns: {
           academic_year_start: number
+          accepted: number
           applications: number
           offers: number
           placed: number
