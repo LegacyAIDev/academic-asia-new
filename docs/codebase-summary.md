@@ -1,6 +1,6 @@
 # Codebase Summary
 
-**Last updated:** 2026-10-22
+**Last updated:** 2026-10-23
 **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase
 
 ---
@@ -96,7 +96,8 @@ src/app/
     │       ├── student-visas.tsx
     │       ├── student-travel.tsx
     │       ├── student-brief-intro.tsx
-    │       ├── student-internal-notes.tsx
+    │       ├── student-internal-notes.tsx  # Read-only for users without Students WRITE; the old dialog is gone
+    │       ├── student-legacy-log.tsx      # Old-system log book: collapsed, read-only, loads on click
     │       ├── student-legal-documents.tsx
     │       ├── student-calendar-section.tsx  # Scheduler tab: student's bookings/exams
     │       └── *-dialog.tsx       # One dialog per sub-entity (create/edit modals)
@@ -210,6 +211,10 @@ src/components/
 │   ├── document-manager.tsx      # Owner-level Documents tab: batch upload, rename, download
 │   ├── attachment-field.tsx      # Inline attach file/link next to a text field
 │   ├── attachment-list.tsx       # Attachment rows: open (spinner while signing), delete
+│   ├── record-notes.tsx          # Notes list for a student, application or exam (eyebrow, count, composer)
+│   ├── record-note-item.tsx      # One note: byline, Edited marker, author-only Edit / Delete
+│   ├── record-note-composer.tsx  # Text box + "Add note" (Ctrl/Cmd+Enter)
+│   ├── record-notes-dialog.tsx   # "Notes" button opening the list in a dialog; loads on open
 │   └── brief-intro-export-menu.tsx  # PDF/Excel menu — profile card + bulk picker
 ├── scheduler/                     # Scheduler UI (added 2026-09-28)
 │   ├── scheduler-calendar.tsx     # FullCalendar wrapper — the one file that imports the library
@@ -356,6 +361,7 @@ src/lib/
     │   ├── student-travel.ts
     │   ├── student-brief-intro.ts
     │   ├── student-internal-notes.ts
+    │   ├── record-notes.ts            # Add / edit / delete a note; edit and delete are author-only
     │   ├── student-documents.ts
     │   ├── student-resume.ts
     │   ├── student-resume-profile.ts
@@ -452,6 +458,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | Timestamped (2026-10-21) | `20261021204752_present_schools.sql` (table `present_schools`, `students.present_school_id` FK, select/insert/update RLS, no delete) |
 | Timestamped (2026-10-22) | `20261022152919_student_contacts_related_student.sql` (`student_contacts.related_student_id` FK to `students`, no self-link check, partial index, unique per student and link) |
 | Timestamped (2026-10-22) | `20261022165842_student_family_suggestions.sql` (function `student_family_suggestions(p_student_id)` plus two partial expression indexes on contact mobile digits and `lower(btrim(email_1))`; execute for `authenticated` only) |
+| Timestamped (2026-10-23) | `20261023193522_record_notes_and_school_note_authors.sql` (table `record_notes` with author-only write RLS, `school_notes.created_by`) |
 | Timestamped (2026-10-20) | `20261020110718_student_application_status_history.sql` (table `student_application_status_history`, trigger `student_applications_status_history`, select-only RLS), `20261020133120_student_application_status_history_revoke_execute.sql` (revokes EXECUTE on the trigger function) |
 
 ---

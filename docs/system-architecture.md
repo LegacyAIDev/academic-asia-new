@@ -267,6 +267,19 @@ A family member of one student can be another student. Migration `20261022152919
 - **Known limits.** Mobiles stored with the 852 prefix (19 contacts) and `email_2` (1,024 contacts) are not matched; deliberate, too few to matter. On 2026-10-22, 104 of 300 sampled students got suggestions (average 1.2, max 3).
 - **Status.** Phases 1-3 done 2026-10-22; browser check of phases 2-3 by the user pending. See roadmap "Customer item 5".
 
+### 5.2c Record notes (2026-10-23)
+
+Dated, attributed notes on a student, an application or an entrance exam. Migration `20261023193522_record_notes_and_school_note_authors.sql`.
+
+- **Table `record_notes`.** Exactly one parent per row: `student_id`, `application_id` or `exam_id` (FK `student_individual_exams`), enforced by a check constraint. `body` 1-5,000 characters, `author_id` defaults to `auth.uid()`, `created_at` / `updated_at`.
+- **RLS is author-aware (first table to do so).** SELECT is open to any signed-in staff; INSERT, UPDATE and DELETE only where `author_id = auth.uid()`. Nobody edits or deletes a colleague's note, not even an admin. The access matrix is still enforced in the app (see below), so the database rule is the second lock, not the first.
+- **Module mapping** (`src/lib/notes/note-targets.ts`, one registry keyed `student` / `application` / `exam`): student and application notes follow the Students module, exam notes follow the Exams module. READ to see, WRITE to add. The registry also holds the column and the page to refresh; `note-targets.test.ts` checks the columns against the SQL.
+- **Code.** Query `queries/record-notes.ts` (newest 200, author names resolved, "Former staff" when the account is gone); actions `actions/record-notes.ts` (add, edit, delete; edit and delete are author-only and scoped to the target column, so a note id from another record is refused). Shared UI in `src/components/features/`: `record-notes.tsx` (list), `record-note-item.tsx`, `record-note-composer.tsx` (Ctrl or Cmd + Enter adds), `record-notes-dialog.tsx` (the "Notes" button; loads on open). Formatting in `src/lib/notes/note-format.ts`.
+- **Shown on.** Student Overview; application page above the timeline; "Notes" button on `/exams` list rows and on exam desk rows (single-candidate bookings only); the application's entrance exam rows (only with Exams access).
+- **School notes.** `school_notes.created_by` added (null for the 1,911 imported notes). Notes & Info shows "Author · date"; imported notes read "Old system · <date>".
+- **Old log book.** The imported old-system log book (15,671 students, up to about 500 KB each) stays read-only in a collapsed card on the student Overview (`student-legacy-log.tsx`). The text is fetched only on click and clamped to 6,000 characters with a "Show all" button.
+- **Student internal notes form** is read-only for users without Students WRITE.
+
 ### 5.3 Reference / Lookup Tables
 
 Many fields reference small lookup tables rather than storing raw strings. Examples: `departments`, `gender_types`, `institution_types`, `phases`, `nationality`, `course_types`, `scholarship_types`, `application_statuses`, `event_types`. This was partially restructured in migrations 036–051 as the legacy data was normalized.
