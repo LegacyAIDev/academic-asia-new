@@ -10,6 +10,7 @@ import { snapshotPapers } from "@/lib/scheduler/assessment-snapshot"
 import type { RawSearchParams } from "@/lib/scheduler/search-params"
 import { EXAM_DESK_MAX_ROWS, getExamDeskBookings } from "@/lib/supabase/queries/exam-desk"
 import { getExamPaperStatuses } from "@/lib/supabase/queries/exam-papers"
+import { getSignedInUserId } from "@/lib/supabase/queries/record-notes"
 import { ExamDeskFilters } from "./exam-desk-filters"
 import { ExamDeskTable } from "./exam-desk-table"
 
@@ -21,12 +22,13 @@ import { ExamDeskTable } from "./exam-desk-table"
 export async function ExamDeskView({ raw }: { raw: RawSearchParams }) {
   const requested = parseExamDeskParams(raw)
   const paperAccess = attachAccess("school_entrance_exam_paper")
-  const [bookings, canWrite, canOpenBooking, canOpenStudent, canPrintPapers] = await Promise.all([
+  const [bookings, canWrite, canOpenBooking, canOpenStudent, canPrintPapers, currentUserId] = await Promise.all([
     getExamDeskBookings({ from: requested.from, to: requested.to }),
     canAccess(MODULES.EXAMS, ACCESS.WRITE),
     canAccess(MODULES.SCHEDULER),
     canAccess(MODULES.STUDENTS),
     canAccess(paperAccess.module, paperAccess.read),
+    getSignedInUserId(),
   ])
 
   // Paper files are uploaded after an exam is booked, so their state is read fresh for the papers on screen.
@@ -48,6 +50,7 @@ export async function ExamDeskView({ raw }: { raw: RawSearchParams }) {
     canOpenBooking,
     canOpenStudent,
     canPrintPapers,
+    currentUserId,
   }
 
   return (

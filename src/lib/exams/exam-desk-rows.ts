@@ -23,6 +23,8 @@ export type ExamDeskCandidate = {
 
 export type ExamDeskRow = {
   bookingId: string
+  /** The student's exam record behind the booking; null for bookings made without one. */
+  examId: string | null
   bookingType: string
   startAt: string
   endAt: string
@@ -95,6 +97,7 @@ function toRow(booking: ExamDeskBooking, statusById: Map<string, ExamPaperStatus
 
   return {
     bookingId: booking.id,
+    examId: booking.exam_id,
     bookingType: booking.booking_type,
     startAt: booking.start_at,
     endAt: booking.end_at,

@@ -8,6 +8,10 @@ export type SchoolNoteWithJoins = {
   detail: string | null
   created_at: string | null
   updated_at: string | null
+  /** Null for notes imported from the old system. */
+  created_by: string | null
+  legacy_last_update: string | null
+  author: { first_name: string | null; surname: string | null } | null
   category: { id: number; code: string; label: string } | null
 }
 
@@ -22,7 +26,8 @@ export async function getSchoolNotes(schoolId: string): Promise<SchoolNoteWithJo
     .from('school_notes')
     .select(`
       id, school_id, category_id, detail,
-      created_at, updated_at,
+      created_at, updated_at, created_by, legacy_last_update,
+      author:profiles!school_notes_created_by_fkey(first_name, surname),
       category:school_note_categories!school_notes_category_id_fkey(id, code, label)
     `)
     .eq('school_id', schoolId)

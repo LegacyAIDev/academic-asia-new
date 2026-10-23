@@ -13,11 +13,13 @@ import type { InternalNotesRecord } from "@/lib/supabase/queries/student-interna
 type Props = {
   studentId: string
   notes: InternalNotesRecord | null
+  /** Without write access the notes are shown as plain text, with no inputs or Save. */
+  canWrite: boolean
 }
 
 const textareaStyles = "resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm"
 
-export function StudentInternalNotesSection({ studentId, notes }: Props) {
+export function StudentInternalNotesSection({ studentId, notes, canWrite }: Props) {
   const [isPending, startTransition] = useTransition()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -39,6 +41,8 @@ export function StudentInternalNotesSection({ studentId, notes }: Props) {
       else toast.error(result?.error ?? "Failed to save notes")
     })
   }
+
+  if (!canWrite) return <InternalNotesReadOnly notes={notes} />
 
   return (
     <Card className="border-0 shadow-sm">
@@ -62,7 +66,7 @@ export function StudentInternalNotesSection({ studentId, notes }: Props) {
 
           {/* Sensitive Information */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-rose-600 uppercase tracking-wider">Sensitive Information</p>
+            <p className="text-xs font-semibold text-destructive uppercase tracking-wider">Sensitive Information</p>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Disability / SEN" name="disability_sen" value={notes?.disability_sen} placeholder="Special educational needs..." />
               <Field label="Medical Notes" name="medical_notes" value={notes?.medical_notes} placeholder="Medical information..." />
@@ -71,7 +75,7 @@ export function StudentInternalNotesSection({ studentId, notes }: Props) {
 
           {/* Additional */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-teal-600 uppercase tracking-wider">Additional</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Additional</p>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Guardianship Notes" name="guardianship_notes" value={notes?.guardianship_notes} placeholder="Guardianship arrangements..." />
               <Field label="Additional Remarks" name="additional_remarks" value={notes?.additional_remarks} placeholder="Any other notes..." />
@@ -85,6 +89,45 @@ export function StudentInternalNotesSection({ studentId, notes }: Props) {
             </Button>
           </div>
         </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+const READ_ONLY_FIELDS: { label: string; key: keyof InternalNotesRecord }[] = [
+  { label: "Character", key: "character" },
+  { label: "Strategy", key: "strategy" },
+  { label: "Parent Expectations", key: "parent_expectations" },
+  { label: "Disability / SEN", key: "disability_sen" },
+  { label: "Medical Notes", key: "medical_notes" },
+  { label: "Guardianship Notes", key: "guardianship_notes" },
+  { label: "Additional Remarks", key: "additional_remarks" },
+]
+
+/** Same card for people who may only read: filled fields as text, nothing to type into. */
+function InternalNotesReadOnly({ notes }: { notes: InternalNotesRecord | null }) {
+  const filled = READ_ONLY_FIELDS.filter(({ key }) => typeof notes?.[key] === "string" && (notes[key] as string).trim() !== "")
+  return (
+    <Card className="border-0 shadow-sm">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-base font-medium flex items-center gap-2">
+          <StickyNote className="h-4 w-4 text-muted-foreground" />
+          Internal Notes
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {filled.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No internal notes yet</p>
+        ) : (
+          <dl className="grid gap-4 sm:grid-cols-2">
+            {filled.map(({ label, key }) => (
+              <div key={key} className="min-w-0">
+                <dt className="text-xs text-muted-foreground">{label}</dt>
+                <dd className="mt-0.5 whitespace-pre-wrap break-words text-sm">{notes?.[key] as string}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </CardContent>
     </Card>
   )

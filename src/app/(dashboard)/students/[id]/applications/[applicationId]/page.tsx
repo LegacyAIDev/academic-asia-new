@@ -11,6 +11,8 @@ import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments
 import { getStudentById } from "@/lib/supabase/queries/students"
 import { buildApplicationTimeline } from "@/lib/applications/application-timeline"
 import { isUuid } from "@/lib/scheduler/uuid"
+import { RecordNotes } from "@/components/features/record-notes"
+import { getRecordNotes, getSignedInUserId } from "@/lib/supabase/queries/record-notes"
 import { ApplicationHeader } from "./application-header"
 import { ApplicationJourney } from "./application-journey"
 import { ApplicationRecordSections } from "./application-record-sections"
@@ -31,20 +33,24 @@ export default async function StudentApplicationPage({ params }: Props) {
   const { id: studentId, applicationId } = await params
   if (!isUuid(studentId) || !isUuid(applicationId)) notFound()
 
-  const [canWrite, canSeeBookings, application, student] = await Promise.all([
+  const [canWrite, canSeeBookings, canSeeExamNotes, canWriteExamNotes, application, student] = await Promise.all([
     canAccess(MODULES.STUDENTS, ACCESS.WRITE),
     canAccess(MODULES.SCHEDULER),
+    canAccess(MODULES.EXAMS),
+    canAccess(MODULES.EXAMS, ACCESS.WRITE),
     getStudentApplicationById(applicationId, studentId),
     getStudentById(studentId),
   ])
   if (!application || !student) notFound()
 
-  const [bookings, statusChanges, attachments, depositAttachments, referenceData] = await Promise.all([
+  const [bookings, statusChanges, attachments, depositAttachments, referenceData, notes, currentUserId] = await Promise.all([
     canSeeBookings ? getApplicationBookings(application.id) : null,
     getApplicationStatusHistory(application.id),
     getAttachmentsForMany("student_application", [application.id]),
     canWrite ? getAttachmentsForMany("student_deposit", application.deposits.map(d => d.id)) : null,
     canWrite ? getApplicationReferenceData() : null,
+    getRecordNotes("application", applicationId),
+    getSignedInUserId(),
   ])
   const applicationAttachments = attachments.get(application.id) ?? []
   const timeline = buildApplicationTimeline(application, bookings ?? [], statusChanges)
@@ -83,7 +89,12 @@ export default async function StudentApplicationPage({ params }: Props) {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <ApplicationRecordSections application={application} />
-          <ApplicationSubRecords application={application} bookings={bookings} attachments={applicationAttachments} />
+          <ApplicationSubRecords
+            application={application}
+            bookings={bookings}
+            attachments={applicationAttachments}
+            examNotes={canSeeExamNotes ? { canWrite: canWriteExamNotes, currentUserId } : null}
+          />
         </div>
         <div className="space-y-4">
           {referenceData && (
@@ -99,6 +110,14 @@ export default async function StudentApplicationPage({ params }: Props) {
             />
           )}
           <ApplicationStudentCard student={student} />
+          <RecordNotes
+            target="application"
+            recordId={application.id}
+            initialNotes={notes.notes}
+            more={notes.more}
+            canWrite={canWrite}
+            currentUserId={currentUserId}
+          />
           <ApplicationTimeline entries={timeline} />
         </div>
       </div>

@@ -1814,6 +1814,68 @@ export type Database = {
           },
         ]
       }
+      record_notes: {
+        Row: {
+          application_id: string | null
+          author_id: string | null
+          body: string
+          created_at: string
+          exam_id: string | null
+          id: string
+          student_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          author_id?: string | null
+          body: string
+          created_at?: string
+          exam_id?: string | null
+          id?: string
+          student_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          exam_id?: string | null
+          id?: string
+          student_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "record_notes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "student_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "record_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "record_notes_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "student_individual_exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "record_notes_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_types: {
         Row: {
           code: string
@@ -2974,6 +3036,7 @@ export type Database = {
           assigned_to: string | null
           category_id: number | null
           created_at: string | null
+          created_by: string | null
           detail: string | null
           id: string
           is_flagged: boolean | null
@@ -2987,6 +3050,7 @@ export type Database = {
           assigned_to?: string | null
           category_id?: number | null
           created_at?: string | null
+          created_by?: string | null
           detail?: string | null
           id?: string
           is_flagged?: boolean | null
@@ -3000,6 +3064,7 @@ export type Database = {
           assigned_to?: string | null
           category_id?: number | null
           created_at?: string | null
+          created_by?: string | null
           detail?: string | null
           id?: string
           is_flagged?: boolean | null
@@ -3022,6 +3087,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "school_note_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {

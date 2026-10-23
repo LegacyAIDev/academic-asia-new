@@ -24,6 +24,11 @@ describe('toExamDeskRows', () => {
     ])
   })
 
+  it('carries the exam record id, or null when the booking has none', () => {
+    expect(rowOf().examId).toBeNull()
+    expect(rowOf({ exam_id: 'exam-9' }).examId).toBe('exam-9')
+  })
+
   it('prefers the school set on the booking over the application school', () => {
     const row = rowOf({ school: { id: 'school-charterhouse', name: 'Charterhouse' } })
     expect(row.schoolName).toBe('Charterhouse')

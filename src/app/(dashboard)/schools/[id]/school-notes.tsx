@@ -11,6 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { StickyNote } from "lucide-react"
+import { personName } from "@/lib/scheduler/person-name"
+import { schoolNoteByline } from "@/lib/notes/note-format"
 import { NoteDialog, EditNoteButton, DeleteNoteButton } from "./note-dialog"
 import type { SchoolNoteWithJoins } from "@/lib/supabase/queries/school-notes"
 import type { NoteReferenceData } from "./note-dialog"
@@ -104,6 +106,14 @@ export function SchoolNotesSection({
                     <TableCell className="text-sm">
                       <p className="text-muted-foreground line-clamp-2 max-w-[500px]">
                         {note.detail || "—"}
+                      </p>
+                      <p suppressHydrationWarning className="mt-1 text-xs tabular-nums text-muted-foreground">
+                        {schoolNoteByline({
+                          authorName: personName(note.author) || null,
+                          createdBy: note.created_by,
+                          createdAt: note.created_at,
+                          legacyLastUpdate: note.legacy_last_update,
+                        })}
                       </p>
                     </TableCell>
                     {canWrite && (

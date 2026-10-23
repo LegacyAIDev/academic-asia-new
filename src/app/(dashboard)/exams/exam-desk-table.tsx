@@ -29,6 +29,8 @@ type Props = {
   canOpenStudent: boolean
   /** Exam team only: may open the paper files of a booking. */
   canPrintPapers: boolean
+  /** Signed-in user, so each note's author can edit it; the desk itself needs Exams access to open. */
+  currentUserId: string | null
 }
 
 const COLUMNS: { key: ExamDeskSortKey; label: string; className: string }[] = [
@@ -49,9 +51,9 @@ const dash = <span className="text-muted-foreground">—</span>
 
 /** One list of the exam desk (booked or showed up). Server-rendered; only the action buttons are interactive. */
 export function ExamDeskTable(props: Props) {
-  const { rows, raw, sort, dir, canWrite, canOpenBooking, canPrintPapers } = props
+  const { rows, raw, sort, dir, canWrite, canOpenBooking, canPrintPapers, currentUserId } = props
   // Everyone who sees the desk may print a cover slip, so the column appears as soon as a row has a candidate.
-  const showActions = canWrite || canOpenBooking || canPrintPapers || rows.some(row => row.candidates.length > 0)
+  const showActions = canWrite || canOpenBooking || canPrintPapers || rows.some(row => row.candidates.length > 0 || row.examId)
   const returnTo = examsHref(raw)
 
   return (
@@ -137,6 +139,14 @@ export function ExamDeskTable(props: Props) {
                   <TableCell className="pr-6 align-top">
                     <ExamDeskRowActions
                       bookingId={row.bookingId}
+                      // An exam record belongs to one student. A group booking points at only one of
+                      // its candidates' records, so offering notes there would mislabel them as the group's.
+                      notes={row.examId && row.candidates.length <= 1 ? {
+                        examId: row.examId,
+                        title: row.candidates.map(c => c.name).join(", ") || "Exam",
+                        canWrite,
+                        currentUserId,
+                      } : null}
                       actions={examDeskActions(row, canWrite)}
                       bookingHref={canOpenBooking ? bookingPageHref(row.bookingId, returnTo) : null}
                       canPrintPapers={canPrintPapers && Boolean(row.availability?.canPrint)}

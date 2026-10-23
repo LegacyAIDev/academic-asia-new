@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { RecordNotesDialog } from "@/components/features/record-notes-dialog"
 import { useBookingActions } from "@/app/(dashboard)/scheduler/use-booking-actions"
 import type { ExamDeskActions } from "@/lib/exams/exam-desk-rows"
 import { ExamDeskPrintPapers } from "./exam-desk-print-papers"
@@ -16,13 +17,15 @@ type Props = {
   canPrintPapers: boolean
   /** Address of the cover slip PDF, or null when the booking has no candidate to print one for. */
   coverSlipHref: string | null
+  /** Set when the booking has an exam record to hang notes on. */
+  notes: { examId: string; title: string; canWrite: boolean; currentUserId: string | null } | null
 }
 
 /**
  * Buttons of one exam desk row. Each row has its own instance, so only the row
  * being saved is disabled while the request runs.
  */
-export function ExamDeskRowActions({ bookingId, actions, bookingHref, canPrintPapers, coverSlipHref }: Props) {
+export function ExamDeskRowActions({ bookingId, actions, bookingHref, canPrintPapers, coverSlipHref, notes }: Props) {
   const { isPending, confirm, recordAttendance } = useBookingActions()
 
   return (
@@ -44,6 +47,10 @@ export function ExamDeskRowActions({ bookingId, actions, bookingHref, canPrintPa
           {/* A plain link on purpose: a prefetching router link would start a PDF render nobody asked for. */}
           <a href={coverSlipHref} target="_blank" rel="noopener noreferrer">Cover slip</a>
         </Button>
+      )}
+      {notes && (
+        <RecordNotesDialog target="exam" recordId={notes.examId} title={notes.title}
+          canWrite={notes.canWrite} currentUserId={notes.currentUserId} />
       )}
       {bookingHref && (
         <Button size="sm" variant="outline" asChild>

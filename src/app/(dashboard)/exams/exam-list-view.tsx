@@ -7,6 +7,7 @@ import { examListHref, parseExamListParams } from "@/lib/exams/exam-page-search-
 import type { RawSearchParams } from "@/lib/scheduler/search-params"
 import { getAllExams, getExamStats } from "@/lib/supabase/queries/exam-management"
 import { getExamBookingLinks } from "@/lib/supabase/queries/scheduler-exams"
+import { getSignedInUserId } from "@/lib/supabase/queries/record-notes"
 import { ExamDateRangeFilter } from "./exam-date-range-filter"
 import { ExamManagementTable } from "./exam-management-table"
 
@@ -26,9 +27,11 @@ export async function ExamListView({ raw }: { raw: RawSearchParams }) {
   // A page past the end (an old link, or a filter that shortened the list) would show an empty table.
   if (page > 1 && exams.length === 0) redirect(examListHref({ status: statusId, from, to }))
 
-  const [links, canSchedule] = await Promise.all([
+  const [links, canSchedule, canWriteNotes, currentUserId] = await Promise.all([
     getExamBookingLinks(exams.map(exam => exam.id)),
     canAccess(MODULES.SCHEDULER, ACCESS.WRITE),
+    canAccess(MODULES.EXAMS, ACCESS.WRITE),
+    getSignedInUserId(),
   ])
 
   return (
@@ -51,6 +54,7 @@ export async function ExamListView({ raw }: { raw: RawSearchParams }) {
         exams={exams}
         links={links}
         canSchedule={canSchedule}
+        notes={{ canWrite: canWriteNotes, currentUserId }}
         currentStatus={statusId}
         range={{ from, to }}
         page={page}

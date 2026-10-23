@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { AttachmentField } from "@/components/features/attachment-field"
+import { RecordNotesDialog } from "@/components/features/record-notes-dialog"
 import { BOOKING_TYPE_LABELS, TIMEZONE_LABEL, type BookingType } from "@/lib/scheduler/config"
 import { assessmentLabel } from "@/lib/scheduler/booking-text-formatters"
 import { formatHkDate, formatHkTime } from "@/lib/scheduler/time-utils"
@@ -21,10 +22,12 @@ type Props = {
   /** Null when the user may not see scheduler bookings; the section is then left out. */
   bookings: ApplicationBooking[] | null
   attachments: AttachmentRecord[]
+  /** Set only for users who may see exam notes; the Notes button on each exam row is left out otherwise. */
+  examNotes: { canWrite: boolean; currentUserId: string | null } | null
 }
 
 /** Deposits, entrance exams, linked scheduler bookings and files of one application. */
-export function ApplicationSubRecords({ application: app, bookings, attachments }: Props) {
+export function ApplicationSubRecords({ application: app, bookings, attachments, examNotes }: Props) {
   return (
     <div className="grid gap-4 xl:grid-cols-2">
       <Section title="Deposits" count={app.deposits.length} plain>
@@ -59,6 +62,12 @@ export function ApplicationSubRecords({ application: app, bookings, attachments 
                   <span className="text-muted-foreground">{[ex.room, ex.seat_no != null ? `seat ${ex.seat_no}` : null].filter(Boolean).join(" · ")}</span>
                 )}
                 {ex.remarks && <span className="basis-full text-xs text-muted-foreground">{ex.remarks}</span>}
+                {examNotes && (
+                  <span className="ml-auto">
+                    <RecordNotesDialog target="exam" recordId={ex.id} title={ex.subject ?? "Exam"}
+                      canWrite={examNotes.canWrite} currentUserId={examNotes.currentUserId} />
+                  </span>
+                )}
               </li>
             ))}
           </ul>

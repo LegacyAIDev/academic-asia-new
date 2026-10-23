@@ -62,6 +62,10 @@ import { StudentBriefIntroSection } from "./student-brief-intro"
 import { StudentResumeProfileSection } from "./student-resume-profile"
 import { StudentResumeSection } from "./student-resume"
 import { StudentInternalNotesSection } from "./student-internal-notes"
+import { StudentLegacyLog } from "./student-legacy-log"
+import { RecordNotes } from "@/components/features/record-notes"
+import { getRecordNotes, getSignedInUserId } from "@/lib/supabase/queries/record-notes"
+import { getStudentLegacyLogMeta } from "@/lib/supabase/queries/student-log-book"
 import { StudentLegalDocumentsSection } from "./student-legal-documents"
 import { StudentDocumentsSection } from "./student-documents-section"
 import { DeleteStudentDialog } from "./delete-student-dialog"
@@ -120,6 +124,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     allDocuments,
     familyLinks,
     familySuggestions,
+    recordNotes, currentUserId, legacyLog,
   ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
@@ -150,6 +155,9 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     getFamilyLinksToStudent(id),
     // Suggestions only help someone who can link them.
     canWrite ? getFamilySuggestions(id) : Promise.resolve([]),
+    getRecordNotes("student", id),
+    getSignedInUserId(),
+    getStudentLegacyLogMeta(id),
   ])
 
   if (!student) {
@@ -604,9 +612,19 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               referenceData={briefIntroReferenceData}
             />
 
+            <RecordNotes
+              target="student"
+              recordId={id}
+              initialNotes={recordNotes.notes}
+              more={recordNotes.more}
+              canWrite={canWrite}
+              currentUserId={currentUserId}
+            />
+
             <StudentInternalNotesSection
               studentId={id}
               notes={internalNotes}
+              canWrite={canWrite}
             />
 
             {student.remarks && (
@@ -622,6 +640,8 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
                 </CardContent>
               </Card>
             )}
+
+            {legacyLog && <StudentLegacyLog studentId={id} lastUpdate={legacyLog.legacy_last_update ? formatDate(legacyLog.legacy_last_update) : null} />}
           </TabsContent>
 
           {/* Resume: profile (talents/interests) + Music Audition / Top Schools records */}

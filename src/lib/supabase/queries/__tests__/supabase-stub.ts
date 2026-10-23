@@ -7,7 +7,7 @@ type Result = { data: unknown; error: unknown; count?: number | null }
 
 const CHAIN_METHODS = [
   'select', 'eq', 'neq', 'gte', 'lte', 'in', 'or', 'order', 'limit',
-  'like', 'overlaps', 'range',
+  'like', 'overlaps', 'range', 'not',
   'insert', 'update', 'delete', 'single', 'maybeSingle',
 ]
 
