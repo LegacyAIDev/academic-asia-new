@@ -11,7 +11,7 @@
 |---|---|
 | Source files (src/) | ~290 files |
 | Estimated LOC (src/) | ~40,500 |
-| SQL migrations | 89 (numbered 001–078 + timestamped, incl. 6 scheduler migrations) |
+| SQL migrations | 89 (numbered 001–078 + timestamped, incl. 7 scheduler migrations) |
 | Server action files | 37 |
 | Query files | 43+ |
 | shadcn/ui primitives | 53 |
@@ -229,6 +229,10 @@ src/components/
 │   ├── booking-form-reason.tsx    # Cancel/reschedule reason field
 │   ├── booking-status-badge.tsx   # Shared status pill (tokens only)
 │   ├── room-chip.tsx              # Signature room tag + capacity meter — reused across scheduler
+│   ├── blocked-times-sheet.tsx    # Toolbar "Blocked times" sheet: own blocks list, add/edit/delete, "Ended" last
+│   ├── blocked-time-form.tsx      # Label, repeat preset, days, times, dates
+│   ├── blocked-time-clash-list.tsx  # Bookings a saved room block overlaps (next 62 days)
+│   ├── blocked-time-date-field.tsx  # Date input for the block range
 │   ├── booking-history-list.tsx   # Renders `scheduler_booking_history` rows
 │   └── schedule-booking-button.tsx  # Entry point used by Exams page + student tab
 ├── permissions/                  # Permission-aware wrappers
@@ -301,7 +305,7 @@ src/lib/
 │   ├── assessment-snapshot.ts    # assessment_snapshot schema (label, version, notes, papers), label-from-papers rule, snapshotPapers, normaliseAssessmentSnapshot
 │   ├── room-schema.ts            # zod schema for room/location forms
 │   ├── conflicts.ts              # Overlap/capacity/seat conflict detection (client-side pre-check)
-│   ├── error-messages.ts         # Maps SQLSTATE codes (SR001–SR006, 23P01) → user messages
+│   ├── error-messages.ts         # Maps SQLSTATE codes (SR001–SR006, 23P01; SR005 = room blocked) → user messages
 │   ├── calendar-adapter.ts       # PURE: bookings/exams/event_schedules → FullCalendar events
 │   ├── colors.ts                 # Booking type/status → calendar color mapping
 │   ├── search-params.ts          # URL query param parsing for calendar filters; usesPersonColumns, fullCalendarViewType
@@ -309,6 +313,7 @@ src/lib/
 │   ├── cancelled-items.ts        # Cancelled booking row → calendar view-row shape (Cancelled filter)
 │   ├── people-filter.ts          # peopleOrFilter: shared PostgREST `or` for active + cancelled queries
 │   ├── return-path.ts            # safeReturnPath (open-redirect safe `?from=`: scheduler, exams, student), returnLabel, bookingPageHref
+│   ├── blocked-times.ts          # Blocked time presets, zod schema, describeBlockedTime, findBlockClashes, hkDateRangeToInstants, hasEnded
 │   ├── booking-permissions.ts    # canCancelBooking: single UI cancel rule, mirrors server check
 │   ├── person-name.ts            # personName: display name from first_name/surname
 │   ├── uuid.ts                   # isUuid: shared id check (search-params, people-filter)
@@ -371,6 +376,7 @@ src/lib/
     │   ├── scheduler-locations.ts     # Location CRUD, requires EXAMS WRITE
     │   ├── scheduler-bookings.ts      # Wraps scheduler_save_booking/confirm/cancel/record_attendance RPCs
     │   ├── scheduler-exams.ts         # Exam scheduling via the same RPCs (single write path)
+    │   ├── scheduler-blocked-times.ts # create/update/delete blocked times; owner = signed-in user; room blocks need EXAMS WRITE; returns clashes
     │   └── scheduler-availability.ts  # Wraps scheduler_free_busy / scheduler_available_rooms
     └── queries/                  # Read-only data fetching for Server Components
         ├── exam-papers.ts            # getSchoolExamPaperOptions; getExamPaperStatuses (live counts per paper, null on failure)
@@ -406,6 +412,7 @@ src/lib/
         ├── scheduler-calendar-helpers.ts  # Attendee attach, people→booking ids (range-bounded), fetchCancelledRows
         ├── scheduler-exams.ts       # Exam bookings for Exams page + student tab
         ├── exam-desk.ts             # getExamDeskBookings: exam bookings in a date range (exam desk)
+        ├── scheduler-blocked-times.ts  # listBlockedTimes, getBlockedTimeOccurrences (calendar shading), getRoomItemsInRange
         ├── scheduler-history.ts     # scheduler_booking_history reads
         └── scheduler-stats.ts       # Rooms-view / dashboard counts
 ```
@@ -440,7 +447,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | 061–068 | Resume profile/talents tables, event application status updates, year group on applications, nullable school_id on representatives, custom_access_token_hook (RBAC), schedule blocker, school_contact_id on representatives, is_active on school contacts |
 | 069–078 | Student intro images bucket, document categories, school documents + bucket, row level security across the public schema, school export fields, county normalisation, current course fee |
 | Timestamped (pre-scheduler) | School document category rounds, permission matrix, record attachments (polymorphic `attachable_type`/`attachable_id` + `external_url` on both document tables) |
-| Timestamped (scheduler, 2026-09-28 to 2026-10-02) | `20260928070928_scheduler_core.sql` (locations, rooms, bookings, attendees, history, view, triggers), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql` (`room_id` FK on exam records), `20260928074722_scheduler_review_hardening.sql` (red-team fixes), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix) |
+| Timestamped (scheduler, 2026-09-28 to 2026-10-02) | `20260928070928_scheduler_core.sql` (locations, rooms, bookings, attendees, history, view, triggers), `20260928070931_scheduler_permission_module.sql` (module seed), `20260928071455_scheduler_free_busy_rpc.sql`, `20260928072540_scheduler_room_fk_on_exams.sql` (`room_id` FK on exam records), `20260928074722_scheduler_review_hardening.sql` (red-team fixes), `20261002165441_scheduler_grants_attendance_and_view_fix.sql` (EXECUTE grants, attendance RPC, exam-link-clear trigger, calendar view fix), `20261023190212_scheduler_blocked_times.sql` (blocked times table, occurrence function, SR005) |
 | Timestamped (2026-10-12) | `20261012130805_school_placement_history.sql` (read-only function `school_placement_history(p_school_id)`: per-entry-year application/offer/placed counts for a school) |
 | Timestamped (2026-10-21) | `20261021204752_present_schools.sql` (table `present_schools`, `students.present_school_id` FK, select/insert/update RLS, no delete) |
 | Timestamped (2026-10-22) | `20261022152919_student_contacts_related_student.sql` (`student_contacts.related_student_id` FK to `students`, no self-link check, partial index, unique per student and link) |

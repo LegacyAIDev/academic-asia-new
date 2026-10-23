@@ -1,6 +1,6 @@
 # Scheduler — Quick Guide for Staff
 
-**Last updated:** 2026-10-12
+**Last updated:** 2026-10-23
 
 ## Who can do what
 
@@ -42,6 +42,20 @@ Shortcuts:
 - Click a booking for its details. **Open** shows it on its own page; **Back to calendar** returns to the same view and filters.
 - Opening a booking from the **Exams** page or a student's **Calendar** tab brings you back there (**Back to exams** / **Back to student**).
 - The dashboard card **Exams awaiting confirmation** opens the Rooms week of the earliest pending exam.
+
+## Block your lunch or a room
+
+Use blocked times for a lunch break, a regular day off or a room that is not available.
+
+**Your own time:** click **Blocked times** in the command bar, then **Block time**. Give it a name (for example "Lunch"), choose how it repeats (**Every day**, **Mon–Fri**, **Pick days** or **Just once**), the start and end time (Hong Kong time) and the dates. Leave the end date empty to repeat forever. You only see and change your own blocks. Anyone with Scheduler edit access can do this.
+
+**A room:** on the **Rooms** page, click the blocked-times button (calendar with a line through it) on the room's row (needs Exams edit access). After you save, the page lists any bookings in the next 62 days that overlap the block. Nothing is cancelled, so move or cancel those yourself.
+
+What a block does:
+- **Rooms:** a blocked room cannot be booked at that time ("Room is blocked then: Lunch") and is left out of room suggestions. Bookings already made stay as they are.
+- **People:** a block does not stop anyone. When you book a colleague during their block, the clash warning shows "Blocked: Lunch" and you can still choose **Book anyway**.
+- **Calendar:** blocks show as grey hatched shading in the Day and Week views (in the Rooms view in the room's column, in Team in the person's column). You can still click through them. The **Month** view does not show blocks.
+- **Finished blocks:** blocks whose end date has passed are listed last and marked **Ended**. Delete them when you no longer need them.
 
 ## Right-click menu
 

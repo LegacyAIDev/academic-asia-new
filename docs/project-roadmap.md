@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-10-22
+**Last updated:** 2026-10-23
 **Current phase:** Phase 2 — Feature Completion
 
 > Items marked as "Inferred" are based on codebase signals (sidebar links, migration patterns, absence of test/CI config) and not from explicit specifications.
@@ -100,8 +100,9 @@
 - [x] Phase 3 (2026-10-12): choose papers on the booking, paper availability on the desk, "Print available", "Do not store – request from school" (migration `20261011234555`). Implemented; not yet checked in a browser
 - [x] Phase 4 (2026-10-12): cover slip PDF from the exam desk row. Implemented, layout provisional (customer template not shared); not yet checked in a browser or on a preview. Chinese fonts on the server unverified. Database protection of paper files (phase 2 part B) remains postponed
 
+- [x] Recurring blocked times (2026-10-23, plan `261023-2023-remaining-phase-one-features`, phase 1): lunch breaks and held-back rooms as shaded time on the calendar; room blocks stop bookings, staff blocks warn. Migration `20261023190212`. Not yet checked in a browser. See system-architecture 6a
+
 **Deferred to v2 backlog** (customer scope cut, 2026-09-26):
-- Recurring availability rules / lunch-break blocked times
 - Legacy `AA_Scheduler.csv` import (folded into the data-migration workstream)
 - Excel exports (rooms list, bookings-in-range)
 - Resource timeline week view
@@ -188,6 +189,7 @@ Open questions for Jack:
 
 ## Changelog
 
+- **2026-10-23** — Scheduler recurring blocked times (moved in from the v2 backlog): new table `scheduler_blocked_times` and function `scheduler_blocked_time_occurrences` (migration `20261023190212`). Staff manage their own blocks from the toolbar "Blocked times" sheet (Scheduler WRITE); room managers (Exams WRITE) block a room from the Rooms page. A room block refuses new bookings (`SR005`) and drops the room from room suggestions; a staff block only warns in the clash banner. Blocks show as hatched shading in day and week views (Rooms and Team columns), not in month view. Saving a room block lists the bookings it overlaps in the next 62 days. New `blocked-times.ts`, `scheduler-blocked-times` query/action, `blocked-times-sheet.tsx`, `blocked-time-form.tsx`, `blocked-time-clash-list.tsx`, `blocked-time-date-field.tsx`; `toBlockedTimeEvents` in the calendar adapter. Browser check pending. Details: system-architecture 6a, scheduler-user-guide.
 - **2026-10-22** — Family members linked to students, phase 3 (customer item 5): migration `20261022165842` adds `student_family_suggestions(p_student_id)` (matches family contacts' mobile or email_1 with other students; skips numbers shared by more than 6 students, same-name students and existing links; never returns the phone/email). Family tab card "Possibly family in the system" with one-click "Link as brother/sister" and "Not family" (visit only); Students WRITE only. 104 of 300 sampled students get suggestions. Not matched: 852-prefixed mobiles, email_2.
 - **2026-10-22** — Exam Results tab restyled to Jack's year-first layout (school page): the Summary is one block per exam year, newest first, with a line per exam type and figure tiles narrowest band first; range counts the most recent years with results across all exam types; "Copy summary" copies one line per year. Number grades read "Grade 9" / "Grades 9-8". The per-cell heat tint is gone. `summariseAcademicResults` replaced by `summariseResultsByYear` and `resultsSummaryText`. Details: system-architecture, design-guidelines.
 - **2026-10-22** — Fix: Exam Results tab crashed for every school with results (`result_percentage` is numeric and arrives as a JSON number; `formatResultValue` now takes a number). Commit 4588eba.
