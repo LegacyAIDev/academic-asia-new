@@ -8,6 +8,7 @@ import { getSchoolContactCount } from "@/lib/supabase/queries/school-contacts"
 import { getSchoolCourseCount } from "@/lib/supabase/queries/school-courses"
 import { getSchoolBankDetailCount } from "@/lib/supabase/queries/school-bank-details"
 import { getSchoolVisitCount } from "@/lib/supabase/queries/school-visits"
+import { getFiledEmailCount } from "@/lib/supabase/queries/filed-emails"
 import { SchoolHeader } from "./school-header"
 import { SchoolTabNav } from "./school-tab-nav"
 import { SchoolTabSkeleton } from "./school-tab-skeleton"
@@ -31,15 +32,16 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
   const tab = resolveSchoolTab(rawTab)
   const supPage = Math.max(1, Number.parseInt(String(Array.isArray(rawSupPage) ? rawSupPage[0] : rawSupPage ?? "1"), 10) || 1)
 
-  // Counts are kept only where they help choose a tab: active contacts, and the
-  // three tabs in the "More" menu, which are otherwise out of sight.
-  const [school, canWrite, contactCount, courseCount, bankDetailCount, visitCount] = await Promise.all([
+  // Counts are kept only where they help choose a tab: active contacts, filed
+  // emails (EF-14), and the three tabs in the "More" menu, otherwise out of sight.
+  const [school, canWrite, contactCount, courseCount, bankDetailCount, visitCount, emailCount] = await Promise.all([
     getSchoolById(id),
     canAccess(MODULES.SCHOOLS, ACCESS.WRITE),
     getSchoolContactCount(id),
     getSchoolCourseCount(id),
     getSchoolBankDetailCount(id),
     getSchoolVisitCount(id),
+    getFiledEmailCount({ schoolId: id }),
   ])
 
   if (!school) notFound()
@@ -52,7 +54,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
       <SchoolTabNav
         schoolId={id}
         current={tab}
-        counts={{ contacts: contactCount, courses: courseCount, "bank-details": bankDetailCount, visits: visitCount }}
+        counts={{ contacts: contactCount, communications: emailCount, courses: courseCount, "bank-details": bankDetailCount, visits: visitCount }}
       />
       <Suspense key={tab} fallback={<SchoolTabSkeleton />}>
         <ActiveTab schoolId={id} school={school} canWrite={canWrite} supPage={supPage} />

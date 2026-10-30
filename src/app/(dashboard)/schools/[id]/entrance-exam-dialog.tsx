@@ -350,7 +350,7 @@ export function EntranceExamDialog({
 export function EditEntranceExamButton({ exam, schoolId, referenceData, attachments = [], canWrite = true, canManagePapers = false }: { exam: SchoolEntranceExamWithJoins; schoolId: string; referenceData: EntranceExamReferenceData; attachments?: AttachmentRecord[]; canWrite?: boolean; canManagePapers?: boolean }) {
   return (
     <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="edit" exam={exam} attachments={attachments} canWrite={canWrite} canManagePapers={canManagePapers}
-      trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
+      trigger={<Button variant="ghost" size="icon" aria-label={`Edit entrance exam${exam.subject ? `: ${exam.subject}` : ""}`} className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )
 }
@@ -371,7 +371,7 @@ export function DeleteEntranceExamButton({ examId, schoolId, label }: { examId: 
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors" onClick={() => setOpen(true)}>
+      <Button variant="ghost" size="icon" aria-label={`Delete entrance exam${label ? `: ${label}` : ""}`} className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors" onClick={() => setOpen(true)}>
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
       <AlertDialogContent className="sm:max-w-[420px]">

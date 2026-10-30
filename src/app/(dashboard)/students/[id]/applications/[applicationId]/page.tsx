@@ -12,6 +12,9 @@ import { getStudentById } from "@/lib/supabase/queries/students"
 import { buildApplicationTimeline } from "@/lib/applications/application-timeline"
 import { isUuid } from "@/lib/scheduler/uuid"
 import { RecordNotes } from "@/components/features/record-notes"
+import { CommunicationsSection } from "@/components/features/communications/communications-section"
+import { ActivityHistory } from "@/components/features/activity-history"
+import { getActivity, MAX_ACTIVITY } from "@/lib/supabase/queries/activity-log"
 import { getRecordNotes, getSignedInUserId } from "@/lib/supabase/queries/record-notes"
 import { ApplicationHeader } from "./application-header"
 import { ApplicationJourney } from "./application-journey"
@@ -43,7 +46,7 @@ export default async function StudentApplicationPage({ params }: Props) {
   ])
   if (!application || !student) notFound()
 
-  const [bookings, statusChanges, attachments, depositAttachments, referenceData, notes, currentUserId] = await Promise.all([
+  const [bookings, statusChanges, attachments, depositAttachments, referenceData, notes, currentUserId, activity] = await Promise.all([
     canSeeBookings ? getApplicationBookings(application.id) : null,
     getApplicationStatusHistory(application.id),
     getAttachmentsForMany("student_application", [application.id]),
@@ -51,6 +54,7 @@ export default async function StudentApplicationPage({ params }: Props) {
     canWrite ? getApplicationReferenceData() : null,
     getRecordNotes("application", applicationId),
     getSignedInUserId(),
+    getActivity({ applicationId: application.id }),
   ])
   const applicationAttachments = attachments.get(application.id) ?? []
   const timeline = buildApplicationTimeline(application, bookings ?? [], statusChanges)
@@ -95,6 +99,15 @@ export default async function StudentApplicationPage({ params }: Props) {
             attachments={applicationAttachments}
             examNotes={canSeeExamNotes ? { canWrite: canWriteExamNotes, currentUserId } : null}
           />
+          <CommunicationsSection
+            title="Emails"
+            context={{
+              kind: "application",
+              applicationId: application.id,
+              student: { id: student.id, name: [student.first_name, student.surname].filter(Boolean).join(" ") || "Student" },
+              school: { id: application.school_id, name: application.school?.name ?? "School" },
+            }}
+          />
         </div>
         <div className="space-y-4">
           {referenceData && (
@@ -119,6 +132,7 @@ export default async function StudentApplicationPage({ params }: Props) {
             currentUserId={currentUserId}
           />
           <ApplicationTimeline entries={timeline} />
+          <ActivityHistory entries={activity} limit={MAX_ACTIVITY} />
         </div>
       </div>
     </div>

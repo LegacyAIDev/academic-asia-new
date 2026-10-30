@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { SCHOOL_TABS, isMoreTab, resolveSchoolTab, schoolTabHref, schoolTabLabel } from '../school-tabs'
 
 describe('SCHOOL_TABS', () => {
-  it('shows eight tabs in the order of the customer prototype', () => {
+  it('shows the prototype tabs in order, then Communications', () => {
     expect(SCHOOL_TABS.filter(t => t.group === 'main').map(t => t.label)).toEqual([
-      'Overview', 'Entrance Assessments', 'Fees', 'Exam Results', 'Contacts', 'Events', 'Notes & Info', 'Documents',
+      'Overview', 'Entrance Assessments', 'Fees', 'Exam Results', 'Contacts', 'Events', 'Notes & Info', 'Documents', 'Communications',
     ])
   })
 
@@ -16,7 +16,7 @@ describe('SCHOOL_TABS', () => {
 
   it('keeps the URL keys the page has always used', () => {
     expect(SCHOOL_TABS.map(t => t.key)).toEqual([
-      'basic', 'entrance-exams', 'fees', 'academic-results', 'contacts', 'events', 'notes', 'documents',
+      'basic', 'entrance-exams', 'fees', 'academic-results', 'contacts', 'events', 'notes', 'documents', 'communications',
       'courses', 'bank-details', 'visits',
     ])
   })

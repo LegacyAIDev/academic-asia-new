@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          application_id: string | null
+          changed: string[]
+          entity: string
+          entity_id: string
+          id: number
+          label: string | null
+          occurred_at: string
+          school_id: string | null
+          student_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          application_id?: string | null
+          changed?: string[]
+          entity: string
+          entity_id: string
+          id?: never
+          label?: string | null
+          occurred_at?: string
+          school_id?: string | null
+          student_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          application_id?: string | null
+          changed?: string[]
+          entity?: string
+          entity_id?: string
+          id?: never
+          label?: string | null
+          occurred_at?: string
+          school_id?: string | null
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       academic_exam_types: {
         Row: {
           code: string
@@ -1433,6 +1483,137 @@ export type Database = {
           sort_order?: number | null
         }
         Relationships: []
+      }
+      filed_emails: {
+        Row: {
+          application_id: string | null
+          archived_at: string | null
+          archived_by: string | null
+          attachments: Json
+          body_html: string | null
+          body_preview: string | null
+          body_text: string | null
+          cc_addresses: string[]
+          created_at: string
+          created_by: string | null
+          direction: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          from_address: string | null
+          from_name: string | null
+          id: string
+          message_id: string | null
+          school_id: string | null
+          sent_at: string
+          source: string
+          staff_note: string | null
+          student_id: string | null
+          subject: string
+          to_addresses: string[]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          attachments?: Json
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: string[]
+          created_at?: string
+          created_by?: string | null
+          direction: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          from_address?: string | null
+          from_name?: string | null
+          id?: string
+          message_id?: string | null
+          school_id?: string | null
+          sent_at: string
+          source: string
+          staff_note?: string | null
+          student_id?: string | null
+          subject: string
+          to_addresses?: string[]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          attachments?: Json
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: string[]
+          created_at?: string
+          created_by?: string | null
+          direction?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          from_address?: string | null
+          from_name?: string | null
+          id?: string
+          message_id?: string | null
+          school_id?: string | null
+          sent_at?: string
+          source?: string
+          staff_note?: string | null
+          student_id?: string | null
+          subject?: string
+          to_addresses?: string[]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filed_emails_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "student_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "filed_emails_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "filed_emails_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "filed_emails_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "filed_emails_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "filed_emails_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       individual_exam_types: {
         Row: {
@@ -3542,6 +3723,50 @@ export type Database = {
           sort_order?: number | null
         }
         Relationships: []
+      }
+      staff_tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          due_date: string | null
+          id: string
+          notes: string | null
+          owner_id: string
+          priority: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          priority?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          priority?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_tasks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       student_application_deposits: {
         Row: {

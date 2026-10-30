@@ -1,6 +1,6 @@
 /**
  * Tabs of the school page, in the order of the customer's prototype. The
- * eight "main" tabs are always visible; the rarely used ones sit behind a
+ * nine "main" tabs are always visible; the rarely used ones sit behind a
  * "More" menu so the page stays uncluttered without hiding any data.
  *
  * URL keys are the ones the page has always used (the exam desk links to
@@ -16,6 +16,7 @@ export const SCHOOL_TABS = [
   { key: 'events', label: 'Events', group: 'main' },
   { key: 'notes', label: 'Notes & Info', group: 'main' },
   { key: 'documents', label: 'Documents', group: 'main' },
+  { key: 'communications', label: 'Communications', group: 'main' },
   { key: 'courses', label: 'Courses', group: 'more' },
   { key: 'bank-details', label: 'Bank details', group: 'more' },
   { key: 'visits', label: 'Visits', group: 'more' },

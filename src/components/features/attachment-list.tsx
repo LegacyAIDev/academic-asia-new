@@ -8,8 +8,9 @@ import { formatFileSize, isSafeExternalUrl, urlHostname } from "@/lib/attachment
 import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
 import { deleteAttachment } from "@/lib/supabase/actions/record-attachments"
 import { getAttachmentSignedUrl } from "@/lib/supabase/actions/record-attachment-signed-url"
-import type { AttachPointKey } from "@/lib/attachments/attach-points"
+import { isVersioned, type AttachPointKey } from "@/lib/attachments/attach-points"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
+import { AttachmentVersionControls, VersionLine } from "./attachment-versions"
 
 /** A file or link chosen before the parent record exists. */
 export type StagedAttachment =
@@ -83,8 +84,10 @@ export function AttachmentList({
       {attachments.map(attachment => {
         const isLink = Boolean(attachment.external_url)
         const busy = busyId === attachment.id
+        const versioned = isVersioned(attachPoint) && !isLink
         return (
-          <Row key={attachment.id}>
+          <div key={attachment.id} className="space-y-1">
+          <Row>
             {isLink
               ? <Link2 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
               : <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
@@ -93,6 +96,7 @@ export function AttachmentList({
               <p className="text-xs text-muted-foreground">
                 {isLink ? urlHostname(attachment.external_url!) : formatFileSize(attachment.file_size)}
               </p>
+              {versioned && <VersionLine attachment={attachment} />}
             </div>
             <Button
               type="button" variant="ghost" size="icon" className="h-7 w-7 shrink-0"
@@ -113,6 +117,8 @@ export function AttachmentList({
               </Button>
             )}
           </Row>
+          {versioned && <AttachmentVersionControls attachPoint={attachPoint} ownerId={ownerId} attachment={attachment} canWrite={canWrite} />}
+          </div>
         )
       })}
 

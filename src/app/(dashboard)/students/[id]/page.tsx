@@ -64,6 +64,10 @@ import { StudentResumeSection } from "./student-resume"
 import { StudentInternalNotesSection } from "./student-internal-notes"
 import { StudentLegacyLog } from "./student-legacy-log"
 import { RecordNotes } from "@/components/features/record-notes"
+import { CommunicationsSection } from "@/components/features/communications/communications-section"
+import { getFiledEmailCount } from "@/lib/supabase/queries/filed-emails"
+import { getActivity, MAX_ACTIVITY } from "@/lib/supabase/queries/activity-log"
+import { ActivityHistory } from "@/components/features/activity-history"
 import { getRecordNotes, getSignedInUserId } from "@/lib/supabase/queries/record-notes"
 import { getStudentLegacyLogMeta } from "@/lib/supabase/queries/student-log-book"
 import { StudentLegalDocumentsSection } from "./student-legal-documents"
@@ -104,7 +108,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
   const { tab: rawTab } = await searchParams
   // Normalise the tab param, mapping the legacy "profile" value to "overview" and
   // the old "contacts" tab (renamed Family) to "family", so saved links still work
-  const validTabs = ["overview", "resume", "family", "education", "documents", "applications", "events", "immigration"]
+  const validTabs = ["overview", "resume", "family", "education", "documents", "applications", "communications", "events", "immigration"]
   const requestedTab = rawTab === "contacts" ? "family" : rawTab
   const tab = validTabs.includes(requestedTab ?? "") ? (requestedTab as string) : "overview"
 
@@ -125,6 +129,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     familyLinks,
     familySuggestions,
     recordNotes, currentUserId, legacyLog,
+    emailCount, activity,
   ] = await Promise.all([
     getStudentById(id),
     getStudentContacts(id),
@@ -158,6 +163,8 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
     getRecordNotes("student", id),
     getSignedInUserId(),
     getStudentLegacyLogMeta(id),
+    getFiledEmailCount({ studentId: id }),
+    tab === "overview" ? getActivity({ studentId: id }) : Promise.resolve(null),
   ])
 
   if (!student) {
@@ -583,6 +590,13 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
                   School Applications
                 </Link>
               </TabsTrigger>
+              <TabsTrigger value="communications" asChild>
+                <Link href={`/students/${id}?tab=communications`} scroll={false} className="gap-1.5">
+                  <Mail className="h-4 w-4" />
+                  Communications
+                  {emailCount > 0 && <Badge variant="secondary" className="ml-0.5 h-5 px-1.5 text-xs">{emailCount}</Badge>}
+                </Link>
+              </TabsTrigger>
               <TabsTrigger value="events" asChild>
                 <Link href={`/students/${id}?tab=events`} scroll={false} className="gap-1.5">
                   <CalendarDays className="h-4 w-4" />
@@ -642,6 +656,8 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
             )}
 
             {legacyLog && <StudentLegacyLog studentId={id} lastUpdate={legacyLog.legacy_last_update ? formatDate(legacyLog.legacy_last_update) : null} />}
+
+            {tab === "overview" && <ActivityHistory entries={activity} limit={MAX_ACTIVITY} />}
           </TabsContent>
 
           {/* Resume: profile (talents/interests) + Music Audition / Top Schools records */}
@@ -709,6 +725,15 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               attachmentsByDeposit={depositAttachments}
               canWrite={canWrite}
             />
+          </TabsContent>
+
+          {/* Communications: filed emails and typed email records (loaded only on this tab) */}
+          <TabsContent value="communications" className="space-y-6">
+            {tab === "communications" && (
+              <CommunicationsSection
+                context={{ kind: "student", student: { id, name: [student.first_name, student.surname].filter(Boolean).join(" ") || "Student" } }}
+              />
+            )}
           </TabsContent>
 
           {/* Event Applications */}

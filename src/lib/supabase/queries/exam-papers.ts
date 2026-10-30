@@ -64,7 +64,9 @@ export async function getExamPaperStatuses(paperIds: string[]): Promise<Map<stri
         .from('school_documents')
         .select('attachable_id, file_path')
         .eq('attachable_type', EXAM_PAPER_ATTACHABLE_TYPE)
-        .in('attachable_id', batch),
+        .in('attachable_id', batch)
+        // A replaced paper is history, not a second file to print.
+        .is('superseded_by', null),
     ])
     if (papers.error || attachments.error) {
       console.error('getExamPaperStatuses failed:', papers.error ?? attachments.error)

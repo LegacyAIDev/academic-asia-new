@@ -7,7 +7,7 @@ type Result = { data: unknown; error: unknown; count?: number | null }
 
 const CHAIN_METHODS = [
   'select', 'eq', 'neq', 'gte', 'lte', 'in', 'or', 'order', 'limit',
-  'like', 'overlaps', 'range', 'not',
+  'like', 'overlaps', 'range', 'not', 'is', 'ilike',
   'insert', 'update', 'delete', 'single', 'maybeSingle',
 ]
 
@@ -17,7 +17,11 @@ const CHAIN_METHODS = [
  * the `respond` callback returns for that table. Storage calls are recorded
  * too: signing echoes the path back so a test can see what was signed.
  */
-export function makeSupabaseStub(respond: (rec: Recorded) => Result = () => ({ data: [], error: null })) {
+export function makeSupabaseStub(
+  respond: (rec: Recorded) => Result = () => ({ data: [], error: null }),
+  /** Objects `download` can return, by path; anything else downloads as "not found". */
+  files: Record<string, Uint8Array> = {},
+) {
   const queries: Recorded[] = []
   const storageCalls: StorageCall[] = []
   const stub = {
@@ -39,6 +43,19 @@ export function makeSupabaseStub(respond: (rec: Recorded) => Result = () => ({ d
           list: async (...args: unknown[]) => {
             storageCalls.push({ bucket, method: 'list', args })
             return { data: [], error: null }
+          },
+          download: async (...args: unknown[]) => {
+            storageCalls.push({ bucket, method: 'download', args })
+            const bytes = files[String(args[0])]
+            return bytes ? { data: new Blob([bytes as BlobPart]), error: null } : { data: null, error: { message: 'Object not found' } }
+          },
+          move: async (...args: unknown[]) => {
+            storageCalls.push({ bucket, method: 'move', args })
+            return { data: { message: 'moved' }, error: null }
+          },
+          createSignedUploadUrl: async (...args: unknown[]) => {
+            storageCalls.push({ bucket, method: 'createSignedUploadUrl', args })
+            return { data: { path: String(args[0]), token: `token:${String(args[0])}`, signedUrl: 'signed-upload' }, error: null }
           },
         }
       },

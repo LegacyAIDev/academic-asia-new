@@ -1,7 +1,7 @@
 import Link from "next/link"
 import {
   Banknote, Building2, CalendarDays, CalendarSearch, ChevronDown, ClipboardCheck, Contact, Files,
-  GraduationCap, Landmark, StickyNote, Trophy,
+  GraduationCap, Landmark, Mail, StickyNote, Trophy,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -19,6 +19,7 @@ const TAB_ICONS: Record<SchoolTabKey, React.ElementType> = {
   events: CalendarDays,
   notes: StickyNote,
   documents: Files,
+  communications: Mail,
   courses: GraduationCap,
   "bank-details": Landmark,
   visits: CalendarSearch,

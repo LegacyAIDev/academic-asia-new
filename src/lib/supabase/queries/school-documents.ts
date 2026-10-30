@@ -30,6 +30,8 @@ export async function getSchoolDocuments(schoolId: string): Promise<SchoolDocume
     .from('school_documents')
     .select('*, category:document_categories(id, code, label)')
     .eq('school_id', schoolId)
+    // Earlier versions of a replaced paper live in its history, not as extra documents.
+    .is('superseded_by', null)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -80,6 +82,8 @@ export async function findStoredSchoolDocument(
 
 /**
  * How many exam papers a whole school, or one of its entrance exams, holds.
+ * Earlier versions of replaced papers are counted too, on purpose: deleting
+ * the exam or the school removes them as well, so the exam-team guard applies.
  * Returns null when that could not be established; callers treat null as
  * "there may be papers" and refuse.
  */

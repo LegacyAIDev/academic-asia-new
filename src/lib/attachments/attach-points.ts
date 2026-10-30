@@ -26,6 +26,8 @@ type AttachPoint = {
   label: string
   /** Set only when the files need other rights than the record they hang off. */
   access?: AttachAccess
+  /** Files can be replaced by a newer version, keeping the older ones in a history (ASM-05). */
+  versioned?: boolean
 }
 
 export const ATTACH_POINTS = {
@@ -77,6 +79,7 @@ export const ATTACH_POINTS = {
     categoryCode: EXAM_PAPER_CATEGORY_CODE,
     label: 'Exam paper',
     access: EXAM_PAPER_ACCESS,
+    versioned: true,
   },
   school_fee: {
     owner: 'school',
@@ -149,4 +152,9 @@ export const ATTACH_READ = ACCESS.READ
 export function attachAccess(point: AttachPointKey): AttachAccess {
   const override = (ATTACH_POINTS[point] as AttachPoint).access
   return override ?? { module: ownerConfig(point).module, read: ATTACH_READ, write: ATTACH_WRITE, restricted: false }
+}
+
+/** Whether files of this attach point keep a version history when replaced. */
+export function isVersioned(point: AttachPointKey): boolean {
+  return (ATTACH_POINTS[point] as AttachPoint).versioned === true
 }

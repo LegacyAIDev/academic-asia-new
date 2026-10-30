@@ -20,6 +20,9 @@ import { SchoolEventsSection } from "./school-events"
 import { SchoolDocumentsSection } from "./school-documents"
 import { SchoolSupplementaryInfo } from "./school-supplementary-info"
 import { BankDetailsTab, CoursesTab, VisitsTab } from "./school-tab-content-more"
+import { CommunicationsSection } from "@/components/features/communications/communications-section"
+import { ActivityHistory } from "@/components/features/activity-history"
+import { getActivity, MAX_ACTIVITY } from "@/lib/supabase/queries/activity-log"
 
 export type SchoolTabProps = {
   schoolId: string
@@ -70,18 +73,24 @@ async function EventsTab({ schoolId }: SchoolTabProps) {
 
 /** Notes and the supplementary information, which the customer's prototype keeps on one tab. */
 async function NotesTab({ schoolId, canWrite, supPage }: SchoolTabProps) {
-  const [notes, referenceData] = await Promise.all([getSchoolNotes(schoolId), getNoteReferenceData()])
+  const [notes, referenceData, activity] = await Promise.all([getSchoolNotes(schoolId), getNoteReferenceData(), getActivity({ schoolId })])
   const attachments = await getAttachmentsForMany("school_note", notes.map(n => n.id))
   return (
     <div className="space-y-6">
       <SchoolNotesSection schoolId={schoolId} notes={notes} referenceData={referenceData} attachmentsByNote={attachments} canWrite={canWrite} />
       <SchoolSupplementaryInfo schoolId={schoolId} page={supPage} canWrite={canWrite} />
+      <ActivityHistory entries={activity} limit={MAX_ACTIVITY} />
     </div>
   )
 }
 
 async function DocumentsTab({ schoolId, canWrite }: SchoolTabProps) {
   return <SchoolDocumentsSection schoolId={schoolId} documents={await getSchoolDocuments(schoolId)} canWrite={canWrite} />
+}
+
+/** Emails filed against the school, including those also filed on a student (D4). */
+async function CommunicationsTab({ schoolId, school }: SchoolTabProps) {
+  return <CommunicationsSection context={{ kind: "school", school: { id: schoolId, name: school.name } }} />
 }
 
 async function OverviewTab({ school }: SchoolTabProps) {
@@ -97,6 +106,7 @@ export const SCHOOL_TAB_CONTENT: Record<SchoolTabKey, (props: SchoolTabProps) =>
   events: EventsTab,
   notes: NotesTab,
   documents: DocumentsTab,
+  communications: CommunicationsTab,
   courses: CoursesTab,
   "bank-details": BankDetailsTab,
   visits: VisitsTab,

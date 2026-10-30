@@ -10,6 +10,7 @@ import {
   GraduationCap,
   Languages,
   LayoutDashboard,
+  ListTodo,
   Mic,
   School,
   Settings,
@@ -29,6 +30,8 @@ export type NavItem = {
 /** Sidebar entries in display order. Visibility per module is decided in the Sidebar component. */
 export const navigation: NavItem[] = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  // Task planner (meeting note 2): every signed-in user has one, so it follows the Dashboard module.
+  { name: "Task Planner", href: "/tasks", icon: ListTodo },
   {
     name: "Students",
     href: "/students",
