@@ -1,6 +1,6 @@
 # Codebase Summary
 
-**Last updated:** 2026-10-23
+**Last updated:** 2026-10-28
 **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase
 
 ---
@@ -38,6 +38,7 @@ aa-new/
 ├── tsconfig.json
 ├── postcss.config.mjs
 ├── eslint.config.mjs
+├── e2e/                  # Browser tests (puppeteer-core + local Chrome) against a local Supabase stack: email filing, task planner, activity history, paper versions
 └── remigrate.sh          # Re-runs the full data migration pipeline
 ```
 
@@ -61,6 +62,7 @@ src/app/
     ├── layout.tsx                 # Loads getCurrentUser() server-side, renders shell
     ├── page.tsx                   # Dashboard home
     ├── pending-exam-bookings-card.tsx  # Dashboard alert: pending exam bookings count (spec NOT-01)
+    ├── tasks/                     # Task Planner (/tasks): page, task-planner, task-row, task-edit-dialog, task-fields
     ├── students/
     │   ├── page.tsx               # Student list with filters
     │   ├── students-filters.tsx
@@ -218,6 +220,10 @@ src/components/
 │   ├── record-note-composer.tsx  # Text box + "Add note" (Ctrl/Cmd+Enter)
 │   ├── record-notes-dialog.tsx   # "Notes" button opening the list in a dialog; loads on open
 │   └── brief-intro-export-menu.tsx  # PDF/Excel menu — profile card + bulk picker
+│   ├── attachment-versions.tsx   # Version line, "Replace with new version", "Earlier versions (n)" for exam papers
+│   ├── activity-history.tsx      # Read-only Activity card (student Overview, application page, school Notes & Info)
+│   └── communications/           # Email filing (system-architecture 5.2d): CommunicationsSection (server loader), CommunicationsPanel,
+│                                 #   toolbar, table, file-email / email-record / email-viewer dialogs, link + detail fields, use-staged-emails
 ├── scheduler/                     # Scheduler UI (added 2026-09-28)
 │   ├── scheduler-calendar.tsx     # FullCalendar wrapper — the one file that imports the library
 │   ├── scheduler-calendar.css     # FullCalendar theme overrides
@@ -254,6 +260,7 @@ src/components/
 ```
 src/lib/
 ├── utils.ts                      # cn() — Tailwind class merge (clsx + tailwind-merge)
+├── hk-day.ts                     # hkDay / hkToday: Hong Kong calendar day (tasks, email date filters)
 ├── auth-utils.ts                 # ADMIN_LEVELS constants, hasMinLevel(), getAdminLevel()
 ├── permissions/                  # Module access rights — the enforcement core
 │   ├── modules.ts                # MODULES/ACCESS constants, PermissionMap, denyAll()
@@ -273,6 +280,9 @@ src/lib/
 │   ├── constraints.ts            # ALLOWED_MIME, MAX_BYTES, isSafeExternalUrl, formatFileSize
 │   ├── open-in-new-tab.ts        # Post-await open that Safari does not block
 │   └── __tests__/                # registry/DB/seed parity, URL validation, exam-paper-access
+├── emails/                       # Email filing pure helpers: email-files (types, 25 MB, byte checks, storage paths), parse-email (.eml/.msg),
+│                                 #   email-body (server-only sanitiser), email-viewer-document (iframe CSP), email-form, email-schema (zod),
+│                                 #   email-draft, email-list (filter/sort), email-access (module rules), filed-email (row → summary); tests in __tests__/
 ├── rich-text.ts                  # sanitizeRichText() — cleans editor HTML before storage
 ├── pdf/
 │   ├── render-document-pdf.ts    # Shared headless-Chromium renderer (HTML string → PDF)
@@ -364,6 +374,10 @@ src/lib/
     │   ├── student-brief-intro.ts
     │   ├── student-internal-notes.ts
     │   ├── record-notes.ts            # Add / edit / delete a note; edit and delete are author-only
+    │   ├── filed-emails.ts            # prepareEmailUpload (signed upload URL), fileEmail, createManualEmail
+    │   ├── filed-email-records.ts     # detail, signed file link, edit, archive/restore, Manager-only delete, link pickers
+    │   ├── record-attachment-versions.ts  # replaceAttachmentFile, listAttachmentVersions (versioned attach points: exam papers)
+    │   ├── staff-tasks.ts             # Task planner: create, update, complete/reopen, delete, clear completed (owner only)
     │   ├── student-documents.ts
     │   ├── student-resume.ts
     │   ├── student-resume-profile.ts
@@ -388,6 +402,9 @@ src/lib/
     │   └── scheduler-availability.ts  # Wraps scheduler_free_busy / scheduler_available_rooms
     └── queries/                  # Read-only data fetching for Server Components
         ├── exam-papers.ts            # getSchoolExamPaperOptions; getExamPaperStatuses (live counts per paper, null on failure)
+        ├── filed-emails.ts           # getFiledEmails (student / school / application, newest 500, null on failure), getApplicationOptions, searchSchoolOptions
+        ├── activity-log.ts           # getActivity: a student's, school's or application's history, newest 200
+        ├── staff-tasks.ts            # getMyTasks: the signed-in user's open tasks and newest 100 completed
         ├── scheduler-calendar-helpers.ts  # peopleOrFilter lookups, fetchCancelledRows, attachAttendees, inBatches (100-id batches)
         ├── __tests__/                # Scheduler query tests against a stubbed query builder (supabase-stub.ts); exam-paper-listing-access.test.ts covers papers hidden from non-team users
         ├── students.ts
@@ -462,6 +479,7 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | Timestamped (2026-10-22) | `20261022152919_student_contacts_related_student.sql` (`student_contacts.related_student_id` FK to `students`, no self-link check, partial index, unique per student and link) |
 | Timestamped (2026-10-22) | `20261022165842_student_family_suggestions.sql` (function `student_family_suggestions(p_student_id)` plus two partial expression indexes on contact mobile digits and `lower(btrim(email_1))`; execute for `authenticated` only) |
 | Timestamped (2026-10-23) | `20261023193522_record_notes_and_school_note_authors.sql` (table `record_notes` with author-only write RLS, `school_notes.created_by`) |
+| Timestamped (2026-10-28) | `20261028181144_filed_emails.sql` (table `filed_emails`, private bucket `filed-emails` 25 MB, duplicate Message-ID partial unique indexes) |
 | Timestamped (2026-10-20) | `20261020110718_student_application_status_history.sql` (table `student_application_status_history`, trigger `student_applications_status_history`, select-only RLS), `20261020133120_student_application_status_history_revoke_execute.sql` (revokes EXECUTE on the trigger function) |
 
 ---

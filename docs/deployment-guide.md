@@ -99,6 +99,22 @@ You do **not** need to run a local Supabase stack — the app connects to the ho
 
 ---
 
+## 4a. Email filing (2026-10-28)
+
+`supabase/migrations/20261028181144_filed_emails.sql` creates the `filed_emails` table and the private `filed-emails` storage bucket (25 MB per object) with its policies. Apply it with the other migrations (`npm run db:push`), then regenerate types (`npm run db:types`); `src/types/database.ts` was edited by hand to match until then.
+
+Email files are uploaded from the browser straight to storage through a signed upload URL, so no server action body limit applies. If uploads fail with a CORS error on a custom domain, check the project's storage settings allow the app's origin.
+
+## 4b. Activity history triggers (2026-10-30)
+
+`20261030182948_activity_log.sql` adds `*_activity` triggers to twelve tables (system-architecture 5.2f). A re-import through `remigrate.sh` or the numbered scripts would write one "System" activity row per record. Before a large load, disable them on the tables being loaded, for example:
+
+```sql
+alter table public.students disable trigger students_activity;
+-- load…
+alter table public.students enable trigger students_activity;
+```
+
 ## 5. Legacy Data Migration
 
 To populate the database from the legacy CSV exports in `data/`:
