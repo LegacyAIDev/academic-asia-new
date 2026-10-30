@@ -1,0 +1,17 @@
+#!/bin/sh
+# Every commit in this repository must be authored and committed as the Legacy AI
+# development account. Set it once per clone:
+#   git config user.email development@legacyai.agency
+#   git config core.hooksPath .githooks
+REQUIRED="development@legacyai.agency"
+
+author=$(git var GIT_AUTHOR_IDENT | sed -n 's/.*<\(.*\)>.*/\1/p')
+committer=$(git var GIT_COMMITTER_IDENT | sed -n 's/.*<\(.*\)>.*/\1/p')
+
+if [ "$author" != "$REQUIRED" ] || [ "$committer" != "$REQUIRED" ]; then
+  echo "Commit blocked: commits must be made from $REQUIRED." >&2
+  echo "  author:    $author" >&2
+  echo "  committer: $committer" >&2
+  echo "Fix with: git config user.email $REQUIRED" >&2
+  exit 1
+fi

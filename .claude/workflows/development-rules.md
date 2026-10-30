@@ -28,6 +28,7 @@
 - Use `code-reviewer` agent to review code after every implementation
 
 ## Pre-commit/Push Rules
+- **Every commit must be made from `development@legacyai.agency`** (author and committer). Per clone: `git config user.email development@legacyai.agency` and `git config core.hooksPath .githooks`; the `.githooks/pre-commit` hook blocks any other address. Never bypass it with `--no-verify` or `--author`.
 - Run linting before commit
 - Run tests before push (DO NOT ignore failed tests just to pass the build or github actions)
 - Keep commits focused on the actual code changes
