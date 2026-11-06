@@ -1520,6 +1520,7 @@ export type Database = {
           archived_by?: string | null
           attachments?: Json
           body_html?: string | null
+          body_preview?: never
           body_text?: string | null
           cc_addresses?: string[]
           created_at?: string
@@ -1548,6 +1549,7 @@ export type Database = {
           archived_by?: string | null
           attachments?: Json
           body_html?: string | null
+          body_preview?: never
           body_text?: string | null
           cc_addresses?: string[]
           created_at?: string
@@ -2900,6 +2902,8 @@ export type Database = {
           is_music_audition: boolean | null
           mime_type: string | null
           school_id: string
+          superseded_at: string | null
+          superseded_by: string | null
           source_file_name: string | null
           title: string | null
           updated_at: string | null
@@ -2920,6 +2924,8 @@ export type Database = {
           is_music_audition?: boolean | null
           mime_type?: string | null
           school_id: string
+          superseded_at?: string | null
+          superseded_by?: string | null
           source_file_name?: string | null
           title?: string | null
           updated_at?: string | null
@@ -2940,6 +2946,8 @@ export type Database = {
           is_music_audition?: boolean | null
           mime_type?: string | null
           school_id?: string
+          superseded_at?: string | null
+          superseded_by?: string | null
           source_file_name?: string | null
           title?: string | null
           updated_at?: string | null
@@ -2959,6 +2967,13 @@ export type Database = {
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_documents_superseded_by_fkey"
+            columns: ["superseded_by"]
+            isOneToOne: false
+            referencedRelation: "school_documents"
             referencedColumns: ["id"]
           },
           {
@@ -4326,6 +4341,8 @@ export type Database = {
           id: string
           mime_type: string | null
           student_id: string
+          superseded_at: string | null
+          superseded_by: string | null
           title: string | null
           updated_at: string | null
           uploaded_by: string | null
@@ -4344,6 +4361,8 @@ export type Database = {
           id?: string
           mime_type?: string | null
           student_id: string
+          superseded_at?: string | null
+          superseded_by?: string | null
           title?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
@@ -4362,6 +4381,8 @@ export type Database = {
           id?: string
           mime_type?: string | null
           student_id?: string
+          superseded_at?: string | null
+          superseded_by?: string | null
           title?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
@@ -4379,6 +4400,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_documents_superseded_by_fkey"
+            columns: ["superseded_by"]
+            isOneToOne: false
+            referencedRelation: "student_documents"
             referencedColumns: ["id"]
           },
           {
