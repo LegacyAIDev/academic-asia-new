@@ -39,6 +39,8 @@ import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments
 import type { StudentWithJoins } from "@/lib/supabase/queries/students"
 import type { PresentSchoolOption } from "@/lib/supabase/queries/present-schools"
 import { PresentSchoolPicker } from "./present-school-picker"
+import { parseDateOnly, toDateOnly } from "@/lib/date-only"
+import { hkToday } from "@/lib/hk-day"
 
 type ReferenceItem = {
   id: number
@@ -75,7 +77,7 @@ export function StudentForm({
   const [addingSchool, setAddingSchool] = useState(false)
   const [dobOpen, setDobOpen] = useState(false)
   const [dob, setDob] = useState<Date | undefined>(
-    student?.date_of_birth ? new Date(student.date_of_birth + "T00:00:00") : undefined
+    parseDateOnly(student?.date_of_birth)
   )
 
   const { statuses, placements, nationalities, courses, schoolTypes, events, profiles } = referenceData
@@ -92,7 +94,7 @@ export function StudentForm({
       first_name: formData.get("first_name") as string,
       chinese_name: (formData.get("chinese_name") as string) || null,
       gender: (formData.get("gender") as string) || null,
-      date_of_birth: dob ? dob.toISOString().split("T")[0] : null,
+      date_of_birth: dob ? toDateOnly(dob) : null,
       nationality_id: formData.get("nationality_id") ? parseInt(formData.get("nationality_id") as string, 10) : null,
       passport_type: (formData.get("passport_type") as string) || null,
       passport_number: (formData.get("passport_number") as string) || null,
@@ -450,7 +452,7 @@ export function StudentForm({
                 id="enrollment_date"
                 name="enrollment_date"
                 type="date"
-                defaultValue={student?.enrollment_date ?? new Date().toISOString().split("T")[0]}
+                defaultValue={student?.enrollment_date ?? hkToday()}
               />
             </div>
             <div className="space-y-2">

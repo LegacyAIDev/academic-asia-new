@@ -9,6 +9,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Plus, Loader2, CalendarDays } from "lucide-react"
 import { createApplicationDeposit } from "@/lib/supabase/actions/student-application-deposits"
+import { toDateOnly } from "@/lib/date-only"
 
 const inputStyles = "h-9 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm"
 
@@ -17,7 +18,7 @@ function formatDateDisplay(date: Date | undefined) {
 }
 
 function formatDateValue(date: Date | undefined) {
-  return date ? date.toISOString().split("T")[0] : null
+  return date ? toDateOnly(date) : null
 }
 
 type Props = {

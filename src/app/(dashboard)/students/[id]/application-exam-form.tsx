@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select"
 import { Plus, Loader2, CalendarDays } from "lucide-react"
 import { createIndividualExam } from "@/lib/supabase/actions/student-individual-exams"
+import { toDateOnly } from "@/lib/date-only"
 
 const inputStyles = "h-9 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm"
 const YEARS = Array.from({ length: 13 }, (_, i) => String(i + 1))
@@ -21,7 +22,7 @@ function formatDateDisplay(date: Date | undefined) {
 }
 
 function formatDateValue(date: Date | undefined) {
-  return date ? date.toISOString().split("T")[0] : null
+  return date ? toDateOnly(date) : null
 }
 
 type Props = {

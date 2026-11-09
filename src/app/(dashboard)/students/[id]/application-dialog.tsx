@@ -63,6 +63,7 @@ import { ApplicationDepositSection } from "./application-deposit-section"
 import { ApplicationExamSection } from "./application-exam-section"
 import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
+import { parseDateOnly, toDateOnly } from "@/lib/date-only"
 
 type ReferenceItem = { id: number; code: string; label: string }
 type StatusItem = ReferenceItem & { category: string | null }
@@ -169,7 +170,7 @@ export function ApplicationDialog({
   const [error, setError] = useState<string | null>(null)
   const [scholarshipTypes, setScholarshipTypes] = useState<string[]>(application?.scholarship_types ?? [])
 
-  const parseDate = (val: string | null | undefined) => val ? new Date(val + "T00:00:00") : undefined
+  const parseDate = parseDateOnly
   const defaultRegDate = useMemo(() => application?.registration_date ? parseDate(application.registration_date) : new Date(), [application])
 
   const [regDate, setRegDate] = useState<Date | undefined>(defaultRegDate)
@@ -199,7 +200,7 @@ export function ApplicationDialog({
   const formatDateDisplay = (date: Date | undefined) =>
     date ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null
   const formatDateValue = (date: Date | undefined) =>
-    date ? date.toISOString().split("T")[0] : null
+    date ? toDateOnly(date) : null
 
   const { statuses, modes, schools, events } = referenceData
   const [selectedEventId, setSelectedEventId] = useState(application?.event_id ?? "")
@@ -214,7 +215,7 @@ export function ApplicationDialog({
   const handleEventSelect = (eventId: string) => {
     setSelectedEventId(eventId)
     const ev = events.find(e => e.id === eventId)
-    if (ev?.start_date) setEventDate(new Date(ev.start_date + "T00:00:00"))
+    if (ev?.start_date) setEventDate(parseDateOnly(ev.start_date))
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
