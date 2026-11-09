@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useTransition } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -74,6 +74,8 @@ export function StudentForm({
   const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [conflict, setConflict] = useState(false)
+  const errorRef = useRef<HTMLDivElement>(null)
   const [addingSchool, setAddingSchool] = useState(false)
   const [dobOpen, setDobOpen] = useState(false)
   const [dob, setDob] = useState<Date | undefined>(
@@ -127,7 +129,7 @@ export function StudentForm({
       if (mode === "create") {
         result = await createStudent(input)
       } else if (student?.id) {
-        result = await updateStudent(student.id, input)
+        result = await updateStudent(student.id, input, { expectedUpdatedAt: student.updated_at })
       }
 
       if (result?.success) {
@@ -144,16 +146,27 @@ export function StudentForm({
           router.push("/students")
         }
       } else {
+        setConflict(result?.conflict === true)
         setError(result?.error ?? "An error occurred")
       }
     })
   }
 
+  // The error box sits above the form; bring it into view after a failed save.
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+  }, [error])
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
-          {error}
+        <div ref={errorRef} role="alert" className="flex flex-wrap items-center gap-3 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
+          <span className="flex-1">{error}</span>
+          {conflict && (
+            <Button type="button" variant="outline" size="sm" onClick={() => window.location.reload()}>
+              Reload latest details
+            </Button>
+          )}
         </div>
       )}
 

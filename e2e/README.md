@@ -9,6 +9,7 @@ End-to-end checks of features in a real Chrome against the real app and a throwa
 | `activity-log.e2e.mjs` | Activity history | 9 |
 | `paper-versions.e2e.mjs` | Entrance exam paper versions | 9 |
 | `date-fields.e2e.mjs` | Dates keep the day picked (UAT DEV24-001), in Hong Kong time | 6 |
+| `stale-editor.e2e.mjs` | An older student editor cannot overwrite a newer save (UAT DEV24-002) | 5 |
 
 ## Run them
 
@@ -21,7 +22,7 @@ npx next build && npx next start -p 3100 # production build: fast and steady tim
 node e2e/email-filing.e2e.mjs            # each suite prints PASS/FAIL per check
 ```
 
-The seed also creates an English Year 9 entrance exam at Headington School and an examination booking today that uses it, for `paper-versions`; rerun `setup-local-db.sh` on another day for a fresh booking. Each suite expects its own data to start empty (no filed emails before `email-filing`, no tasks before `task-planner`, no activity or exams before `activity-log`, no exam paper files before `paper-versions`); clear those tables between runs. `activity-log` and `date-fields` use `psql`. Failure screenshots go to `/tmp/aa-e2e-shots`.
+The seed also creates an English Year 9 entrance exam at Headington School and an examination booking today that uses it, for `paper-versions`; rerun `setup-local-db.sh` on another day for a fresh booking. Each suite expects its own data to start empty (no filed emails before `email-filing`, no tasks before `task-planner`, no activity or exams before `activity-log`, no exam paper files before `paper-versions`); clear those tables between runs. `activity-log`, `date-fields` and `stale-editor` use `psql`. Failure screenshots go to `/tmp/aa-e2e-shots`.
 
 Test accounts (password in `env.sh`): `manager@aa.test` (Manager, exam team), `staff@aa.test` (Staff: Students write, Schools read), `junior@aa.test` (Junior: read only).
 

@@ -47,6 +47,8 @@ export type ActionResult<T = void> = {
   success: boolean
   data?: T
   error?: string
+  /** The record changed after the editor opened, so nothing was saved. */
+  conflict?: boolean
 }
 
 /**
@@ -67,6 +69,11 @@ async function withListSchoolName<T extends Partial<CreateStudentInput>>(input: 
 }
 
 const UNKNOWN_SCHOOL: ActionResult<never> = { success: false, error: 'Choose a school from the list' }
+const STALE_STUDENT: ActionResult<never> = {
+  success: false,
+  conflict: true,
+  error: 'Someone saved changes to this student after you opened it, so your changes were not saved. Reload to see the latest details, then make your changes again.',
+}
 
 /**
  * Create a new student with auto-generated student code
@@ -123,9 +130,15 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
 }
 
 /**
- * Update an existing student by ID
+ * Update a student. An editor passes the updated_at it was opened with: if the
+ * student was saved since, nothing is written and the editor is told to reload,
+ * so an older form cannot silently undo a newer save (UAT DEV24-002).
  */
-export async function updateStudent(id: string, input: Partial<CreateStudentInput>): Promise<ActionResult> {
+export async function updateStudent(
+  id: string,
+  input: Partial<CreateStudentInput>,
+  { expectedUpdatedAt }: { expectedUpdatedAt?: string | null } = {},
+): Promise<ActionResult> {
   const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
   if (denied) return denied
 
@@ -138,15 +151,18 @@ export async function updateStudent(id: string, input: Partial<CreateStudentInpu
 
     const updateData: StudentUpdate = { ...withSchool }
 
-    const { error } = await supabase
+    let update = supabase
       .from('students')
       .update(updateData as never)
       .eq('id', id)
+    if (expectedUpdatedAt) update = update.eq('updated_at', expectedUpdatedAt)
+    const { data, error } = await update.select('id')
 
     if (error) {
       console.error('Error updating student:', error)
       return { success: false, error: error.message }
     }
+    if (expectedUpdatedAt && !data?.length) return STALE_STUDENT
 
     revalidatePath('/students')
     revalidatePath(`/students/${id}`)
