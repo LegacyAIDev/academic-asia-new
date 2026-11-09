@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, useWatch, type UseFormReturn } from 'react-hook-form'
+import { useForm, useWatch, type FieldErrors, type UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import {
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { bookingFormSchema, type BookingFormInput, type BookingFormValues } from '@/lib/scheduler/booking-schema'
 import { defaultBookingInput } from '@/lib/scheduler/booking-defaults'
 import { canCancelBooking } from '@/lib/scheduler/booking-permissions'
+import { formErrorMessages } from '@/lib/scheduler/form-error-messages'
 import { saveBooking, confirmBooking, type SaveBookingResult } from '@/lib/supabase/actions/scheduler-bookings'
 import { BookingFormSection } from './booking-form-section'
 import { BookingFormBasics } from './booking-form-basics'
@@ -69,6 +70,7 @@ export function BookingDialog({
   const isEditing = Boolean(initial?.id)
   const [isPending, startTransition] = useTransition()
   const [cancelOpen, setCancelOpen] = useState(false)
+  const [problems, setProblems] = useState<string[]>([])
 
   const defaultValues = useMemo(
     () => defaultBookingInput(initial ?? {}, currentProfileId),
@@ -98,7 +100,11 @@ export function BookingDialog({
     original !== null &&
     (original.start_at !== startAt || original.end_at !== endAt || original.room_id !== form.getValues('room_id'))
 
+  // Every reason the form will not save, listed beside Save (some rules have no field on screen).
+  const onInvalid = (errors: FieldErrors<BookingFormInput>) => setProblems(formErrorMessages(errors))
+
   const onSubmit = (values: BookingFormValues) => {
+    setProblems([])
     startTransition(async () => {
       const result: SaveBookingResult = await saveBooking(values)
       if (result.success) {
@@ -112,6 +118,7 @@ export function BookingDialog({
         toast.warning('Some attendees are already busy for this time.')
         return
       }
+      setProblems([result.error ?? 'Failed to save booking'])
       toast.error(result.error ?? 'Failed to save booking')
     })
   }
@@ -139,13 +146,13 @@ export function BookingDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={v => { if (!v) setProblems([]); onOpenChange(v) }}>
         <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{isEditing ? 'Edit booking' : 'New booking'}</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-4">
             <BookingFormSection title="When">
               <BookingFormBasics form={form} isEditing={isEditing} />
               <BookingFormReason form={form} show={timeOrRoomChanged} />
@@ -161,6 +168,15 @@ export function BookingDialog({
             </BookingFormSection>
 
             <BookingConflictBanner conflicts={conflicts} form={form} />
+
+            {problems.length > 0 && (
+              <div role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                <p className="font-medium">This booking can&apos;t be saved yet:</p>
+                <ul className="mt-1 list-disc space-y-0.5 pl-5">
+                  {problems.map(p => <li key={p}>{p}</li>)}
+                </ul>
+              </div>
+            )}
 
             <DialogFooter className="gap-2">
               {showCancel && (

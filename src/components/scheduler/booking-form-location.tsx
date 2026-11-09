@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
-import { isExamBooking } from '@/lib/scheduler/config'
+import { BOOKING_TYPE_LABELS, isExamBooking, needsRoom } from '@/lib/scheduler/config'
 import { findAvailableRooms } from '@/lib/supabase/actions/scheduler-availability'
 import type { AvailableRoom } from '@/lib/supabase/queries/scheduler-availability'
 import { RoomChip } from './room-chip'
@@ -36,6 +36,7 @@ export function BookingFormLocation({
 
   const [availableRooms, setAvailableRooms] = useState<AvailableRoom[]>([])
   const examOnly = isExamBooking(bookingType)
+  const roomOnly = needsRoom(bookingType)
 
   const search = useDebouncedCallback(async () => {
     if (locationType !== 'room' || !startAt || !endAt) return
@@ -73,10 +74,18 @@ export function BookingFormLocation({
           <Label htmlFor="location-room" className="font-normal">In a room</Label>
         </div>
         <div className="flex min-h-9 items-center gap-2">
-          <RadioGroupItem value="online" id="location-online" />
-          <Label htmlFor="location-online" className="font-normal">Online</Label>
+          <RadioGroupItem value="online" id="location-online" disabled={roomOnly && locationType !== 'online'} />
+          <Label htmlFor="location-online" className={cn('font-normal', roomOnly && 'text-muted-foreground')}>Online</Label>
         </div>
       </RadioGroup>
+      {roomOnly && (
+        <p className="text-xs text-muted-foreground">
+          A {BOOKING_TYPE_LABELS[bookingType].toLowerCase()} needs a room.
+        </p>
+      )}
+      {form.formState.errors.location_type && (
+        <p className="text-sm text-destructive">{form.formState.errors.location_type.message}</p>
+      )}
 
       {locationType === 'online' ? (
         <div className="space-y-1.5">

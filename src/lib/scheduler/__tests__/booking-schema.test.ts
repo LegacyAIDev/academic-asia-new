@@ -111,7 +111,7 @@ describe('bookingFormSchema - examination', () => {
     expect(issuePaths(result)).toContain('student_id')
   })
 
-  it('requires the booking to be in a room', () => {
+  it('accepts an online examination with a meeting link and no room (DEV24-003)', () => {
     const result = bookingFormSchema.safeParse(
       baseBooking({
         booking_type: 'examination',
@@ -121,8 +121,14 @@ describe('bookingFormSchema - examination', () => {
         online_link: 'https://meet.example.com/abc',
       }),
     )
-    expect(result.success).toBe(false)
-    expect(issuePaths(result)).toContain('location_type')
+    expect(result.success).toBe(true)
+  })
+
+  it('still needs the meeting link when online', () => {
+    const result = bookingFormSchema.safeParse(
+      baseBooking({ booking_type: 'examination', student_id: STUDENT_ID, location_type: 'online', room_id: null, online_link: null }),
+    )
+    expect(issuePaths(result)).toEqual(['online_link'])
   })
 
   it('accepts a valid examination booking', () => {
@@ -132,6 +138,19 @@ describe('bookingFormSchema - examination', () => {
 })
 
 describe('bookingFormSchema - group_examination', () => {
+  it('still needs a room', () => {
+    const result = bookingFormSchema.safeParse(
+      baseBooking({
+        booking_type: 'group_examination',
+        location_type: 'online',
+        room_id: null,
+        online_link: 'https://meet.example.com/abc',
+        attendees: [{ student_id: STUDENT_ID, role: 'candidate' }],
+      }),
+    )
+    expect(issuePaths(result)).toContain('location_type')
+  })
+
   it('requires at least one candidate', () => {
     const result = bookingFormSchema.safeParse(
       baseBooking({ booking_type: 'group_examination', seats_required: 1, attendees: [] }),

@@ -63,7 +63,6 @@ const baseBookingSchema = z.object({
 const TYPE_RULES: Record<z.infer<typeof baseBookingSchema>['booking_type'], (v: z.infer<typeof baseBookingSchema>, issue: (path: string, message: string) => void) => void> = {
   examination: (v, issue) => {
     if (!v.student_id) issue('student_id', 'Select the student sitting the exam')
-    if (v.location_type !== 'room') issue('location_type', 'Examinations take place in a room')
   },
   group_examination: (v, issue) => {
     const candidates = v.attendees.filter(a => a.role === 'candidate').length

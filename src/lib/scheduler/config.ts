@@ -44,6 +44,17 @@ export function isExamBooking(bookingType: string): boolean {
 export const BOOKING_STATUSES = ['pending', 'confirmed', 'cancelled'] as const
 export type BookingStatus = (typeof BOOKING_STATUSES)[number]
 
+/**
+ * Bookings that need a physical room: a group exam seats several candidates,
+ * and a room reservation is the room. A single examination may be online
+ * (UAT DEV24-003); many school entrance tests are sat online.
+ */
+export const ROOM_ONLY_BOOKING_TYPES: BookingType[] = ['group_examination', 'room_reservation']
+
+export function needsRoom(bookingType: string): boolean {
+  return (ROOM_ONLY_BOOKING_TYPES as string[]).includes(bookingType)
+}
+
 /** A booking either takes place in a physical room or online. */
 export const LOCATION_TYPES = ['room', 'online'] as const
 export type LocationType = (typeof LOCATION_TYPES)[number]
