@@ -2087,6 +2087,7 @@ export type Database = {
         Row: {
           application_id: string | null
           booking_id: string
+          exam_id: string | null
           id: string
           period: unknown
           profile_id: string | null
@@ -2098,6 +2099,7 @@ export type Database = {
         Insert: {
           application_id?: string | null
           booking_id: string
+          exam_id?: string | null
           id?: string
           period?: unknown
           profile_id?: string | null
@@ -2109,6 +2111,7 @@ export type Database = {
         Update: {
           application_id?: string | null
           booking_id?: string
+          exam_id?: string | null
           id?: string
           period?: unknown
           profile_id?: string | null
@@ -4805,6 +4808,7 @@ export type Database = {
           room_id: string | null
           school_id: string | null
           score: number | null
+          scheduler_booking_id: string | null
           seat_no: number | null
           status_id: number
           student_id: string
@@ -4839,6 +4843,7 @@ export type Database = {
           room_id?: string | null
           school_id?: string | null
           score?: number | null
+          scheduler_booking_id?: string | null
           seat_no?: number | null
           status_id?: number
           student_id: string
@@ -4873,6 +4878,7 @@ export type Database = {
           room_id?: string | null
           school_id?: string | null
           score?: number | null
+          scheduler_booking_id?: string | null
           seat_no?: number | null
           status_id?: number
           student_id?: string

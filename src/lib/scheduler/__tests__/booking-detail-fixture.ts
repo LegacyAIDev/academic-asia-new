@@ -60,6 +60,7 @@ export function makeAttendee(overrides: Partial<BookingAttendee> = {}): BookingA
     seat_no: null,
     application_id: null,
     profile: null,
+    exam: null,
     student: null,
     ...overrides,
   }

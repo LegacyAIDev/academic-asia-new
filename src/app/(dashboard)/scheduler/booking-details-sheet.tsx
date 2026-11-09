@@ -15,6 +15,7 @@ import type { CalendarEventProps } from '@/lib/scheduler/calendar-adapter'
 import type { BookingFormInput } from '@/lib/scheduler/booking-schema'
 import { bookingDetailPeopleLabels, bookingDetailToFormInput } from '@/lib/scheduler/booking-defaults'
 import { bookingPageHref } from '@/lib/scheduler/return-path'
+import { isExamBooking } from '@/lib/scheduler/config'
 import { getBookingDetailsAction, type BookingDetailsPayload } from '@/lib/supabase/actions/scheduler-details'
 import { useBookingActions } from './use-booking-actions'
 
@@ -116,6 +117,13 @@ export function BookingDetailsSheet({ selected, onClose, canWrite, canConfirm, r
                   </span>
                 )}
               </div>
+              {isExamBooking(booking.booking_type) && booking.status !== 'cancelled' && !booking.attendance && (
+                <p className="text-xs text-muted-foreground">
+                  {booking.status === 'pending'
+                    ? 'The examination team confirms this exam. On the day, record attendance here: Showed up completes the exam in All exams.'
+                    : 'On the day, record attendance: Showed up completes the exam in All exams; No show leaves it open to rebook.'}
+                </p>
+              )}
               <Separator />
               <div>
                 <SectionEyebrow className="mb-3">History</SectionEyebrow>

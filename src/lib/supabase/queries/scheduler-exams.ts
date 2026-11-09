@@ -25,6 +25,17 @@ export async function getExamBookingLinks(examIds: string[]): Promise<Record<str
   for (const row of data ?? []) {
     if (row.exam_id) links[row.exam_id] = { exam_id: row.exam_id, booking_id: row.id, status: row.status }
   }
+
+  // Group exam candidates are linked through their attendee row, not the booking.
+  const { data: seats, error: seatsError } = await supabase
+    .from('scheduler_booking_attendees')
+    .select('exam_id, booking:scheduler_bookings!inner(id, status)')
+    .in('exam_id', examIds)
+    .neq('booking.status', 'cancelled')
+  if (seatsError) console.error('getExamBookingLinks attendees failed:', seatsError)
+  for (const row of (seats ?? []) as unknown as { exam_id: string; booking: { id: string; status: string } }[]) {
+    links[row.exam_id] ??= { exam_id: row.exam_id, booking_id: row.booking.id, status: row.booking.status }
+  }
   return links
 }
 

@@ -46,6 +46,7 @@ key() { echo "$STATUS" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('
 export E2E_PASSWORD="$(openssl rand -base64 18)"
 export SB_URL=http://127.0.0.1:54321 SB_SERVICE="$(key SERVICE_ROLE_KEY)"
 (cd "$REPO" && node e2e/seed-local-db.mjs) | tail -1 > "$WORK/seed-ids.txt"
+(cd "$REPO" && node e2e/make-fixtures.mjs "$WORK/fixtures")
 
 cat > "$WORK/env.sh" <<ENV
 export NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321

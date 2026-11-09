@@ -1,5 +1,7 @@
 import Link from 'next/link'
-import { TIMEZONE_LABEL } from '@/lib/scheduler/config'
+import { TIMEZONE_LABEL, isExamBooking } from '@/lib/scheduler/config'
+import { examListHref } from '@/lib/exams/exam-page-search-params'
+import { hkDay } from '@/lib/hk-day'
 import { formatHkDate, formatHkTime } from '@/lib/scheduler/time-utils'
 import { personName, type NamedPerson } from '@/lib/scheduler/person-name'
 import type { BookingDetail } from '@/lib/supabase/queries/scheduler-bookings'
@@ -85,9 +87,21 @@ export function BookingDetails({ booking }: { booking: BookingDetail }) {
                 <li key={a.id}>
                   {a.profile ? fullName(a.profile) : fullName(a.student)}
                   <span className="text-muted-foreground"> · {a.role}{a.seat_no ? ` · seat ${a.seat_no}` : ''}</span>
+                  {a.exam?.status && <span className="text-muted-foreground"> · exam {a.exam.status.label.toLowerCase()}</span>}
                 </li>
               ))}
             </ul>
+          </Fact>
+        )}
+
+        {isExamBooking(booking.booking_type) && booking.status !== 'cancelled' && (
+          <Fact label="Exam record" wide>
+            <Link
+              href={examListHref({ from: hkDay(booking.start_at), to: hkDay(booking.start_at) })}
+              className="text-primary underline underline-offset-2"
+            >
+              See this day in All exams
+            </Link>
           </Fact>
         )}
 
