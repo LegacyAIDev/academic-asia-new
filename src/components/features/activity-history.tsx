@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { History } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel } from "@/components/ui/panel"
 import { describeActivity, type ActivityEntry } from "@/lib/activity/activity-format"
 import { formatEmailDate } from "@/lib/emails/email-form"
 
@@ -17,14 +16,7 @@ export function ActivityHistory({ entries, title = "Activity", limit }: { entrie
   const [shown, setShown] = useState(PAGE)
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-medium">
-          <History className="h-4 w-4 text-muted-foreground" />
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Panel title={title}>
         {entries === null ? (
           <p className="text-sm text-destructive" role="alert">The activity could not be loaded. Refresh the page to try again.</p>
         ) : entries.length === 0 ? (
@@ -33,7 +25,7 @@ export function ActivityHistory({ entries, title = "Activity", limit }: { entrie
           <>
             <ol className="space-y-0" aria-label={title}>
               {entries.slice(0, shown).map(entry => (
-                <li key={entry.id} className="border-t py-2.5 first:border-t-0">
+                <li key={entry.id} className="border-t py-2.5 first:border-t-0 first:pt-0">
                   <p className="text-sm">
                     {describeActivity(entry)}
                     {entry.label && <span className="text-muted-foreground"> · {entry.label}</span>}
@@ -54,7 +46,6 @@ export function ActivityHistory({ entries, title = "Activity", limit }: { entrie
             )}
           </>
         )}
-      </CardContent>
-    </Card>
+    </Panel>
   )
 }

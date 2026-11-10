@@ -4,7 +4,7 @@
  *   007 Book consultation from a student keeps that student
  *   008 a seat beyond the room's seats is named, and can be corrected
  *   009 an exam result's school is chosen by name
- *   011 Quick Actions > Add Note starts a note
+ *   011 Add > Note starts a note
  *   012 an unsupported upload is refused with the reason
  * Runs in Hong Kong time. Needs psql on PATH and E2E_DB_URL for the local test database.
  */
@@ -110,7 +110,7 @@ try {
 
   await step(page, '009: an exam result school is searched and chosen by name, and shown again when editing', async () => {
     await open(page, `/students/${S}?tab=education`)
-    await click(page, 'New Exam Result', '[role="tabpanel"]')
+    await click(page, 'Add exam result', 'main')
     await page.waitForSelector(DIALOG)
     assert(!(await page.evaluate(() => document.querySelector('[role="dialog"]').innerText.includes('UUID'))), 'still asks for a UUID')
     await click(page, 'Search schools (optional)', DIALOG, { prefix: true }).catch(() => page.click(`${DIALOG} button[aria-label="School"]`))
@@ -125,15 +125,19 @@ try {
     assert(sql(`select s.name from public.student_exam_results r join public.schools s on s.id = r.school_id where r.remarks = 'UAT rem result'`) === 'Headington School', 'school not saved')
   })
 
-  await step(page, '011: Quick Actions > Add Note starts a note, from Overview and from another tab', async () => {
+  const addNote = async () => {
+    await click(page, 'Add', 'main header')
+    await click(page, 'Note', '[role="menu"]')
+  }
+  await step(page, '011: Add > Note starts a note, from Overview and from another tab', async () => {
     await open(page, `/students/${S}?tab=overview`)
-    await click(page, 'Add Note')
+    await addNote()
     await page.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'New note', { polling: 100, timeout: 5000 })
     await page.keyboard.type('UAT rem note from quick actions')
     await page.keyboard.down('Control'); await page.keyboard.press('Enter'); await page.keyboard.up('Control')
     await seeText(page, 'UAT rem note from quick actions', '#student-notes')
     await open(page, `/students/${S}?tab=family`)
-    await click(page, 'Add Note')
+    await addNote()
     await page.waitForFunction(() => location.search.includes('tab=overview') && document.activeElement?.getAttribute('aria-label') === 'New note', { polling: 100, timeout: 30000 })
     assert(!(await page.evaluate(() => [...document.querySelectorAll('button')].some(b => b.innerText.trim() === 'Log Call'))), 'Log Call still shown')
   })

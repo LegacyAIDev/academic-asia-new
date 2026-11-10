@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Panel } from '@/components/ui/panel'
 import { addDays, format } from 'date-fns'
 import { TZDate } from '@date-fns/tz'
 import { Button } from '@/components/ui/button'
@@ -16,7 +17,7 @@ import { MODULES } from '@/lib/permissions/modules'
 type Props = { studentId: string; canBook: boolean }
 
 const SOURCE_LABELS: Record<string, string> = { booking: 'Scheduler', exam: 'Exams', event_schedule: 'Event' }
-const EYEBROW = 'text-[11px] font-semibold uppercase tracking-wide text-muted-foreground'
+const EYEBROW = 'text-sm font-medium text-foreground'
 
 function groupByDate(items: CalendarItem[]): [string, CalendarItem[]][] {
   const groups = new Map<string, CalendarItem[]>()
@@ -39,27 +40,27 @@ export async function StudentCalendarSection({ studentId, canBook }: Props) {
   const groups = groupByDate(items)
 
   return (
-    <div className="space-y-4 rounded-xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className={EYEBROW}>Calendar</p>
-          <p className="text-sm font-semibold tabular-nums">
-            {formatHkDate(from)} – {formatHkDate(to)} <span className="font-normal text-muted-foreground">· {TIMEZONE_LABEL}</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm" className="h-9">
+    <Panel
+      title="Calendar"
+      action={
+        <>
+          <Button asChild variant="ghost" size="sm" className="h-8">
             <Link href={`/scheduler?view=team&people=s:${studentId}`}>Open in scheduler</Link>
           </Button>
           {canBook && (
             <ScheduleBookingButton
               label="Book consultation"
-              variant="default"
+              variant="outline"
               initial={{ booking_type: 'consultation', student_id: studentId }}
             />
           )}
-        </div>
-      </div>
+        </>
+      }
+    >
+      <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Two weeks back to six weeks ahead: {formatHkDate(from)} to {formatHkDate(to)}, {TIMEZONE_LABEL}
+      </p>
 
       {groups.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border px-4 py-8 text-center">
@@ -100,6 +101,7 @@ export async function StudentCalendarSection({ studentId, canBook }: Props) {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </Panel>
   )
 }

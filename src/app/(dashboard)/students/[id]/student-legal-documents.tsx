@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel } from "@/components/ui/panel"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { FileText, Pencil, Check, Loader2, Download, Trash2, Plus, FileUp } from "lucide-react"
+import { Pencil, Check, Loader2, Download, Trash2, Plus, FileUp } from "lucide-react"
 import { toast } from "sonner"
 import { updateStudent } from "@/lib/supabase/actions/students"
 import { uploadStudentDocument, deleteStudentDocument, getDocumentSignedUrl } from "@/lib/supabase/actions/student-documents"
@@ -88,28 +88,22 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            Legal Documents
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            {canWrite && (
-              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowUpload(!showUpload)}>
-                <Plus className="h-3 w-3" /> Upload
-              </Button>
-            )}
-            {canWrite && !editing && (
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditing(true)}>
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
-            )}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <Panel
+      title="Passport and legal documents"
+      action={canWrite ? (
+        <>
+          {!editing && (
+            <Button variant="ghost" size="sm" className="h-8 gap-1.5" onClick={() => setEditing(true)}>
+              <Pencil className="h-3.5 w-3.5" /> Edit passport
+            </Button>
+          )}
+          <Button variant="outline" size="sm" className="h-8 gap-1.5" onClick={() => setShowUpload(!showUpload)}>
+            <Plus className="h-3.5 w-3.5" /> Upload document
+          </Button>
+        </>
+      ) : null}
+    >
+      <div className="space-y-4">
         {/* Passport Info */}
         {editing ? (
           <form onSubmit={handlePassportSave} className="rounded-lg border border-border p-4 space-y-3">
@@ -143,12 +137,12 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
         ) : (
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Passport Type</p>
-              <p className="text-sm font-medium">{passportType || "—"}</p>
+              <p className="text-xs text-muted-foreground">Passport type</p>
+              <p className="text-sm font-medium">{passportType || <span className="font-normal text-muted-foreground/70">Not recorded</span>}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Passport Number</p>
-              <p className="text-sm font-medium">{passportNumber || "—"}</p>
+              <p className="text-xs text-muted-foreground">Passport number</p>
+              <p className="text-sm font-medium">{passportNumber || <span className="font-normal text-muted-foreground/70">Not recorded</span>}</p>
             </div>
           </div>
         )}
@@ -182,7 +176,7 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
         {/* Uploaded Documents */}
         {documents.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <p className="text-xs text-muted-foreground">
               Documents ({documents.length})
             </p>
             {documents.map((doc) => (
@@ -202,7 +196,7 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
                     : <Download className="h-3.5 w-3.5" />}
                 </Button>
                 {canWrite && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(doc.id)} disabled={isPending}>
+                  <Button aria-label="Delete" title="Delete" variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(doc.id)} disabled={isPending}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 )}
@@ -214,7 +208,7 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
         {documents.length === 0 && !showUpload && (
           <p className="text-sm text-muted-foreground text-center py-2">No documents uploaded</p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </Panel>
   )
 }

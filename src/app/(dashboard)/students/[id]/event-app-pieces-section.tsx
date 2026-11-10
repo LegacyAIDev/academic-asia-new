@@ -64,7 +64,7 @@ export function EventAppPiecesSection({ pieces, onChange }: Props) {
                   placeholder="e.g. Chopin"
                 />
               </div>
-              <Button
+              <Button aria-label="Delete" title="Delete"
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9 text-muted-foreground hover:text-destructive shrink-0"

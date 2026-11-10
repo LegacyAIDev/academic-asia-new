@@ -182,3 +182,7 @@
   from { transform: translateX(-100%); }
   to { transform: translateX(300%); }
 }
+
+/* Form pop-ups laid out as a column (header, scrolling body, footer): only the
+   body may shrink, so a long form never squashes the title or the buttons. */
+[data-slot="dialog-content"].flex > :not(form):not(.flex-1) { flex-shrink: 0; }

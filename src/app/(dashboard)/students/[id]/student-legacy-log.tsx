@@ -35,7 +35,7 @@ export function StudentLegacyLog({ studentId, lastUpdate }: Props) {
     <section className="space-y-3 rounded-xl border bg-card p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">From the old system</h2>
+          <h2 className="text-sm font-semibold text-foreground">From the old system</h2>
           {lastUpdate && <p className="mt-0.5 text-xs tabular-nums text-muted-foreground">Last updated {lastUpdate}</p>}
         </div>
         {text === null ? (

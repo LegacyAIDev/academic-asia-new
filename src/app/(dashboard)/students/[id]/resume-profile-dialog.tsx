@@ -52,23 +52,21 @@ export function ResumeProfileDialog({ studentId, profile }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90">
-          {isEdit ? <Pencil className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          {isEdit ? "Edit Resume" : "Add Resume"}
+        <Button size="sm" variant="outline" className="h-8 gap-1.5">
+          {isEdit ? <Pencil className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+          {isEdit ? "Edit profile" : "Fill in profile"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:!max-w-[760px] w-[95vw] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
-        <div className="relative overflow-hidden border-b border-border/50">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
-          <div className="relative flex items-center gap-4 px-6 py-5">
+        <div className="relative shrink-0 border-b border-border">
+          <div className="relative flex items-center gap-3 px-6 py-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25">
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-md bg-brand-navy/[0.07] text-brand-navy">
                 <FileText className="h-5 w-5" />
               </div>
             </div>
             <DialogHeader className="flex-1 space-y-1">
-              <DialogTitle className="text-xl font-semibold tracking-tight">
+              <DialogTitle className="text-lg font-semibold">
                 {isEdit ? "Edit Resume Profile" : "Add Resume Profile"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground">English standard, interests, and parents input</p>
@@ -123,7 +121,7 @@ export function ResumeProfileDialog({ studentId, profile }: Props) {
             </div>
           </div>
 
-          <div className="border-t border-border bg-muted/50 px-6 py-4">
+          <div className="shrink-0 border-t border-border bg-muted/40 px-6 py-3">
             <div className="flex items-center justify-end gap-3">
               <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isPending}>Cancel</Button>
               <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20">

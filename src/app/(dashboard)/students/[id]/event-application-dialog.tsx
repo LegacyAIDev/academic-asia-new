@@ -17,6 +17,7 @@ import {
 import type { EventAppWithJoins } from "@/lib/supabase/queries/student-event-applications"
 import { EventAppFormContent } from "./event-app-form-content"
 import type { PieceEntry } from "./event-app-pieces-section"
+import { useAddParam } from "@/lib/students/use-add-param"
 
 type EventTypeItem = { id: number; code: string; label: string; color: string | null; category_id: number | null }
 type EventItem = {
@@ -46,7 +47,7 @@ type EventApplicationDialogProps = {
 export function EventApplicationDialog({
   studentId, referenceData, mode, application, trigger,
 }: EventApplicationDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useAddParam(mode === "create" ? "event-application" : null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -99,23 +100,21 @@ export function EventApplicationDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90">
-            <Plus className="h-4 w-4" /> New Event Application
+          <Button size="sm" variant="outline" className="h-8 gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> Add event application
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:!max-w-[620px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
-        <div className="relative overflow-hidden border-b border-border/50">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
-          <div className="relative flex items-center gap-4 px-6 py-5">
+        <div className="relative shrink-0 border-b border-border">
+          <div className="relative flex items-center gap-3 px-6 py-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25">
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-md bg-brand-navy/[0.07] text-brand-navy">
                 <CalendarDays className="h-5 w-5" />
               </div>
             </div>
             <DialogHeader className="flex-1 space-y-1">
-              <DialogTitle className="text-xl font-semibold tracking-tight">
+              <DialogTitle className="text-lg font-semibold">
                 {mode === "create" ? "New Event Application" : "Edit Event Application"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground">
@@ -148,7 +147,7 @@ export function EventApplicationDialog({
               onPiecesChange={setPieces}
             />
           </div>
-          <div className="border-t border-border bg-muted/50 px-6 py-4">
+          <div className="shrink-0 border-t border-border bg-muted/40 px-6 py-3">
             <div className="flex items-center justify-end gap-3">
               <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isPending}>Cancel</Button>
               <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20">
@@ -169,7 +168,7 @@ export function EditEventApplicationButton({ application, studentId, referenceDa
 }) {
   return (
     <EventApplicationDialog studentId={studentId} referenceData={referenceData} mode="edit" application={application}
-      trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10"><Pencil className="h-3.5 w-3.5" /></Button>}
+      trigger={<Button aria-label="Edit" title="Edit" variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )
 }
@@ -193,7 +192,7 @@ export function DeleteEventApplicationButton({ applicationId, studentId, eventNa
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => setOpen(true)}>
+      <Button aria-label="Delete" title="Delete" variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => setOpen(true)}>
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
       <AlertDialogContent className="sm:max-w-[420px]">

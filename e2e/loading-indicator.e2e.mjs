@@ -28,7 +28,7 @@ try {
   await step(page, 'switching a tab on a record shows the bar until the tab arrives', async () => {
     await open(page, `/students/${SEED.student}?tab=overview`)
     await slow(1500)
-    await page.evaluate(() => [...document.querySelectorAll('[role="tab"]')].find(t => t.innerText.trim() === 'Family').click())
+    await page.evaluate(() => [...document.querySelectorAll('nav[aria-label="Student sections"] a')].find(t => t.innerText.trim().startsWith('Family')).click())
     await page.waitForSelector(BAR, { timeout: 3000 })
     await page.waitForFunction(() => location.search.includes('tab=family'), { polling: 100, timeout: 60000 })
     await page.waitForFunction(sel => !document.querySelector(sel), { polling: 100, timeout: 60000 }, BAR)

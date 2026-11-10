@@ -71,14 +71,19 @@ try {
   await step(page, 'a student can be deleted', async () => {
     const id = sql(`insert into public.students (surname, first_name, student_code) values ('DELETEME', 'Tmp', 'S0DELME') returning id`).split('\n')[0]
     await open(page, `/students/${id}`)
-    await confirmDelete(page, 'Delete Student')
+    // Delete lives in the More menu on a student, away from everyday buttons.
+    await page.click('main button[aria-label="More actions"]')
+    await click(page, 'Delete student')
+    await page.waitForSelector('[role="alertdialog"]')
+    await pause(400)
+    await page.evaluate(() => [...document.querySelectorAll('[role="alertdialog"] button')].pop().click())
     await page.waitForFunction(() => location.pathname === '/students', { polling: 100, timeout: 60000 })
     assert(sql(`select count(*) from public.students where id = '${id}'`) === '0', 'student still in the database')
   })
 
   await step(page, "the student's Calendar tab opens and stays open after reload", async () => {
     await open(page, `/students/${SEED.student}?tab=calendar`)
-    const selected = () => page.evaluate(() => document.querySelector('[role="tab"][aria-selected="true"]')?.innerText.trim())
+    const selected = () => page.evaluate(() => document.querySelector('nav[aria-label="Student sections"] [aria-current="page"]')?.innerText.trim())
     assert(await selected() === 'Calendar', `selected tab: ${await selected()}`)
     await page.reload({ waitUntil: 'networkidle2' })
     assert(await selected() === 'Calendar', `after reload: ${await selected()}`)

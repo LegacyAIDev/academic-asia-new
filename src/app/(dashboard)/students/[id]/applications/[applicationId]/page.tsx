@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation"
-import {
-  Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import Link from "next/link"
+import { ChevronLeft } from "lucide-react"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { getApplicationReferenceData, getStudentApplicationById } from "@/lib/supabase/queries/student-applications"
@@ -64,19 +63,9 @@ export default async function StudentApplicationPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink href="/">Dashboard</BreadcrumbLink></BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbLink href="/students">Students</BreadcrumbLink></BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/students/${student.id}?tab=applications`}>{student.first_name} {student.surname}</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbPage>{application.school?.name ?? "Application"}</BreadcrumbPage></BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Link href={`/students/${student.id}?tab=applications`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <ChevronLeft className="h-4 w-4" /> {[student.first_name, student.surname].filter(Boolean).join(" ")}&apos;s applications
+      </Link>
 
       <ApplicationHeader
         application={application}

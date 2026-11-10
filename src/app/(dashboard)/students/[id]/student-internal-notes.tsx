@@ -1,145 +1,166 @@
 "use client"
 
-import { useTransition } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useTransition } from "react"
+import { Loader2, Pencil, Plus } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { StickyNote, Loader2, Check } from "lucide-react"
-import { toast } from "sonner"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 import { upsertStudentInternalNotes } from "@/lib/supabase/actions/student-internal-notes"
 import type { InternalNotesRecord } from "@/lib/supabase/queries/student-internal-notes"
 
 type Props = {
   studentId: string
   notes: InternalNotesRecord | null
-  /** Without write access the notes are shown as plain text, with no inputs or Save. */
+  /** Without write access the notes are shown with no Edit. */
   canWrite: boolean
 }
 
-const textareaStyles = "resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm"
+type Key = "character" | "strategy" | "parent_expectations" | "disability_sen" | "medical_notes" | "guardianship_notes" | "additional_remarks"
 
+const GROUPS: { title: string; sensitive?: boolean; fields: { key: Key; label: string; placeholder: string }[] }[] = [
+  {
+    title: "Student profile",
+    fields: [
+      { key: "character", label: "Character", placeholder: "Character traits" },
+      { key: "strategy", label: "Strategy", placeholder: "Placement strategy" },
+      { key: "parent_expectations", label: "Parent expectations", placeholder: "What the family hopes for" },
+    ],
+  },
+  {
+    title: "Sensitive",
+    sensitive: true,
+    fields: [
+      { key: "disability_sen", label: "Disability / SEN", placeholder: "Special educational needs" },
+      { key: "medical_notes", label: "Medical", placeholder: "Medical information" },
+    ],
+  },
+  {
+    title: "Other",
+    fields: [
+      { key: "guardianship_notes", label: "Guardianship", placeholder: "Guardianship arrangements" },
+      { key: "additional_remarks", label: "Remarks", placeholder: "Anything else" },
+    ],
+  },
+]
+
+const filledText = (notes: InternalNotesRecord | null, key: Key) => {
+  const value = notes?.[key]
+  return typeof value === "string" && value.trim() !== "" ? value : null
+}
+
+/**
+ * Staff-only notes on the student: shown as a short summary of what is filled
+ * in, edited in a pop-up rather than as seven open boxes on the page.
+ */
 export function StudentInternalNotesSection({ studentId, notes, canWrite }: Props) {
+  const [editing, setEditing] = useState(false)
+  const filled = GROUPS.flatMap(g => g.fields.filter(f => filledText(notes, f.key)).map(f => ({ ...f, sensitive: g.sensitive })))
+
+  return (
+    <Panel
+      title="Internal notes"
+      action={canWrite && filled.length > 0 ? (
+        <Button variant="ghost" size="sm" className="h-8 gap-1.5" onClick={() => setEditing(true)}>
+          <Pencil className="h-3.5 w-3.5" /> Edit
+        </Button>
+      ) : null}
+    >
+      {filled.length === 0 ? (
+        <PanelEmpty
+          title="No internal notes yet"
+          action={canWrite ? (
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditing(true)}>
+              <Plus className="h-3.5 w-3.5" /> Add internal notes
+            </Button>
+          ) : null}
+        >
+          Character, strategy, family expectations and any sensitive needs. Seen by staff only.
+        </PanelEmpty>
+      ) : (
+        <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+          {filled.map(field => (
+            <div key={field.key} className="min-w-0">
+              <dt className={field.sensitive ? "text-xs font-medium text-destructive" : "text-xs text-muted-foreground"}>
+                {field.label}{field.sensitive ? " (sensitive)" : ""}
+              </dt>
+              <dd className="mt-0.5 whitespace-pre-wrap break-words text-sm">{filledText(notes, field.key)}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {canWrite && <InternalNotesDialog studentId={studentId} notes={notes} open={editing} onOpenChange={setEditing} />}
+    </Panel>
+  )
+}
+
+function InternalNotesDialog({ studentId, notes, open, onOpenChange }: {
+  studentId: string
+  notes: InternalNotesRecord | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
-
+    const value = (key: Key) => (fd.get(key) as string)?.trim() || null
     startTransition(async () => {
       const result = await upsertStudentInternalNotes({
         student_id: studentId,
-        character: (fd.get("character") as string) || null,
-        strategy: (fd.get("strategy") as string) || null,
-        parent_expectations: (fd.get("parent_expectations") as string) || null,
-        disability_sen: (fd.get("disability_sen") as string) || null,
-        medical_notes: (fd.get("medical_notes") as string) || null,
-        guardianship_notes: (fd.get("guardianship_notes") as string) || null,
-        additional_remarks: (fd.get("additional_remarks") as string) || null,
+        character: value("character"),
+        strategy: value("strategy"),
+        parent_expectations: value("parent_expectations"),
+        disability_sen: value("disability_sen"),
+        medical_notes: value("medical_notes"),
+        guardianship_notes: value("guardianship_notes"),
+        additional_remarks: value("additional_remarks"),
       })
-      if (result?.success) toast.success("Internal notes saved")
-      else toast.error(result?.error ?? "Failed to save notes")
+      if (result?.success) {
+        toast.success("Internal notes saved")
+        onOpenChange(false)
+        router.refresh()
+      } else {
+        toast.error(result?.error ?? "The notes could not be saved. Try again.")
+      }
     })
   }
 
-  if (!canWrite) return <InternalNotesReadOnly notes={notes} />
-
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <StickyNote className="h-4 w-4 text-muted-foreground" />
-          Internal Notes
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Internal notes</DialogTitle>
+          <DialogDescription>Seen by Academic Asia staff only. Leave a box empty if it does not apply.</DialogDescription>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Student Profile Notes */}
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Student Profile</p>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <Field label="Character" name="character" value={notes?.character} placeholder="Character traits..." />
-              <Field label="Strategy" name="strategy" value={notes?.strategy} placeholder="Placement strategy..." />
-              <Field label="Parent Expectations" name="parent_expectations" value={notes?.parent_expectations} placeholder="Parent expectations..." />
-            </div>
-          </div>
-
-          {/* Sensitive Information */}
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-destructive uppercase tracking-wider">Sensitive Information</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Disability / SEN" name="disability_sen" value={notes?.disability_sen} placeholder="Special educational needs..." />
-              <Field label="Medical Notes" name="medical_notes" value={notes?.medical_notes} placeholder="Medical information..." />
-            </div>
-          </div>
-
-          {/* Additional */}
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Additional</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Guardianship Notes" name="guardianship_notes" value={notes?.guardianship_notes} placeholder="Guardianship arrangements..." />
-              <Field label="Additional Remarks" name="additional_remarks" value={notes?.additional_remarks} placeholder="Any other notes..." />
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button type="submit" size="sm" disabled={isPending} className="gap-1.5">
-              {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
-              Save Notes
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-  )
-}
-
-const READ_ONLY_FIELDS: { label: string; key: keyof InternalNotesRecord }[] = [
-  { label: "Character", key: "character" },
-  { label: "Strategy", key: "strategy" },
-  { label: "Parent Expectations", key: "parent_expectations" },
-  { label: "Disability / SEN", key: "disability_sen" },
-  { label: "Medical Notes", key: "medical_notes" },
-  { label: "Guardianship Notes", key: "guardianship_notes" },
-  { label: "Additional Remarks", key: "additional_remarks" },
-]
-
-/** Same card for people who may only read: filled fields as text, nothing to type into. */
-function InternalNotesReadOnly({ notes }: { notes: InternalNotesRecord | null }) {
-  const filled = READ_ONLY_FIELDS.filter(({ key }) => typeof notes?.[key] === "string" && (notes[key] as string).trim() !== "")
-  return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <StickyNote className="h-4 w-4 text-muted-foreground" />
-          Internal Notes
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {filled.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No internal notes yet</p>
-        ) : (
-          <dl className="grid gap-4 sm:grid-cols-2">
-            {filled.map(({ label, key }) => (
-              <div key={key} className="min-w-0">
-                <dt className="text-xs text-muted-foreground">{label}</dt>
-                <dd className="mt-0.5 whitespace-pre-wrap break-words text-sm">{notes?.[key] as string}</dd>
+          {GROUPS.map(group => (
+            <fieldset key={group.title} className="space-y-3">
+              <legend className={group.sensitive ? "text-sm font-semibold text-destructive" : "text-sm font-semibold"}>{group.title}</legend>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {group.fields.map(field => (
+                  <div key={field.key} className="space-y-1.5">
+                    <Label htmlFor={`internal-${field.key}`} className="text-xs text-muted-foreground">{field.label}</Label>
+                    <Textarea id={`internal-${field.key}`} name={field.key} rows={3} className="resize-y text-sm" defaultValue={notes?.[field.key] ?? ""} placeholder={field.placeholder} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </dl>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-function Field({ label, name, value, placeholder }: {
-  label: string; name: string; value: string | null | undefined; placeholder: string
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      <Textarea name={name} rows={3} className={textareaStyles} defaultValue={value ?? ""} placeholder={placeholder} />
-    </div>
+            </fieldset>
+          ))}
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="submit" disabled={isPending} className="gap-1.5">
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+              Save notes
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }

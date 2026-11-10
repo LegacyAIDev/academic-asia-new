@@ -8,7 +8,6 @@ import type { ApplicationWithJoins } from "@/lib/supabase/queries/student-applic
 import type { StudentWithJoins } from "@/lib/supabase/queries/students"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import { ApplicationDialog, type ApplicationReferenceData } from "../../application-dialog"
-import { Eyebrow } from "./application-section"
 
 type Props = {
   application: ApplicationWithJoins
@@ -32,7 +31,7 @@ export function ApplicationHeader({ application: app, student, edit }: Props) {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0 space-y-1.5">
-        <Eyebrow as="p">School application</Eyebrow>
+        <p className="text-sm text-muted-foreground">School application</p>
         <h1 className="text-2xl font-semibold tracking-tight">
           {app.school ? (
             <Link href={`/schools/${app.school.id}`} className="underline-offset-4 hover:underline">{app.school.name}</Link>

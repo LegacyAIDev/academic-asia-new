@@ -45,6 +45,7 @@ import {
 } from "@/lib/supabase/actions/schools"
 import { getAcademicYearOptions } from "@/lib/utils"
 import type { SupInfoCategory } from "@/lib/supabase/queries/school-supplementary-info"
+import { FormSection } from "@/components/forms/form-section"
 
 type SchoolSupplementaryInfo = {
   id: string
@@ -67,42 +68,6 @@ type SupInfoDialogProps = {
 }
 
 /** Floating card section for form grouping */
-function FormSection({
-  icon: Icon,
-  title,
-  children,
-  accentColor = "primary",
-}: {
-  icon: React.ElementType
-  title: string
-  children: React.ReactNode
-  accentColor?: "primary" | "teal" | "amber" | "rose"
-}) {
-  const accentStyles = {
-    primary: "from-primary/20 to-primary/5 text-primary",
-    teal: "from-teal-500/20 to-teal-500/5 text-teal-600",
-    amber: "from-amber-500/20 to-amber-500/5 text-amber-600",
-    rose: "from-rose-500/20 to-rose-500/5 text-rose-600",
-  }
-
-  return (
-    <div className="group">
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-        <div className="flex items-center gap-2.5 mb-4">
-          <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${accentStyles[accentColor]}`}>
-            <Icon className="h-4 w-4" />
-          </div>
-          <span className="text-sm font-semibold text-foreground">
-            {title}
-          </span>
-        </div>
-        <div className="space-y-4">
-          {children}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 /** Clean form field with label */
 function FormField({
@@ -191,14 +156,11 @@ export function SupInfoDialog({
         showCloseButton={false}
       >
         {/* Header */}
-        <div className="relative overflow-hidden border-b border-border/50">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-60" />
+        <div className="relative shrink-0 border-b border-border">
 
-          <div className="relative flex items-center gap-4 px-6 py-5">
+          <div className="relative flex items-center gap-3 px-6 py-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25">
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-md bg-brand-navy/[0.07] text-brand-navy">
                 {mode === "create" ? (
                   <Plus className="h-5 w-5" />
                 ) : (
@@ -208,7 +170,7 @@ export function SupInfoDialog({
             </div>
 
             <DialogHeader className="flex-1 space-y-1">
-              <DialogTitle className="text-xl font-semibold tracking-tight">
+              <DialogTitle className="text-lg font-semibold">
                 {mode === "create" ? "Add Supplementary Info" : "Edit Supplementary Info"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground">
@@ -300,7 +262,7 @@ export function SupInfoDialog({
           </div>
 
           {/* Footer */}
-          <div className="border-t border-border bg-muted/50 px-6 py-4">
+          <div className="shrink-0 border-t border-border bg-muted/40 px-6 py-3">
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground">
                 <span className="text-destructive">*</span> Required field
@@ -358,7 +320,7 @@ export function EditSupInfoButton({
       supInfo={supInfo}
       categories={categories}
       trigger={
-        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+        <Button aria-label="Edit" title="Edit" variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
           <Pencil className="h-3.5 w-3.5" />
         </Button>
       }
@@ -394,7 +356,7 @@ export function DeleteSupInfoButton({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <Button
+      <Button aria-label="Delete" title="Delete"
         variant="ghost"
         size="icon"
         className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"

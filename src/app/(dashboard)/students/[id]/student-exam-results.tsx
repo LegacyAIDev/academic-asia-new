@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { FileCheck, Check, Minus } from "lucide-react"
+import { Check, Minus } from "lucide-react"
 import { ExamResultDialog, EditExamResultButton, DeleteExamResultButton } from "./exam-result-dialog"
 import type { ExamResultWithJoins } from "@/lib/supabase/queries/student-exam-results"
 import type { ExamResultReferenceData } from "./exam-result-dialog"
@@ -60,58 +60,33 @@ export function StudentExamResultsSection({
 }: StudentExamResultsSectionProps) {
   if (examResults.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <FileCheck className="h-4 w-4 text-muted-foreground" />
-              Exam Results
-            </CardTitle>
-            {canWrite && (
-              <ExamResultDialog
+      <Panel title="Exam results">
+        <PanelEmpty title="No exam results yet" action={canWrite ? (
+          <ExamResultDialog
                 studentId={studentId}
                 referenceData={referenceData}
                 mode="create"
               />
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <FileCheck className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No exam results yet</h3>
-            <p className="text-sm text-muted-foreground">
-              Record test and exam results for this student
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        ) : null}>
+          Record test and exam results for this student
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <FileCheck className="h-4 w-4 text-muted-foreground" />
-            Exam Results ({examResults.length})
-          </CardTitle>
-          {canWrite && (
-            <ExamResultDialog
+    <Panel title="Exam results" count={examResults.length} flush action={canWrite ? (
+        <ExamResultDialog
               studentId={studentId}
               referenceData={referenceData}
               mode="create"
             />
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+      ) : null}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6">Test Date</TableHead>
+                <TableHead className="pl-4">Test Date</TableHead>
                 <TableHead className="min-w-[120px]">School</TableHead>
                 <TableHead className="min-w-[100px]">Exam Paper</TableHead>
                 <TableHead className="min-w-[120px]">Test/Exam</TableHead>
@@ -121,7 +96,7 @@ export function StudentExamResultsSection({
                 <TableHead>Max</TableHead>
                 <TableHead className="min-w-[100px]">Status</TableHead>
                 <TableHead>Updated</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                <TableHead className="pr-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,7 +105,7 @@ export function StudentExamResultsSection({
 
                 return (
                   <TableRow key={rec.id}>
-                    <TableCell className="pl-6 text-sm">{formatDate(rec.test_date)}</TableCell>
+                    <TableCell className="pl-4 text-sm">{formatDate(rec.test_date)}</TableCell>
                     <TableCell className="text-sm max-w-[160px] truncate">
                       {rec.school?.name ?? "—"}
                     </TableCell>
@@ -160,7 +135,7 @@ export function StudentExamResultsSection({
                       ) : "—"}
                     </TableCell>
                     <TableCell className="text-sm">{formatDate(rec.updated_at)}</TableCell>
-                    <TableCell className="pr-6">
+                    <TableCell className="pr-4">
                       <div className="flex items-center justify-end gap-1">
                         <EditExamResultButton
                           examResult={rec}
@@ -184,10 +159,6 @@ export function StudentExamResultsSection({
             </TableBody>
           </Table>
         </div>
-        <div className="px-6 py-3 border-t text-xs text-muted-foreground">
-          Total: {examResults.length} result{examResults.length !== 1 ? "s" : ""}
-        </div>
-      </CardContent>
-    </Card>
+    </Panel>
   )
 }

@@ -78,7 +78,7 @@ export function FamilySiblingLine({ student, siblings, studentId, referenceData,
 function SelfNode({ student }: { student: FamilyLineStudent }) {
   return (
     <>
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">This student</p>
+      <p className="text-xs font-medium text-brand-navy">This student</p>
       <p className="truncate text-sm font-semibold">{linkedStudentName(student)}</p>
       {student.date_of_birth && <p className="text-xs text-muted-foreground tabular-nums">born {formatDate(student.date_of_birth)}</p>}
     </>
@@ -94,7 +94,7 @@ function SiblingNode({ entry, student, studentId, referenceData, studentAddress,
   return (
     <div className="flex items-start justify-between gap-2">
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           {siblingAgeLabel(label, linked?.date_of_birth, student.date_of_birth)}
         </p>
         {linked ? (

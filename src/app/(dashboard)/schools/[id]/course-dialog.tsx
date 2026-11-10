@@ -49,6 +49,7 @@ import {
 } from "@/lib/supabase/actions/school-courses"
 import { getAcademicYearOptions } from "@/lib/utils"
 import type { SchoolCourseWithJoins, CourseItem } from "@/lib/supabase/queries/school-courses"
+import { FormSection } from "@/components/forms/form-section"
 
 export type CourseReferenceData = { courses: CourseItem[] }
 
@@ -78,38 +79,6 @@ const categoryLabels: Record<string, string> = {
   level: "Level",
 }
 
-function FormSection({
-  icon: Icon,
-  title,
-  children,
-  accentColor = "primary",
-}: {
-  icon: React.ElementType
-  title: string
-  children: React.ReactNode
-  accentColor?: "primary" | "teal" | "amber" | "rose"
-}) {
-  const accentStyles = {
-    primary: "from-primary/20 to-primary/5 text-primary",
-    teal: "from-teal-500/20 to-teal-500/5 text-teal-600",
-    amber: "from-amber-500/20 to-amber-500/5 text-amber-600",
-    rose: "from-rose-500/20 to-rose-500/5 text-rose-600",
-  }
-
-  return (
-    <div className="group">
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-        <div className="flex items-center gap-2.5 mb-4">
-          <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${accentStyles[accentColor]}`}>
-            <Icon className="h-4 w-4" />
-          </div>
-          <span className="text-sm font-semibold text-foreground">{title}</span>
-        </div>
-        <div className="space-y-4">{children}</div>
-      </div>
-    </div>
-  )
-}
 
 function FormField({
   label,
@@ -195,18 +164,15 @@ export function CourseDialog({ schoolId, referenceData, mode, course, trigger }:
         )}
       </DialogTrigger>
       <DialogContent className="sm:!max-w-[560px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
-        <div className="relative overflow-hidden border-b border-border/50">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-60" />
-          <div className="relative flex items-center gap-4 px-6 py-5">
+        <div className="relative shrink-0 border-b border-border">
+          <div className="relative flex items-center gap-3 px-6 py-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25">
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-md bg-brand-navy/[0.07] text-brand-navy">
                 <GraduationCap className="h-5 w-5" />
               </div>
             </div>
             <DialogHeader className="flex-1 space-y-1">
-              <DialogTitle className="text-xl font-semibold tracking-tight">
+              <DialogTitle className="text-lg font-semibold">
                 {mode === "create" ? "Add Course" : "Edit Course"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground">
@@ -279,7 +245,7 @@ export function CourseDialog({ schoolId, referenceData, mode, course, trigger }:
             </FormSection>
           </div>
 
-          <div className="border-t border-border bg-muted/50 px-6 py-4">
+          <div className="shrink-0 border-t border-border bg-muted/40 px-6 py-3">
             <div className="flex items-center justify-end gap-3">
               <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isPending} className="text-muted-foreground hover:text-foreground">Cancel</Button>
               <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all duration-200">
@@ -296,7 +262,7 @@ export function CourseDialog({ schoolId, referenceData, mode, course, trigger }:
 export function EditCourseButton({ course, schoolId, referenceData }: { course: SchoolCourseWithJoins; schoolId: string; referenceData: CourseReferenceData }) {
   return (
     <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="edit" course={course}
-      trigger={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
+      trigger={<Button aria-label="Edit" title="Edit" variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
     />
   )
 }
@@ -317,7 +283,7 @@ export function DeleteCourseButton({ courseId, schoolId, label }: { courseId: st
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors" onClick={() => setOpen(true)}>
+      <Button aria-label="Delete" title="Delete" variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors" onClick={() => setOpen(true)}>
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
       <AlertDialogContent className="sm:max-w-[420px]">

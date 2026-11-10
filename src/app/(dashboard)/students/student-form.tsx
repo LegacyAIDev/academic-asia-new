@@ -65,10 +65,14 @@ export type StudentFormProps = {
   presentSchools: PresentSchoolOption[]
   examPaperAttachments?: AttachmentRecord[]
   canWrite?: boolean
+  /** Called after a successful save instead of opening the student page (the edit drawer closes itself). */
+  onDone?: () => void
+  /** Called by Cancel instead of leaving the page. */
+  onCancel?: () => void
 }
 
 export function StudentForm({
-  mode, student, referenceData, presentSchools, examPaperAttachments = [], canWrite = true,
+  mode, student, referenceData, presentSchools, examPaperAttachments = [], canWrite = true, onDone, onCancel,
 }: StudentFormProps) {
   const router = useRouterWithProgress()
   const attachRef = useRef<AttachmentFieldHandle>(null)
@@ -138,7 +142,9 @@ export function StudentForm({
           await attachRef.current?.flush(result.data.id, result.data.id)
         }
 
-        if (mode === "create" && result.data?.id) {
+        if (onDone) {
+          onDone()
+        } else if (mode === "create" && result.data?.id) {
           router.push(`/students/${result.data.id}`)
         } else if (student?.id) {
           router.push(`/students/${student.id}`)
@@ -603,13 +609,17 @@ export function StudentForm({
         </CardContent>
       </Card>
 
-      {/* Form Actions */}
-      <div className="flex items-center justify-end gap-4 pb-8">
-        <Button type="button" variant="outline" asChild>
-          <Link href={student?.id ? `/students/${student.id}` : "/students"}>
-            Cancel
-          </Link>
-        </Button>
+      {/* Form Actions: kept in view at the foot, so Save never needs a scroll */}
+      <div className="sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-3 border-t bg-background/95 px-1 py-3 backdrop-blur">
+        {onCancel ? (
+          <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
+        ) : (
+          <Button type="button" variant="outline" asChild>
+            <Link href={student?.id ? `/students/${student.id}` : "/students"}>
+              Cancel
+            </Link>
+          </Button>
+        )}
         <Button type="submit" disabled={isPending || addingSchool} className="gap-2">
           {isPending ? (
             <>

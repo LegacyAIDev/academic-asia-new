@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Shield, Check, Minus } from "lucide-react"
+import { Check, Minus } from "lucide-react"
 import { VisaDialog, EditVisaButton, DeleteVisaButton } from "./visa-dialog"
 import type { VisaWithJoins } from "@/lib/supabase/queries/student-visas"
 import type { VisaReferenceData } from "./visa-dialog"
@@ -70,58 +70,33 @@ export function StudentVisasSection({
 }: StudentVisasSectionProps) {
   if (visas.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <Shield className="h-4 w-4 text-muted-foreground" />
-              Visa Applications
-            </CardTitle>
-            {canWrite && (
-              <VisaDialog
+      <Panel title="Visas">
+        <PanelEmpty title="No visa applications yet" action={canWrite ? (
+          <VisaDialog
                 studentId={studentId}
                 referenceData={referenceData}
                 mode="create"
               />
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <Shield className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No visa applications yet</h3>
-            <p className="text-sm text-muted-foreground">
-              Create a visa application to track the visa workflow
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        ) : null}>
+          Create a visa application to track the visa workflow
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Shield className="h-4 w-4 text-muted-foreground" />
-            Visa Applications ({visas.length})
-          </CardTitle>
-          {canWrite && (
-            <VisaDialog
+    <Panel title="Visas" count={visas.length} flush action={canWrite ? (
+        <VisaDialog
               studentId={studentId}
               referenceData={referenceData}
               mode="create"
             />
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+      ) : null}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[180px]">School</TableHead>
+                <TableHead className="pl-4 min-w-[180px]">School</TableHead>
                 <TableHead>Entry Year</TableHead>
                 <TableHead className="min-w-[100px]">Status</TableHead>
                 <TableHead className="text-center w-10" title="Sent Request to Parent">SR</TableHead>
@@ -135,7 +110,7 @@ export function StudentVisasSection({
                 <TableHead className="text-center w-10" title="Appointment">AP</TableHead>
                 <TableHead>Appt. Date</TableHead>
                 <TableHead>Updated</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                <TableHead className="pr-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -144,7 +119,7 @@ export function StudentVisasSection({
 
                 return (
                   <TableRow key={visa.id}>
-                    <TableCell className="pl-6 font-medium">
+                    <TableCell className="pl-4 font-medium">
                       <span className="text-sm">{visa.school?.name ?? visa.application ?? "—"}</span>
                     </TableCell>
                     <TableCell className="text-sm">
@@ -168,7 +143,7 @@ export function StudentVisasSection({
                     <TableCell className="text-center"><BoolIndicator value={visa.appointment} /></TableCell>
                     <TableCell className="text-sm">{formatDate(visa.appointment_date)}</TableCell>
                     <TableCell className="text-sm">{formatDate(visa.updated_at)}</TableCell>
-                    <TableCell className="pr-6">
+                    <TableCell className="pr-4">
                       <div className="flex items-center justify-end gap-1">
                         <EditVisaButton
                           visa={visa}
@@ -192,10 +167,6 @@ export function StudentVisasSection({
             </TableBody>
           </Table>
         </div>
-        <div className="px-6 py-3 border-t text-xs text-muted-foreground">
-          Total: {visas.length} visa{visas.length !== 1 ? "s" : ""}
-        </div>
-      </CardContent>
-    </Card>
+    </Panel>
   )
 }

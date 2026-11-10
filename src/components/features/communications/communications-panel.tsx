@@ -1,9 +1,9 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { FilePlus2, Mail, Upload } from "lucide-react"
+import { FilePlus2, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import type { EmailContext } from "@/lib/emails/email-draft"
 import type { FiledEmailDetail, FiledEmailSummary } from "@/lib/emails/filed-email"
 import {
@@ -53,32 +53,29 @@ export function CommunicationsPanel({ context, emails, canWrite, canDelete, appl
   const changeFilters = (next: EmailListFilters) => { setFilters(next); setLimit(EMAIL_PAGE_SIZE) }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="flex flex-row flex-wrap items-center gap-3 space-y-0 pb-4">
-        <CardTitle className="flex items-center gap-2 text-base font-medium">
-          <Mail className="h-4 w-4 text-muted-foreground" />
-          {title}
-          <span className="text-sm font-normal text-muted-foreground">({liveCount})</span>
-        </CardTitle>
-        {canWrite && (
-          <div className="ml-auto flex gap-2">
-            <Button type="button" size="sm" variant="outline" className="gap-1.5" onClick={() => setEditor({ mode: "manual" })}>
-              <FilePlus2 className="h-4 w-4" />Add record
-            </Button>
-            <Button type="button" size="sm" className="gap-1.5" onClick={() => setFiling(true)}>
-              <Upload className="h-4 w-4" />File email
-            </Button>
-          </div>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <Panel
+      title={title}
+      count={liveCount}
+      action={canWrite ? (
+        <>
+          <Button type="button" size="sm" variant="ghost" className="h-8 gap-1.5" onClick={() => setEditor({ mode: "manual" })}>
+            <FilePlus2 className="h-3.5 w-3.5" />Log a call or meeting
+          </Button>
+          <Button type="button" size="sm" variant="outline" className="h-8 gap-1.5" onClick={() => setFiling(true)}>
+            <Upload className="h-3.5 w-3.5" />File email
+          </Button>
+        </>
+      ) : null}
+    >
+      <div className="space-y-4">
         {emails === null ? (
           <p className="text-sm text-destructive" role="alert">The emails could not be loaded. Refresh the page to try again.</p>
         ) : emails.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-10 text-center">
-            <p className="text-sm text-muted-foreground">No emails have been filed here yet.</p>
-            {canWrite && <Button type="button" size="sm" className="gap-1.5" onClick={() => setFiling(true)}><Upload className="h-4 w-4" />File email</Button>}
-          </div>
+          <PanelEmpty title="Nothing filed yet">
+            {canWrite
+              ? "Use File email to drop in an .eml, .msg or PDF email, or log a call or meeting by hand."
+              : "Emails, calls and meetings filed here will be listed."}
+          </PanelEmpty>
         ) : (
           <>
             <EmailListToolbar filters={filters} onChange={changeFilters} applications={context.kind === "student" ? applications : undefined} />
@@ -101,7 +98,7 @@ export function CommunicationsPanel({ context, emails, canWrite, canDelete, appl
             )}
           </>
         )}
-      </CardContent>
+      </div>
 
       {filing && <FileEmailDialog open={filing} onOpenChange={setFiling} context={context} />}
       {editor && (
@@ -110,6 +107,6 @@ export function CommunicationsPanel({ context, emails, canWrite, canDelete, appl
       )}
       <EmailViewerDialog emailId={openId} onClose={() => setOpenId(null)} canWrite={canWrite} canDelete={canDelete}
         onEdit={email => { setOpenId(null); setEditor({ mode: "edit", email }) }} />
-    </Card>
+    </Panel>
   )
 }

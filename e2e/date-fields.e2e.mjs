@@ -101,7 +101,7 @@ try {
 
   await step(page, 'a new application keeps the registration date picked (single-digit day)', async () => {
     await open(page, `/students/${studentId}?tab=applications`)
-    await click(page, 'New Application', '[role="tabpanel"]')
+    await click(page, 'Add application', 'main')
     await click(page, 'Select school', DIALOG)
     await click(page, 'Headington School')
     await page.waitForFunction(() => document.querySelectorAll('[role="dialog"] [role="combobox"][aria-expanded="true"]').length === 0, { polling: 100 })

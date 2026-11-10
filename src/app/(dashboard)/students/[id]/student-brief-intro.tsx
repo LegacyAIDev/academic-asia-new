@@ -1,8 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
-import { Languages, CheckCircle2, XCircle, Send } from "lucide-react"
+import { CheckCircle2, XCircle, Send } from "lucide-react"
 import { looksLikeHtml } from "@/lib/utils"
 import { BriefIntroDialog } from "./brief-intro-dialog"
 import { BriefIntroExportMenu } from "@/components/features/brief-intro-export-menu"
@@ -34,124 +34,89 @@ export function StudentBriefIntroSection({
 }: StudentBriefIntroSectionProps) {
   if (!briefIntro) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <Languages className="h-4 w-4 text-muted-foreground" />
-              Brief Introduction
-            </CardTitle>
-            {canWrite && <BriefIntroDialog studentId={studentId} referenceData={referenceData} />}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <Languages className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No introduction yet</h3>
-            <p className="text-sm text-muted-foreground">Write a brief introduction for this student</p>
-          </div>
-        </CardContent>
-      </Card>
+      <Panel title="Brief introduction">
+        <PanelEmpty
+          title="No introduction yet"
+          action={canWrite ? <BriefIntroDialog studentId={studentId} referenceData={referenceData} /> : null}
+        >
+          A short profile of the student to send to schools, in English and Chinese.
+        </PanelEmpty>
+      </Panel>
     )
   }
 
+  const updatedBy = profileName(briefIntro.assigned_profile)
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Languages className="h-4 w-4 text-muted-foreground" />
-            Brief Introduction
-          </CardTitle>
-          <div className="flex items-start gap-2">
-            {/* Only offered once there is something to export — the empty state
-                above has no introduction to put in a document. */}
-            <BriefIntroExportMenu studentIds={[studentId]} />
-            {canWrite && <BriefIntroDialog studentId={studentId} referenceData={referenceData} briefIntro={briefIntro} />}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Spoken English</p>
-            <p className="text-sm font-medium">
-              {briefIntro.spoken_english?.label ?? briefIntro.legacy_spoken_english ?? "—"}
-            </p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Intended Subjects</p>
-            <p className="text-sm font-medium">{briefIntro.subjects || "—"}</p>
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Hobbies &amp; Interests</p>
-          <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">
-            {briefIntro.hobbies || "—"}
-          </p>
-        </div>
-
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Remarks</p>
-          {briefIntro.remarks ? (
-            looksLikeHtml(briefIntro.remarks) ? (
-              // Sanitized on save in upsertStudentBriefIntro, safe to render
-              <div className="rich-content" dangerouslySetInnerHTML={{ __html: briefIntro.remarks }} />
-            ) : (
-              <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">{briefIntro.remarks}</p>
-            )
-          ) : (
-            <p className="text-sm text-muted-foreground">—</p>
-          )}
-        </div>
-
-        {/* Approval Status */}
-        <div className="flex items-center gap-3 pt-2">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Approval</p>
+    <Panel
+      title="Brief introduction"
+      action={
+        <>
+          <BriefIntroExportMenu studentIds={[studentId]} />
+          {canWrite && <BriefIntroDialog studentId={studentId} referenceData={referenceData} briefIntro={briefIntro} />}
+        </>
+      }
+    >
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center gap-2 text-sm">
           {briefIntro.is_approved ? (
-            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-medium gap-1">
+            <Badge variant="outline" className="gap-1 border-emerald-200 bg-emerald-50 font-medium text-emerald-700">
               <CheckCircle2 className="h-3 w-3" /> Approved
             </Badge>
           ) : (
-            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium gap-1">
-              <XCircle className="h-3 w-3" /> Pending
+            <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 font-medium text-amber-800">
+              <XCircle className="h-3 w-3" /> Awaiting approval
             </Badge>
           )}
           {briefIntro.is_approved && profileName(briefIntro.approved_profile) && (
-            <span className="text-xs text-muted-foreground">
-              by {profileName(briefIntro.approved_profile)} on {formatDate(briefIntro.approved_at)}
-            </span>
+            <span className="text-xs text-muted-foreground">by {profileName(briefIntro.approved_profile)}, {formatDate(briefIntro.approved_at)}</span>
           )}
         </div>
-
-        {/* Sent History */}
-        {briefIntro.sent_history && briefIntro.sent_history.length > 0 && (
-          <div className="space-y-2 pt-2">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <Send className="h-3 w-3" /> Sent History ({briefIntro.sent_history.length})
-            </p>
-            <div className="space-y-1.5">
-              {briefIntro.sent_history.map((entry) => (
-                <div key={entry.id} className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">{entry.school?.name ?? "Unknown school"}</span>
-                  <span>·</span>
-                  <span>{formatDate(entry.sent_at)}</span>
-                  {entry.method && <Badge variant="outline" className="text-[10px] px-1.5 py-0">{entry.method}</Badge>}
-                  {profileName(entry.sent_by_profile) && <span>by {profileName(entry.sent_by_profile)}</span>}
-                </div>
-              ))}
+        <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+          <div>
+            <dt className="text-xs text-muted-foreground">Spoken English</dt>
+            <dd className="mt-0.5 text-sm">{briefIntro.spoken_english?.label ?? briefIntro.legacy_spoken_english ?? "Not recorded"}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-muted-foreground">Intended subjects</dt>
+            <dd className="mt-0.5 text-sm">{briefIntro.subjects || "Not recorded"}</dd>
+          </div>
+          {briefIntro.hobbies && (
+            <div className="sm:col-span-2">
+              <dt className="text-xs text-muted-foreground">Hobbies and interests</dt>
+              <dd className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed">{briefIntro.hobbies}</dd>
             </div>
+          )}
+          {briefIntro.remarks && (
+            <div className="sm:col-span-2">
+              <dt className="text-xs text-muted-foreground">Remarks</dt>
+              <dd className="mt-0.5 text-sm">
+                {looksLikeHtml(briefIntro.remarks) ? (
+                  // Sanitized on save in upsertStudentBriefIntro, safe to render
+                  <div className="rich-content" dangerouslySetInnerHTML={{ __html: briefIntro.remarks }} />
+                ) : (
+                  <p className="whitespace-pre-wrap leading-relaxed">{briefIntro.remarks}</p>
+                )}
+              </dd>
+            </div>
+          )}
+        </dl>
+        {briefIntro.sent_history && briefIntro.sent_history.length > 0 && (
+          <div>
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Send className="h-3 w-3" /> Sent to {briefIntro.sent_history.length} {briefIntro.sent_history.length === 1 ? "school" : "schools"}</p>
+            <ul className="mt-1.5 divide-y rounded-md border text-sm">
+              {briefIntro.sent_history.map(entry => (
+                <li key={entry.id} className="flex flex-wrap items-center gap-x-3 gap-y-0.5 px-3 py-2">
+                  <span className="font-medium">{entry.school?.name ?? "Unknown school"}</span>
+                  <span className="text-muted-foreground">{formatDate(entry.sent_at)}</span>
+                  {entry.method && <Badge variant="outline" className="px-1.5 py-0 text-[10px]">{entry.method}</Badge>}
+                  {profileName(entry.sent_by_profile) && <span className="text-xs text-muted-foreground">by {profileName(entry.sent_by_profile)}</span>}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
-
-        <div className="pt-2 text-xs text-muted-foreground">
-          Last updated: {formatDate(briefIntro.updated_at)}
-          {profileName(briefIntro.assigned_profile) && (
-            <> by <span className="font-medium text-foreground">{profileName(briefIntro.assigned_profile)}</span></>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        <p className="text-xs text-muted-foreground">Updated {formatDate(briefIntro.updated_at)}{updatedBy ? ` by ${updatedBy}` : ""}</p>
+      </div>
+    </Panel>
   )
 }

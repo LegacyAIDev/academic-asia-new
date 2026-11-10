@@ -1,7 +1,7 @@
 "use client"
 
+import { Panel } from "@/components/ui/panel"
 import { useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
 import { NOTE_LIMIT, type RecordNote } from "@/lib/notes/record-note"
 import { RecordNoteComposer } from "./record-note-composer"
 import { RecordNoteItem } from "./record-note-item"
@@ -48,11 +48,6 @@ export function RecordNotes({ target, recordId, initialNotes, more = false, canW
 
   const content = (
     <>
-      <h2 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-        Notes
-        <span className="ml-1.5 tabular-nums text-muted-foreground/70">{notes.length}</span>
-      </h2>
-
       {canWrite && (
         <RecordNoteComposer target={target} recordId={recordId} onAdded={(note) => setNotes((prev) => [note, ...prev])} />
       )}
@@ -78,5 +73,10 @@ export function RecordNotes({ target, recordId, initialNotes, more = false, canW
     </>
   )
 
-  return <section id={anchorId} className={cn("space-y-3 scroll-mt-24", !bare && "rounded-xl border bg-card p-4")}>{content}</section>
+  if (bare) return <section id={anchorId} className="space-y-3 scroll-mt-24">{content}</section>
+  return (
+    <Panel id={anchorId} title="Notes" count={notes.length} className="scroll-mt-28">
+      <div className="space-y-3">{content}</div>
+    </Panel>
+  )
 }

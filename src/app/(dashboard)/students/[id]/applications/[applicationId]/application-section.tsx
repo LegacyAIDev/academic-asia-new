@@ -2,13 +2,13 @@ import { cn } from "@/lib/utils"
 
 /**
  * Building blocks of the application page, in the visual language of the
- * scheduler screens: card surfaces with hairline borders, small uppercase
- * eyebrows instead of icon headings, and figures in tabular numerals.
+ * rest of the app: panels with hairline borders, plain sentence-case
+ * headings instead of icon headings, and figures in tabular numerals.
  */
 
-const eyebrowClass = "text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
+const eyebrowClass = "text-sm font-semibold text-foreground"
 
-/** Uppercase section label with an optional count. */
+/** Section heading with an optional count. */
 export function Eyebrow({ children, count, as: Tag = "h2", className }: {
   children: React.ReactNode
   count?: number
@@ -43,7 +43,7 @@ export function Section({ title, count, plain, children }: {
   children: React.ReactNode
 }) {
   return (
-    <section className="rounded-xl border bg-card p-4">
+    <section className="rounded-lg border bg-card p-4">
       <Eyebrow count={count} className="mb-3">{title}</Eyebrow>
       {plain ? children : <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">{children}</dl>}
     </section>

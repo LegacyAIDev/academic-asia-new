@@ -1,8 +1,7 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
-import { FileText } from "lucide-react"
 import { looksLikeHtml } from "@/lib/utils"
 import { ResumeProfileDialog } from "./resume-profile-dialog"
 import { ResumeTalentsSection } from "./resume-talents-section"
@@ -33,27 +32,18 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
   const english = profile?.english_standard ? englishLabels[profile.english_standard] : null
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            Resume
-          </CardTitle>
-          {canWrite && <ResumeProfileDialog studentId={studentId} profile={profile} />}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <Panel title="Resume profile" action={canWrite ? <ResumeProfileDialog studentId={studentId} profile={profile} /> : null}>
+      <div className="space-y-6">
         {/* Section A — Profile */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">A — Profile</p>
+          <h3 className="text-sm font-semibold text-foreground">A. Profile</h3>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">English Standard</p>
               {english ? (
                 <Badge variant="outline" className={`${english.style} border text-xs font-medium`}>{english.label}</Badge>
               ) : (
-                <p className="text-sm text-muted-foreground">—</p>
+                <p className="text-sm text-muted-foreground/70">Not recorded</p>
               )}
             </div>
             <div className="space-y-1">
@@ -67,7 +57,7 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
 
         {/* Section B — Academic */}
         <div className="space-y-4">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">B — Academic</p>
+          <h3 className="text-sm font-semibold text-foreground">B. Academic</h3>
           <ResumeAATestsSection studentId={studentId} aaTests={aaTests} canWrite={canWrite} />
           <ResumeDocumentsSection studentId={studentId} documents={schoolReports} categoryId={1} title="Current School Reports" canWrite={canWrite} />
           <ResumeDocumentsSection studentId={studentId} documents={examCerts} categoryId={2} title="External Exam Certificates" canWrite={canWrite} />
@@ -77,7 +67,7 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
 
         {/* Section C — Special Talents */}
         <div className="space-y-4">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">C — Special Talents</p>
+          <h3 className="text-sm font-semibold text-foreground">C. Special talents</h3>
           <ResumeTalentsSection studentId={studentId} talents={talents} canWrite={canWrite} />
         </div>
 
@@ -85,17 +75,17 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
 
         {/* Section D — Parents Input */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">D — Parents Input</p>
+          <h3 className="text-sm font-semibold text-foreground">D. Parents&apos; input</h3>
           <RichOrPlain value={profile?.parents_input} />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </Panel>
   )
 }
 
 /** Render sanitized rich HTML, falling back to plain text for legacy values. */
 function RichOrPlain({ value }: { value: string | null | undefined }) {
-  if (!value) return <p className="text-sm text-muted-foreground">—</p>
+  if (!value) return <p className="text-sm text-muted-foreground/70">Not recorded</p>
   return looksLikeHtml(value) ? (
     // Sanitized on save in upsertStudentResumeProfile, safe to render
     <div className="rich-content" dangerouslySetInnerHTML={{ __html: value }} />

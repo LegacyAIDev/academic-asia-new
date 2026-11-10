@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { CalendarDays, Mail } from "lucide-react"
+import { Mail } from "lucide-react"
 import { EventApplicationDialog, EditEventApplicationButton, DeleteEventApplicationButton } from "./event-application-dialog"
 import type { EventAppWithJoins } from "@/lib/supabase/queries/student-event-applications"
 import type { EventAppReferenceData } from "./event-application-dialog"
@@ -62,64 +62,39 @@ export function StudentEventApplicationsSection({
 }: StudentEventApplicationsSectionProps) {
   if (applications.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-muted-foreground" />
-              Event Applications
-            </CardTitle>
-            {canWrite && (
-              <EventApplicationDialog
+      <Panel title="Event applications">
+        <PanelEmpty title="No event applications yet" action={canWrite ? (
+          <EventApplicationDialog
                 studentId={studentId}
                 referenceData={referenceData}
                 mode="create"
               />
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <CalendarDays className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No event applications yet</h3>
-            <p className="text-sm text-muted-foreground">
-              Register for an event like an expo, interview, or audition
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        ) : null}>
+          Register for an event like an expo, interview, or audition
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-            Event Applications ({applications.length})
-          </CardTitle>
-          {canWrite && (
-            <EventApplicationDialog
+    <Panel title="Event applications" count={applications.length} flush action={canWrite ? (
+        <EventApplicationDialog
               studentId={studentId}
               referenceData={referenceData}
               mode="create"
             />
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+      ) : null}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[120px]">Event Type</TableHead>
+                <TableHead className="pl-4 min-w-[120px]">Event Type</TableHead>
                 <TableHead className="min-w-[200px]">Event Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead className="min-w-[100px]">Status</TableHead>
                 <TableHead>Updated</TableHead>
                 <TableHead className="min-w-[150px]">Remarks</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                <TableHead className="pr-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,7 +105,7 @@ export function StudentEventApplicationsSection({
 
                 return (
                   <TableRow key={app.id}>
-                    <TableCell className="pl-6">
+                    <TableCell className="pl-4">
                       {eventType ? (
                         <Badge variant="outline" className={`${etStyle} border text-xs font-medium whitespace-nowrap`}>
                           {eventType.label}
@@ -158,7 +133,7 @@ export function StudentEventApplicationsSection({
                     <TableCell className="text-sm max-w-[200px] truncate">
                       {app.remarks || "—"}
                     </TableCell>
-                    <TableCell className="pr-6">
+                    <TableCell className="pr-4">
                       <div className="flex items-center justify-end gap-1">
                         {canWrite && (
                           <EditEventApplicationButton
@@ -182,10 +157,6 @@ export function StudentEventApplicationsSection({
             </TableBody>
           </Table>
         </div>
-        <div className="px-6 py-3 border-t text-xs text-muted-foreground">
-          Total: {applications.length} application{applications.length !== 1 ? "s" : ""}
-        </div>
-      </CardContent>
-    </Card>
+    </Panel>
   )
 }

@@ -25,7 +25,7 @@ export function FamilyOthersList({ entries, studentId, referenceData, studentAdd
         const { linked, label, name } = memberDisplay(entry, "Contact")
         return (
           <li key={entry.kind === "link" ? entry.link.contactId : entry.contact.id} className="flex flex-wrap items-start gap-x-4 gap-y-1 px-4 py-3">
-            <p className="w-28 shrink-0 pt-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+            <p className="w-28 shrink-0 pt-0.5 text-xs text-muted-foreground">{label}</p>
             <div className="min-w-0 flex-1 basis-56 space-y-1">
               {linked ? (
                 <Link href={`/students/${linked.id}?tab=family`}

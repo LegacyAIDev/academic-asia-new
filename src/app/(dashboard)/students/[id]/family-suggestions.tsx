@@ -60,7 +60,7 @@ export function FamilySuggestions({ studentId, suggestions, relationships }: Fam
 
   return (
     <section className="space-y-2">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="text-xs text-muted-foreground">
         Possibly family in the system <span className="tabular-nums">· {shown.length}</span>
       </p>
       <p className="text-xs text-muted-foreground">

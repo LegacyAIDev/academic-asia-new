@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { BookOpen, Mail } from "lucide-react"
+import { Mail } from "lucide-react"
 import { EducationDialog, EditEducationButton, DeleteEducationButton } from "./education-dialog"
 import type { EducationWithJoins } from "@/lib/supabase/queries/student-education"
 import type { EducationReferenceData } from "./education-dialog"
@@ -52,58 +52,33 @@ export function StudentEducationSection({
 }: StudentEducationSectionProps) {
   if (educationEntries.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-              Education
-            </CardTitle>
-            {canWrite && (
-              <EducationDialog
+      <Panel title="Tutoring courses">
+        <PanelEmpty title="No tutoring courses yet" action={canWrite ? (
+          <EducationDialog
                 studentId={studentId}
                 referenceData={referenceData}
                 mode="create"
               />
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <BookOpen className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No education entries yet</h3>
-            <p className="text-sm text-muted-foreground">
-              Add a tutoring or prep program enrollment for this student
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        ) : null}>
+          Add a tutoring or prep program enrollment for this student
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-            Education ({educationEntries.length})
-          </CardTitle>
-          {canWrite && (
-            <EducationDialog
+    <Panel title="Tutoring courses" count={educationEntries.length} flush action={canWrite ? (
+        <EducationDialog
               studentId={studentId}
               referenceData={referenceData}
               mode="create"
             />
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+      ) : null}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[180px]">Course</TableHead>
+                <TableHead className="pl-4 min-w-[180px]">Course</TableHead>
                 <TableHead className="min-w-[120px]">Tutor</TableHead>
                 <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
@@ -111,7 +86,7 @@ export function StudentEducationSection({
                 <TableHead>Email</TableHead>
                 <TableHead className="min-w-[100px]">Status</TableHead>
                 <TableHead>Updated</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                <TableHead className="pr-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -120,7 +95,7 @@ export function StudentEducationSection({
 
                 return (
                   <TableRow key={entry.id}>
-                    <TableCell className="pl-6 font-medium">
+                    <TableCell className="pl-4 font-medium">
                       <span className="text-sm">{entry.course?.label ?? entry.legacy_course_name ?? "—"}</span>
                     </TableCell>
                     <TableCell className="text-sm">{entry.tutor || "—"}</TableCell>
@@ -142,7 +117,7 @@ export function StudentEducationSection({
                       ) : "—"}
                     </TableCell>
                     <TableCell className="text-sm">{formatDate(entry.updated_at)}</TableCell>
-                    <TableCell className="pr-6">
+                    <TableCell className="pr-4">
                       <div className="flex items-center justify-end gap-1">
                         {canWrite && (
                           <EditEducationButton
@@ -166,10 +141,6 @@ export function StudentEducationSection({
             </TableBody>
           </Table>
         </div>
-        <div className="px-6 py-3 border-t text-xs text-muted-foreground">
-          Total: {educationEntries.length} entr{educationEntries.length !== 1 ? "ies" : "y"}
-        </div>
-      </CardContent>
-    </Card>
+    </Panel>
   )
 }

@@ -1,14 +1,13 @@
 "use client"
 
 import { useEffect, useState, useTransition } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel } from "@/components/ui/panel"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { FileText, FileUp, Loader2, Trash2, Download, X, Check, Pencil } from "lucide-react"
+import { FileUp, Loader2, Trash2, Download, X, Check, Pencil } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { ALLOWED_MIME, checkUploadable, formatFileSize } from "@/lib/attachments/constraints"
@@ -130,17 +129,10 @@ export function DocumentManager({
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <FileText className="h-4 w-4 text-muted-foreground" />
-          Documents
-          {documents.length > 0 && <Badge variant="secondary" className="text-xs">{documents.length}</Badge>}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <Panel title="Documents" count={documents.length}>
+      <div className="space-y-4">
         {canWrite && (
-        <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-center transition-colors hover:bg-muted/40">
+        <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 px-4 py-6 text-center transition-colors hover:bg-muted/40">
           <FileUp className="h-6 w-6 text-muted-foreground" />
           <span className="text-sm font-medium">Choose files or drop them here</span>
           <span className="text-xs text-muted-foreground">PDF or images, up to 10 MB each — select multiple</span>
@@ -183,7 +175,7 @@ export function DocumentManager({
         ) : (
           groupByCategory(documents).map(([label, docs]) => (
             <div key={label} className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+              <p className="text-sm font-medium text-foreground">{label}</p>
               {docs.map((doc) => (
                 <div key={doc.id} className="flex items-center gap-3 rounded-lg border border-border/50 bg-background p-3 text-sm">
                   {renamingId === doc.id ? (
@@ -228,8 +220,8 @@ export function DocumentManager({
             </div>
           ))
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </Panel>
   )
 }
 

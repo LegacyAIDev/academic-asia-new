@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Plane, Check, Minus } from "lucide-react"
+import { Check, Minus } from "lucide-react"
 import { TravelDialog, EditTravelButton, DeleteTravelButton } from "./travel-dialog"
 import type { TravelWithJoins } from "@/lib/supabase/queries/student-travel"
 import type { TravelReferenceData } from "./travel-dialog"
@@ -62,58 +62,33 @@ export function StudentTravelSection({
 }: StudentTravelSectionProps) {
   if (travelRecords.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <Plane className="h-4 w-4 text-muted-foreground" />
-              Travel
-            </CardTitle>
-            {canWrite && (
-              <TravelDialog
+      <Panel title="Travel">
+        <PanelEmpty title="No travel records yet" action={canWrite ? (
+          <TravelDialog
                 studentId={studentId}
                 referenceData={referenceData}
                 mode="create"
               />
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <Plane className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No travel records yet</h3>
-            <p className="text-sm text-muted-foreground">
-              Add flight details and pickup arrangements for this student
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        ) : null}>
+          Add flight details and pickup arrangements for this student
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Plane className="h-4 w-4 text-muted-foreground" />
-            Travel ({travelRecords.length})
-          </CardTitle>
-          {canWrite && (
-            <TravelDialog
+    <Panel title="Travel" count={travelRecords.length} flush action={canWrite ? (
+        <TravelDialog
               studentId={studentId}
               referenceData={referenceData}
               mode="create"
             />
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+      ) : null}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 w-[50px]">Pickup</TableHead>
+                <TableHead className="pl-4 w-[50px]">Pickup</TableHead>
                 <TableHead className="w-[50px]">Jou.</TableHead>
                 <TableHead className="w-[50px]">Rt.</TableHead>
                 <TableHead className="min-w-[120px]">Airline</TableHead>
@@ -124,7 +99,7 @@ export function StudentTravelSection({
                 <TableHead className="min-w-[140px]">Pickup Status</TableHead>
                 <TableHead className="min-w-[100px]">Status</TableHead>
                 <TableHead>Updated</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                <TableHead className="pr-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -133,7 +108,7 @@ export function StudentTravelSection({
 
                 return (
                   <TableRow key={rec.id}>
-                    <TableCell className="pl-6">
+                    <TableCell className="pl-4">
                       <BoolIndicator value={rec.requires_pickup} />
                     </TableCell>
                     <TableCell className="text-sm">{rec.journey_no ?? "—"}</TableCell>
@@ -160,7 +135,7 @@ export function StudentTravelSection({
                       ) : "—"}
                     </TableCell>
                     <TableCell className="text-sm">{formatDate(rec.updated_at)}</TableCell>
-                    <TableCell className="pr-6">
+                    <TableCell className="pr-4">
                       <div className="flex items-center justify-end gap-1">
                         <EditTravelButton
                           travel={rec}
@@ -184,10 +159,6 @@ export function StudentTravelSection({
             </TableBody>
           </Table>
         </div>
-        <div className="px-6 py-3 border-t text-xs text-muted-foreground">
-          Total: {travelRecords.length} record{travelRecords.length !== 1 ? "s" : ""}
-        </div>
-      </CardContent>
-    </Card>
+    </Panel>
   )
 }

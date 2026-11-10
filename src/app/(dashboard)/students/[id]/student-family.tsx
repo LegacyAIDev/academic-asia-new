@@ -1,7 +1,6 @@
 "use client"
 
-import { Users } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { groupFamily } from "@/lib/students/family-relationships"
 import type { StudentContactWithRelations } from "@/lib/supabase/queries/students"
 import type { FamilyLinkToStudent, FamilySuggestion } from "@/lib/supabase/queries/student-family"
@@ -28,9 +27,9 @@ type StudentFamilySectionProps = {
 
 function Eyebrow({ children, count }: { children: React.ReactNode; count?: number }) {
   return (
-    <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+    <h3 className="text-sm font-medium text-foreground">
       {children}
-      {count !== undefined && <span className="tabular-nums"> · {count}</span>}
+      {count !== undefined && <span className="ml-1.5 tabular-nums text-muted-foreground">{count}</span>}
     </h3>
   )
 }
@@ -49,30 +48,23 @@ export function StudentFamilySection({
   const shared = { studentId, referenceData, studentAddress, canWrite }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between gap-3">
-          <CardTitle className="text-base font-medium">
-            <h2 className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" aria-hidden />
-              Family {total > 0 && <span className="text-muted-foreground tabular-nums">({total})</span>}
-            </h2>
-          </CardTitle>
-          {canWrite && (
-            <ContactDialog studentId={studentId} referenceData={referenceData} mode="create" studentAddress={studentAddress} />
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-8">
+    <Panel
+      title="Family"
+      count={total}
+      action={canWrite && total > 0 ? (
+        <ContactDialog studentId={studentId} referenceData={referenceData} mode="create" studentAddress={studentAddress} />
+      ) : null}
+    >
+      <div className="space-y-8">
         {total === 0 && (
-          <div className="py-6 text-center">
-            <h3 className="mb-1 text-sm font-medium">No family members yet</h3>
-            <p className="text-sm text-muted-foreground">
-              {canWrite
-                ? "Add the parents first. A brother or sister who is a student too can be picked from the students."
-                : "No parents, brothers or sisters have been recorded for this student."}
-            </p>
-          </div>
+          <PanelEmpty
+            title="No family members yet"
+            action={canWrite ? <ContactDialog studentId={studentId} referenceData={referenceData} mode="create" studentAddress={studentAddress} /> : null}
+          >
+            {canWrite
+              ? "Add the parents first. A brother or sister who is a student too can be picked from the students."
+              : "No parents, brothers or sisters have been recorded for this student."}
+          </PanelEmpty>
         )}
 
         {groups.parents.length > 0 && (
@@ -88,7 +80,7 @@ export function StudentFamilySection({
 
         {groups.siblings.length > 0 && (
           <section className="space-y-4">
-            <Eyebrow count={groups.siblings.length}>Brothers and sisters, eldest first</Eyebrow>
+            <Eyebrow count={groups.siblings.length}>Brothers and sisters (eldest first)</Eyebrow>
             <FamilySiblingLine student={student} siblings={groups.siblings} {...shared} />
           </section>
         )}
@@ -103,7 +95,7 @@ export function StudentFamilySection({
             <FamilyOthersList entries={groups.others} {...shared} />
           </section>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </Panel>
   )
 }

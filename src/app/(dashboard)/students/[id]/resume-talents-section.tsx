@@ -91,7 +91,7 @@ export function ResumeTalentsSection({ studentId, talents, canWrite = true }: Pr
               </div>
             </div>
             {canWrite && (
-              <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(t.id)} disabled={isPending}>
+              <Button aria-label="Delete" title="Delete" variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(t.id)} disabled={isPending}>
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             )}

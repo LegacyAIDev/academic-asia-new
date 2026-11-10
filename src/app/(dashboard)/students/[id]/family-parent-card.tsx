@@ -23,13 +23,13 @@ export function FamilyParentCard({ contact, studentId, referenceData, studentAdd
   const priority = contactPriorityLabel(contact.priority)
 
   return (
-    <article aria-label={name || contact.relationship?.label} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
+    <article aria-label={name || contact.relationship?.label} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {contact.relationship?.label ?? "Family"}
             {/* Only the main contact stands out: it is who staff call first. */}
-            {priority && <span className={contact.priority === 1 ? "text-primary" : undefined}> · {priority}</span>}
+            {priority && <span className={contact.priority === 1 ? "font-medium text-brand-navy" : undefined}>, {priority.toLowerCase()}</span>}
           </p>
           {contact.related_student ? (
             <Link href={`/students/${contact.related_student.id}?tab=family`}

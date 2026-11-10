@@ -1,41 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { ChevronLeft } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import {
-  ArrowLeft,
-  Edit,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  GraduationCap,
-  User,
-  FileText,
-  Globe,
-  ClipboardList,
-  School,
-  BookOpen,
-  Shield,
-  CalendarDays,
-  Plane,
-  FileCheck,
-  Files,
-  CalendarClock,
-  Users,
-} from "lucide-react"
 import { getStudentById, getStudentContacts, getContactReferenceData } from "@/lib/supabase/queries/students"
 import { getFamilyLinksToStudent, getFamilySuggestions } from "@/lib/supabase/queries/student-family"
 import { getStudentApplications, getApplicationReferenceData } from "@/lib/supabase/queries/student-applications"
@@ -48,8 +14,18 @@ import { getStudentBriefIntro, getBriefIntroReferenceData } from "@/lib/supabase
 import { getStudentResume, getResumeReferenceData } from "@/lib/supabase/queries/student-resume"
 import { getStudentResumeProfile, getStudentResumeTalents, getStudentDocuments } from "@/lib/supabase/queries/student-resume-profile"
 import { getStudentAATests } from "@/lib/supabase/queries/student-individual-exams"
-import { StudentCalendarSection } from "./student-calendar-section"
 import { getStudentInternalNotes } from "@/lib/supabase/queries/student-internal-notes"
+import { getStudentSectionCounts } from "@/lib/supabase/queries/student-sections"
+import { getActivity, MAX_ACTIVITY } from "@/lib/supabase/queries/activity-log"
+import { getRecordNotes, getSignedInUserId } from "@/lib/supabase/queries/record-notes"
+import { getStudentLegacyLogMeta } from "@/lib/supabase/queries/student-log-book"
+import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
+import { RecordNotes } from "@/components/features/record-notes"
+import { CommunicationsSection } from "@/components/features/communications/communications-section"
+import { ActivityHistory } from "@/components/features/activity-history"
+import { StudentCalendarSection } from "./student-calendar-section"
 import { StudentFamilySection } from "./student-family"
 import { StudentApplicationsSection } from "./student-applications"
 import { StudentEducationSection } from "./student-education"
@@ -62,37 +38,32 @@ import { StudentResumeProfileSection } from "./student-resume-profile"
 import { StudentResumeSection } from "./student-resume"
 import { StudentInternalNotesSection } from "./student-internal-notes"
 import { StudentLegacyLog } from "./student-legacy-log"
-import { RecordNotes } from "@/components/features/record-notes"
-import { CommunicationsSection } from "@/components/features/communications/communications-section"
-import { getFiledEmailCount } from "@/lib/supabase/queries/filed-emails"
-import { getActivity, MAX_ACTIVITY } from "@/lib/supabase/queries/activity-log"
-import { ActivityHistory } from "@/components/features/activity-history"
-import { getRecordNotes, getSignedInUserId } from "@/lib/supabase/queries/record-notes"
-import { getStudentLegacyLogMeta } from "@/lib/supabase/queries/student-log-book"
 import { StudentLegalDocumentsSection } from "./student-legal-documents"
 import { StudentDocumentsSection } from "./student-documents-section"
-import { DeleteStudentDialog } from "./delete-student-dialog"
-import { canAccess, requireAccess } from "@/lib/permissions/guard"
-import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
-import { AttachmentField } from "@/components/features/attachment-field"
-import { ACCESS, MODULES } from "@/lib/permissions/modules"
-import { QuickAddNoteButton, STUDENT_NOTES_ANCHOR } from "./quick-add-note-button"
+import { StudentDetailsPanel } from "./student-details-panel"
+import { StudentHeaderActions } from "./student-header-actions"
+import { StudentSectionBar } from "./student-section-bar"
+import { sectionFromParam } from "./student-sections"
+import { STUDENT_NOTES_ANCHOR } from "./quick-add-note-button"
 
-// Status badge styling based on status code
 const statusStyles: Record<string, string> = {
-  active: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  new: "bg-indigo-50 text-indigo-700 border-indigo-200",
-  pending: "bg-amber-50 text-amber-700 border-amber-200",
-  closed: "bg-slate-100 text-slate-600 border-slate-200",
-  dead: "bg-rose-50 text-rose-700 border-rose-200",
+  active: "bg-emerald-50 text-emerald-700 ring-emerald-600/15",
+  new: "bg-sky-50 text-sky-700 ring-sky-600/15",
+  pending: "bg-amber-50 text-amber-800 ring-amber-600/20",
+  closed: "bg-slate-100 text-slate-600 ring-slate-500/15",
+  dead: "bg-rose-50 text-rose-700 ring-rose-600/15",
 }
 
-// Placement badge styling based on placement code
-const placementStyles: Record<string, { color: string; label: string }> = {
-  cold: { color: "bg-sky-100 text-sky-700", label: "Cold" },
-  warm: { color: "bg-amber-100 text-amber-700", label: "Warm" },
-  hot: { color: "bg-orange-100 text-orange-700", label: "Hot" },
-  very_hot: { color: "bg-rose-100 text-rose-700", label: "Very Hot" },
+const longDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
+
+/** Whole years between a date of birth and today (Hong Kong). */
+function age(dateOfBirth: string): number | null {
+  const born = new Date(`${dateOfBirth.slice(0, 10)}T00:00:00Z`)
+  if (Number.isNaN(born.getTime())) return null
+  const now = new Date(Date.now() + 8 * 3600000)
+  let years = now.getUTCFullYear() - born.getUTCFullYear()
+  if (now.getUTCMonth() < born.getUTCMonth() || (now.getUTCMonth() === born.getUTCMonth() && now.getUTCDate() < born.getUTCDate())) years -= 1
+  return years
 }
 
 type StudentDetailPageParams = {
@@ -100,681 +71,208 @@ type StudentDetailPageParams = {
   searchParams: Promise<{ tab?: string }>
 }
 
+/**
+ * One student: a compact header with every action (Add opens each kind of
+ * record's form straight away), a section bar that stays in view, and only the
+ * open section's data loaded.
+ */
 export default async function StudentDetailPage({ params, searchParams }: StudentDetailPageParams) {
   await requireAccess(MODULES.STUDENTS)
-  const canWrite = await canAccess(MODULES.STUDENTS, ACCESS.WRITE)
-
   const { id } = await params
-  const { tab: rawTab } = await searchParams
-  // Normalise the tab param, mapping the legacy "profile" value to "overview" and
-  // the old "contacts" tab (renamed Family) to "family", so saved links still work
-  const validTabs = ["overview", "resume", "family", "education", "documents", "applications", "communications", "events", "immigration", "calendar"]
-  const requestedTab = rawTab === "contacts" ? "family" : rawTab
-  const tab = validTabs.includes(requestedTab ?? "") ? (requestedTab as string) : "overview"
+  const section = sectionFromParam((await searchParams).tab)
 
-  // Fetch student, contacts, applications, and reference data in parallel
-  const [
-    student, contacts, contactReferenceData,
-    applications, appReferenceData,
-    educationEntries, eduReferenceData,
-    visas, visaReferenceData,
-    eventApplications, eventAppReferenceData,
-    travelRecords, travelReferenceData,
-    examResults, examResultReferenceData,
-    briefIntro, briefIntroReferenceData,
-    resumeEntries, resumeReferenceData,
-    internalNotes,
-    resumeProfile, resumeTalents, resumeDocuments, aaTests, legalDocuments,
-    allDocuments,
-    familyLinks,
-    familySuggestions,
-    recordNotes, currentUserId, legacyLog,
-    emailCount, activity,
-  ] = await Promise.all([
+  const [student, canWrite, counts, contacts] = await Promise.all([
     getStudentById(id),
+    canAccess(MODULES.STUDENTS, ACCESS.WRITE),
+    getStudentSectionCounts(id),
+    // The header's "Email parent" needs the family; the Family section reuses it.
     getStudentContacts(id),
-    getContactReferenceData(),
-    getStudentApplications(id),
-    getApplicationReferenceData(),
-    getStudentEducation(id),
-    getEducationReferenceData(),
-    getStudentVisas(id),
-    getVisaReferenceData(id),
-    getStudentEventApplications(id),
-    getEventAppReferenceData(),
-    getStudentTravel(id),
-    getTravelReferenceData(),
-    getStudentExamResults(id),
-    getExamResultReferenceData(),
-    getStudentBriefIntro(id),
-    getBriefIntroReferenceData(),
-    getStudentResume(id),
-    getResumeReferenceData(),
-    getStudentInternalNotes(id),
-    getStudentResumeProfile(id),
-    getStudentResumeTalents(id),
-    getStudentDocuments(id, 'resume'),
-    getStudentAATests(id),
-    getStudentDocuments(id, 'legal_documents'),
-    getStudentDocuments(id),
-    getFamilyLinksToStudent(id),
-    // Suggestions only help someone who can link them.
-    canWrite ? getFamilySuggestions(id) : Promise.resolve([]),
-    getRecordNotes("student", id),
-    getSignedInUserId(),
-    getStudentLegacyLogMeta(id),
-    getFiledEmailCount({ studentId: id }),
-    tab === "overview" ? getActivity({ studentId: id }) : Promise.resolve(null),
   ])
+  if (!student) notFound()
 
-  if (!student) {
-    notFound()
-  }
-
-  // Record attachments are fetched per section in one batched query each — the
-  // ids only exist once the rows above have loaded, hence the second round.
-  const depositIds = applications.flatMap(a => (a.deposits ?? []).map(d => d.id))
-  const [
-    visaAttachments, travelAttachments, examResultAttachments,
-    resumeAttachments, applicationAttachments, depositAttachments,
-    examPaperAttachments,
-  ] = await Promise.all([
-    getAttachmentsForMany('student_visa', visas.map(v => v.id)),
-    getAttachmentsForMany('student_travel', travelRecords.map(t => t.id)),
-    getAttachmentsForMany('student_exam_result', examResults.map(r => r.id)),
-    getAttachmentsForMany('student_qualification', resumeEntries.map(r => r.id)),
-    getAttachmentsForMany('student_application', applications.map(a => a.id)),
-    getAttachmentsForMany('student_deposit', depositIds),
-    getAttachmentsForMany('student_exam_paper', [id]),
-  ])
-
-  const statusStyle = statusStyles[student.status?.code ?? 'new'] ?? statusStyles.new
-  const placementStyle = placementStyles[student.placement?.code ?? 'cold'] ?? placementStyles.cold
-
-  // AA mainly emails parents/guardians. Pick the highest-priority contact that
-  // has an email so the header offers a one-click "Email Parent" action.
+  const name = [student.first_name, student.surname].filter(Boolean).join(" ") || "Unnamed student"
+  // AA mainly emails parents/guardians: offer the highest-priority contact with an email.
   const parentContact = [...contacts]
-    .filter((c) => c.email_1 || c.email_2 || c.email_3)
+    .filter(c => c.email_1 || c.email_2 || c.email_3)
     .sort((a, b) => (a.priority ?? 99) - (b.priority ?? 99))[0]
-  const parentEmail = parentContact?.email_1 || parentContact?.email_2 || parentContact?.email_3
-  const parentName = parentContact
-    ? [parentContact.first_name, parentContact.surname].filter(Boolean).join(' ')
-    : ''
-
-  // Format date helper
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "—"
-    try {
-      return new Date(dateStr).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    } catch {
-      return dateStr
-    }
-  }
+  const parent = parentContact
+    ? { name: [parentContact.first_name, parentContact.surname].filter(Boolean).join(" "), email: (parentContact.email_1 || parentContact.email_2 || parentContact.email_3) as string }
+    : null
+  const years = student.date_of_birth ? age(student.date_of_birth) : null
+  const consultant = student.assigned_profile ? [student.assigned_profile.first_name, student.assigned_profile.surname].filter(Boolean).join(" ") : null
+  const facts = [
+    student.date_of_birth ? `Born ${longDate.format(new Date(`${student.date_of_birth.slice(0, 10)}T00:00:00Z`))}${years !== null ? ` (${years})` : ""}` : null,
+    student.nationality?.label ?? null,
+    student.gender === "M" ? "Male" : student.gender === "F" ? "Female" : student.gender,
+    consultant ? `Consultant: ${consultant}` : "No consultant assigned",
+  ].filter(Boolean) as string[]
 
   return (
-    <div className="space-y-6">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/students">Students</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{student.first_name} {student.surname}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+    <div className="mx-auto max-w-[1320px]">
+      <Link href="/students" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <ChevronLeft className="h-4 w-4" /> Students
+      </Link>
 
-      {/* Header */}
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex items-start gap-4">
-          <Button variant="ghost" size="icon" asChild className="mt-1">
-            <Link href="/students">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <Avatar className="h-16 w-16 border-4 border-background shadow-lg">
-            <AvatarFallback className="bg-gradient-to-br from-primary/30 to-primary/10 text-primary text-xl font-semibold">
-              {student.first_name?.[0] ?? ''}{student.surname?.[0] ?? ''}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                {student.first_name} {student.surname}
-              </h1>
-              {student.status && (
-                <Badge variant="outline" className={`${statusStyle} border font-medium`}>
-                  {student.status.label}
-                </Badge>
-              )}
-              {student.placement && (
-                <Badge className={`${placementStyle.color} border-0 font-medium`}>
-                  {placementStyle.label}
-                </Badge>
-              )}
-            </div>
-            {student.chinese_name && (
-              <p className="text-lg text-muted-foreground mt-0.5">{student.chinese_name}</p>
+      <header className="mt-3 flex flex-col gap-4 pb-5 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight text-brand-navy">{name}</h1>
+            {student.chinese_name && <span className="text-xl text-muted-foreground">{student.chinese_name}</span>}
+            {student.status && (
+              <Badge variant="outline" className={`border-0 font-medium ring-1 ring-inset ${statusStyles[student.status.code] ?? statusStyles.closed}`}>
+                {student.status.label}
+              </Badge>
             )}
-            <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground flex-wrap">
-              <code className="font-mono bg-muted px-2 py-0.5 rounded text-xs">
-                {student.student_code ?? '—'}
-              </code>
-              {student.date_of_birth && (
-                <>
-                  <span>&middot;</span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-3.5 w-3.5" />
-                    {formatDate(student.date_of_birth)}
-                  </span>
-                </>
-              )}
-              {student.nationality && (
-                <>
-                  <span>&middot;</span>
-                  <span>{student.nationality.label}</span>
-                </>
-              )}
-              {student.gender && (
-                <>
-                  <span>&middot;</span>
-                  <span>{student.gender === "M" ? "Male" : student.gender === "F" ? "Female" : student.gender}</span>
-                </>
-              )}
-            </div>
+            {student.placement && <Badge variant="outline" className="font-medium">{student.placement.label} lead</Badge>}
           </div>
+          <p className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+            <span className="font-mono text-foreground/80">{student.student_code ?? "No code"}</span>
+            {facts.map(fact => <span key={fact}>{fact}</span>)}
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          {canWrite && (
-            <Button className="gap-2 shadow-sm" asChild>
-              <Link href={`/students/${id}/edit`}>
-                <Edit className="h-4 w-4" />
-                Edit Student
-              </Link>
-            </Button>
-          )}
-          <DeleteStudentDialog
-            studentId={id}
-            studentName={`${student.first_name} ${student.surname}`}
-          />
-        </div>
-      </div>
+        <StudentHeaderActions
+          studentId={id}
+          studentName={name}
+          section={section}
+          canWrite={canWrite}
+          parent={parent}
+          studentEmail={student.email}
+        />
+      </header>
 
-      {/* Main Content - Overview */}
-      <div className="space-y-6">
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Personal Information */}
-          <Card className="lg:col-span-2 border-0 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
-                Personal Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Full Name</p>
-                <p className="text-sm font-medium">{student.first_name} {student.surname}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Chinese Name</p>
-                <p className="text-sm font-medium">{student.chinese_name || "—"}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Date of Birth</p>
-                <p className="text-sm font-medium flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                  {formatDate(student.date_of_birth)}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Gender</p>
-                <p className="text-sm font-medium">
-                  {student.gender === "M" ? "Male" : student.gender === "F" ? "Female" : student.gender || "—"}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Nationality</p>
-                <p className="text-sm font-medium flex items-center gap-2">
-                  <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-                  {student.nationality?.label || "—"}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Passport</p>
-                <p className="text-sm font-medium">
-                  {student.passport_type ? `${student.passport_type} - ${student.passport_number || '—'}` : "—"}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Consultant</p>
-                <p className="text-sm font-medium">
-                  {student.assigned_profile
-                    ? [student.assigned_profile.first_name, student.assigned_profile.surname].filter(Boolean).join(" ")
-                    : "—"}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+      <StudentSectionBar studentId={id} current={section} counts={counts} />
 
-          {/* Quick Actions */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base font-medium">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {parentEmail && (
-                <Button className="w-full justify-start gap-2 shadow-sm" asChild>
-                  <a href={`mailto:${parentEmail}`} title={`${parentEmail}${parentName ? ` — ${parentName}` : ''}`}>
-                    <Mail className="h-4 w-4" />
-                    Email Parent{parentName ? ` (${parentName})` : ''}
-                  </a>
-                </Button>
-              )}
-              {student.email && (
-                <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                  <a href={`mailto:${student.email}`}>
-                    <Mail className="h-4 w-4" />
-                    Email Student
-                  </a>
-                </Button>
-              )}
-              {canWrite && <QuickAddNoteButton studentId={id} onOverview={tab === "overview"} />}
-              <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <Link href={`/students/${id}?tab=applications`} scroll={false}>
-                  <School className="h-4 w-4" />
-                  New Application
-                </Link>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <Link href={`/students/${id}?tab=education`} scroll={false}>
-                  <BookOpen className="h-4 w-4" />
-                  New Education
-                </Link>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <Link href={`/students/${id}?tab=immigration`} scroll={false}>
-                  <Shield className="h-4 w-4" />
-                  New Visa
-                </Link>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <Link href={`/students/${id}?tab=events`} scroll={false}>
-                  <CalendarDays className="h-4 w-4" />
-                  New Event App
-                </Link>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <Link href={`/students/${id}?tab=immigration`} scroll={false}>
-                  <Plane className="h-4 w-4" />
-                  New Travel
-                </Link>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <Link href={`/students/${id}?tab=education`} scroll={false}>
-                  <FileCheck className="h-4 w-4" />
-                  New Exam Result
-                </Link>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                <Link href={`/students/${id}?tab=resume`} scroll={false}>
-                  <FileText className="h-4 w-4" />
-                  New Resume
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Contact Information */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                Contact Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</p>
-                <p className="text-sm font-medium flex items-center gap-2">
-                  <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                  {student.email || "—"}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Mobile</p>
-                <p className="text-sm font-medium flex items-center gap-2">
-                  <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                  {student.mobile || "—"}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Telephone</p>
-                <p className="text-sm font-medium">{student.telephone || "—"}</p>
-              </div>
-              <Separator />
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Address Line 1</p>
-                <p className="text-sm font-medium flex items-start gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-muted-foreground mt-0.5" />
-                  {student.address_line_1 || "—"}
-                </p>
-              </div>
-              {student.chinese_address && (
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Chinese Address</p>
-                  <p className="text-sm font-medium">{student.chinese_address}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Academic Information */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                Academic Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Current School</p>
-                <p className="text-sm font-medium">{student.present_school || "—"}</p>
-                {student.school_type && (
-                  <p className="text-xs text-muted-foreground">{student.school_type.label}</p>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Course</p>
-                  <p className="text-sm font-medium">{student.course?.label || "—"}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Entry</p>
-                  <p className="text-sm font-medium">{student.entry_year ? `${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][(student.entry_month ?? 1) - 1]} ${student.entry_year}` : "—"}</p>
-                </div>
-              </div>
-              <Separator />
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Enrollment Date</p>
-                <p className="text-sm font-medium">{formatDate(student.enrollment_date)}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Lead Source</p>
-                <p className="text-sm font-medium capitalize">
-                  {student.lead_source_category
-                    ? `${student.lead_source_category.replace("_", " ")}${student.lead_source_referral_detail ? ` — ${student.lead_source_referral_detail}` : ""}${student.lead_source_event ? ` — ${student.lead_source_event.name}` : ""}`
-                    : "—"}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exam Paper</p>
-                <p className="text-sm font-medium">{student.exam_paper || "—"}</p>
-                <AttachmentField
-                  attachPoint="student_exam_paper"
-                  ownerId={id}
-                  attachableId={id}
-                  attachments={examPaperAttachments.get(id) ?? []}
-                  canWrite={canWrite}
-                />
-              </div>
-              <div className="flex gap-4 pt-2">
-                <Badge variant={student.aa_news ? "default" : "secondary"} className="text-xs">
-                  {student.aa_news ? "AA News: Yes" : "AA News: No"}
-                </Badge>
-                <Badge variant={student.airport_pickup ? "default" : "secondary"} className="text-xs">
-                  {student.airport_pickup ? "Airport Pickup: Yes" : "Airport Pickup: No"}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Tabs — sections grouped to avoid one long scrolling page */}
-        <Tabs defaultValue={tab} className="space-y-6">
-          <div className="overflow-x-auto pb-1">
-            <TabsList className="bg-muted/50 w-max">
-              <TabsTrigger value="overview" asChild>
-                <Link href={`/students/${id}?tab=overview`} scroll={false} className="gap-1.5">
-                  <User className="h-4 w-4" />
-                  Overview
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="resume" asChild>
-                <Link href={`/students/${id}?tab=resume`} scroll={false} className="gap-1.5">
-                  <FileText className="h-4 w-4" />
-                  Resume
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="family" asChild>
-                <Link href={`/students/${id}?tab=family`} scroll={false} className="gap-1.5">
-                  <Users className="h-4 w-4" />
-                  Family
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="education" asChild>
-                <Link href={`/students/${id}?tab=education`} scroll={false} className="gap-1.5">
-                  <GraduationCap className="h-4 w-4" />
-                  Education
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="documents" asChild>
-                <Link href={`/students/${id}?tab=documents`} scroll={false} className="gap-1.5">
-                  <Files className="h-4 w-4" />
-                  Documents
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="applications" asChild>
-                <Link href={`/students/${id}?tab=applications`} scroll={false} className="gap-1.5">
-                  <School className="h-4 w-4" />
-                  School Applications
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="communications" asChild>
-                <Link href={`/students/${id}?tab=communications`} scroll={false} className="gap-1.5">
-                  <Mail className="h-4 w-4" />
-                  Communications
-                  {emailCount > 0 && <Badge variant="secondary" className="ml-0.5 h-5 px-1.5 text-xs">{emailCount}</Badge>}
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="events" asChild>
-                <Link href={`/students/${id}?tab=events`} scroll={false} className="gap-1.5">
-                  <CalendarDays className="h-4 w-4" />
-                  Event Applications
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="calendar" asChild>
-                <Link href={`/students/${id}?tab=calendar`} scroll={false} className="gap-1.5">
-                  <CalendarClock className="h-4 w-4" />
-                  Calendar
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="immigration" asChild>
-                <Link href={`/students/${id}?tab=immigration`} scroll={false} className="gap-1.5">
-                  <Plane className="h-4 w-4" />
-                  Immigration
-                </Link>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          {/* Overview: brief intro, notes and remarks */}
-          <TabsContent value="overview" className="space-y-6">
-            <StudentBriefIntroSection
-              studentId={id}
-              briefIntro={briefIntro}
-              referenceData={briefIntroReferenceData}
-              canWrite={canWrite}
-            />
-
-            <RecordNotes
-              target="student"
-              recordId={id}
-              initialNotes={recordNotes.notes}
-              more={recordNotes.more}
-              canWrite={canWrite}
-              currentUserId={currentUserId}
-              anchorId={STUDENT_NOTES_ANCHOR}
-            />
-
-            <StudentInternalNotesSection
-              studentId={id}
-              notes={internalNotes}
-              canWrite={canWrite}
-            />
-
-            {student.remarks && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-base font-medium flex items-center gap-2">
-                    <ClipboardList className="h-4 w-4 text-muted-foreground" />
-                    Remarks
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{student.remarks}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            {legacyLog && <StudentLegacyLog studentId={id} lastUpdate={legacyLog.legacy_last_update ? formatDate(legacyLog.legacy_last_update) : null} />}
-
-            {tab === "overview" && <ActivityHistory entries={activity} limit={MAX_ACTIVITY} />}
-          </TabsContent>
-
-          {/* Resume: profile (talents/interests) + Music Audition / Top Schools records */}
-          <TabsContent value="resume" className="space-y-6">
-            <StudentResumeProfileSection
-              studentId={id}
-              profile={resumeProfile}
-              talents={resumeTalents}
-              documents={resumeDocuments}
-              aaTests={aaTests}
-              canWrite={canWrite}
-            />
-
-            <StudentResumeSection
-              studentId={id}
-              resumeEntries={resumeEntries}
-              referenceData={resumeReferenceData}
-              attachmentsByResume={resumeAttachments}
-              canWrite={canWrite}
-            />
-          </TabsContent>
-
-          {/* Family: parents, brothers and sisters (linked when they are students too), other contacts */}
-          <TabsContent value="family" className="space-y-6">
-            <StudentFamilySection
-              studentId={id}
-              student={student}
-              contacts={contacts}
-              linksToStudent={familyLinks}
-              suggestions={familySuggestions}
-              referenceData={contactReferenceData}
-              studentAddress={student.address_line_1}
-              canWrite={canWrite}
-            />
-          </TabsContent>
-
-          {/* Education: schooling history and exam results */}
-          <TabsContent value="education" className="space-y-6">
-            <StudentEducationSection
-              studentId={id}
-              educationEntries={educationEntries}
-              referenceData={eduReferenceData}
-              canWrite={canWrite}
-            />
-
-            <StudentExamResultsSection
-              studentId={id}
-              examResults={examResults}
-              referenceData={examResultReferenceData}
-              attachmentsByResult={examResultAttachments}
-              canWrite={canWrite}
-            />
-          </TabsContent>
-
-          {/* Documents: multi-file upload with categories and rename */}
-          <TabsContent value="documents" className="space-y-6">
-            <StudentDocumentsSection studentId={id} documents={allDocuments} />
-          </TabsContent>
-
-          {/* School Applications */}
-          <TabsContent value="applications" className="space-y-6">
-            <StudentApplicationsSection
-              studentId={id}
-              applications={applications}
-              referenceData={appReferenceData}
-              attachmentsByApplication={applicationAttachments}
-              attachmentsByDeposit={depositAttachments}
-              canWrite={canWrite}
-            />
-          </TabsContent>
-
-          {/* Communications: filed emails and typed email records (loaded only on this tab) */}
-          <TabsContent value="communications" className="space-y-6">
-            {tab === "communications" && (
-              <CommunicationsSection
-                context={{ kind: "student", student: { id, name: [student.first_name, student.surname].filter(Boolean).join(" ") || "Student" } }}
-              />
-            )}
-          </TabsContent>
-
-          {/* Event Applications */}
-          <TabsContent value="events" className="space-y-6">
-            <StudentEventApplicationsSection
-              studentId={id}
-              applications={eventApplications}
-              referenceData={eventAppReferenceData}
-              canWrite={canWrite}
-            />
-          </TabsContent>
-
-          {/* Immigration: visas, legal documents and travel */}
-          <TabsContent value="calendar" className="space-y-6">
-            <StudentCalendarSection studentId={id} canBook={await canAccess(MODULES.SCHEDULER, ACCESS.WRITE)} />
-          </TabsContent>
-
-          <TabsContent value="immigration" className="space-y-6">
-            <StudentVisasSection
-              studentId={id}
-              visas={visas}
-              referenceData={visaReferenceData}
-              attachmentsByVisa={visaAttachments}
-              canWrite={canWrite}
-            />
-
-            <StudentLegalDocumentsSection
-              studentId={id}
-              passportType={student.passport_type}
-              passportNumber={student.passport_number}
-              documents={legalDocuments}
-              canWrite={canWrite}
-            />
-
-            <StudentTravelSection
-              studentId={id}
-              travelRecords={travelRecords}
-              referenceData={travelReferenceData}
-              attachmentsByTravel={travelAttachments}
-              canWrite={canWrite}
-            />
-          </TabsContent>
-        </Tabs>
+      <div className="pt-6">
+        <Section id={id} section={section} canWrite={canWrite} student={student} contacts={contacts} name={name} />
       </div>
     </div>
   )
+}
+
+type Student = NonNullable<Awaited<ReturnType<typeof getStudentById>>>
+type Contacts = Awaited<ReturnType<typeof getStudentContacts>>
+
+/** The open section, loading only its own data. */
+async function Section({ id, section, canWrite, student, contacts, name }: {
+  id: string
+  section: ReturnType<typeof sectionFromParam>
+  canWrite: boolean
+  student: Student
+  contacts: Contacts
+  name: string
+}) {
+  switch (section) {
+    case "overview": {
+      const [briefIntro, briefIntroReferenceData, internalNotes, recordNotes, currentUserId, legacyLog, activity, examPaperAttachments] = await Promise.all([
+        getStudentBriefIntro(id), getBriefIntroReferenceData(), getStudentInternalNotes(id),
+        getRecordNotes("student", id), getSignedInUserId(), getStudentLegacyLogMeta(id),
+        getActivity({ studentId: id }), getAttachmentsForMany("student_exam_paper", [id]),
+      ])
+      return (
+        <div className="grid items-start gap-6 lg:grid-cols-3">
+          <div className="grid min-w-0 gap-6 lg:col-span-2">
+            <RecordNotes
+              target="student" recordId={id} initialNotes={recordNotes.notes} more={recordNotes.more}
+              canWrite={canWrite} currentUserId={currentUserId} anchorId={STUDENT_NOTES_ANCHOR}
+            />
+            <StudentInternalNotesSection studentId={id} notes={internalNotes} canWrite={canWrite} />
+            <StudentBriefIntroSection studentId={id} briefIntro={briefIntro} referenceData={briefIntroReferenceData} canWrite={canWrite} />
+            <ActivityHistory entries={activity} limit={MAX_ACTIVITY} />
+          </div>
+          {/* On phones the contact details come first; on desktop they sit on the right. */}
+          <div className="order-first grid min-w-0 gap-6 lg:order-none">
+            <StudentDetailsPanel student={student} examPaperAttachments={examPaperAttachments.get(id) ?? []} canWrite={canWrite} />
+            {legacyLog && (
+              <StudentLegacyLog
+                studentId={id}
+                lastUpdate={legacyLog.legacy_last_update ? longDate.format(new Date(legacyLog.legacy_last_update)) : null}
+              />
+            )}
+          </div>
+        </div>
+      )
+    }
+    case "applications": {
+      const [applications, referenceData] = await Promise.all([getStudentApplications(id), getApplicationReferenceData()])
+      const depositIds = applications.flatMap(a => (a.deposits ?? []).map(d => d.id))
+      const [byApplication, byDeposit] = await Promise.all([
+        getAttachmentsForMany("student_application", applications.map(a => a.id)),
+        getAttachmentsForMany("student_deposit", depositIds),
+      ])
+      return (
+        <StudentApplicationsSection
+          studentId={id} applications={applications} referenceData={referenceData}
+          attachmentsByApplication={byApplication} attachmentsByDeposit={byDeposit} canWrite={canWrite}
+        />
+      )
+    }
+    case "family": {
+      const [referenceData, links, suggestions] = await Promise.all([
+        getContactReferenceData(), getFamilyLinksToStudent(id),
+        // Suggestions only help someone who can link them.
+        canWrite ? getFamilySuggestions(id) : Promise.resolve([]),
+      ])
+      return (
+        <StudentFamilySection
+          studentId={id} student={student} contacts={contacts} linksToStudent={links} suggestions={suggestions}
+          referenceData={referenceData} studentAddress={student.address_line_1} canWrite={canWrite}
+        />
+      )
+    }
+    case "education": {
+      const [education, eduReference, examResults, examReference] = await Promise.all([
+        getStudentEducation(id), getEducationReferenceData(), getStudentExamResults(id), getExamResultReferenceData(),
+      ])
+      const examAttachments = await getAttachmentsForMany("student_exam_result", examResults.map(r => r.id))
+      return (
+        <div className="grid gap-6">
+          <StudentEducationSection studentId={id} educationEntries={education} referenceData={eduReference} canWrite={canWrite} />
+          <StudentExamResultsSection studentId={id} examResults={examResults} referenceData={examReference} attachmentsByResult={examAttachments} canWrite={canWrite} />
+        </div>
+      )
+    }
+    case "resume": {
+      const [profile, talents, documents, aaTests, entries, referenceData] = await Promise.all([
+        getStudentResumeProfile(id), getStudentResumeTalents(id), getStudentDocuments(id, "resume"),
+        getStudentAATests(id), getStudentResume(id), getResumeReferenceData(),
+      ])
+      const attachments = await getAttachmentsForMany("student_qualification", entries.map(r => r.id))
+      return (
+        <div className="grid gap-6">
+          <StudentResumeProfileSection studentId={id} profile={profile} talents={talents} documents={documents} aaTests={aaTests} canWrite={canWrite} />
+          <StudentResumeSection studentId={id} resumeEntries={entries} referenceData={referenceData} attachmentsByResume={attachments} canWrite={canWrite} />
+        </div>
+      )
+    }
+    case "documents":
+      return <StudentDocumentsSection studentId={id} documents={await getStudentDocuments(id)} />
+    case "communications":
+      return <CommunicationsSection context={{ kind: "student", student: { id, name } }} />
+    case "events": {
+      const [applications, referenceData] = await Promise.all([getStudentEventApplications(id), getEventAppReferenceData()])
+      return <StudentEventApplicationsSection studentId={id} applications={applications} referenceData={referenceData} canWrite={canWrite} />
+    }
+    case "calendar":
+      return <StudentCalendarSection studentId={id} canBook={await canAccess(MODULES.SCHEDULER, ACCESS.WRITE)} />
+    case "immigration": {
+      const [visas, visaReference, legalDocuments, travel, travelReference] = await Promise.all([
+        getStudentVisas(id), getVisaReferenceData(id), getStudentDocuments(id, "legal_documents"),
+        getStudentTravel(id), getTravelReferenceData(),
+      ])
+      const [visaAttachments, travelAttachments] = await Promise.all([
+        getAttachmentsForMany("student_visa", visas.map(v => v.id)),
+        getAttachmentsForMany("student_travel", travel.map(t => t.id)),
+      ])
+      return (
+        <div className="grid gap-6">
+          <StudentVisasSection studentId={id} visas={visas} referenceData={visaReference} attachmentsByVisa={visaAttachments} canWrite={canWrite} />
+          <StudentLegalDocumentsSection
+            studentId={id} passportType={student.passport_type} passportNumber={student.passport_number}
+            documents={legalDocuments} canWrite={canWrite}
+          />
+          <StudentTravelSection studentId={id} travelRecords={travel} referenceData={travelReference} attachmentsByTravel={travelAttachments} canWrite={canWrite} />
+        </div>
+      )
+    }
+  }
 }

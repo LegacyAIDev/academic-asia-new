@@ -36,7 +36,8 @@ try {
 
   await step(page, 'empty Communications tab offers File email', async () => {
     await open(page, studentTab)
-    await seeText(page, 'No emails have been filed here yet.')
+    await seeText(page, 'Nothing filed yet')
+    await seeText(page, 'File email', 'main')
   })
 
   await step(page, 'eml is read in the browser and pre-fills the form', async () => {
@@ -143,7 +144,7 @@ try {
   })
 
   await step(page, 'a typed record is saved and found by a word deep in its text (EF-08, EF-16)', async () => {
-    await click(page, 'Add record')
+    await click(page, 'Log a call or meeting')
     await page.type(`${DIALOG} input[id$="-subject"]`, 'Phone call follow-up')
     await page.type(`${DIALOG} #email-record-body`, `${'Called the mother about boarding. '.repeat(40)}Remember the zebracrossing form.`)
     await click(page, 'Save record', DIALOG)
@@ -204,7 +205,7 @@ try {
     await open(junior, studentTab)
     await seeText(junior, 'Year 9 entry – confirmed', 'table')
     await notSeeText(junior, 'File email')
-    await notSeeText(junior, 'Add record')
+    await notSeeText(junior, 'Log a call or meeting')
     await openEmail(junior, 'Year 9 entry – confirmed')
     await notSeeText(junior, 'Archive', DIALOG)
     await notSeeText(junior, 'Edit', `${DIALOG} button`)
