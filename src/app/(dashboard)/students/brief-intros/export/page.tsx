@@ -38,11 +38,11 @@ export default async function BriefIntroExportPage({
   await requireAccess(MODULES.STUDENTS)
 
   const params = await searchParams
-  const page = parseInt(params.page ?? '1', 10)
   const selectedIds = (params.ids ?? '').split(',').map((id) => id.trim()).filter(Boolean)
 
-  const { students, totalCount, totalPages } = await getStudentsList({
-    page,
+  // The list clamps a page past the end, so page numbers below use the page it served.
+  const { students, totalCount, totalPages, page } = await getStudentsList({
+    page: parseInt(params.page ?? '1', 10),
     pageSize: PAGE_SIZE,
     ...parseStudentListFilters(params),
   })

@@ -22,6 +22,12 @@ type ReferenceItem = {
   label: string
 }
 
+export type StudentFilterOptions = {
+  statuses: ReferenceItem[]
+  placements: ReferenceItem[]
+  consultants: Consultant[]
+}
+
 type Consultant = {
   id: string
   first_name: string | null
@@ -33,20 +39,29 @@ type Consultant = {
  *   do not count as an active filter. The brief introduction export keeps its
  *   student selection in the URL, and clearing a filter there should narrow the
  *   list, not silently discard what the consultant has picked.
+ * @param options Dropdown choices loaded with the page, so they are there on the
+ *   first paint; without them the component loads its own.
+ * @param showStatus False where the page shows status as tabs instead.
  */
-export function StudentsFilters({ preserveParams = [] }: { preserveParams?: string[] } = {}) {
+export function StudentsFilters({ preserveParams = [], options, showStatus = true }: {
+  preserveParams?: string[]
+  options?: StudentFilterOptions
+  showStatus?: boolean
+} = {}) {
   const router = useRouterWithProgress()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
   const [search, setSearch] = useState(searchParams.get('search') ?? '')
-  const [statuses, setStatuses] = useState<ReferenceItem[]>([])
-  const [placements, setPlacements] = useState<ReferenceItem[]>([])
-  const [consultants, setConsultants] = useState<Consultant[]>([])
+  const [statuses, setStatuses] = useState<ReferenceItem[]>(options?.statuses ?? [])
+  const [placements, setPlacements] = useState<ReferenceItem[]>(options?.placements ?? [])
+  const [consultants, setConsultants] = useState<Consultant[]>(options?.consultants ?? [])
 
-  // Fetch reference data for dropdowns
+  // Fetch reference data for dropdowns when the page did not pass it
+  const hasOptions = Boolean(options)
   useEffect(() => {
+    if (hasOptions) return
     const fetchReferenceData = async () => {
       const supabase = createClient()
 
@@ -62,7 +77,7 @@ export function StudentsFilters({ preserveParams = [] }: { preserveParams?: stri
     }
 
     fetchReferenceData()
-  }, [])
+  }, [hasOptions])
 
   // Create URL with updated params
   const createQueryString = useCallback(
@@ -124,7 +139,7 @@ export function StudentsFilters({ preserveParams = [] }: { preserveParams?: stri
   const clearFilters = () => {
     setSearch('')
     const kept = new URLSearchParams()
-    preserveParams.forEach((key) => {
+    ;['per', 'sort', 'dir', ...preserveParams].forEach((key) => {
       const value = searchParams.get(key)
       if (value) kept.set(key, value)
     })
@@ -137,20 +152,22 @@ export function StudentsFilters({ preserveParams = [] }: { preserveParams?: stri
   const consultantName = (c: Consultant) =>
     [c.first_name, c.surname].filter(Boolean).join(' ') || 'Unnamed'
 
-  // Any active filter (search or any URL param other than the page number and
+  // Any active filter (search or any URL param other than paging, sorting and
   // whatever the host screen owns)
+  const notFilters = ['page', 'per', 'sort', 'dir', ...preserveParams]
   const hasFilters =
     Boolean(search) ||
-    Array.from(searchParams.keys()).some((k) => k !== 'page' && !preserveParams.includes(k))
+    Array.from(searchParams.keys()).some((k) => !notFilters.includes(k))
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-1 items-center gap-3">
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-1 flex-wrap items-center gap-2 sm:gap-3">
         {/* Search Input */}
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative w-full sm:w-auto sm:min-w-[280px] sm:max-w-md sm:flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search students..."
+            placeholder="Search name, code or email"
+            aria-label="Search students"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 bg-background"
@@ -166,7 +183,7 @@ export function StudentsFilters({ preserveParams = [] }: { preserveParams?: stri
         </div>
 
         {/* Status Filter */}
-        <Select
+        {showStatus && <Select
           value={searchParams.get('status') ?? 'all'}
           onValueChange={handleStatusChange}
         >
@@ -181,7 +198,7 @@ export function StudentsFilters({ preserveParams = [] }: { preserveParams?: stri
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select>}
 
         {/* Placement Filter */}
         <Select
