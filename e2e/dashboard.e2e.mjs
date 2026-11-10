@@ -12,14 +12,17 @@ try {
   await step(page, 'dashboard greets by name with real figures', async () => {
     await open(page, '/')
     await seeText(page, 'Good ')
-    await seeText(page, 'Needs your attention')
+    await seeText(page, 'Needs you today')
     await seeText(page, 'Active students')
     await notSeeText(page, '38,294')
     await notSeeText(page, 'Placement Rate')
+    await seeText(page, 'Applications in progress')
+    await seeText(page, 'Exams, next 14 days')
+    await notSeeText(page, 'Open applications')
     await shot(page, 'dashboard-admin-1512')
   })
 
-  await step(page, 'Active students tile opens the list filtered to Active', async () => {
+  await step(page, 'Active students figure opens the list filtered to Active', async () => {
     await open(page, '/')
     const href = await page.$$eval('main a', links => links.find(a => a.textContent?.includes('Active students'))?.getAttribute('href'))
     assert(/^\/students\?status=\d+$/.test(href ?? ''), `unexpected tile link ${href}`)
@@ -39,7 +42,7 @@ try {
   await step(page, 'phone layout puts attention first', async () => {
     await page.setViewport({ width: 390, height: 844 })
     await open(page, '/')
-    await seeText(page, 'Needs your attention')
+    await seeText(page, 'Needs you today')
     await shot(page, 'dashboard-admin-390')
     await page.setViewport({ width: 1512, height: 982 })
   })

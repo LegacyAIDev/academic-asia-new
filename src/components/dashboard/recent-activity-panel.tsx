@@ -4,38 +4,39 @@ import { describeGroup } from "@/lib/dashboard/group-activity"
 import type { RecentActivity } from "@/lib/supabase/queries/dashboard"
 import { DashboardPanel } from "./dashboard-panel"
 
-/** The latest changes the team made, in plain words, each opening its record. */
+/** The latest changes the team made, in plain words, each opening its record; who made it shows unless it was an import. */
 export function RecentActivityPanel({ entries }: { entries: RecentActivity[] | null }) {
   return (
-    <DashboardPanel title="Recent activity" className="lg:col-span-2">
+    <DashboardPanel title="Recent changes" flush>
       {entries === null ? (
-        <p className="text-sm text-muted-foreground">Recent activity could not be loaded.</p>
+        <p className="px-4 py-3 text-sm text-muted-foreground">Recent changes could not be loaded.</p>
       ) : entries.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Changes to students, schools and bookings will show here as the team works.</p>
+        <p className="px-4 py-3 text-sm text-muted-foreground">Changes to students, schools and bookings appear here as the team works.</p>
       ) : (
-        <ul className="-mx-2 divide-y">
+        <ul className="divide-y">
           {entries.map(entry => {
+            const what = describeGroup(entry)
             const body = (
               <>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">{entry.subject ?? entry.label ?? describeGroup(entry)}</span>
-                  <span className="block text-sm text-muted-foreground sm:truncate">
-                    {entry.subject ?? entry.label
-                      ? `${describeGroup(entry)}${entry.label && entry.subject && entry.label !== entry.subject ? ` (${entry.label})` : ""}, by ${entry.actorName}`
-                      : `By ${entry.actorName}`}
+                  <span className="block truncate text-sm font-medium">{entry.subject ?? entry.label ?? what}</span>
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {entry.subject || entry.label ? what : null}
+                    {entry.label && entry.subject && entry.label !== entry.subject ? ` (${entry.label})` : ""}
                   </span>
                 </span>
-                <time dateTime={entry.occurredAt} className="shrink-0 text-xs text-muted-foreground">
-                  {formatDistanceToNowStrict(new Date(entry.occurredAt), { addSuffix: true })}
-                </time>
+                <span className="shrink-0 text-right text-xs text-muted-foreground">
+                  <time dateTime={entry.occurredAt} className="block">{formatDistanceToNowStrict(new Date(entry.occurredAt), { addSuffix: true })}</time>
+                  {entry.actorName !== "System" && <span className="block">{entry.actorName}</span>}
+                </span>
               </>
             )
             return (
               <li key={entry.id}>
                 {entry.href ? (
-                  <Link href={entry.href} className="flex items-center gap-4 rounded-lg px-2 py-3 hover:bg-muted/60">{body}</Link>
+                  <Link href={entry.href} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/60">{body}</Link>
                 ) : (
-                  <div className="flex items-center gap-4 px-2 py-3">{body}</div>
+                  <div className="flex items-center gap-3 px-4 py-2.5">{body}</div>
                 )}
               </li>
             )

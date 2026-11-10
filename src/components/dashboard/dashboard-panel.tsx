@@ -2,24 +2,26 @@ import Link from "next/link"
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-/** A titled block of the dashboard; the link on the right leads to the full page. */
-export function DashboardPanel({ title, link, children, className }: {
+/** A dashboard panel: a titled header bar over its content; the link on the right opens the full page. */
+export function DashboardPanel({ title, link, children, className, flush = false }: {
   title: string
   link?: { href: string; label: string }
   children: ReactNode
   className?: string
+  /** Content runs edge to edge (lists with their own row padding). */
+  flush?: boolean
 }) {
   return (
-    <section className={cn("flex min-w-0 flex-col rounded-xl border bg-card p-5 sm:p-6", className)}>
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <h2 className="text-base font-semibold text-brand-navy">{title}</h2>
+    <section className={cn("flex min-w-0 flex-col rounded-lg border bg-card", className)}>
+      <header className="flex items-center justify-between gap-4 border-b px-4 py-3">
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
         {link && (
-          <Link href={link.href} className="shrink-0 text-sm font-medium text-primary underline-offset-4 hover:underline">
+          <Link href={link.href} className="shrink-0 text-xs font-medium text-muted-foreground hover:text-brand-navy">
             {link.label}
           </Link>
         )}
-      </div>
-      {children}
+      </header>
+      <div className={cn("flex-1", flush ? "py-1" : "p-4")}>{children}</div>
     </section>
   )
 }
