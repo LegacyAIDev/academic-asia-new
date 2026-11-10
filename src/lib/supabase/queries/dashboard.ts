@@ -1,0 +1,145 @@
+import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
+import { ACTIVITY_SELECT, hiddenActivityKinds, toActivityEntry, type ActivityEntry, type ActivityRow } from '@/lib/activity/activity-format'
+import { EXAM_BOOKING_TYPES } from '@/lib/scheduler/config'
+import { personName } from '@/lib/scheduler/person-name'
+import { groupActivity } from '@/lib/dashboard/group-activity'
+
+/**
+ * Real numbers for the dashboard, each only for what the viewer may see (the
+ * page passes their rights). A count that cannot be read is null, so the tile
+ * can say so rather than show a wrong number.
+ */
+
+const addDays = (day: string, n: number) => new Date(Date.parse(`${day}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
+
+export type DashboardCounts = {
+  activeStudents: number | null
+  /** Id of the Active status, so the tile can open the list filtered to it. */
+  activeStatusId: number | null
+  openApplications: number | null
+  examsNext7Days: number | null
+  eventsNext30Days: number | null
+}
+
+export async function getDashboardCounts(
+  rights: { students: boolean; scheduler: boolean; events: boolean },
+  today: string,
+): Promise<DashboardCounts> {
+  const supabase = createClient(await cookies())
+  const count = async (query: PromiseLike<{ count: number | null; error: unknown }>) => {
+    const { count: n, error } = await query
+    if (error) console.error('Dashboard count failed:', error)
+    return error ? null : n ?? 0
+  }
+
+  const activeStatusId = rights.students
+    ? (await supabase.from('student_statuses').select('id').eq('code', 'active').maybeSingle()).data?.id ?? null
+    : null
+  const [activeStudents, openApplications, examsNext7Days, eventsNext30Days] = await Promise.all([
+    rights.students && activeStatusId !== null
+      ? count(supabase.from('students').select('id', { count: 'exact', head: true }).eq('status_id', activeStatusId))
+      : null,
+    rights.students
+      ? count(supabase.from('student_applications').select('id', { count: 'exact', head: true }).or('is_archived.is.null,is_archived.eq.false'))
+      : null,
+    rights.scheduler
+      ? count(supabase.from('scheduler_bookings').select('id', { count: 'exact', head: true })
+          .in('booking_type', EXAM_BOOKING_TYPES).neq('status', 'cancelled')
+          .gte('local_date', today).lte('local_date', addDays(today, 6)))
+      : null,
+    rights.events
+      ? count(supabase.from('events').select('id', { count: 'exact', head: true }).gte('start_date', today).lte('start_date', addDays(today, 30)))
+      : null,
+  ])
+  return { activeStudents, activeStatusId, openApplications, examsNext7Days, eventsNext30Days }
+}
+
+export type TodayBooking = {
+  id: string
+  title: string
+  startAt: string
+  endAt: string
+  bookingType: string
+  place: string | null
+}
+
+/** The signed-in person's own bookings today (as organiser or attendee), earliest first. */
+export async function getMyBookingsToday(profileId: string, today: string): Promise<TodayBooking[] | null> {
+  const supabase = createClient(await cookies())
+  const { data: seats, error: seatsError } = await supabase
+    .from('scheduler_booking_attendees').select('booking_id').eq('profile_id', profileId)
+  if (seatsError) {
+    console.error('Dashboard bookings failed:', seatsError)
+    return null
+  }
+  const attending = [...new Set((seats ?? []).map(s => s.booking_id))]
+  const mine = [`organiser_id.eq.${profileId}`, ...(attending.length ? [`booking_id.in.(${attending.join(',')})`] : [])].join(',')
+  const { data, error } = await supabase
+    .from('scheduler_calendar_items')
+    .select('booking_id, title, start_at, end_at, booking_type, room_name, location_type')
+    .eq('local_date', today)
+    .eq('source', 'booking')
+    .or(mine)
+    .order('start_at')
+    .limit(8)
+  if (error) {
+    console.error('Dashboard bookings failed:', error)
+    return null
+  }
+  return (data ?? []).map(row => ({
+    id: row.booking_id as string,
+    title: row.title ?? 'Booking',
+    startAt: row.start_at as string,
+    endAt: row.end_at as string,
+    bookingType: row.booking_type ?? 'other',
+    place: row.location_type === 'online' ? 'Online' : row.room_name ?? null,
+  }))
+}
+
+/** `subject` names the student or school the change belongs to. */
+export type RecentActivity = ActivityEntry & { href: string | null; subject: string | null; count: number }
+
+const STUDENT_KINDS = ['students', 'student_applications', 'student_individual_exams', 'student_contacts', 'student_documents', 'filed_emails']
+const SCHOOL_KINDS = ['schools', 'school_contacts', 'school_documents', 'school_entrance_exams', 'school_exam_papers']
+
+/** The latest changes across records the viewer may see, repeats folded together, each linking to its record. */
+export async function getRecentActivity(
+  rights: { students: boolean; schools: boolean; scheduler: boolean; examPapers: boolean },
+  limit = 6,
+): Promise<RecentActivity[] | null> {
+  const hidden = [
+    ...hiddenActivityKinds({ examPapers: rights.examPapers, scheduler: rights.scheduler }),
+    ...(rights.students ? [] : STUDENT_KINDS),
+    ...(rights.schools ? [] : SCHOOL_KINDS),
+  ]
+  const supabase = createClient(await cookies())
+  let query = supabase.from('activity_log').select(`${ACTIVITY_SELECT}, student_id, school_id, application_id`)
+  if (hidden.length) query = query.not('entity', 'in', `(${[...new Set(hidden)].join(',')})`)
+  const { data, error } = await query.order('occurred_at', { ascending: false }).order('id', { ascending: false }).limit(limit * 4)
+  if (error) {
+    console.error('Dashboard activity failed:', error.message)
+    return null
+  }
+  type Row = ActivityRow & { student_id: string | null; school_id: string | null; application_id: string | null }
+  const rows = data as unknown as Row[]
+  const studentIds = [...new Set(rows.flatMap(r => r.student_id ? [r.student_id] : []))]
+  const schoolIds = [...new Set(rows.flatMap(r => !r.student_id && r.school_id ? [r.school_id] : []))]
+  const [studentsRes, schoolsRes] = await Promise.all([
+    studentIds.length ? supabase.from('students').select('id, first_name, surname').in('id', studentIds) : null,
+    schoolIds.length ? supabase.from('schools').select('id, name').in('id', schoolIds) : null,
+  ])
+  // A name that cannot be read just leaves the line without one.
+  const names = new Map<string, string>([
+    ...(studentsRes?.data ?? []).map(s => [s.id, personName(s)] as [string, string]),
+    ...(schoolsRes?.data ?? []).map(s => [s.id, s.name ?? ''] as [string, string]),
+  ])
+  return groupActivity(rows.map(row => ({
+    ...toActivityEntry(row),
+    subject: names.get(row.student_id ?? row.school_id ?? '') || null,
+    href: row.student_id && row.application_id ? `/students/${row.student_id}/applications/${row.application_id}`
+      : row.student_id ? `/students/${row.student_id}`
+      : row.school_id ? `/schools/${row.school_id}`
+      : null,
+  })), limit)
+}
