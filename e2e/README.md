@@ -13,10 +13,11 @@ End-to-end checks of features in a real Chrome against the real app and a throwa
 | `online-exam.e2e.mjs` | Online exams save; booking form lists why it cannot save (UAT DEV24-003) | 6 |
 | `exam-completion.e2e.mjs` | A Scheduler exam reaches the exam desk and All exams and is completed; group candidates each get a record (UAT DEV24-004) | 6 |
 | `group-attendance.e2e.mjs` | Exam desk counts and marks attendance per candidate (UAT DEV24-005) | 4 |
-| `events-workflow.e2e.mjs` | Every event type: create, view, edit, scheduler, delete | 33 |
+| `events-workflow.e2e.mjs` | Every event type: create, view, edit, scheduler, delete; type preselected and required | 34 |
 | `scheduler-workflow.e2e.mjs` | Other booking types, cancelling, blocked times, rooms | 7 |
 | `staff-workflow.e2e.mjs` | Admin creates and edits a staff member, who can then sign in | 4 |
 | `records-workflow.e2e.mjs` | School create/edit/delete, student delete, student Calendar tab, PDF and spreadsheet exports | 8 |
+| `loading-indicator.e2e.mjs` | Loading screen on page changes, top loading bar on tab and filter changes, on a slow connection | 4 |
 
 Two sweeps cover the whole app rather than one feature:
 

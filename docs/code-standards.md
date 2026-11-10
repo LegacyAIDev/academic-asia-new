@@ -231,6 +231,32 @@ export function StudentForm() {
 }
 ```
 
+### Required fields on create
+
+A form must not be able to create an empty record. Each create action declares
+what makes an entry worth saving with `missingRequired` from
+`src/lib/forms/required-fields.ts` ("at least one of these fields") and returns
+the rule's message, which the dialog shows. Rules apply on create only: some
+imported records lack these fields and must stay editable. `e2e/dialog-sweep.mjs`
+finds forms that save blank records or refuse without saying why.
+
+```typescript
+const REQUIRED: RequiredRule<CreateSchoolVisitInput>[] = [
+  { anyOf: ['visit_date'], message: 'Enter the visit date' },
+]
+// in createSchoolVisit, after assertAccess:
+const missing = missingRequired(input, REQUIRED)
+if (missing) return { success: false, error: missing }
+```
+
+### Loading states
+
+`src/app/(dashboard)/loading.tsx` shows "Loading…" in the page area while a new
+page loads; `NavigationProgress` shows a bar across the top for tab and filter
+changes. Navigate in code with `useRouterWithProgress()` from
+`@/components/layout/navigation-progress` instead of `useRouter()`, so `push` and
+`replace` start the bar too.
+
 ---
 
 ## 9. UI Components
@@ -322,6 +348,11 @@ const canWrite = await canAccess(MODULES.STUDENTS, ACCESS.WRITE)
 
 Hide write actions rather than disabling them — a greyed-out button invites a support
 ticket.
+
+Record sections take a `canWrite` prop and hide their New, Delete and Upload
+controls when it is false. Keep a control visible when it is also how read-only
+staff view or download something (the exam result, visa, travel and resume Edit
+buttons open read-only and list the attachments).
 
 ### Preventing privilege escalation
 
