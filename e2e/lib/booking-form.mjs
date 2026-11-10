@@ -4,16 +4,22 @@ import { click, open, seeText } from './harness.mjs'
 export const DIALOG = '[role="dialog"]'
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-/** Opens the Select whose label reads `label` inside the dialog and picks an option. */
+/** Opens the Select whose label reads `label` inside the dialog and picks an option, checking it took. */
 export async function chooseByLabel(page, label, option) {
-  const trigger = await page.waitForFunction((l) => {
+  const findTrigger = () => page.waitForFunction((l) => {
     const labels = [...document.querySelectorAll('[role="dialog"] label')].filter(el => el.innerText.trim() === l)
     return labels.map(el => el.parentElement.querySelector('button[role="combobox"]')).find(Boolean) ?? null
   }, { polling: 100 }, label)
-  await trigger.asElement().click()
-  await click(page, option, '[data-slot="select-content"]')
-  await page.waitForFunction(() => !document.querySelector('[data-slot="select-content"]'), { polling: 100 })
-  await pause(300)
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    await (await findTrigger()).asElement().click()
+    await click(page, option, '[data-slot="select-content"]')
+    await page.waitForFunction(() => !document.querySelector('[data-slot="select-content"]'), { polling: 100 })
+    await pause(300)
+    const shown = await (await findTrigger()).asElement().evaluate(el => el.innerText.trim())
+    if (shown === option) return
+    if (attempt === 2) throw new Error(`${label}: picked "${option}" but the field shows "${shown}"`)
+    console.log(`  (retrying ${label}: the field showed "${shown}" instead of "${option}")`)
+  }
 }
 
 /** Fills a new Examination for Lucas Ng today; online with a link, or in the Exam Room. */

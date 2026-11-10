@@ -1,9 +1,10 @@
-/** Seeds the local test database (see e2e/setup-local-db.sh): three staff accounts at different levels and a student, two schools and an application. */
+/** Seeds the local test database (see e2e/setup-local-db.sh): four staff accounts at different levels and a student, two schools and an application. */
 import { createClient } from '@supabase/supabase-js'
 const admin = createClient(process.env.SB_URL, process.env.SB_SERVICE, { auth: { persistSession: false } })
 const PASSWORD = process.env.E2E_PASSWORD
 if (!PASSWORD) throw new Error('Set E2E_PASSWORD (e2e/setup-local-db.sh generates one)')
 const users = [
+  { email: 'admin@aa.test', first: 'Ada', last: 'Admin', level: 0 },
   { email: 'manager@aa.test', first: 'Maggie', last: 'Manager', level: 3 },
   { email: 'staff@aa.test', first: 'Sam', last: 'Staff', level: 6 },
   { email: 'junior@aa.test', first: 'Jo', last: 'Junior', level: 7 },
