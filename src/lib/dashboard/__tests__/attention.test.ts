@@ -15,7 +15,7 @@ describe('attentionItems', () => {
     })
     expect(items.map(i => [i.key, i.label])).toEqual([
       ['overdue', '1 task past the deadline'],
-      ['exams', '9 exams waiting for confirmation'],
+      ['exams', '9 exams in the next 7 days waiting for confirmation'],
       ['today', '1 task due today'],
       ['week', '4 exams in the next 7 days'],
     ])

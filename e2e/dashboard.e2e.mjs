@@ -30,6 +30,14 @@ try {
     await seeText(page, 'Students')
   })
 
+  await step(page, 'awaiting confirmation agrees between the list and the figures', async () => {
+    await open(page, '/')
+    const text = await page.evaluate(() => document.querySelector('main').innerText)
+    const listed = text.match(/(\d+) exams? in the next 7 days waiting for confirmation/)?.[1]
+    const noted = text.match(/(\d+) awaiting confirmation/)?.[1]
+    assert(listed && listed === noted, `list says ${listed}, figures say ${noted}`)
+  })
+
   await step(page, 'every dashboard link resolves', async () => {
     await open(page, '/')
     const hrefs = await page.$$eval('main a[href^="/"]', links => [...new Set(links.map(a => a.getAttribute('href')))])

@@ -19,7 +19,6 @@ import { getCurrentUser } from "@/lib/supabase/auth"
 import {
   getApplicationPipeline, getDashboardCounts, getExamLoad, getMyBookingsToday, getRecentActivity,
 } from "@/lib/supabase/queries/dashboard"
-import { getPendingExamBookings } from "@/lib/supabase/queries/scheduler-stats"
 import { getMyTasks } from "@/lib/supabase/queries/staff-tasks"
 
 /**
@@ -39,9 +38,8 @@ export default async function DashboardPage() {
     canAccess(EXAM_PAPER_ACCESS.module, EXAM_PAPER_ACCESS.read),
   ])
 
-  const [counts, pendingExams, tasks, myDay, activity, pipeline, examLoad] = await Promise.all([
+  const [counts, tasks, myDay, activity, pipeline, examLoad] = await Promise.all([
     getDashboardCounts({ students, scheduler, events }, today),
-    scheduler ? getPendingExamBookings() : Promise.resolve(null),
     getMyTasks(),
     scheduler && user ? getMyBookingsToday(user.id, today) : Promise.resolve(null),
     getRecentActivity({ students, schools, scheduler, examPapers }),
@@ -49,12 +47,17 @@ export default async function DashboardPage() {
     scheduler ? getExamLoad(today) : Promise.resolve(null),
   ])
 
+  // "Awaiting confirmation" means the next 7 days everywhere on the page; later
+  // ones still show in gold on the 14-day chart.
+  const thisWeek = examLoad?.slice(0, 7) ?? null
+  const pendingExams = thisWeek
+    ? { count: thisWeek.reduce((sum, day) => sum + day.pending, 0), earliestDate: thisWeek.find(day => day.pending > 0)?.day ?? null }
+    : null
   const attention = attentionItems({ pendingExams, tasks: tasks?.active ?? null, examsThisWeek: counts.examsNext7Days, today })
   const dateLine = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Hong_Kong" }).format(new Date())
 
   const inProgress = pipeline?.reduce((sum, stage) => sum + stage.count, 0) ?? null
   const offers = pipeline?.find(stage => stage.stage === "offer_received")?.count ?? null
-  const awaitingThisWeek = examLoad?.slice(0, 7).reduce((sum, day) => sum + day.pending, 0) ?? null
   const plural = (n: number, one: string, many: string) => `${n.toLocaleString("en-GB")} ${n === 1 ? one : many}`
 
   const kpis: Kpi[] = [
@@ -68,7 +71,7 @@ export default async function DashboardPage() {
     ] : []),
     ...(scheduler ? [{
       label: "Exams in the next 7 days", value: counts.examsNext7Days, href: "/exams",
-      note: awaitingThisWeek ? `${awaitingThisWeek.toLocaleString("en-GB")} awaiting confirmation` : "All confirmed",
+      note: pendingExams?.count ? `${pendingExams.count.toLocaleString("en-GB")} awaiting confirmation` : "All confirmed",
     }] : []),
     ...(events ? [{ label: "Events in the next 30 days", value: counts.eventsNext30Days, href: "/events", note: null }] : []),
   ]

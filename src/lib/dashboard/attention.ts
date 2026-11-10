@@ -9,7 +9,7 @@ export type AttentionTone = 'urgent' | 'due' | 'info'
 export type AttentionItem = { key: string; count: number; label: string; detail: string; href: string; tone: AttentionTone }
 
 export type AttentionInput = {
-  /** Null when the person cannot see the Scheduler. */
+  /** Exams in the next 7 days not yet confirmed (the same window as the figures strip). Null without Scheduler access. */
   pendingExams: { count: number; earliestDate: string | null } | null
   tasks: StaffTask[] | null
   examsThisWeek: number | null
@@ -31,7 +31,7 @@ export function attentionItems({ pendingExams, tasks, examsThisWeek, today }: At
     const from = pendingExams.earliestDate ? `&date=${pendingExams.earliestDate}` : ''
     items.push({ key: 'exams', count: pendingExams.count, tone: 'urgent',
       href: `/scheduler?view=rooms&mode=week&status=pending&types=examination,group_examination${from}`,
-      label: `${plural(pendingExams.count, 'exam')} waiting for confirmation`, detail: 'Confirm them so students and invigilators can be told.' })
+      label: `${plural(pendingExams.count, 'exam')} in the next 7 days waiting for confirmation`, detail: 'Confirm them so students and invigilators can be told.' })
   }
   if (dueToday.length) {
     items.push({ key: 'today', count: dueToday.length, tone: 'due', href: '/tasks',
