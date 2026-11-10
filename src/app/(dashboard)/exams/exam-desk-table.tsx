@@ -90,7 +90,7 @@ export function ExamDeskTable(props: Props) {
               </TableRow>
             )}
             {rows.map(row => (
-              <TableRow key={row.bookingId}>
+              <TableRow key={row.rowKey}>
                 <TableCell className="pl-6 align-top">
                   <span className="block font-medium tabular-nums">{formatHkTime(row.startAt)}–{formatHkTime(row.endAt)}</span>
                   {props.showDate && (
@@ -139,9 +139,9 @@ export function ExamDeskTable(props: Props) {
                   <TableCell className="pr-6 align-top">
                     <ExamDeskRowActions
                       bookingId={row.bookingId}
-                      // An exam record belongs to one student. A group booking points at only one of
-                      // its candidates' records, so offering notes there would mislabel them as the group's.
-                      notes={row.examId && row.candidates.length <= 1 ? {
+                      studentId={row.studentId}
+                      // Each row is one candidate, so its exam record is that candidate's own.
+                      notes={row.examId ? {
                         examId: row.examId,
                         title: row.candidates.map(c => c.name).join(", ") || "Exam",
                         canWrite,

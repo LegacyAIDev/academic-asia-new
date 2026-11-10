@@ -7,9 +7,9 @@ import { summarisePaperAvailability, type PaperAvailability } from './exam-paper
 import { paperYearLevels } from './exam-paper-selection'
 
 /**
- * Turns examination bookings into the rows the exam desk shows. One booking is
- * one row: a single examination has one candidate, a group examination lists
- * all of them and is handled as a whole. Pure, so the rules can be tested.
+ * Turns examination bookings into the rows the exam desk shows: one row per
+ * candidate, so a group exam's students are counted and marked present one by
+ * one (UAT DEV24-005). Pure, so the rules can be tested.
  */
 
 export type ExamDeskCandidate = {
@@ -19,10 +19,19 @@ export type ExamDeskCandidate = {
   sortName: string
   code: string | null
   seatNo: number | null
+  /** Recorded for this candidate; bookings from before per-candidate attendance fall back to the booking's. */
+  attendance: Attendance
+  examId: string | null
 }
 
+type Attendance = 'show_up' | 'no_show' | null
+
 export type ExamDeskRow = {
+  /** Unique per row: the booking, and the candidate when the booking has one. */
+  rowKey: string
   bookingId: string
+  /** The candidate this row is for; null when the booking lists nobody. */
+  studentId: string | null
   /** The student's exam record behind the booking; null for bookings made without one. */
   examId: string | null
   bookingType: string
@@ -43,7 +52,7 @@ export type ExamDeskRow = {
   isOnline: boolean
   seatLabel: string | null
   status: 'pending' | 'confirmed'
-  attendance: 'show_up' | 'no_show' | null
+  attendance: Attendance
   /** Everything the search box looks through, lower-cased once. */
   searchText: string
 }
@@ -53,30 +62,37 @@ export const EXAM_DESK_STATUS_LABELS = { pending: 'Awaiting confirmation', confi
 /** Only what candidate listing needs, so a full booking detail can be passed as well. */
 type CandidateSource = {
   student: ExamDeskStudent | null
-  attendees: { role: string; seat_no: number | null; student: ExamDeskStudent | null }[]
+  attendance?: string | null
+  exam_id?: string | null
+  attendees: { role: string; seat_no: number | null; attendance?: string | null; exam_id?: string | null; student: ExamDeskStudent | null }[]
 }
 
-function toCandidate(student: ExamDeskStudent, seatNo: number | null): ExamDeskCandidate {
+const asAttendance = (value: string | null | undefined): Attendance => (value === 'show_up' || value === 'no_show' ? value : null)
+
+function toCandidate(student: ExamDeskStudent, seatNo: number | null, attendance: Attendance, examId: string | null): ExamDeskCandidate {
   return {
     studentId: student.id,
     name: personName(student) || 'Unnamed student',
     sortName: `${student.surname ?? ''} ${student.first_name ?? ''}`.trim().toLowerCase(),
     code: student.student_code,
     seatNo,
+    attendance,
+    examId,
   }
 }
 
 /** The students sitting the exam, by seat and then by name; falls back to the booking's own student. */
 export function examCandidates(booking: CandidateSource): ExamDeskCandidate[] {
+  const bookingAttendance = asAttendance(booking.attendance)
   const candidates = booking.attendees
     .filter(a => a.role === 'candidate' && a.student)
-    .map(a => toCandidate(a.student as ExamDeskStudent, a.seat_no))
+    .map(a => toCandidate(a.student as ExamDeskStudent, a.seat_no, asAttendance(a.attendance) ?? bookingAttendance, a.exam_id ?? null))
     .sort((a, b) => {
       if (a.seatNo !== b.seatNo) return (a.seatNo ?? Infinity) - (b.seatNo ?? Infinity)
       return a.sortName.localeCompare(b.sortName)
     })
   if (candidates.length > 0) return candidates
-  return booking.student ? [toCandidate(booking.student, null)] : []
+  return booking.student ? [toCandidate(booking.student, null, bookingAttendance, booking.exam_id ?? null)] : []
 }
 
 function seatLabel(candidates: ExamDeskCandidate[]): string | null {
@@ -85,8 +101,8 @@ function seatLabel(candidates: ExamDeskCandidate[]): string | null {
   return seats.length === 1 ? `Seat ${seats[0]}` : `Seats ${seats.join(', ')}`
 }
 
-function toRow(booking: ExamDeskBooking, statusById: Map<string, ExamPaperStatus> | null): ExamDeskRow {
-  const candidates = examCandidates(booking)
+function toRow(booking: ExamDeskBooking, candidates: ExamDeskCandidate[], statusById: Map<string, ExamPaperStatus> | null): ExamDeskRow {
+  const candidate = candidates.length === 1 ? candidates[0] : null
   // Older bookings carry no school of their own, so the linked application is the fallback.
   const school = booking.school ?? booking.application?.school ?? null
   const assessment = assessmentLabel(booking.assessment_snapshot)
@@ -96,8 +112,10 @@ function toRow(booking: ExamDeskBooking, statusById: Map<string, ExamPaperStatus
   ]
 
   return {
+    rowKey: candidate ? `${booking.id}:${candidate.studentId}` : booking.id,
     bookingId: booking.id,
-    examId: booking.exam_id,
+    studentId: candidate?.studentId ?? null,
+    examId: candidate?.examId ?? booking.exam_id,
     bookingType: booking.booking_type,
     startAt: booking.start_at,
     endAt: booking.end_at,
@@ -115,14 +133,19 @@ function toRow(booking: ExamDeskBooking, statusById: Map<string, ExamPaperStatus
     isOnline: booking.location_type === 'online',
     seatLabel: seatLabel(candidates),
     status: booking.status === 'pending' ? 'pending' : 'confirmed',
-    attendance: booking.attendance === 'show_up' || booking.attendance === 'no_show' ? booking.attendance : null,
+    attendance: candidate ? candidate.attendance : asAttendance(booking.attendance),
     searchText: searchable.filter(Boolean).join(' ').toLowerCase(),
   }
 }
 
 /** `statusById` is the live state of the chosen papers: null when it could not be read, empty when nothing is known yet. */
 export function toExamDeskRows(bookings: ExamDeskBooking[], statusById: Map<string, ExamPaperStatus> | null = new Map()): ExamDeskRow[] {
-  return bookings.map(booking => toRow(booking, statusById))
+  return bookings.flatMap(booking => {
+    const candidates = examCandidates(booking)
+    // A booking that lists nobody still shows, as one row.
+    if (candidates.length === 0) return [toRow(booking, [], statusById)]
+    return candidates.map(candidate => toRow(booking, [candidate], statusById))
+  })
 }
 
 /**

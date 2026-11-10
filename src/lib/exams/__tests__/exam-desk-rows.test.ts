@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { examCandidates, examDeskActions, splitExamDeskRows, toExamDeskRows } from '../exam-desk-rows'
 import { candidate, emma, lucas, makeDeskBooking, officer } from './exam-desk-fixture'
+import type { ExamDeskBooking } from '@/lib/supabase/queries/exam-desk'
 
 const rowOf = (...args: Parameters<typeof makeDeskBooking>) => toExamDeskRows([makeDeskBooking(...args)])[0]
 
@@ -20,8 +21,9 @@ describe('toExamDeskRows', () => {
       attendance: null,
     })
     expect(rowOf().candidates).toEqual([
-      { studentId: 'student-lucas', name: 'Lucas Ng', sortName: 'ng lucas', code: 'S001', seatNo: 1 },
+      { studentId: 'student-lucas', name: 'Lucas Ng', sortName: 'ng lucas', code: 'S001', seatNo: 1, attendance: null, examId: null },
     ])
+    expect(rowOf()).toMatchObject({ rowKey: 'booking-1:student-lucas', studentId: 'student-lucas' })
   })
 
   it('carries the exam record id, or null when the booking has none', () => {
@@ -71,7 +73,6 @@ describe('examCandidates', () => {
       attendees: [officer(), candidate(lucas, 2), candidate(emma, 1)],
     })
     expect(examCandidates(booking).map(c => c.name)).toEqual(['Emma Chan', 'Lucas Ng'])
-    expect(toExamDeskRows([booking])[0].seatLabel).toBe('Seats 1, 2')
   })
 
   it('puts candidates without a seat last, by surname', () => {
@@ -81,12 +82,40 @@ describe('examCandidates', () => {
 
   it('falls back to the booking student when no candidate was recorded', () => {
     expect(examCandidates(makeDeskBooking({ attendees: [] }))).toEqual([
-      { studentId: 'student-lucas', name: 'Lucas Ng', sortName: 'ng lucas', code: 'S001', seatNo: null },
+      { studentId: 'student-lucas', name: 'Lucas Ng', sortName: 'ng lucas', code: 'S001', seatNo: null, attendance: null, examId: null },
     ])
   })
 
   it('returns nobody when the booking has neither candidates nor a student', () => {
     expect(examCandidates(makeDeskBooking({ attendees: [], student: null }))).toEqual([])
+  })
+})
+
+describe('group examinations, one row per candidate (DEV24-005)', () => {
+  const group = (attendees: ExamDeskBooking['attendees'], attendance: string | null = null) =>
+    makeDeskBooking({ id: 'group-1', booking_type: 'group_examination', student: null, attendance, attendees })
+
+  it('gives each candidate their own row, seat, exam record and attendance', () => {
+    const rows = toExamDeskRows([group([
+      { ...candidate(lucas, 2), attendance: 'show_up', exam_id: 'exam-lucas' },
+      { ...candidate(emma, 1), exam_id: 'exam-emma' },
+    ])])
+    expect(rows.map(r => [r.rowKey, r.studentId, r.seatLabel, r.examId, r.attendance])).toEqual([
+      ['group-1:student-emma', 'student-emma', 'Seat 1', 'exam-emma', null],
+      ['group-1:student-lucas', 'student-lucas', 'Seat 2', 'exam-lucas', 'show_up'],
+    ])
+  })
+
+  it('counts people, not bookings: three expected, two waiting once one arrives', () => {
+    const single = makeDeskBooking({ id: 'single', attendees: [{ ...candidate(lucas, 1), attendance: 'show_up' }] })
+    const pair = group([candidate(emma, 1), candidate({ ...lucas, id: 'student-mira', first_name: 'Mira' }, 2)])
+    const { booked, showedUp, waiting } = splitExamDeskRows(toExamDeskRows([single, pair]))
+    expect([booked.length, showedUp.length, waiting]).toEqual([2, 1, 2])
+  })
+
+  it('uses the booking attendance for candidates recorded before per-candidate attendance', () => {
+    const rows = toExamDeskRows([group([candidate(lucas, 1), candidate(emma, 2)], 'show_up')])
+    expect(rows.map(r => r.attendance)).toEqual(['show_up', 'show_up'])
   })
 })
 

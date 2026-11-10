@@ -145,15 +145,21 @@ export async function cancelBooking(id: string, input: { reason: string }): Prom
   }
 }
 
-/** Records whether the student or attendees showed up; a show-up completes a linked exam. */
-export async function recordAttendance(id: string, attendance: 'show_up' | 'no_show'): Promise<ActionResult> {
+/**
+ * Records whether a candidate showed up (the exam desk has one row per candidate)
+ * or, without a student, every candidate of the booking not yet recorded. A
+ * show-up completes the candidate's exam record.
+ */
+export async function recordAttendance(id: string, attendance: 'show_up' | 'no_show', studentId?: string | null): Promise<ActionResult> {
   const denied = await assertAccess(MODULES.EXAMS, ACCESS.WRITE)
   if (denied) return denied
 
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
-    const { error } = await supabase.rpc('scheduler_record_attendance', { p_id: id, p_attendance: attendance })
+    const { error } = studentId
+      ? await supabase.rpc('scheduler_record_candidate_attendance', { p_id: id, p_student: studentId, p_attendance: attendance })
+      : await supabase.rpc('scheduler_record_attendance', { p_id: id, p_attendance: attendance })
     if (error) return { success: false, error: mapSchedulerError(error) }
 
     const booking = await getBooking(id)

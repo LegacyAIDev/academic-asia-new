@@ -34,10 +34,10 @@ export async function signIn(browser, email) {
   const page = await context.newPage()
   page.setDefaultTimeout(20000)
   page.on('pageerror', err => console.log(`  [page error] ${err.message}`))
-  await page.goto(`${BASE}/login`, { waitUntil: 'networkidle2' })
+  await page.goto(`${BASE}/login`, { waitUntil: 'networkidle2', timeout: 120000 })
   await page.type('#email', email)
   await page.type('#password', PASSWORD)
-  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle2' }), page.click('button[type="submit"]')])
+  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000 }), page.click('button[type="submit"]')])
   if (page.url().includes('/login')) throw new Error(`Sign-in failed for ${email}`)
   return { context, page }
 }

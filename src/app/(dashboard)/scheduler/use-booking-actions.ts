@@ -31,9 +31,9 @@ export function useBookingActions(onDone?: () => void) {
   return {
     isPending,
     confirm: (bookingId: string) => run(() => confirmBooking(bookingId), 'Booking confirmed'),
-    recordAttendance: (bookingId: string, attendance: 'show_up' | 'no_show') =>
+    recordAttendance: (bookingId: string, attendance: 'show_up' | 'no_show', studentId?: string | null) =>
       run(
-        () => recordAttendance(bookingId, attendance),
+        () => recordAttendance(bookingId, attendance, studentId),
         attendance === 'show_up' ? 'Marked as showed up' : 'Marked as no show',
       ),
   }

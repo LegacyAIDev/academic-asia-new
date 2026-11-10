@@ -38,6 +38,7 @@ export type BookingAttendee = {
   student: (PersonName & { student_code: string | null }) | null
   /** The candidate's exam record, shown in All exams. */
   exam: { id: string; status: { label: string } | null } | null
+  attendance?: string | null
 }
 
 export type BookingDetail = BookingRow & {
@@ -118,7 +119,7 @@ export async function getBooking(id: string): Promise<BookingDetail | null> {
        confirmer:profiles!scheduler_bookings_confirmed_by_fkey(id, first_name, surname),
        student:students(id, first_name, surname, student_code),
        school:schools(id, name),
-       attendees:scheduler_booking_attendees(id, profile_id, student_id, role, seat_no, application_id,
+       attendees:scheduler_booking_attendees(id, profile_id, student_id, role, seat_no, application_id, attendance,
          profile:profiles(id, first_name, surname), student:students(id, first_name, surname, student_code),
          exam:student_individual_exams!scheduler_booking_attendees_exam_id_fkey(id, status:exam_booking_statuses(label)))`,
     )

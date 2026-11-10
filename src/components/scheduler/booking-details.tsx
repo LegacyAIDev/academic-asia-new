@@ -87,6 +87,7 @@ export function BookingDetails({ booking }: { booking: BookingDetail }) {
                 <li key={a.id}>
                   {a.profile ? fullName(a.profile) : fullName(a.student)}
                   <span className="text-muted-foreground"> · {a.role}{a.seat_no ? ` · seat ${a.seat_no}` : ''}</span>
+                  {a.attendance && <span className="text-muted-foreground"> · {a.attendance === 'show_up' ? 'showed up' : 'no show'}</span>}
                   {a.exam?.status && <span className="text-muted-foreground"> · exam {a.exam.status.label.toLowerCase()}</span>}
                 </li>
               ))}

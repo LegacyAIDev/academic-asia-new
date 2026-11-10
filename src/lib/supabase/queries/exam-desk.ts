@@ -38,6 +38,9 @@ export type ExamDeskBooking = {
     profile_id: string | null
     role: string
     seat_no: number | null
+    /** This candidate's own attendance and exam record (absent on bookings made before they existed). */
+    attendance?: string | null
+    exam_id?: string | null
     student: ExamDeskStudent | null
   }[]
 }
@@ -48,7 +51,7 @@ const EXAM_DESK_SELECT = `id, title, booking_type, status, attendance, start_at,
   student:students(id, first_name, surname, student_code),
   school:schools(id, name),
   application:student_applications!scheduler_bookings_application_id_fkey(entry_year, school:schools(id, name)),
-  attendees:scheduler_booking_attendees(student_id, profile_id, role, seat_no,
+  attendees:scheduler_booking_attendees(student_id, profile_id, role, seat_no, attendance, exam_id,
     student:students(id, first_name, surname, student_code))`
 
 /**

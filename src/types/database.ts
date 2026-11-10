@@ -2086,6 +2086,7 @@ export type Database = {
       scheduler_booking_attendees: {
         Row: {
           application_id: string | null
+          attendance: string | null
           booking_id: string
           exam_id: string | null
           id: string
@@ -2098,6 +2099,7 @@ export type Database = {
         }
         Insert: {
           application_id?: string | null
+          attendance?: string | null
           booking_id: string
           exam_id?: string | null
           id?: string
@@ -2110,6 +2112,7 @@ export type Database = {
         }
         Update: {
           application_id?: string | null
+          attendance?: string | null
           booking_id?: string
           exam_id?: string | null
           id?: string
@@ -6312,6 +6315,10 @@ export type Database = {
           subject_kind: string
           title: string
         }[]
+      }
+      scheduler_record_candidate_attendance: {
+        Args: { p_attendance: string; p_id: string; p_student: string }
+        Returns: undefined
       }
       scheduler_record_attendance: {
         Args: { p_attendance: string; p_id: string }
