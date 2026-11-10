@@ -108,7 +108,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
   const { tab: rawTab } = await searchParams
   // Normalise the tab param, mapping the legacy "profile" value to "overview" and
   // the old "contacts" tab (renamed Family) to "family", so saved links still work
-  const validTabs = ["overview", "resume", "family", "education", "documents", "applications", "communications", "events", "immigration"]
+  const validTabs = ["overview", "resume", "family", "education", "documents", "applications", "communications", "events", "immigration", "calendar"]
   const requestedTab = rawTab === "contacts" ? "family" : rawTab
   const tab = validTabs.includes(requestedTab ?? "") ? (requestedTab as string) : "overview"
 

@@ -16,7 +16,7 @@ End-to-end checks of features in a real Chrome against the real app and a throwa
 | `events-workflow.e2e.mjs` | Every event type: create, view, edit, scheduler, delete | 33 |
 | `scheduler-workflow.e2e.mjs` | Other booking types, cancelling, blocked times, rooms | 7 |
 | `staff-workflow.e2e.mjs` | Admin creates and edits a staff member, who can then sign in | 4 |
-| `records-workflow.e2e.mjs` | School create/edit/delete, student delete, PDF and spreadsheet exports | 7 |
+| `records-workflow.e2e.mjs` | School create/edit/delete, student delete, student Calendar tab, PDF and spreadsheet exports | 8 |
 
 Two sweeps cover the whole app rather than one feature:
 

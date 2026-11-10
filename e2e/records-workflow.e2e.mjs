@@ -1,6 +1,7 @@
 /**
  * End-to-end check of school and student records and the document exports:
- * create, edit and delete a school (with boarder ages), delete a student, and
+ * create, edit and delete a school (with boarder ages), delete a student, open
+ * the student Calendar tab, and
  * download the school PDF, the brief intro PDF and spreadsheet, and an exam
  * cover slip. Needs psql on PATH and E2E_DB_URL for the local test database.
  */
@@ -73,6 +74,14 @@ try {
     await confirmDelete(page, 'Delete Student')
     await page.waitForFunction(() => location.pathname === '/students', { polling: 100, timeout: 60000 })
     assert(sql(`select count(*) from public.students where id = '${id}'`) === '0', 'student still in the database')
+  })
+
+  await step(page, "the student's Calendar tab opens and stays open after reload", async () => {
+    await open(page, `/students/${SEED.student}?tab=calendar`)
+    const selected = () => page.evaluate(() => document.querySelector('[role="tab"][aria-selected="true"]')?.innerText.trim())
+    assert(await selected() === 'Calendar', `selected tab: ${await selected()}`)
+    await page.reload({ waitUntil: 'networkidle2' })
+    assert(await selected() === 'Calendar', `after reload: ${await selected()}`)
   })
 
   await step(page, 'the selected-schools PDF downloads', async () => {
