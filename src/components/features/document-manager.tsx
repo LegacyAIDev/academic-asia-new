@@ -11,7 +11,7 @@ import {
 import { FileText, FileUp, Loader2, Trash2, Download, X, Check, Pencil } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
-import { formatFileSize } from "@/lib/attachments/constraints"
+import { ALLOWED_MIME, checkUploadable, formatFileSize } from "@/lib/attachments/constraints"
 import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
 
 type Category = { id: number; code: string; label: string }
@@ -75,7 +75,9 @@ export function DocumentManager({
 
   const addFiles = (files: FileList | null) => {
     if (!files) return
-    const next = Array.from(files).map((file) => ({
+    const { ok, refused } = checkUploadable(Array.from(files))
+    for (const reason of refused) toast.error(reason)
+    const next = ok.map((file) => ({
       file, name: file.name.replace(/\.[^.]+$/, ""), categoryId: defaultCategoryId(),
     }))
     setStaged((prev) => [...prev, ...next])
@@ -93,14 +95,14 @@ export function DocumentManager({
     })
     startTransition(async () => {
       const result = await uploadAction(ownerId, items, fd)
-      if (result.success && result.data) {
-        const { uploaded, failed, errors } = result.data
-        if (uploaded > 0) toast.success(`Uploaded ${uploaded} document${uploaded === 1 ? "" : "s"}`)
-        if (failed > 0) toast.error(errors[0] ?? `${failed} file(s) failed`)
-        setStaged([])
-      } else {
-        toast.error(result.error ?? "Upload failed")
-      }
+      // The reasons travel in data.errors even when every file failed (UAT DEV24-012).
+      const errors = result.data?.errors ?? []
+      const uploaded = result.data?.uploaded ?? 0
+      if (uploaded > 0) toast.success(`Uploaded ${uploaded} document${uploaded === 1 ? "" : "s"}`)
+      for (const reason of errors) toast.error(reason)
+      if (!result.success && errors.length === 0) toast.error(result.error ?? "Upload failed")
+      // Keep only the files a reason names (reasons start with the file's title), so they can be fixed.
+      if (uploaded > 0) setStaged((prev) => prev.filter((s) => errors.some((e) => e.startsWith(`${s.name || s.file.name}:`))))
     })
   }
 
@@ -142,7 +144,7 @@ export function DocumentManager({
           <FileUp className="h-6 w-6 text-muted-foreground" />
           <span className="text-sm font-medium">Choose files or drop them here</span>
           <span className="text-xs text-muted-foreground">PDF or images, up to 10 MB each — select multiple</span>
-          <input type="file" multiple accept="application/pdf,image/*" className="hidden"
+          <input type="file" multiple accept={ALLOWED_MIME.join(",")} className="hidden"
             onChange={(e) => { addFiles(e.target.files); e.target.value = "" }} />
         </label>
         )}

@@ -9,6 +9,21 @@ export const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/png', 'imag
 
 export const MAX_BYTES = 10 * 1024 * 1024
 
+/**
+ * Splits chosen files into those that can be uploaded and why the others
+ * cannot, so staff are told at once rather than after a failed upload (UAT DEV24-012).
+ */
+export function checkUploadable<F extends { name: string; type: string; size: number }>(files: F[]): { ok: F[]; refused: string[] } {
+  const ok: F[] = []
+  const refused: string[] = []
+  for (const file of files) {
+    if (!ALLOWED_MIME.includes(file.type)) refused.push(`${file.name} can't be uploaded: only PDF, JPG, PNG and WebP files are accepted.`)
+    else if (file.size > MAX_BYTES) refused.push(`${file.name} is larger than ${MAX_BYTES / 1048576} MB, the upload limit.`)
+    else ok.push(file)
+  }
+  return { ok, refused }
+}
+
 /** Human-readable size, used in upload lists and attachment rows. */
 export function formatFileSize(bytes: number | null): string {
   if (!bytes) return ''

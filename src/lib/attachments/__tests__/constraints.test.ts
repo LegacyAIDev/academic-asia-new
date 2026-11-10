@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ALLOWED_MIME, MAX_BYTES, formatFileSize, isSafeExternalUrl, urlHostname } from '../constraints'
+import { ALLOWED_MIME, MAX_BYTES, formatFileSize, isSafeExternalUrl, urlHostname, checkUploadable } from '../constraints'
 
 describe('upload constraints', () => {
   // These were moved here from student-documents.ts / school-documents.ts. The
@@ -62,3 +62,22 @@ describe('formatFileSize', () => {
     expect(formatFileSize(null)).toBe('')
   })
 })
+
+describe('checkUploadable (DEV24-012)', () => {
+  it('refuses unsupported types and oversized files, naming each, and keeps the rest', () => {
+    const files = [
+      { name: 'report.pdf', type: 'application/pdf', size: 2000 },
+      { name: 'notes.txt', type: 'text/plain', size: 56 },
+      { name: 'scan.gif', type: 'image/gif', size: 900 },
+      { name: 'huge.png', type: 'image/png', size: 11 * 1024 * 1024 },
+    ]
+    const { ok, refused } = checkUploadable(files)
+    expect(ok.map(f => f.name)).toEqual(['report.pdf'])
+    expect(refused).toEqual([
+      "notes.txt can't be uploaded: only PDF, JPG, PNG and WebP files are accepted.",
+      "scan.gif can't be uploaded: only PDF, JPG, PNG and WebP files are accepted.",
+      'huge.png is larger than 10 MB, the upload limit.',
+    ])
+  })
+})
+
