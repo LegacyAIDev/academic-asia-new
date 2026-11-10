@@ -77,11 +77,13 @@ export function StudentVisasSection({
               <Shield className="h-4 w-4 text-muted-foreground" />
               Visa Applications
             </CardTitle>
-            <VisaDialog
-              studentId={studentId}
-              referenceData={referenceData}
-              mode="create"
-            />
+            {canWrite && (
+              <VisaDialog
+                studentId={studentId}
+                referenceData={referenceData}
+                mode="create"
+              />
+            )}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -105,11 +107,13 @@ export function StudentVisasSection({
             <Shield className="h-4 w-4 text-muted-foreground" />
             Visa Applications ({visas.length})
           </CardTitle>
-          <VisaDialog
-            studentId={studentId}
-            referenceData={referenceData}
-            mode="create"
-          />
+          {canWrite && (
+            <VisaDialog
+              studentId={studentId}
+              referenceData={referenceData}
+              mode="create"
+            />
+          )}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -173,11 +177,13 @@ export function StudentVisasSection({
                           attachments={attachmentsByVisa?.get(visa.id) ?? []}
                           canWrite={canWrite}
                         />
-                        <DeleteVisaButton
-                          visaId={visa.id}
-                          studentId={studentId}
-                          schoolName={visa.school?.name ?? "this school"}
-                        />
+                        {canWrite && (
+                          <DeleteVisaButton
+                            visaId={visa.id}
+                            studentId={studentId}
+                            schoolName={visa.school?.name ?? "this school"}
+                          />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

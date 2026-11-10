@@ -69,11 +69,13 @@ export function StudentTravelSection({
               <Plane className="h-4 w-4 text-muted-foreground" />
               Travel
             </CardTitle>
-            <TravelDialog
-              studentId={studentId}
-              referenceData={referenceData}
-              mode="create"
-            />
+            {canWrite && (
+              <TravelDialog
+                studentId={studentId}
+                referenceData={referenceData}
+                mode="create"
+              />
+            )}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -97,11 +99,13 @@ export function StudentTravelSection({
             <Plane className="h-4 w-4 text-muted-foreground" />
             Travel ({travelRecords.length})
           </CardTitle>
-          <TravelDialog
-            studentId={studentId}
-            referenceData={referenceData}
-            mode="create"
-          />
+          {canWrite && (
+            <TravelDialog
+              studentId={studentId}
+              referenceData={referenceData}
+              mode="create"
+            />
+          )}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -165,11 +169,13 @@ export function StudentTravelSection({
                           attachments={attachmentsByTravel?.get(rec.id) ?? []}
                           canWrite={canWrite}
                         />
-                        <DeleteTravelButton
-                          travelId={rec.id}
-                          studentId={studentId}
-                          label={rec.airline?.label ?? rec.flight_number ?? "this record"}
-                        />
+                        {canWrite && (
+                          <DeleteTravelButton
+                            travelId={rec.id}
+                            studentId={studentId}
+                            label={rec.airline?.label ?? rec.flight_number ?? "this record"}
+                          />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

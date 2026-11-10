@@ -67,11 +67,13 @@ export function StudentExamResultsSection({
               <FileCheck className="h-4 w-4 text-muted-foreground" />
               Exam Results
             </CardTitle>
-            <ExamResultDialog
-              studentId={studentId}
-              referenceData={referenceData}
-              mode="create"
-            />
+            {canWrite && (
+              <ExamResultDialog
+                studentId={studentId}
+                referenceData={referenceData}
+                mode="create"
+              />
+            )}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -95,11 +97,13 @@ export function StudentExamResultsSection({
             <FileCheck className="h-4 w-4 text-muted-foreground" />
             Exam Results ({examResults.length})
           </CardTitle>
-          <ExamResultDialog
-            studentId={studentId}
-            referenceData={referenceData}
-            mode="create"
-          />
+          {canWrite && (
+            <ExamResultDialog
+              studentId={studentId}
+              referenceData={referenceData}
+              mode="create"
+            />
+          )}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -165,11 +169,13 @@ export function StudentExamResultsSection({
                           attachments={attachmentsByResult?.get(rec.id) ?? []}
                           canWrite={canWrite}
                         />
-                        <DeleteExamResultButton
-                          resultId={rec.id}
-                          studentId={studentId}
-                          label={rec.exam_type?.label ?? rec.subject?.label ?? "this result"}
-                        />
+                        {canWrite && (
+                          <DeleteExamResultButton
+                            resultId={rec.id}
+                            studentId={studentId}
+                            label={rec.exam_type?.label ?? rec.subject?.label ?? "this result"}
+                          />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

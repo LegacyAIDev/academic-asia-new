@@ -13,7 +13,7 @@ import { Plus, Loader2, ClipboardList, Check } from "lucide-react"
 import { createAATestBooking } from "@/lib/supabase/actions/student-resume-aa-tests"
 import type { IndividualExamRecord } from "@/lib/supabase/queries/student-individual-exams"
 
-type Props = { studentId: string; aaTests: IndividualExamRecord[] }
+type Props = { studentId: string; aaTests: IndividualExamRecord[]; canWrite?: boolean }
 
 const statusMap: Record<number, { label: string; style: string }> = {
   1: { label: "Pending", style: "bg-amber-50 text-amber-700 border-amber-200" },
@@ -26,7 +26,7 @@ function formatDate(d: string | null) {
   return new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
 }
 
-export function ResumeAATestsSection({ studentId, aaTests }: Props) {
+export function ResumeAATestsSection({ studentId, aaTests, canWrite = true }: Props) {
   const [showForm, setShowForm] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -59,9 +59,11 @@ export function ResumeAATestsSection({ studentId, aaTests }: Props) {
           <span className="text-sm font-medium">AA Test Results</span>
           {aaTests.length > 0 && <Badge variant="secondary" className="text-xs">{aaTests.length}</Badge>}
         </div>
-        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowForm(!showForm)}>
-          <Plus className="h-3 w-3" /> Book AA Test
-        </Button>
+        {canWrite && (
+          <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowForm(!showForm)}>
+            <Plus className="h-3 w-3" /> Book AA Test
+          </Button>
+        )}
       </div>
 
       {aaTests.length === 0 && !showForm && (

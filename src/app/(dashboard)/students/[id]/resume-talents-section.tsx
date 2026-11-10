@@ -12,7 +12,7 @@ import { Plus, Loader2, Trophy, Trash2, Check, Video } from "lucide-react"
 import { createStudentTalent, deleteStudentTalent } from "@/lib/supabase/actions/student-resume-talents"
 import type { ResumeTalentRecord } from "@/lib/supabase/queries/student-resume-profile"
 
-type Props = { studentId: string; talents: ResumeTalentRecord[] }
+type Props = { studentId: string; talents: ResumeTalentRecord[]; canWrite?: boolean }
 
 const categoryLabels: Record<string, { label: string; style: string }> = {
   music: { label: "Music", style: "bg-violet-50 text-violet-700 border-violet-200" },
@@ -22,7 +22,7 @@ const categoryLabels: Record<string, { label: string; style: string }> = {
   others: { label: "Others", style: "bg-slate-50 text-slate-700 border-slate-200" },
 }
 
-export function ResumeTalentsSection({ studentId, talents }: Props) {
+export function ResumeTalentsSection({ studentId, talents, canWrite = true }: Props) {
   const [showForm, setShowForm] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -62,9 +62,11 @@ export function ResumeTalentsSection({ studentId, talents }: Props) {
           <span className="text-sm font-medium">Special Talents</span>
           {talents.length > 0 && <Badge variant="secondary" className="text-xs">{talents.length}</Badge>}
         </div>
-        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowForm(!showForm)}>
-          <Plus className="h-3 w-3" /> Add Talent
-        </Button>
+        {canWrite && (
+          <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowForm(!showForm)}>
+            <Plus className="h-3 w-3" /> Add Talent
+          </Button>
+        )}
       </div>
 
       {talents.length === 0 && !showForm && (
@@ -88,9 +90,11 @@ export function ResumeTalentsSection({ studentId, talents }: Props) {
                 )}
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(t.id)} disabled={isPending}>
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            {canWrite && (
+              <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(t.id)} disabled={isPending}>
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
         )
       })}

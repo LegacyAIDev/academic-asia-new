@@ -17,6 +17,8 @@ import type { StudentDocumentRecord } from "@/lib/supabase/queries/student-resum
 import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
 
 type Props = {
+  /** False for read-only staff: hides adding, editing and deleting. */
+  canWrite?: boolean
   studentId: string
   passportType: string | null
   passportNumber: string | null
@@ -24,7 +26,7 @@ type Props = {
 }
 
 /** Legal documents section — passport info + document uploads */
-export function StudentLegalDocumentsSection({ studentId, passportType, passportNumber, documents }: Props) {
+export function StudentLegalDocumentsSection({ studentId, passportType, passportNumber, documents, canWrite = true }: Props) {
   const [editing, setEditing] = useState(false)
   const [showUpload, setShowUpload] = useState(false)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
@@ -94,10 +96,12 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
             Legal Documents
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowUpload(!showUpload)}>
-              <Plus className="h-3 w-3" /> Upload
-            </Button>
-            {!editing && (
+            {canWrite && (
+              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowUpload(!showUpload)}>
+                <Plus className="h-3 w-3" /> Upload
+              </Button>
+            )}
+            {canWrite && !editing && (
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditing(true)}>
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
@@ -197,9 +201,11 @@ export function StudentLegalDocumentsSection({ studentId, passportType, passport
                     ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     : <Download className="h-3.5 w-3.5" />}
                 </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(doc.id)} disabled={isPending}>
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                {canWrite && (
+                  <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(doc.id)} disabled={isPending}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>

@@ -66,7 +66,9 @@ export function StudentResumeSection({
               <FileText className="h-4 w-4 text-muted-foreground" />
               Resume
             </CardTitle>
-            <ResumeDialog studentId={studentId} referenceData={referenceData} mode="create" />
+            {canWrite && (
+              <ResumeDialog studentId={studentId} referenceData={referenceData} mode="create" />
+            )}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -122,7 +124,9 @@ export function StudentResumeSection({
               )}
             </div>
           </div>
-          <ResumeDialog studentId={studentId} referenceData={referenceData} mode="create" />
+          {canWrite && (
+            <ResumeDialog studentId={studentId} referenceData={referenceData} mode="create" />
+          )}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -172,11 +176,13 @@ export function StudentResumeSection({
                           attachments={attachmentsByResume?.get(entry.id) ?? []}
                           canWrite={canWrite}
                         />
-                        <DeleteResumeButton
-                          resumeId={entry.id}
-                          studentId={studentId}
-                          resumeLabel={entry.instrument?.label ?? entry.subject ?? "this entry"}
-                        />
+                        {canWrite && (
+                          <DeleteResumeButton
+                            resumeId={entry.id}
+                            studentId={studentId}
+                            resumeLabel={entry.instrument?.label ?? entry.subject ?? "this entry"}
+                          />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

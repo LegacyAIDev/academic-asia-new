@@ -16,6 +16,8 @@ import type { EducationWithJoins } from "@/lib/supabase/queries/student-educatio
 import type { EducationReferenceData } from "./education-dialog"
 
 type StudentEducationSectionProps = {
+  /** False for read-only staff: hides adding, editing and deleting. */
+  canWrite?: boolean
   studentId: string
   educationEntries: EducationWithJoins[]
   referenceData: EducationReferenceData
@@ -46,6 +48,7 @@ export function StudentEducationSection({
   studentId,
   educationEntries,
   referenceData,
+  canWrite = true,
 }: StudentEducationSectionProps) {
   if (educationEntries.length === 0) {
     return (
@@ -56,11 +59,13 @@ export function StudentEducationSection({
               <BookOpen className="h-4 w-4 text-muted-foreground" />
               Education
             </CardTitle>
-            <EducationDialog
-              studentId={studentId}
-              referenceData={referenceData}
-              mode="create"
-            />
+            {canWrite && (
+              <EducationDialog
+                studentId={studentId}
+                referenceData={referenceData}
+                mode="create"
+              />
+            )}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -84,11 +89,13 @@ export function StudentEducationSection({
             <BookOpen className="h-4 w-4 text-muted-foreground" />
             Education ({educationEntries.length})
           </CardTitle>
-          <EducationDialog
-            studentId={studentId}
-            referenceData={referenceData}
-            mode="create"
-          />
+          {canWrite && (
+            <EducationDialog
+              studentId={studentId}
+              referenceData={referenceData}
+              mode="create"
+            />
+          )}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -137,16 +144,20 @@ export function StudentEducationSection({
                     <TableCell className="text-sm">{formatDate(entry.updated_at)}</TableCell>
                     <TableCell className="pr-6">
                       <div className="flex items-center justify-end gap-1">
-                        <EditEducationButton
-                          education={entry}
-                          studentId={studentId}
-                          referenceData={referenceData}
-                        />
-                        <DeleteEducationButton
-                          educationId={entry.id}
-                          studentId={studentId}
-                          courseName={entry.course?.label ?? entry.legacy_course_name ?? "this entry"}
-                        />
+                        {canWrite && (
+                          <EditEducationButton
+                            education={entry}
+                            studentId={studentId}
+                            referenceData={referenceData}
+                          />
+                        )}
+                        {canWrite && (
+                          <DeleteEducationButton
+                            educationId={entry.id}
+                            studentId={studentId}
+                            courseName={entry.course?.label ?? entry.legacy_course_name ?? "this entry"}
+                          />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

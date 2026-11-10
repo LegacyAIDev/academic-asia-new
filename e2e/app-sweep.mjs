@@ -30,7 +30,7 @@ const ROUTES = [
   '/scheduler', '/scheduler?view=day', '/scheduler?view=month', '/scheduler?mode=team', '/scheduler?mode=rooms', '/scheduler/rooms',
   ...(booking ? [`/scheduler/bookings/${booking}`] : []),
   '/staff', '/staff/new', ...(profile ? [`/staff/${profile}`, `/staff/${profile}/edit`] : []),
-  '/reports', '/settings', '/settings/access-levels',
+  '/settings', '/settings/access-levels',
 ]
 
 const IGNORED_PREFETCH = (process.env.SWEEP_IGNORE_PREFETCH ?? '/reports').split(',')

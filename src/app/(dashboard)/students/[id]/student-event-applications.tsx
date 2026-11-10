@@ -16,6 +16,8 @@ import type { EventAppWithJoins } from "@/lib/supabase/queries/student-event-app
 import type { EventAppReferenceData } from "./event-application-dialog"
 
 type StudentEventApplicationsSectionProps = {
+  /** False for read-only staff: hides adding, editing and deleting. */
+  canWrite?: boolean
   studentId: string
   applications: EventAppWithJoins[]
   referenceData: EventAppReferenceData
@@ -56,6 +58,7 @@ export function StudentEventApplicationsSection({
   studentId,
   applications,
   referenceData,
+  canWrite = true,
 }: StudentEventApplicationsSectionProps) {
   if (applications.length === 0) {
     return (
@@ -66,11 +69,13 @@ export function StudentEventApplicationsSection({
               <CalendarDays className="h-4 w-4 text-muted-foreground" />
               Event Applications
             </CardTitle>
-            <EventApplicationDialog
-              studentId={studentId}
-              referenceData={referenceData}
-              mode="create"
-            />
+            {canWrite && (
+              <EventApplicationDialog
+                studentId={studentId}
+                referenceData={referenceData}
+                mode="create"
+              />
+            )}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -94,11 +99,13 @@ export function StudentEventApplicationsSection({
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
             Event Applications ({applications.length})
           </CardTitle>
-          <EventApplicationDialog
-            studentId={studentId}
-            referenceData={referenceData}
-            mode="create"
-          />
+          {canWrite && (
+            <EventApplicationDialog
+              studentId={studentId}
+              referenceData={referenceData}
+              mode="create"
+            />
+          )}
         </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -153,16 +160,20 @@ export function StudentEventApplicationsSection({
                     </TableCell>
                     <TableCell className="pr-6">
                       <div className="flex items-center justify-end gap-1">
-                        <EditEventApplicationButton
-                          application={app}
-                          studentId={studentId}
-                          referenceData={referenceData}
-                        />
-                        <DeleteEventApplicationButton
-                          applicationId={app.id}
-                          studentId={studentId}
-                          eventName={app.event?.name ?? app.legacy_event_name ?? "this event"}
-                        />
+                        {canWrite && (
+                          <EditEventApplicationButton
+                            application={app}
+                            studentId={studentId}
+                            referenceData={referenceData}
+                          />
+                        )}
+                        {canWrite && (
+                          <DeleteEventApplicationButton
+                            applicationId={app.id}
+                            studentId={studentId}
+                            eventName={app.event?.name ?? app.legacy_event_name ?? "this event"}
+                          />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

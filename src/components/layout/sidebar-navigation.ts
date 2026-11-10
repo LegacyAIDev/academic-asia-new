@@ -6,7 +6,6 @@ import {
   CalendarDays,
   ClipboardCheck,
   DoorOpen,
-  FileText,
   GraduationCap,
   Languages,
   LayoutDashboard,
@@ -92,7 +91,7 @@ export const navigation: NavItem[] = [
     ],
   },
   { name: "Staff", href: "/staff", icon: UserCog },
-  { name: "Reports", href: "/reports", icon: FileText },
+  // Reports has no page yet; its access level stays so the page can be added later without a migration.
   { name: "Settings", href: "/settings", icon: Settings },
 ]
 

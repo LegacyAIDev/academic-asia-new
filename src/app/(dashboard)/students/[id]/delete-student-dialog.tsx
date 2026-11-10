@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Trash2, Loader2 } from "lucide-react"
 import { deleteStudent } from "@/lib/supabase/actions/students"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 type DeleteStudentDialogProps = {
   studentId: string
@@ -23,7 +23,7 @@ type DeleteStudentDialogProps = {
 }
 
 export function DeleteStudentDialog({ studentId, studentName }: DeleteStudentDialogProps) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)

@@ -624,6 +624,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               briefIntro={briefIntro}
               referenceData={briefIntroReferenceData}
+              canWrite={canWrite}
             />
 
             <RecordNotes
@@ -668,6 +669,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               talents={resumeTalents}
               documents={resumeDocuments}
               aaTests={aaTests}
+              canWrite={canWrite}
             />
 
             <StudentResumeSection
@@ -699,6 +701,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               educationEntries={educationEntries}
               referenceData={eduReferenceData}
+              canWrite={canWrite}
             />
 
             <StudentExamResultsSection
@@ -742,6 +745,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               studentId={id}
               applications={eventApplications}
               referenceData={eventAppReferenceData}
+              canWrite={canWrite}
             />
           </TabsContent>
 
@@ -764,6 +768,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               passportType={student.passport_type}
               passportNumber={student.passport_number}
               documents={legalDocuments}
+              canWrite={canWrite}
             />
 
             <StudentTravelSection

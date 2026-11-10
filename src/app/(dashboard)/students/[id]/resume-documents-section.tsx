@@ -12,13 +12,15 @@ import { formatFileSize } from "@/lib/attachments/constraints"
 import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
 
 type Props = {
+  /** False for read-only staff: hides adding, editing and deleting. */
+  canWrite?: boolean
   studentId: string
   documents: StudentDocumentRecord[]
   categoryId: number
   title: string
 }
 
-export function ResumeDocumentsSection({ studentId, documents, categoryId, title }: Props) {
+export function ResumeDocumentsSection({ studentId, documents, categoryId, title, canWrite = true }: Props) {
   const [showForm, setShowForm] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -67,9 +69,11 @@ export function ResumeDocumentsSection({ studentId, documents, categoryId, title
           <span className="text-sm font-medium">{title}</span>
           {documents.length > 0 && <Badge variant="secondary" className="text-xs">{documents.length}</Badge>}
         </div>
-        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowForm(!showForm)}>
-          <Plus className="h-3 w-3" /> Upload
-        </Button>
+        {canWrite && (
+          <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setShowForm(!showForm)}>
+            <Plus className="h-3 w-3" /> Upload
+          </Button>
+        )}
       </div>
 
       {documents.length === 0 && !showForm && (
@@ -93,9 +97,11 @@ export function ResumeDocumentsSection({ studentId, documents, categoryId, title
               ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
               : <Download className="h-3.5 w-3.5" />}
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(doc.id)} disabled={isPending}>
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+          {canWrite && (
+            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(doc.id)} disabled={isPending}>
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
       ))}
 

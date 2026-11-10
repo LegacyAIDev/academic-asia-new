@@ -12,6 +12,8 @@ import type { ResumeProfileRecord, ResumeTalentRecord, StudentDocumentRecord } f
 import type { IndividualExamRecord } from "@/lib/supabase/queries/student-individual-exams"
 
 type Props = {
+  /** False for read-only staff: hides adding, editing and deleting. */
+  canWrite?: boolean
   studentId: string
   profile: ResumeProfileRecord | null
   talents: ResumeTalentRecord[]
@@ -25,7 +27,7 @@ const englishLabels: Record<string, { label: string; style: string }> = {
   not_good: { label: "Not Good", style: "bg-amber-50 text-amber-700 border-amber-200" },
 }
 
-export function StudentResumeProfileSection({ studentId, profile, talents, documents, aaTests }: Props) {
+export function StudentResumeProfileSection({ studentId, profile, talents, documents, aaTests, canWrite = true }: Props) {
   const schoolReports = documents.filter(d => d.category?.code === "school_report")
   const examCerts = documents.filter(d => d.category?.code === "exam_certificate")
   const english = profile?.english_standard ? englishLabels[profile.english_standard] : null
@@ -38,7 +40,7 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
             <FileText className="h-4 w-4 text-muted-foreground" />
             Resume
           </CardTitle>
-          <ResumeProfileDialog studentId={studentId} profile={profile} />
+          {canWrite && <ResumeProfileDialog studentId={studentId} profile={profile} />}
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -66,9 +68,9 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
         {/* Section B — Academic */}
         <div className="space-y-4">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">B — Academic</p>
-          <ResumeAATestsSection studentId={studentId} aaTests={aaTests} />
-          <ResumeDocumentsSection studentId={studentId} documents={schoolReports} categoryId={1} title="Current School Reports" />
-          <ResumeDocumentsSection studentId={studentId} documents={examCerts} categoryId={2} title="External Exam Certificates" />
+          <ResumeAATestsSection studentId={studentId} aaTests={aaTests} canWrite={canWrite} />
+          <ResumeDocumentsSection studentId={studentId} documents={schoolReports} categoryId={1} title="Current School Reports" canWrite={canWrite} />
+          <ResumeDocumentsSection studentId={studentId} documents={examCerts} categoryId={2} title="External Exam Certificates" canWrite={canWrite} />
         </div>
 
         <div className="border-t border-border/50" />
@@ -76,7 +78,7 @@ export function StudentResumeProfileSection({ studentId, profile, talents, docum
         {/* Section C — Special Talents */}
         <div className="space-y-4">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">C — Special Talents</p>
-          <ResumeTalentsSection studentId={studentId} talents={talents} />
+          <ResumeTalentsSection studentId={studentId} talents={talents} canWrite={canWrite} />
         </div>
 
         <div className="border-t border-border/50" />

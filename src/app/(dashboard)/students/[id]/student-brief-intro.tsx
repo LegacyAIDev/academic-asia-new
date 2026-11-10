@@ -10,6 +10,8 @@ import type { BriefIntroWithJoins } from "@/lib/supabase/queries/student-brief-i
 import type { BriefIntroReferenceData } from "./brief-intro-dialog"
 
 type StudentBriefIntroSectionProps = {
+  /** False for read-only staff: hides adding, editing and deleting. */
+  canWrite?: boolean
   studentId: string
   briefIntro: BriefIntroWithJoins | null
   referenceData: BriefIntroReferenceData
@@ -28,7 +30,7 @@ function formatDate(dateStr: string | null) {
 }
 
 export function StudentBriefIntroSection({
-  studentId, briefIntro, referenceData,
+  studentId, briefIntro, referenceData, canWrite = true,
 }: StudentBriefIntroSectionProps) {
   if (!briefIntro) {
     return (
@@ -39,7 +41,7 @@ export function StudentBriefIntroSection({
               <Languages className="h-4 w-4 text-muted-foreground" />
               Brief Introduction
             </CardTitle>
-            <BriefIntroDialog studentId={studentId} referenceData={referenceData} />
+            {canWrite && <BriefIntroDialog studentId={studentId} referenceData={referenceData} />}
           </div>
         </CardHeader>
         <CardContent className="py-8">
@@ -65,7 +67,7 @@ export function StudentBriefIntroSection({
             {/* Only offered once there is something to export — the empty state
                 above has no introduction to put in a document. */}
             <BriefIntroExportMenu studentIds={[studentId]} />
-            <BriefIntroDialog studentId={studentId} referenceData={referenceData} briefIntro={briefIntro} />
+            {canWrite && <BriefIntroDialog studentId={studentId} referenceData={referenceData} briefIntro={briefIntro} />}
           </div>
         </div>
       </CardHeader>
