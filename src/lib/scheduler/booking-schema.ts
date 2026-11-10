@@ -18,7 +18,7 @@ export const attendeeSchema = z
     profile_id: optionalUuid,
     student_id: optionalUuid,
     role: z.enum(ATTENDEE_ROLES).default('attendee'),
-    seat_no: z.number().int().positive().nullable().optional(),
+    seat_no: z.number().int('Seat numbers are whole numbers').positive('Seat numbers start at 1').nullable().optional(),
     application_id: optionalUuid,
   })
   .refine(a => Boolean(a.profile_id) !== Boolean(a.student_id), {

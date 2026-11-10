@@ -1,9 +1,10 @@
 import { addMinutes } from 'date-fns'
 import type { BookingFormInput } from './booking-schema'
-import { DAY_START_TIME, DEFAULT_BOOKING_MINUTES } from './config'
+import { DAY_END_TIME, DAY_START_TIME, DEFAULT_BOOKING_MINUTES } from './config'
 import { combineBusinessDateTime } from './exam-booking-defaults'
 import type { SchedulerView } from './search-params'
-import { formatHkDate, normaliseSelection } from './time-utils'
+import { formatHkDate, normaliseSelection, roundUpToSlot, toHkParts } from './time-utils'
+import { hkDay } from '@/lib/hk-day'
 
 /** A slot the user picked on the calendar: by click, drag or the right-click menu. */
 export type SlotSelection = { start: string; end: string; allDay?: boolean; resourceId?: string }
@@ -67,4 +68,25 @@ export function slotFromGridAttributes(
 function formatHkIsoDate(iso: string): string {
   const [day, month, year] = formatHkDate(iso).split('/')
   return `${year}-${month}-${day}`
+}
+
+/**
+ * When New booking is pressed without picking a slot: the day the calendar is
+ * showing, at the start of the business day (UAT DEV24-006). On today, the
+ * next 15-minute slot instead, moved to the start of the next business day
+ * when it falls outside business hours.
+ */
+export function slotForDay(day: string, now: Date = new Date()): SlotSelection | null {
+  if (!GRID_DATE.test(day)) return null
+  const today = hkDay(now)
+  let date = day
+  let clock = DAY_START_TIME
+  if (day === today) {
+    const rounded = roundUpToSlot(now)
+    const next = toHkParts(rounded.toISOString()).time
+    // Past closing, or rounded over midnight: the next business day.
+    if (hkDay(rounded) !== today || next > DAY_END_TIME) date = hkDay(new Date(now.getTime() + 24 * 3600000))
+    else if (next >= DAY_START_TIME) clock = next
+  }
+  return slotFromGridAttributes(date, clock, undefined)
 }

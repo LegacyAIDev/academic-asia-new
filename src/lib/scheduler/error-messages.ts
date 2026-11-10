@@ -19,9 +19,17 @@ const MESSAGES: Record<string, string> = {
   '23505': 'This name is already in use.',
 }
 
+/** Names the seat and the seats the room has (UAT DEV24-008). */
+export function seatOutsideRoom(seat: number, capacity: number): string {
+  return `Seat ${seat} is outside this room's seats (1–${capacity})`
+}
+
 export function mapSchedulerError(error: PgLikeError, fallback = 'Something went wrong. Please try again.'): string {
   if (!error) return fallback
   if (error.code === 'SR002') return error.message || 'Room capacity exceeded.'
+  // "Seat 3 exceeds the room capacity of 2" from the attendee trigger.
+  const seat = error.code === 'SR003' ? /Seat (\d+) exceeds the room capacity of (\d+)/.exec(error.message ?? '') : null
+  if (seat) return seatOutsideRoom(Number(seat[1]), Number(seat[2]))
   // The database message names the block ("Room is blocked then: Lunch").
   if (error.code === 'SR005' && error.message) return error.message
   if (error.code && MESSAGES[error.code]) return MESSAGES[error.code]

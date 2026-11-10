@@ -9,7 +9,8 @@ import { bookingInitialFromExam } from '@/lib/scheduler/exam-booking-defaults'
 import { todayInBusinessTz } from '@/lib/scheduler/search-params'
 import { getBooking } from '@/lib/supabase/queries/scheduler-bookings'
 import { getExamBookingLinks, getExamForBooking } from '@/lib/supabase/queries/scheduler-exams'
-import { listActiveStaff, type SchedulerStaffOption } from '@/lib/supabase/queries/scheduler-people'
+import { getStudentsByIds, listActiveStaff, type SchedulerStaffOption } from '@/lib/supabase/queries/scheduler-people'
+import { personName } from '@/lib/scheduler/person-name'
 import { getRooms, type SchedulerRoom } from '@/lib/supabase/queries/scheduler-rooms'
 
 export type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
@@ -61,6 +62,13 @@ export async function getBookingDialogContextAction(input: {
         const name = `${exam.student?.first_name ?? ''} ${exam.student?.surname ?? ''}`.trim()
         if (name) peopleLabels[exam.student_id] = name
       }
+    }
+
+    // A booking started from a student's page arrives with only the id; the form
+    // shows the student as chosen once it has their name (UAT DEV24-007).
+    if (initial.student_id && !peopleLabels[initial.student_id]) {
+      const [student] = await getStudentsByIds([initial.student_id])
+      if (student) peopleLabels[student.id] = personName(student)
     }
 
     return {

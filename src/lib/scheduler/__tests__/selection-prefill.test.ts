@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { prefillFromSelection, slotFromGridAttributes } from '../selection-prefill'
+import { prefillFromSelection, slotForDay, slotFromGridAttributes } from '../selection-prefill'
 
 const ME = '11111111-1111-4111-8111-111111111111'
 const COLLEAGUE = '22222222-2222-4222-8222-222222222222'
@@ -173,5 +173,34 @@ describe('slotFromGridAttributes', () => {
       booking_type: 'consultation',
       student_id: STUDENT,
     })
+  })
+})
+
+describe('slotForDay (New booking without a picked slot, DEV24-006)', () => {
+  // Tue 10/11/2026 10:07 in Hong Kong.
+  const NOW = new Date('2026-11-10T02:07:00.000Z')
+
+  it('starts at 09:00 HKT on another day the calendar shows', () => {
+    expect(slotForDay('2026-10-28', NOW)).toEqual({ start: '2026-10-28T01:00:00.000Z', end: '2026-10-28T02:00:00.000Z', resourceId: undefined })
+  })
+
+  it('starts at the next 15-minute slot today', () => {
+    expect(slotForDay('2026-11-10', NOW)?.start).toBe('2026-11-10T02:15:00.000Z')
+  })
+
+  it('starts at 09:00 when today is still before business hours', () => {
+    expect(slotForDay('2026-11-10', new Date('2026-11-09T22:40:00.000Z'))?.start).toBe('2026-11-10T01:00:00.000Z')
+  })
+
+  it('moves to 09:00 the next day late in the evening', () => {
+    expect(slotForDay('2026-11-10', new Date('2026-11-10T14:39:00.000Z'))?.start).toBe('2026-11-11T01:00:00.000Z')
+  })
+
+  it('moves to 09:00 the next day when the next slot is past midnight', () => {
+    expect(slotForDay('2026-11-10', new Date('2026-11-10T15:50:00.000Z'))?.start).toBe('2026-11-11T01:00:00.000Z')
+  })
+
+  it('ignores a malformed day', () => {
+    expect(slotForDay('28/10/2026', NOW)).toBeNull()
   })
 })

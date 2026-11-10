@@ -17,6 +17,7 @@ import { bookingFormSchema, type BookingFormInput, type BookingFormValues } from
 import { defaultBookingInput } from '@/lib/scheduler/booking-defaults'
 import { canCancelBooking } from '@/lib/scheduler/booking-permissions'
 import { formErrorMessages } from '@/lib/scheduler/form-error-messages'
+import { seatOutsideRoom } from '@/lib/scheduler/error-messages'
 import { saveBooking, confirmBooking, type SaveBookingResult } from '@/lib/supabase/actions/scheduler-bookings'
 import { BookingFormSection } from './booking-form-section'
 import { BookingFormBasics } from './booking-form-basics'
@@ -91,6 +92,12 @@ export function BookingDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, defaultValues])
 
+  // A listed problem goes away as soon as the form is changed, so it never describes old values.
+  useEffect(() => {
+    const subscription = form.watch(() => setProblems(current => (current.length ? [] : current)))
+    return () => subscription.unsubscribe()
+  }, [form])
+
   const startAt = useWatch({ control: form.control, name: 'start_at' })
   const endAt = useWatch({ control: form.control, name: 'end_at' })
   const { conflicts, setConflicts } = useBookingConflicts(form, initial?.id ?? null)
@@ -104,6 +111,13 @@ export function BookingDialog({
   const onInvalid = (errors: FieldErrors<BookingFormInput>) => setProblems(formErrorMessages(errors))
 
   const onSubmit = (values: BookingFormValues) => {
+    // A seat beyond the room's seats is caught here, keeping what was typed (UAT DEV24-008).
+    const capacity = rooms.find(room => room.id === values.room_id)?.capacity
+    const outside = capacity ? values.attendees.filter(a => a.seat_no && a.seat_no > capacity) : []
+    if (capacity && outside.length > 0) {
+      setProblems(outside.map(a => seatOutsideRoom(a.seat_no!, capacity)))
+      return
+    }
     setProblems([])
     startTransition(async () => {
       const result: SaveBookingResult = await saveBooking(values)

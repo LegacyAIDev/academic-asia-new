@@ -30,6 +30,8 @@ describe('mapSchedulerError', () => {
   it('maps known SQLSTATE codes to friendly text', () => {
     expect(mapSchedulerError({ code: 'SR001' })).toBe('That room is exclusively booked for this time.')
     expect(mapSchedulerError({ code: 'SR003' })).toBe('The seat number is outside the room capacity.')
+    expect(mapSchedulerError({ code: 'SR003', message: 'Seat 3 exceeds the room capacity of 2' }))
+      .toBe("Seat 3 is outside this room's seats (1–2)")
     expect(mapSchedulerError({ code: 'SR004' })).toBe('A reason is required.')
     expect(mapSchedulerError({ code: '23P01' })).toBe('That seat is already taken for this time.')
     expect(mapSchedulerError({ code: 'P0002' })).toBe('Booking not found or already cancelled.')

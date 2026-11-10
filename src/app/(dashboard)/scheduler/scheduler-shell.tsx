@@ -11,7 +11,7 @@ import type { BlockedOccurrence, BlockedTime } from '@/lib/scheduler/blocked-tim
 import type { CalendarEvent, CalendarEventProps } from '@/lib/scheduler/calendar-adapter'
 import type { BookingFormInput } from '@/lib/scheduler/booking-schema'
 import { bookingDetailPeopleLabels, bookingDetailToFormInput } from '@/lib/scheduler/booking-defaults'
-import { prefillFromSelection, type SlotSelection } from '@/lib/scheduler/selection-prefill'
+import { prefillFromSelection, slotForDay, type SlotSelection } from '@/lib/scheduler/selection-prefill'
 import { moveBooking } from '@/lib/supabase/actions/scheduler-bookings'
 import { getBookingDetailsAction } from '@/lib/supabase/actions/scheduler-details'
 import type { EventMove } from '@/components/scheduler/scheduler-calendar'
@@ -70,7 +70,9 @@ export function SchedulerShell({ params, items, blockedOccurrences, myBlockedTim
 
   const openCreate = (slot?: SlotSelection) => {
     if (!canWrite) return
-    setDialog({ open: true, initial: prefillFromSelection(slot, params.view, currentProfileId), peopleLabels: model.peopleLabels })
+    // Without a picked slot, the booking starts on the day the calendar is showing.
+    const picked = slot ?? slotForDay(params.date) ?? undefined
+    setDialog({ open: true, initial: prefillFromSelection(picked, params.view, currentProfileId), peopleLabels: model.peopleLabels })
   }
 
   const openEdit = async (bookingId: string) => {

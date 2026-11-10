@@ -252,6 +252,13 @@ describe('bookingFormSchema - seats', () => {
 })
 
 describe('attendeeSchema', () => {
+  it('explains zero, negative and decimal seats (DEV24-008)', () => {
+    const issue = (seat: number) => attendeeSchema.safeParse({ student_id: STUDENT_ID, role: 'candidate', seat_no: seat }).error?.issues[0]?.message
+    expect(issue(0)).toBe('Seat numbers start at 1')
+    expect(issue(-2)).toBe('Seat numbers start at 1')
+    expect(issue(1.5)).toBe('Seat numbers are whole numbers')
+  })
+
   it('accepts a staff attendee (profile_id only)', () => {
     expect(attendeeSchema.safeParse({ profile_id: PROFILE_ID }).success).toBe(true)
   })
