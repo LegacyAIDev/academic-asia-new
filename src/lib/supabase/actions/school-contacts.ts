@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { missingRequired, type RequiredRule } from '@/lib/forms/required-fields'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -32,6 +33,11 @@ export type CreateSchoolContactInput = {
   remarks?: string | null
   is_active?: boolean
 }
+
+/** What an entry needs before it is worth saving. */
+const REQUIRED: RequiredRule<CreateSchoolContactInput>[] = [
+  { anyOf: ['first_name', 'surname', 'email_1'], message: "Enter the contact's name or email" },
+]
 
 export type SchoolContactOption = {
   id: string
@@ -91,6 +97,8 @@ export async function createSchoolContact(
 ): Promise<ActionResult<{ id: string }>> {
   const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
   if (denied) return denied
+  const missing = missingRequired(input, REQUIRED)
+  if (missing) return { success: false, error: missing }
 
   try {
     const cookieStore = await cookies()

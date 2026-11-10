@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { deleteAttachmentsForRecord } from '@/lib/supabase/actions/record-attachments'
+import { missingRequired, type RequiredRule } from '@/lib/forms/required-fields'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -30,6 +31,12 @@ export type CreateResumeInput = {
   remarks?: string | null
 }
 
+/** What an entry needs before it is worth saving. */
+const REQUIRED: RequiredRule<CreateResumeInput>[] = [
+  { anyOf: ['resume_type_id'], message: 'Choose the type of entry' },
+  { anyOf: ['exam_school', 'subject', 'result', 'qualification', 'piece', 'event_name', 'remarks'], message: 'Add what this entry is about' },
+]
+
 /**
  * Create a new resume entry for a student
  */
@@ -38,6 +45,8 @@ export async function createStudentResume(
 ): Promise<ActionResult<{ id: string }>> {
   const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
   if (denied) return denied
+  const missing = missingRequired(input, REQUIRED)
+  if (missing) return { success: false, error: missing }
 
   try {
     const cookieStore = await cookies()

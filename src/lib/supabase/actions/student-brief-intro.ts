@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { sanitizeRichText } from '@/lib/rich-text'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { missingRequired, type RequiredRule } from '@/lib/forms/required-fields'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -23,6 +24,11 @@ export type UpsertBriefIntroInput = {
   approved_at?: string | null
   approved_by?: string | null
 }
+
+/** What an entry needs before it is worth saving. */
+const REQUIRED: RequiredRule<UpsertBriefIntroInput>[] = [
+  { anyOf: ['spoken_english_id', 'hobbies', 'subjects', 'remarks'], message: 'Fill in at least one part of the introduction' },
+]
 
 /**
  * Create or update the brief intro for a student (one record per student)
@@ -47,6 +53,12 @@ export async function upsertStudentBriefIntro(
       .select('id')
       .eq('student_id', input.student_id)
       .maybeSingle()
+
+    // A new intro needs some content; an existing one (some imported ones are blank) can still be edited.
+    if (!existing) {
+      const missing = missingRequired(input, REQUIRED)
+      if (missing) return { success: false, error: missing }
+    }
 
     if (existing) {
       const { student_id: _, ...updateFields } = input

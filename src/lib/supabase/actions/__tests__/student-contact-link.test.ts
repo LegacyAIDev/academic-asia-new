@@ -81,7 +81,7 @@ describe('linking a family member to a student', () => {
 
   it('refuses the student themself and a student that no longer exists', async () => {
     let queries = setup()
-    expect(await createStudentContact({ student_id: 's1', related_student_id: 's1' }))
+    expect(await createStudentContact({ student_id: 's1', relationship_id: 4, related_student_id: 's1' }))
       .toEqual({ success: false, error: 'A student cannot be their own family member' })
     expect(queries).toHaveLength(0)
 
@@ -95,24 +95,24 @@ describe('linking a family member to a student', () => {
     setup({ write: { data: null, error: { code: '23505', message: 'duplicate key' } } })
     expect(await updateStudentContact('c1', 's1', { related_student_id: 's2' }))
       .toEqual({ success: false, error: 'This student is already linked as a family member' })
-    expect(await createStudentContact({ student_id: 's1', related_student_id: 's2' }))
+    expect(await createStudentContact({ student_id: 's1', relationship_id: 4, related_student_id: 's2' }))
       .toEqual({ success: false, error: 'This student is already linked as a family member' })
 
     setup({ write: { data: null, error: { code: '42501', message: 'permission denied' } } })
-    expect(await createStudentContact({ student_id: 's1', related_student_id: 's2' }))
+    expect(await createStudentContact({ student_id: 's1', relationship_id: 4, related_student_id: 's2' }))
       .toEqual({ success: false, error: 'permission denied' })
   })
 
   it('needs Students write access to link', async () => {
     const queries = setup()
     state.rights = new Set(['students:1'])
-    expect(await createStudentContact({ student_id: 's1', related_student_id: 's2' })).toEqual(DENIED)
+    expect(await createStudentContact({ student_id: 's1', relationship_id: 4, related_student_id: 's2' })).toEqual(DENIED)
     expect(queries).toHaveLength(0)
   })
 
   it('reports a failed lookup as a failed save', async () => {
     setup({ lookup: { data: null, error: { message: 'timeout' } } })
-    expect(await createStudentContact({ student_id: 's1', related_student_id: 's2' }))
+    expect(await createStudentContact({ student_id: 's1', relationship_id: 4, related_student_id: 's2' }))
       .toEqual({ success: false, error: 'Failed to create contact' })
   })
 
@@ -156,5 +156,13 @@ describe('searchStudentsForFamilyAction', () => {
     state.rights = new Set(['students:1'])
     state.client = stub.supabase
     expect(await searchStudentsForFamilyAction('chan', 's1')).toEqual({ success: false, error: 'Failed to search students' })
+  })
+
+  it('refuses a blank family member (DEV24-010) and writes nothing', async () => {
+    const queries = setup()
+    expect(await createStudentContact({ student_id: 's1' })).toEqual({ success: false, error: 'Choose the relationship' })
+    expect(await createStudentContact({ student_id: 's1', relationship_id: 4, surname: ' ' }))
+      .toEqual({ success: false, error: 'Enter a name, phone or email, or link an existing student' })
+    expect(queries).toHaveLength(0)
   })
 })

@@ -9,6 +9,7 @@ import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { purgeOwnerStorage } from '@/lib/supabase/actions/record-attachments'
 import { getPresentSchoolName } from '@/lib/supabase/queries/present-schools'
 import { getLinkedStudent } from '@/lib/supabase/queries/student-family'
+import { missingRequired, type RequiredRule } from '@/lib/forms/required-fields'
 
 export type CreateStudentInput = {
   surname: string
@@ -241,6 +242,12 @@ export type CreateContactInput = {
   related_student_id?: string | null
 }
 
+/** What an entry needs before it is worth saving. */
+const CONTACT_REQUIRED: RequiredRule<CreateContactInput>[] = [
+  { anyOf: ['relationship_id'], message: 'Choose the relationship' },
+  { anyOf: ['first_name', 'surname', 'telephone', 'mobile', 'email_1', 'related_student_id'], message: 'Enter a name, phone or email, or link an existing student' },
+]
+
 /**
  * A family member who is a student too is linked rather than typed: their name
  * and gender are copied from that student, so the row still reads right if the
@@ -278,6 +285,8 @@ function revalidateFamilyPages(studentId: string, linkedIds: (string | null | un
 export async function createStudentContact(input: CreateContactInput): Promise<ActionResult<{ id: string }>> {
   const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
   if (denied) return denied
+  const missing = missingRequired(input, CONTACT_REQUIRED)
+  if (missing) return { success: false, error: missing }
 
   try {
     const cookieStore = await cookies()

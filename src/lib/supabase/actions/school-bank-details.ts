@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { deleteAttachmentsForRecord } from '@/lib/supabase/actions/record-attachments'
+import { missingRequired, type RequiredRule } from '@/lib/forms/required-fields'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -28,12 +29,19 @@ export type CreateBankDetailInput = {
   remarks?: string | null
 }
 
+/** What an entry needs before it is worth saving. */
+const REQUIRED: RequiredRule<CreateBankDetailInput>[] = [
+  { anyOf: ['bank_name', 'account_number', 'iban_number'], message: 'Enter the bank name or the account number' },
+]
+
 /** Create a new bank detail entry */
 export async function createSchoolBankDetail(
   input: CreateBankDetailInput
 ): Promise<ActionResult<{ id: string }>> {
   const denied = await assertAccess(MODULES.SCHOOLS, ACCESS.WRITE)
   if (denied) return denied
+  const missing = missingRequired(input, REQUIRED)
+  if (missing) return { success: false, error: missing }
 
   try {
     const cookieStore = await cookies()

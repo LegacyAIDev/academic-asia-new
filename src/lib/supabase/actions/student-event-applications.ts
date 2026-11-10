@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
+import { missingRequired, type RequiredRule } from '@/lib/forms/required-fields'
 
 type ActionResult<T = void> = {
   success: boolean
@@ -25,6 +26,11 @@ export type CreateEventAppInput = {
   remarks?: string | null
 }
 
+/** What an entry needs before it is worth saving. */
+const REQUIRED: RequiredRule<CreateEventAppInput>[] = [
+  { anyOf: ['event_id'], message: 'Choose the event' },
+]
+
 /**
  * Create a new event application for a student
  */
@@ -33,6 +39,8 @@ export async function createStudentEventApplication(
 ): Promise<ActionResult<{ id: string }>> {
   const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
   if (denied) return denied
+  const missing = missingRequired(input, REQUIRED)
+  if (missing) return { success: false, error: missing }
 
   try {
     const cookieStore = await cookies()
