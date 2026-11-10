@@ -29,6 +29,8 @@ export default async function NewEventPage({ params }: NewEventPageParams) {
   ])
 
   const referenceData = { ...refData, profiles }
+  // The type whose page the user came from is filled in for them.
+  const pageType = refData.eventTypes.find((t) => t.code === typeCode)
   const typeLabel = EVENT_TYPE_LABELS[typeCode]
 
   return (
@@ -53,7 +55,8 @@ export default async function NewEventPage({ params }: NewEventPageParams) {
         </div>
       </div>
 
-      <EventForm mode="create" eventType={type} referenceData={referenceData} />
+      <EventForm mode="create" eventType={type} referenceData={referenceData}
+        defaultEventType={pageType ? { id: pageType.id, categoryId: pageType.category_id } : null} />
     </div>
   )
 }

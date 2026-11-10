@@ -11,6 +11,8 @@ import type { EventFormReferenceData, EventData } from "./event-form-types"
 import { selectTriggerStyles } from "./event-form-types"
 
 type Props = {
+  /** Type preselected for a new event started from that type's page. */
+  defaultEventTypeId?: number | null
   referenceData: EventFormReferenceData
   selectedCategoryId: number | null
   onCategoryChange: (id: number) => void
@@ -20,7 +22,7 @@ type Props = {
 }
 
 export function EventFormBasicSection({
-  referenceData, selectedCategoryId, onCategoryChange, onDeliveryModeChange, event,
+  referenceData, selectedCategoryId, onCategoryChange, onDeliveryModeChange, event, defaultEventTypeId = null,
 }: Props) {
   const { categories, eventTypes, deliveryModes, visibilities, profiles } = referenceData
 
@@ -69,7 +71,7 @@ export function EventFormBasicSection({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5 text-muted-foreground" />Event Type</Label>
-            <Select name="event_type_id" key={selectedCategoryId} defaultValue={event?.event_type_id?.toString() ?? ""}>
+            <Select name="event_type_id" key={selectedCategoryId} defaultValue={(event?.event_type_id ?? (filteredTypes.some((t) => t.id === defaultEventTypeId) ? defaultEventTypeId : null))?.toString() ?? ""}>
               <SelectTrigger className={selectTriggerStyles}>
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>

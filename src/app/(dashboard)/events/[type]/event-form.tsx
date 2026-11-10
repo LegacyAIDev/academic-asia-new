@@ -2,7 +2,6 @@
 
 import { useState, useTransition, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Save, Loader2 } from "lucide-react"
 import { createEvent, updateEvent, type CreateEventInput } from "@/lib/supabase/actions/events"
@@ -17,6 +16,7 @@ import { EventFormRepresentatives, type RepresentativeRow } from "./event-form-r
 import { EventFormExamBlocks, type ExamBlockRow } from "./event-form-exam-blocks"
 import { EventFormRemarksSection } from "./event-form-remarks-section"
 import { getContactsForSchools, type SchoolContactOption } from "@/lib/supabase/actions/school-contacts"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 export type EventFormProps = {
   mode: "create" | "edit"
@@ -25,15 +25,17 @@ export type EventFormProps = {
   referenceData: EventFormReferenceData
   /** Pre-loaded school IDs for E&G events in edit mode */
   existingSchoolIds?: string[]
+  /** For a new event: the type of the page it was started from. */
+  defaultEventType?: { id: number; categoryId: number | null } | null
 }
 
-export function EventForm({ mode, eventType, event, referenceData, existingSchoolIds = [] }: EventFormProps) {
-  const router = useRouter()
+export function EventForm({ mode, eventType, event, referenceData, existingSchoolIds = [], defaultEventType = null }: EventFormProps) {
+  const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
   // Controlled state for conditional rendering
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(event?.category_id ?? null)
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(event?.category_id ?? defaultEventType?.categoryId ?? null)
   const [selectedDeliveryModeId, setSelectedDeliveryModeId] = useState<number | null>(event?.delivery_mode_id ?? null)
   const [selectedSchedulingModeId, setSelectedSchedulingModeId] = useState<number | null>(event?.scheduling_mode_id ?? null)
 
@@ -85,6 +87,10 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
     const str = (name: string) => { const v = (fd.get(name) as string); return (!v || v === "none") ? null : v }
     const int = (name: string) => fd.get(name) ? parseInt(fd.get(name) as string, 10) : null
     const assignedTo = str("assigned_to")
+    if (!int("event_type_id")) {
+      setError("Choose the event type")
+      return
+    }
 
     const input: CreateEventInput = {
       event_type_id: int("event_type_id")!,
@@ -144,6 +150,7 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
         referenceData={referenceData}
         selectedCategoryId={selectedCategoryId}
         onCategoryChange={setSelectedCategoryId}
+        defaultEventTypeId={defaultEventType?.id ?? null}
         onDeliveryModeChange={setSelectedDeliveryModeId}
         event={event}
       />

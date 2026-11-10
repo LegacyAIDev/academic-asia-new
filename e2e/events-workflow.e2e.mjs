@@ -39,6 +39,21 @@ try {
   const errors = []
   page.on('pageerror', e => errors.push(e.message))
 
+  await step(page, 'a new event from a type page starts with that type chosen, and a missing type is explained', async () => {
+    await open(page, '/events/interview/new')
+    const chosen = await page.evaluate(() => [...document.querySelectorAll('main label')]
+      .filter(l => ['Category', 'Event Type'].includes(l.innerText.replace('*', '').trim()))
+      .map(l => l.parentElement.querySelector('button[role="combobox"]')?.innerText.trim()).join(' / '))
+    assert(chosen === 'Admission & Assessment / Interview Day', `preselected: ${chosen}`)
+    // Switching the category clears the preselected type.
+    await open(page, '/events/expo-fair/new')
+    await chooseAfterLabel(page, 'Category', 'Admission & Assessment')
+    await page.type('#name', 'UAT Event no type')
+    await page.click('main button[type="submit"]')
+    await seeText(page, 'Choose the event type')
+    assert(sql(`select count(*) from public.events where name = 'UAT Event no type'`) === '0', 'saved without a type')
+  })
+
   for (const [type, category, label] of TYPES) {
     const name = `UAT Event ${type}`
     let id = null

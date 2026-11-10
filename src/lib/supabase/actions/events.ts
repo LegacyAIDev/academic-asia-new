@@ -39,6 +39,8 @@ export type ActionResult<T = void> = {
 export async function createEvent(input: CreateEventInput): Promise<ActionResult<{ id: string }>> {
   const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
   if (denied) return denied
+  if (!input.event_type_id) return { success: false, error: 'Choose the event type' }
+  if (!input.name?.trim()) return { success: false, error: 'Enter the event name' }
 
   try {
     const cookieStore = await cookies()
@@ -88,6 +90,8 @@ export async function createEvent(input: CreateEventInput): Promise<ActionResult
 export async function updateEvent(id: string, input: Partial<CreateEventInput>): Promise<ActionResult> {
   const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
   if (denied) return denied
+  if ('event_type_id' in input && !input.event_type_id) return { success: false, error: 'Choose the event type' }
+  if ('name' in input && !input.name?.trim()) return { success: false, error: 'Enter the event name' }
 
   try {
     const cookieStore = await cookies()
