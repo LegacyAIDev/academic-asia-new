@@ -50,6 +50,7 @@ import {
 import type { ExamResultWithJoins } from "@/lib/supabase/queries/student-exam-results"
 import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
+import { SchoolSearchField } from "@/components/features/school-search-field"
 
 type ExamTypeItem = { id: number; code: string; label: string }
 type SubjectItem = { id: number; code: string; label: string; exam_type_code: string | null }
@@ -275,7 +276,7 @@ export function ExamResultDialog({
                 <Input name="test_date" type="date" className={inputStyles} defaultValue={examResult?.test_date ?? ""} />
               </FormField>
               <FormField label="School">
-                <Input name="school_id" className={inputStyles} defaultValue={examResult?.school_id ?? ""} placeholder="School UUID (optional)" />
+                <SchoolSearchField name="school_id" className={inputStyles} defaultSchool={examResult?.school ?? null} />
               </FormField>
             </FormSection>
 

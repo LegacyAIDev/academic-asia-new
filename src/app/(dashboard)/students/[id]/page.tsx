@@ -26,7 +26,6 @@ import {
   FileText,
   Globe,
   ClipboardList,
-  MessageSquare,
   School,
   BookOpen,
   Shield,
@@ -77,6 +76,7 @@ import { canAccess, requireAccess } from "@/lib/permissions/guard"
 import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
 import { AttachmentField } from "@/components/features/attachment-field"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
+import { QuickAddNoteButton, STUDENT_NOTES_ANCHOR } from "./quick-add-note-button"
 
 // Status badge styling based on status code
 const statusStyles: Record<string, string> = {
@@ -389,14 +389,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
                   </a>
                 </Button>
               )}
-              <Button variant="outline" className="w-full justify-start gap-2" disabled>
-                <Phone className="h-4 w-4" />
-                Log Call
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" disabled>
-                <MessageSquare className="h-4 w-4" />
-                Add Note
-              </Button>
+              {canWrite && <QuickAddNoteButton studentId={id} onOverview={tab === "overview"} />}
               <Button variant="outline" className="w-full justify-start gap-2" asChild>
                 <Link href={`/students/${id}?tab=applications`} scroll={false}>
                   <School className="h-4 w-4" />
@@ -634,6 +627,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
               more={recordNotes.more}
               canWrite={canWrite}
               currentUserId={currentUserId}
+              anchorId={STUDENT_NOTES_ANCHOR}
             />
 
             <StudentInternalNotesSection

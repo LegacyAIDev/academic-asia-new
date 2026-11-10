@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { NOTE_LIMIT, type RecordNote } from "@/lib/notes/record-note"
 import { RecordNoteComposer } from "./record-note-composer"
@@ -17,11 +17,34 @@ type Props = {
   currentUserId: string | null
   /** Drops the card frame when the list sits inside a dialog. */
   bare?: boolean
+  /** Id of the section, so a link ending in #id scrolls here and starts a note. */
+  anchorId?: string
+}
+
+const PENDING_KEY = "record-notes:start-note"
+
+/** Asks this record's notes section to start a note once it is on screen (after a tab change). */
+export function requestNoteComposer(recordId: string, anchorId: string) {
+  sessionStorage.setItem(PENDING_KEY, `${recordId}:${anchorId}`)
+}
+
+/** Puts the cursor in the composer of the notes section with this id. */
+export function focusNoteComposer(anchorId: string) {
+  const section = document.getElementById(anchorId)
+  section?.scrollIntoView({ behavior: "smooth", block: "center" })
+  section?.querySelector<HTMLTextAreaElement>('textarea[aria-label="New note"]')?.focus({ preventScroll: true })
 }
 
 /** Dated notes of one record, newest first, with a composer for those who may write. */
-export function RecordNotes({ target, recordId, initialNotes, more = false, canWrite, currentUserId, bare }: Props) {
+export function RecordNotes({ target, recordId, initialNotes, more = false, canWrite, currentUserId, bare, anchorId }: Props) {
   const [notes, setNotes] = useState(initialNotes)
+
+  // Arriving from Quick Actions > Add Note on another tab starts a note.
+  useEffect(() => {
+    if (!anchorId || !canWrite || sessionStorage.getItem(PENDING_KEY) !== `${recordId}:${anchorId}`) return
+    sessionStorage.removeItem(PENDING_KEY)
+    focusNoteComposer(anchorId)
+  }, [anchorId, canWrite, recordId])
 
   const content = (
     <>
@@ -55,5 +78,5 @@ export function RecordNotes({ target, recordId, initialNotes, more = false, canW
     </>
   )
 
-  return <section className={cn("space-y-3", !bare && "rounded-xl border bg-card p-4")}>{content}</section>
+  return <section id={anchorId} className={cn("space-y-3 scroll-mt-24", !bare && "rounded-xl border bg-card p-4")}>{content}</section>
 }
