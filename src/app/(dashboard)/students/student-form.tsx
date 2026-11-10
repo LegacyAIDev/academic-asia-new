@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useTransition } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -41,6 +40,7 @@ import type { PresentSchoolOption } from "@/lib/supabase/queries/present-schools
 import { PresentSchoolPicker } from "./present-school-picker"
 import { parseDateOnly, toDateOnly } from "@/lib/date-only"
 import { hkToday } from "@/lib/hk-day"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 type ReferenceItem = {
   id: number
@@ -70,7 +70,7 @@ export type StudentFormProps = {
 export function StudentForm({
   mode, student, referenceData, presentSchools, examPaperAttachments = [], canWrite = true,
 }: StudentFormProps) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)

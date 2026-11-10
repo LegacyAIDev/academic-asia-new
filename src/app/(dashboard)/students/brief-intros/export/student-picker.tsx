@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { Check, Minus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 export type PickerStudent = {
   id: string
@@ -40,7 +41,7 @@ export function StudentPicker({
   selectedIds: string[]
   cap: number
 }) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 

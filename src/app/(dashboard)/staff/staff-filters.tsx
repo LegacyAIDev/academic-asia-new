@@ -1,11 +1,12 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useState, useTransition } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, X } from "lucide-react"
 import { useDebouncedCallback } from "use-debounce"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 type StaffFiltersProps = {
   departments: { id: number; label: string }[]
@@ -13,7 +14,7 @@ type StaffFiltersProps = {
 
 /** Search bar and department filter for staff list */
 export function StaffFilters({ departments }: StaffFiltersProps) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const currentSearch = searchParams.get("search") ?? ""

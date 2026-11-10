@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useState, useTransition } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +18,7 @@ import {
 import { Search, SlidersHorizontal, X } from "lucide-react"
 import { useDebouncedCallback } from "use-debounce"
 import type { SchoolFilterOptions } from "@/lib/supabase/queries/schools"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 /** URL params this component owns, with the labels shown on the active chips. */
 const FILTER_KEYS = {
@@ -38,7 +39,7 @@ type FilterKey = keyof typeof FILTER_KEYS
 const ANY = "__any__"
 
 export function SchoolsFilters({ options }: { options: SchoolFilterOptions }) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
 

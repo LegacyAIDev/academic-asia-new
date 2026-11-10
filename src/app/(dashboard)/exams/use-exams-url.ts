@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useTransition } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 export type ExamsUrlUpdate = (updates: Record<string, string | null>) => void
 
@@ -10,7 +11,7 @@ export type ExamsUrlUpdate = (updates: Record<string, string | null>) => void
  * the first page, and the scroll position is kept so the list does not jump.
  */
 export function useExamsUrl() {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 

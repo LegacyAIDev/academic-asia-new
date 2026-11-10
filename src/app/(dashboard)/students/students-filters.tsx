@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import { useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState, useTransition } from 'react'
 import { Input } from '@/components/ui/input'
 import {
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Search, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { StudentsAdvancedFilters } from './students-advanced-filters'
+import { useRouterWithProgress } from '@/components/layout/navigation-progress'
 
 type ReferenceItem = {
   id: number
@@ -34,7 +35,7 @@ type Consultant = {
  *   list, not silently discard what the consultant has picked.
  */
 export function StudentsFilters({ preserveParams = [] }: { preserveParams?: string[] } = {}) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()

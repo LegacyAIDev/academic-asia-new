@@ -1,10 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { ArrowLeft, Download, Loader2, Printer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useRouterWithProgress } from '@/components/layout/navigation-progress'
 
 /**
  * On-screen controls. Carries `no-print` so none of it reaches the paper.
@@ -27,7 +28,7 @@ export function ExportControls({
 }) {
   const [downloading, setDownloading] = useState(false)
   const [downloadError, setDownloadError] = useState<string | null>(null)
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 

@@ -1,17 +1,18 @@
 'use client'
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import { useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState, useTransition } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, X, Calendar } from 'lucide-react'
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 type EventsFiltersProps = {
   eventType: string
 }
 
 export function EventsFilters({ eventType }: EventsFiltersProps) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()

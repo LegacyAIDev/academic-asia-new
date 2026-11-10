@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Trash2, Loader2 } from "lucide-react"
 import { deleteEvent } from "@/lib/supabase/actions/events"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 type DeleteEventDialogProps = {
   eventId: string
@@ -24,7 +24,7 @@ type DeleteEventDialogProps = {
 }
 
 export function DeleteEventDialog({ eventId, eventName, eventType }: DeleteEventDialogProps) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)

@@ -171,3 +171,9 @@
   height: 0;
   pointer-events: none;
 }
+
+/* Top loading bar (components/layout/navigation-progress.tsx). */
+@keyframes nav-progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(300%); }
+}

@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -28,6 +27,7 @@ import {
 } from "lucide-react"
 import { createSchool, updateSchool, type CreateSchoolInput } from "@/lib/supabase/actions/schools"
 import type { SchoolWithJoins } from "@/lib/supabase/queries/schools"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 /** Tri-state select <-> nullable boolean. NULL means nobody has answered yet. */
 const boolToSelect = (value: boolean | null | undefined) =>
@@ -56,7 +56,7 @@ export type SchoolFormProps = {
 }
 
 export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [genderTypeId, setGenderTypeId] = useState(school?.gender_type?.id?.toString() ?? "")

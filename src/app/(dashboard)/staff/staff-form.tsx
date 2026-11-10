@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,6 +19,7 @@ import { setProfilePermissions } from "@/lib/supabase/actions/permissions"
 import { StaffAccessCard } from "./staff-access-card"
 import type { MatrixModule } from "@/components/permissions/permission-matrix"
 import type { AccessLevel } from "@/lib/permissions/modules"
+import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 type StaffFormProps = {
   mode: "create" | "edit"
@@ -47,7 +47,7 @@ export function StaffForm({
   initialOverrides = {},
   canManageAccess,
 }: StaffFormProps) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [adminLevel, setAdminLevel] = useState<number | null>(staff?.admin_level ?? null)

@@ -1,7 +1,6 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import type { CalendarItem } from '@/lib/supabase/queries/scheduler-bookings'
@@ -26,6 +25,7 @@ import { MoveConfirmDialog } from './move-confirm-dialog'
 import { CalendarContextMenu } from './calendar-context-menu'
 import { useCalendarModel } from './use-calendar-model'
 import { useBookingActions } from './use-booking-actions'
+import { useRouterWithProgress } from '@/components/layout/navigation-progress'
 
 const SchedulerCalendar = dynamic(() => import('@/components/scheduler/scheduler-calendar'), {
   ssr: false,
@@ -52,7 +52,7 @@ const WIDE_TEAM_WEEK = 5
 
 /** Client state for the scheduler page: URL-driven params, selection, dialogs and drag moves. */
 export function SchedulerShell({ params, items, blockedOccurrences, myBlockedTimes, rooms, staff, studentLabels, currentProfileId, canWrite, canConfirm }: SchedulerShellProps) {
-  const router = useRouter()
+  const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
   const [selected, setSelected] = useState<SelectedItem | null>(null)
   const [dialog, setDialog] = useState<DialogState>({ open: false })

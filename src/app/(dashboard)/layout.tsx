@@ -1,5 +1,7 @@
 import { Sidebar } from "@/components/layout/sidebar"
 import { Header } from "@/components/layout/header"
+import { NavigationProgress } from "@/components/layout/navigation-progress"
+import { Suspense } from "react"
 import { getCurrentUser } from "@/lib/supabase/auth"
 import { getPermissions } from "@/lib/permissions/resolve"
 
@@ -12,6 +14,9 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
+      <Suspense fallback={null}>
+        <NavigationProgress />
+      </Suspense>
       {/* The app shell is screen-only: printable documents live under /schools/export. */}
       <div className="print:hidden">
         <Sidebar permissions={permissions} />
