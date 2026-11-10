@@ -18,6 +18,7 @@ End-to-end checks of features in a real Chrome against the real app and a throwa
 | `staff-workflow.e2e.mjs` | Admin creates and edits a staff member, who can then sign in | 4 |
 | `records-workflow.e2e.mjs` | School create/edit/delete, student delete, student Calendar tab, PDF and spreadsheet exports | 8 |
 | `loading-indicator.e2e.mjs` | Loading screen on page changes, top loading bar on tab and filter changes, on a slow connection | 4 |
+| `uat-remaining.e2e.mjs` | UAT DEV24-006/007/008/009/011/012: booking day, consultation student, seat range, school picker, Add Note, unsupported upload | 6 |
 
 Two sweeps cover the whole app rather than one feature:
 
@@ -35,7 +36,7 @@ npx next build && npx next start -p 3100 # production build: fast and steady tim
 node e2e/email-filing.e2e.mjs            # each suite prints PASS/FAIL per check
 ```
 
-The seed also creates an English Year 9 entrance exam at Headington School and an examination booking today that uses it, for `paper-versions`; rerun `setup-local-db.sh` on another day for a fresh booking. Each suite expects its own data to start empty (no filed emails before `email-filing`, no tasks before `task-planner`, no activity or exams before `activity-log`, no exam paper files before `paper-versions`); clear those tables between runs. `activity-log`, `date-fields`, `stale-editor`, `online-exam`, `exam-completion` and `group-attendance` use `psql`. Failure screenshots go to `/tmp/aa-e2e-shots`.
+The seed also creates an English Year 9 entrance exam at Headington School and an examination booking today that uses it, for `paper-versions`; rerun `setup-local-db.sh` on another day for a fresh booking. Each suite expects its own data to start empty (no filed emails before `email-filing`, no tasks before `task-planner`, no activity or exams before `activity-log`, no exam paper files before `paper-versions`); clear those tables between runs. `activity-log`, `date-fields`, `stale-editor`, `online-exam`, `exam-completion`, `group-attendance` and the workflow suites use `psql`. Failure screenshots go to `/tmp/aa-e2e-shots`.
 
 Test accounts (password in `env.sh`): `admin@aa.test` (Admin, level 0: staff and access levels), `manager@aa.test` (Manager, exam team), `staff@aa.test` (Staff: Students write, Schools read), `junior@aa.test` (Junior: read only).
 
