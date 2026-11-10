@@ -14,6 +14,7 @@ import { RepresentativeTabs } from './representative-tabs'
 import { TimeSlotGrid } from './time-slot-grid'
 import { UnassignedSidebar } from './unassigned-sidebar'
 import { DragOverlayContent } from './drag-overlay-content'
+import { hkToday } from '@/lib/hk-day'
 
 type EventSchedulerProps = {
   event: SchedulerEvent
@@ -51,7 +52,7 @@ export function EventScheduler({
   const [, startTransition] = useTransition()
 
   // Date navigation for multi-day events
-  const startDate = event.start_date ?? new Date().toISOString().split('T')[0]
+  const startDate = event.start_date ?? hkToday()
   const endDate = event.end_date ?? startDate
   const [selectedDate, setSelectedDate] = useState(startDate)
 

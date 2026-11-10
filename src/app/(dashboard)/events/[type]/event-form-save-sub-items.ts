@@ -3,6 +3,7 @@ import { addRepresentative } from "@/lib/supabase/actions/event-representatives"
 import { addExamBlock } from "@/lib/supabase/actions/event-exam-blocks"
 import type { RepresentativeRow } from "./event-form-representatives"
 import type { ExamBlockRow } from "./event-form-exam-blocks"
+import { hkToday } from '@/lib/hk-day'
 
 type SaveSubItemsParams = {
   eventId: string
@@ -18,7 +19,7 @@ type SaveSubItemsParams = {
 /** Convert a plain HH:mm time to a full ISO timestamp using the event date */
 function toTimestamp(time: string | null, date: string | null): string | null {
   if (!time) return null
-  const d = date || new Date().toISOString().split('T')[0]
+  const d = date || hkToday()
   return `${d}T${time}:00`
 }
 

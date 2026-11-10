@@ -15,6 +15,7 @@ import {
 import { UpcomingEventCard } from "./upcoming-event-card"
 import { requireAccess } from "@/lib/permissions/guard"
 import { MODULES } from "@/lib/permissions/modules"
+import { hkToday } from "@/lib/hk-day"
 
 const TYPE_CODE_TO_URL = Object.fromEntries(
   Object.entries(URL_TO_TYPE_CODE).map(([slug, code]) => [code, slug])
@@ -23,7 +24,7 @@ const TYPE_CODE_TO_URL = Object.fromEntries(
 export default async function EventsOverviewPage() {
   await requireAccess(MODULES.EVENTS)
 
-  const today = new Date().toISOString().split("T")[0]
+  const today = hkToday()
 
   const [upcomingResult, stats] = await Promise.all([
     getEventsList({ pageSize: 20, dateFrom: today, sortBy: "start_date", sortOrder: "asc" }),
