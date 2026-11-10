@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
@@ -46,11 +47,8 @@ export function Sidebar({ permissions }: SidebarProps) {
     <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
       <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r bg-card px-6 pb-4">
         {/* Logo */}
-        <div className="flex h-16 shrink-0 items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">AA</span>
-          </div>
-          <span className="font-semibold text-lg">Academic Asia</span>
+        <div className="flex h-16 shrink-0 items-center">
+          <Image src="/brand/aa-logo-navy.png" alt="Academic Asia" width={245} height={24} priority className="h-auto w-[180px]" />
         </div>
 
         {/* Navigation */}
