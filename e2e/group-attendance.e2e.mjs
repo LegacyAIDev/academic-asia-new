@@ -16,9 +16,12 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 sql(`delete from public.scheduler_bookings where title like 'UAT attend%'`)
 sql(`delete from public.student_individual_exams where subject like 'UAT attend%'`)
+// Leo is this suite's own student, so other suites renaming theirs cannot affect it.
+sql(`delete from public.students where surname = 'ATTENDTEST'`)
+sql(`insert into public.students (surname, first_name, student_code) values ('ATTENDTEST', 'Leo', 'S0ATTEND')`)
 
 const student = where => `(select id from public.students where ${where} limit 1)`
-const AVA = student(`surname = 'DATEDRIFT'`), LUCAS = student(`student_code = 'S000123'`), LEO = student(`surname = 'STALETEST'`)
+const AVA = student(`surname = 'DATEDRIFT'`), LUCAS = student(`student_code = 'S000123'`), LEO = student(`surname = 'ATTENDTEST'`)
 const ROOM = `(select id from public.scheduler_rooms where display_name = 'Exam Room')`
 
 /** Books and confirms exams as the manager, the way the Scheduler does. */
@@ -61,7 +64,7 @@ try {
   await step(page, 'one individual exam and a group of two count as three people waiting', async () => {
     await open(page, DESK)
     await seeText(page, '3 waiting')
-    for (const name of ['Ava DATEDRIFT', 'Lucas Ng', 'Leo STALETEST']) await seeText(page, name, 'tbody')
+    for (const name of ['Ava DATEDRIFT', 'Lucas Ng', 'Leo ATTENDTEST']) await seeText(page, name, 'tbody')
     assert(await counters(page) === '3/0', `counters ${await counters(page)}`)
   })
 
@@ -75,7 +78,7 @@ try {
     await rowButton(page, 'Lucas Ng', 'Showed up')
     await seeText(page, '1 waiting')
     await pause(500)
-    await rowButton(page, 'Leo STALETEST', 'No show')
+    await rowButton(page, 'Leo ATTENDTEST', 'No show')
     await seeText(page, '0 waiting')
     assert(attendanceOf(LUCAS) === 'show_up|3', `Lucas ${attendanceOf(LUCAS)}`)
     assert(attendanceOf(LEO) === 'no_show|2', `Leo ${attendanceOf(LEO)}`)
@@ -85,7 +88,7 @@ try {
   await step(page, 'after reload the desk keeps each outcome; Leo can still be marked late', async () => {
     await open(page, DESK)
     assert(await counters(page) === '0/2', `counters ${await counters(page)}`)
-    const leoRow = await page.evaluate(() => [...document.querySelectorAll('tbody tr')].find(r => r.innerText.includes('Leo STALETEST'))?.innerText.replace(/\s+/g, ' '))
+    const leoRow = await page.evaluate(() => [...document.querySelectorAll('tbody tr')].find(r => r.innerText.includes('Leo ATTENDTEST'))?.innerText.replace(/\s+/g, ' '))
     assert(leoRow.includes('No show') && leoRow.includes('Showed up'), `Leo's row: ${leoRow}`)
   })
 } finally {
