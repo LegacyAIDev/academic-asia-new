@@ -29,7 +29,7 @@ export function AuthField({
 export function AuthHeading({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="mb-8">
-      <h1 className="font-display text-4xl font-semibold text-brand-navy 2xl:text-5xl">{title}</h1>
+      <h1 className="text-3xl font-semibold tracking-tight text-brand-navy 2xl:text-4xl">{title}</h1>
       <p className="mt-2 text-pretty text-base text-muted-foreground 2xl:text-lg">{children}</p>
     </div>
   )

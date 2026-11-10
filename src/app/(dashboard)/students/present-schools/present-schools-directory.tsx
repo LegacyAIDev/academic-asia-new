@@ -35,7 +35,7 @@ export const PresentSchoolsDirectory = memo(function PresentSchoolsDirectory({ s
         </div>
         {groups.map(({ letter, schools: inGroup }) => (
           <section key={letter} id={anchorFor(letter)} className="scroll-mt-16">
-            <header className="sticky top-16 z-10 flex items-baseline justify-between border-b border-border bg-card px-4 pb-2 pt-4">
+            <header className="sticky top-14 z-10 lg:top-0 flex items-baseline justify-between border-b border-border bg-card px-4 pb-2 pt-4">
               <h2 aria-label={letter === "#" ? "Other" : undefined} className="text-xl font-semibold leading-none tracking-tight">{letter}</h2>
               <p className="text-xs text-muted-foreground tabular-nums">
                 {inGroup.length.toLocaleString("en-GB")} {inGroup.length === 1 ? "school" : "schools"}

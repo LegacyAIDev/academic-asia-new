@@ -1,7 +1,8 @@
-import { Sidebar } from "@/components/layout/sidebar"
-import { Header } from "@/components/layout/header"
-import { NavigationProgress } from "@/components/layout/navigation-progress"
+import { cookies } from "next/headers"
 import { Suspense } from "react"
+import { AppShell } from "@/components/layout/app-shell"
+import { SIDEBAR_COOKIE } from "@/components/layout/sidebar-cookie"
+import { NavigationProgress } from "@/components/layout/navigation-progress"
 import { getCurrentUser } from "@/lib/supabase/auth"
 import { getPermissions } from "@/lib/permissions/resolve"
 
@@ -10,25 +11,16 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [user, permissions] = await Promise.all([getCurrentUser(), getPermissions()])
+  const [user, permissions, cookieStore] = await Promise.all([getCurrentUser(), getPermissions(), cookies()])
 
   return (
     <div className="min-h-screen bg-background">
       <Suspense fallback={null}>
         <NavigationProgress />
       </Suspense>
-      {/* The app shell is screen-only: printable documents live under /schools/export. */}
-      <div className="print:hidden">
-        <Sidebar permissions={permissions} />
-      </div>
-      <div className="lg:pl-64 print:pl-0">
-        <div className="print:hidden">
-          <Header user={user} />
-        </div>
-        <main className="py-6 px-4 sm:px-6 lg:px-8 print:p-0">
-          {children}
-        </main>
-      </div>
+      <AppShell user={user} permissions={permissions} initialCollapsed={cookieStore.get(SIDEBAR_COOKIE)?.value === "collapsed"}>
+        {children}
+      </AppShell>
     </div>
   )
 }
