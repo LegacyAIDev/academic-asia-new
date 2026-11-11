@@ -60,7 +60,7 @@ export function ExamManagementTable({ exams, links, canSchedule, notes, currentS
     >
       {exams.length === 0 ? (
         <PanelEmpty title="No exams here">
-          {range.from || range.to ? "Nothing booked on these dates. Clear the dates to see every exam." : "Exams are requested from a student's page, under Exams."}
+          {range.from || range.to ? "Nothing booked on these dates. Clear the dates to see every exam." : "Exams are requested from a student's school application (Edit, then Add exam), or booked as an Examination in the Scheduler."}
         </PanelEmpty>
       ) : (
         <div className="overflow-x-auto">
