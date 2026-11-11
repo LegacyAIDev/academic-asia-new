@@ -8,11 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Search, X } from 'lucide-react'
 import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
-type EventsFiltersProps = {
-  eventType: string
-}
-
-export function EventsFilters({ eventType }: EventsFiltersProps) {
+/** Search and From / To dates for one category of events; each change is written to the address. */
+export function EventsFilters() {
   const router = useRouterWithProgress()
   const pathname = usePathname()
   const searchParams = useSearchParams()

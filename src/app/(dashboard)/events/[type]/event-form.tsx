@@ -54,15 +54,18 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
   const [examBlocks, setExamBlocks] = useState<ExamBlockRow[]>([])
 
   // School contacts for representative dropdown — combines engagement multi-select + admission single school
-  const [schoolContacts, setSchoolContacts] = useState<SchoolContactOption[]>([])
+  const [fetchedContacts, setFetchedContacts] = useState<SchoolContactOption[]>([])
+  const hasSchools = selectedSchoolIds.length > 0 || Boolean(admissionSchoolId)
   useEffect(() => {
     const allSchoolIds = [...new Set([...selectedSchoolIds, ...(admissionSchoolId ? [admissionSchoolId] : [])])]
-    if (allSchoolIds.length > 0) {
-      getContactsForSchools(allSchoolIds).then(setSchoolContacts)
-    } else {
-      setSchoolContacts([])
-    }
+    if (allSchoolIds.length === 0) return
+    // A slower earlier answer must not overwrite the contacts for the schools chosen since.
+    let current = true
+    getContactsForSchools(allSchoolIds).then(contacts => { if (current) setFetchedContacts(contacts) })
+    return () => { current = false }
   }, [selectedSchoolIds, admissionSchoolId])
+  // With no school chosen there are no contacts to offer, whatever was fetched before.
+  const schoolContacts = hasSchools ? fetchedContacts : []
 
   // Derive conditions from reference data lookups
   const deliveryModeCode = referenceData.deliveryModes.find((d) => d.id === selectedDeliveryModeId)?.code

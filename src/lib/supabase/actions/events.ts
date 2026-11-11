@@ -199,32 +199,6 @@ export async function addEventSchool(input: CreateEventSchoolInput): Promise<Act
   }
 }
 
-export async function removeEventSchool(eventSchoolId: string, eventId: string): Promise<ActionResult> {
-  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase
-      .from('event_schools')
-      .delete()
-      .eq('id', eventSchoolId)
-
-    if (error) {
-      console.error('Error removing event school:', error)
-      return { success: false, error: error.message }
-    }
-
-    revalidatePath(`/events`)
-    return { success: true }
-  } catch (err) {
-    console.error('Error in removeEventSchool:', err)
-    return { success: false, error: 'Failed to remove school from event' }
-  }
-}
-
 // Event Representatives CRUD
 
 export type CreateEventRepresentativeInput = {
@@ -258,32 +232,6 @@ export async function addEventRepresentative(input: CreateEventRepresentativeInp
   } catch (err) {
     console.error('Error in addEventRepresentative:', err)
     return { success: false, error: 'Failed to add representative' }
-  }
-}
-
-export async function removeEventRepresentative(representativeId: string, eventId: string): Promise<ActionResult> {
-  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase
-      .from('event_representatives')
-      .delete()
-      .eq('id', representativeId)
-
-    if (error) {
-      console.error('Error removing representative:', error)
-      return { success: false, error: error.message }
-    }
-
-    revalidatePath(`/events`)
-    return { success: true }
-  } catch (err) {
-    console.error('Error in removeEventRepresentative:', err)
-    return { success: false, error: 'Failed to remove representative' }
   }
 }
 
@@ -322,31 +270,5 @@ export async function addEventSchedule(input: CreateEventScheduleInput): Promise
   } catch (err) {
     console.error('Error in addEventSchedule:', err)
     return { success: false, error: 'Failed to add schedule' }
-  }
-}
-
-export async function removeEventSchedule(scheduleId: string, eventId: string): Promise<ActionResult> {
-  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase
-      .from('event_schedules')
-      .delete()
-      .eq('id', scheduleId)
-
-    if (error) {
-      console.error('Error removing schedule:', error)
-      return { success: false, error: error.message }
-    }
-
-    revalidatePath(`/events`)
-    return { success: true }
-  } catch (err) {
-    console.error('Error in removeEventSchedule:', err)
-    return { success: false, error: 'Failed to remove schedule' }
   }
 }

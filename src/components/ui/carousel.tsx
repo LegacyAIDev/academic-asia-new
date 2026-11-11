@@ -95,11 +95,13 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
-    onSelect(api)
+    // The first reading waits a frame, so state is not set while the effect runs.
+    const frame = requestAnimationFrame(() => onSelect(api))
     api.on("reInit", onSelect)
     api.on("select", onSelect)
 
     return () => {
+      cancelAnimationFrame(frame)
       api?.off("select", onSelect)
     }
   }, [api, onSelect])

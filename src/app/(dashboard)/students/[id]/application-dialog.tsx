@@ -158,14 +158,12 @@ export function ApplicationDialog({
   const [scholarshipTypes, setScholarshipTypes] = useState<string[]>(application?.scholarship_types ?? [])
 
   const parseDate = parseDateOnly
-  const defaultRegDate = useMemo(() => application?.registration_date ? parseDate(application.registration_date) : new Date(), [application])
+  const defaultRegDate = useMemo(() => application?.registration_date ? parseDateOnly(application.registration_date) : new Date(), [application])
 
   const [regDate, setRegDate] = useState<Date | undefined>(defaultRegDate)
   const [regDateOpen, setRegDateOpen] = useState(false)
   const [visitDate, setVisitDate] = useState<Date | undefined>(parseDate(application?.visit_date))
   const [visitDateOpen, setVisitDateOpen] = useState(false)
-  const [eventDate, setEventDate] = useState<Date | undefined>(parseDate(application?.event_date))
-  const [eventDateOpen, setEventDateOpen] = useState(false)
   const [depositDate, setDepositDate] = useState<Date | undefined>(undefined)
   const [depositCommission, setDepositCommission] = useState(true)
   const [examPrefDate, setExamPrefDate] = useState<Date | undefined>(undefined)
@@ -209,13 +207,9 @@ export function ApplicationDialog({
     ? events.filter(ev => ev.school_id === selectedSchoolId)
     : []
 
-  // Auto-fill date/time from selected event
+  // The event's own date is saved with the application (event_date below).
   const selectedEvent = events.find(ev => ev.id === selectedEventId)
-  const handleEventSelect = (eventId: string) => {
-    setSelectedEventId(eventId)
-    const ev = events.find(e => e.id === eventId)
-    if (ev?.start_date) setEventDate(parseDateOnly(ev.start_date))
-  }
+  const handleEventSelect = (eventId: string) => setSelectedEventId(eventId)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -327,7 +321,6 @@ export function ApplicationDialog({
         setScholarshipTypes(application?.scholarship_types ?? [])
         setRegDate(application?.registration_date ? parseDate(application.registration_date) : new Date())
         setVisitDate(parseDate(application?.visit_date))
-        setEventDate(parseDate(application?.event_date))
         setDepositDate(undefined)
         setDepositCommission(true)
         setExamPrefDate(undefined)

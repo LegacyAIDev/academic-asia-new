@@ -1,5 +1,5 @@
 /** Helpers for the Scheduler's booking drawer, shared by the exam suites. */
-import { click, clickElement, open, seeText } from './harness.mjs'
+import { click, clickElement, hkDay, open, seeText } from './harness.mjs'
 
 export const DIALOG = '[role="dialog"]'
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -56,9 +56,20 @@ export async function saveBooking(page) {
   await page.waitForFunction(() => !document.querySelector('[role="dialog"]'), { polling: 100, timeout: 30000 })
 }
 
-/** Opens a booking's side panel from the week calendar by its title. */
-export async function openBookingFromCalendar(page, title) {
-  await open(page, '/scheduler')
+/**
+ * The day New booking proposes: today in Hong Kong, or tomorrow once the next
+ * 15-minute slot is past the 21:00 close (the app's own rule, slotForDay).
+ */
+export function bookingDay() {
+  const hk = new Date(Date.now() + 8 * 3600000)
+  const minutes = hk.getUTCHours() * 60 + hk.getUTCMinutes() + (hk.getUTCSeconds() > 0 ? 1 : 0)
+  const nextSlot = Math.ceil(minutes / 15) * 15
+  return nextSlot > 21 * 60 ? hkDay(1) : hkDay()
+}
+
+/** Opens a booking's side panel from the week calendar by its title; `day` picks the week to show. */
+export async function openBookingFromCalendar(page, title, day = hkDay()) {
+  await open(page, `/scheduler?date=${day}`)
   const event = await page.waitForFunction(t => [...document.querySelectorAll('[role=button]')].find(e => e.innerText?.includes(t)) ?? null, { polling: 100 }, title)
   await event.asElement().click()
   await seeText(page, title, '[role="dialog"]')

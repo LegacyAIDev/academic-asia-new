@@ -6,12 +6,13 @@
  */
 import { execFileSync } from 'node:child_process'
 import { assert, click, hkDay, launch, open, seeText, signIn, step, summary } from './lib/harness.mjs'
-import { newExam, openBookingFromCalendar, saveBooking } from './lib/booking-form.mjs'
+import { newExam, openBookingFromCalendar, saveBooking, bookingDay } from './lib/booking-form.mjs'
 
 const DB = process.env.E2E_DB_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
 const sql = query => execFileSync('psql', [DB, '-X', '-A', '-t', '-q', '-c', query], { encoding: 'utf8' }).trim()
 const SHEET = '[role="dialog"]'
-const TODAY = hkDay()
+// After 21:00 in Hong Kong New booking proposes tomorrow, so the test follows the same day.
+const TODAY = bookingDay()
 const ALL_EXAMS_TODAY = `/exams?view=all&from=${TODAY}&to=${TODAY}`
 
 sql(`delete from public.scheduler_bookings where title like 'UAT complete%'`)
@@ -42,7 +43,7 @@ try {
   })
 
   await step(page, 'it is on the exam desk and in All exams for its date', async () => {
-    await open(page, '/exams')
+    await open(page, `/exams?from=${TODAY}&to=${TODAY}`)
     await seeText(page, '09:00–09:45 Lucas Ng')
     await open(page, ALL_EXAMS_TODAY)
     const rows = await rowText(page, 'UAT complete physics')
@@ -50,7 +51,7 @@ try {
   })
 
   await step(page, 'the booking says how to complete it and links to All exams', async () => {
-    await openBookingFromCalendar(page, 'UAT complete physics')
+    await openBookingFromCalendar(page, 'UAT complete physics', TODAY)
     await seeText(page, 'Showed up completes the exam in All exams', SHEET)
     await seeText(page, 'exam pending', SHEET)
     const href = await page.$eval(`${SHEET} a[href*="view=all"]`, a => a.getAttribute('href'))
@@ -59,7 +60,7 @@ try {
 
   await step(page, 'confirming, then Showed up, completes the exam record', async () => {
     for (const [button, status] of [['Confirm', '2'], ['Showed up', '3']]) {
-      await openBookingFromCalendar(page, 'UAT complete physics')
+      await openBookingFromCalendar(page, 'UAT complete physics', TODAY)
       await seeText(page, 'Created', SHEET)
       await new Promise(resolve => setTimeout(resolve, 600))
       await click(page, button, SHEET)
@@ -71,7 +72,7 @@ try {
     await open(page, ALL_EXAMS_TODAY)
     const rows = await rowText(page, 'UAT complete physics')
     assert(rows.length === 1 && rows[0].includes('Completed'), `All exams: ${rows}`)
-    await openBookingFromCalendar(page, 'UAT complete physics')
+    await openBookingFromCalendar(page, 'UAT complete physics', TODAY)
     await seeText(page, 'exam completed', SHEET)
     await seeText(page, 'Confirmed', SHEET)
     await seeText(page, 'Maggie Manager', SHEET)

@@ -67,7 +67,9 @@ async function tryTrigger(page, route, label) {
       const rx = new RegExp(re, 'i')
       const dlg = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].pop()
       const buttons = [...dlg.querySelectorAll('button')].filter(b => b.offsetParent !== null && b.innerText.trim()).reverse()
-      const btn = buttons.find(b => b.type === 'submit' && b.innerText.trim() !== 'Cancel') ?? buttons.find(b => rx.test(b.innerText.trim()))
+      // A plain (non-submit) "Add …" button opens a form inside the dialog rather than saving one.
+      const btn = buttons.find(b => b.type === 'submit' && b.innerText.trim() !== 'Cancel') ??
+        buttons.find(b => rx.test(b.innerText.trim()) && !/^Add /.test(b.innerText.trim()))
       if (!btn) return null
       if (btn.disabled) return `disabled:${btn.innerText.trim()}`
       btn.click()
@@ -75,7 +77,13 @@ async function tryTrigger(page, route, label) {
     }, SAVE.source)
     if (!save) return { outcome: 'opened', note: 'dialog has no save button' }
     if (save.startsWith('disabled:')) return { outcome: 'feedback', note: `Save disabled until filled (${save.slice(9)})` }
-    await pause(1800)
+    // Wait for an answer (the dialog closes, or a message or toast appears), up to 6s on a busy machine.
+    await page.waitForFunction(() => {
+      const dlg = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].pop()
+      return !dlg || document.querySelector('[data-sonner-toast]') ||
+        dlg.querySelector('[role="alert"], .text-destructive, [data-slot="form-message"], [aria-invalid="true"], :invalid')
+    }, { polling: 200, timeout: 6000 }).catch(() => {})
+    await pause(300)
     const after = await page.evaluate(() => {
       const dlg = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')].pop()
       const toasts = [...document.querySelectorAll('[data-sonner-toast]')].map(t => t.innerText.replace(/\s+/g, ' ').trim())

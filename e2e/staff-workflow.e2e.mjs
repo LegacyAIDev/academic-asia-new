@@ -118,6 +118,7 @@ try {
     await page.click('button[aria-label="More actions"]')
     await click(page, 'Reset password', '[role="menu"]')
     await page.waitForSelector('#staff-new-password')
+    await pause(400) // let the window finish opening, so no keystroke is lost
     await page.type('#staff-new-password', NEW_PASSWORD)
     await click(page, 'Set password', DIALOG)
     await seeText(page, 'New password set')

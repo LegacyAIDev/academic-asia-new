@@ -66,7 +66,7 @@ export default async function EventsListPage({ params, searchParams }: PageParam
       <section className="overflow-hidden rounded-lg border bg-card">
         <div className="border-b px-4 py-3 sm:px-5">
           <Suspense fallback={<Skeleton className="h-9 w-full max-w-md" />}>
-            <EventsFilters eventType={type} />
+            <EventsFilters />
           </Suspense>
         </div>
         {events.length === 0 ? (
