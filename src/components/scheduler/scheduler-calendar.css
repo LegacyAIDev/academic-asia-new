@@ -10,6 +10,9 @@
   --fc-monarch-border: var(--border);
   --fc-monarch-background: var(--card);
   --fc-monarch-foreground: var(--foreground);
+  /* Today's date in the brand navy rather than the theme's purple. */
+  --fc-monarch-tertiary: var(--color-brand-navy);
+  --fc-monarch-tertiary-foreground: #fff;
   --sched-examination: #dc2626;
   --sched-group-examination: #b91c1c;
   --sched-consultation: #16a34a;
@@ -32,6 +35,10 @@
 .scheduler-calendar .type-other {
   --sched-accent: var(--sched-other);
   border-radius: 6px;
+  /* Calm cards: a light tint of the type colour with dark text, the colour itself only on the bar. */
+  background-color: color-mix(in oklch, var(--sched-accent) 12%, var(--card)) !important;
+  border-color: color-mix(in oklch, var(--sched-accent) 30%, var(--card)) !important;
+  color: var(--foreground) !important;
   box-shadow: inset 3px 0 0 0 var(--sched-accent);
   font-size: 12px;
   line-height: 1.25;
@@ -54,6 +61,21 @@
 .scheduler-calendar .type-other:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 1px;
+}
+
+.scheduler-calendar .type-examination *,
+.scheduler-calendar .type-group_examination *,
+.scheduler-calendar .type-consultation *,
+.scheduler-calendar .type-school_interview *,
+.scheduler-calendar .type-internal_meeting *,
+.scheduler-calendar .type-room_reservation *,
+.scheduler-calendar .type-other * {
+  color: inherit !important;
+}
+
+/* Day names in plain case ("Mon 9", not "MON 9"); the theme sets capitals with this class. */
+.scheduler-calendar .fc-monarch-XHd {
+  text-transform: none;
 }
 
 .scheduler-calendar .is-cancelled {

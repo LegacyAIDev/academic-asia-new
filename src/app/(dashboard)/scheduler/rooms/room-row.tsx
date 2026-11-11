@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { RoomChip } from "@/components/scheduler/room-chip"
 import { EditRoomButton } from "./room-dialog"
-import { BlockedTimesButton, DeleteRoomButton, ToggleActiveButton } from "./room-row-actions"
+import { RoomMoreMenu } from "./room-row-actions"
 import { hasEnded, type BlockedTime } from "@/lib/scheduler/blocked-times"
 import { todayInBusinessTz } from "@/lib/scheduler/search-params"
 import type { SchedulerRoom, SchedulerLocation } from "@/lib/supabase/queries/scheduler-rooms"
@@ -17,10 +17,10 @@ export function RoomGroup({ location, rooms, canManage, locations, blocksByRoom 
 }) {
   const eyebrow = [location.building, location.address].filter(Boolean).join(" · ")
   return (
-    <section className="rounded-xl border border-border bg-card shadow-sm">
+    <section className="rounded-lg border bg-card">
       <header className="flex flex-wrap items-end justify-between gap-2 border-b border-border px-4 py-3">
         <div className="min-w-0">
-          {eyebrow && <p className="truncate text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{eyebrow}</p>}
+          {eyebrow && <p className="truncate text-xs font-medium text-muted-foreground">{eyebrow}</p>}
           <h2 className={cn("text-sm font-semibold", !location.is_active && "text-muted-foreground line-through")}>{location.name}</h2>
         </div>
         <p className="text-xs text-muted-foreground tabular-nums">{rooms.length} room{rooms.length === 1 ? "" : "s"}</p>
@@ -76,11 +76,9 @@ function RoomRow({ room, canManage, locations, blocks }: {
         )}
         {inactive && <Badge variant="outline" className="text-[11px] text-muted-foreground">Inactive</Badge>}
         {canManage && (
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
             <EditRoomButton room={room} locations={locations} />
-            <BlockedTimesButton room={room} blocks={blocks} />
-            <ToggleActiveButton room={room} />
-            <DeleteRoomButton room={room} />
+            <RoomMoreMenu room={room} blocks={blocks} />
           </div>
         )}
       </div>

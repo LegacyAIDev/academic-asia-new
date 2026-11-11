@@ -81,7 +81,7 @@ export function BlockedTimesSheet({ open, onOpenChange, subject, subjectLabel, b
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent className="w-full gap-0 overflow-y-auto sm:max-w-md">
           <SheetHeader>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium text-muted-foreground">
               {subject.kind === 'room' ? subjectLabel ?? 'Room' : 'My calendar'}
             </p>
             <SheetTitle>{copy.title}</SheetTitle>
@@ -115,7 +115,7 @@ export function BlockedTimesSheet({ open, onOpenChange, subject, subjectLabel, b
                         <div className={cn('min-w-0 flex-1', hasEnded(block, today) && 'text-muted-foreground')}>
                           <p className="truncate text-sm font-medium">
                             {block.label}
-                            {hasEnded(block, today) && <span className="ml-2 text-[11px] font-semibold uppercase tracking-wide">Ended</span>}
+                            {hasEnded(block, today) && <span className="ml-2 text-xs font-medium">Ended</span>}
                           </p>
                           <p className="text-xs text-muted-foreground tabular-nums">{describeBlockedTime(block)}</p>
                         </div>
@@ -130,7 +130,7 @@ export function BlockedTimesSheet({ open, onOpenChange, subject, subjectLabel, b
                   </ul>
                 )}
                 <Button className="h-9" onClick={() => { setClashes([]); setMode({ kind: 'form' }) }}>
-                  <Plus className="mr-1 h-4 w-4" /> Block time
+                  <Plus className="mr-1 h-4 w-4" /> Add blocked time
                 </Button>
               </>
             )}

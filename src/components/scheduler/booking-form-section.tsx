@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils'
 
-/** Uppercase eyebrow shared by every scheduler section label (When · Where · Who · Details). */
+/** Section label shared by the scheduler (What · When · Where · Who · Details, History). */
 export function SectionEyebrow({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={cn('text-[11px] font-semibold uppercase tracking-wide text-muted-foreground', className)}>{children}</p>
+    <p className={cn('text-sm font-semibold text-foreground', className)}>{children}</p>
   )
 }
 

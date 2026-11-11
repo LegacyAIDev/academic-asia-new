@@ -1,5 +1,5 @@
-/** Helpers for the Scheduler's booking dialog, shared by the exam suites. */
-import { click, open, seeText } from './harness.mjs'
+/** Helpers for the Scheduler's booking drawer, shared by the exam suites. */
+import { click, clickElement, open, seeText } from './harness.mjs'
 
 export const DIALOG = '[role="dialog"]'
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -11,7 +11,7 @@ export async function chooseByLabel(page, label, option) {
     return labels.map(el => el.parentElement.querySelector('button[role="combobox"]')).find(Boolean) ?? null
   }, { polling: 100 }, label)
   for (let attempt = 1; attempt <= 2; attempt++) {
-    await (await findTrigger()).asElement().click()
+    await clickElement((await findTrigger()).asElement())
     await click(page, option, '[data-slot="select-content"]')
     await page.waitForFunction(() => !document.querySelector('[data-slot="select-content"]'), { polling: 100 })
     await pause(300)
@@ -27,6 +27,7 @@ export async function newExam(page, title, { online = true, student = true, appl
   await open(page, '/scheduler')
   await click(page, 'New booking')
   await page.waitForSelector(DIALOG)
+  await new Promise(resolve => setTimeout(resolve, 500)) // the form slides in from the side
   await chooseByLabel(page, 'Type', 'Examination')
   await page.$eval(`${DIALOG} input[name="title"]`, el => { el.value = '' })
   await page.type(`${DIALOG} input[name="title"]`, title)

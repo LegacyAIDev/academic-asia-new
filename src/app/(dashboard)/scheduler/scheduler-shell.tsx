@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import type { CalendarItem } from '@/lib/supabase/queries/scheduler-bookings'
 import type { SchedulerRoom } from '@/lib/supabase/queries/scheduler-rooms'
@@ -20,6 +20,7 @@ import { BookingCancelDialog } from '@/components/scheduler/booking-cancel-dialo
 import { BlockedTimesSheet } from '@/components/scheduler/blocked-times-sheet'
 import { SchedulerToolbar } from './scheduler-toolbar'
 import { SchedulerFilterBar } from './scheduler-filter-bar'
+import { PeoplePicker } from './people-picker'
 import { BookingDetailsSheet } from './booking-details-sheet'
 import { MoveConfirmDialog } from './move-confirm-dialog'
 import { CalendarContextMenu } from './calendar-context-menu'
@@ -43,6 +44,8 @@ export type SchedulerShellProps = {
   currentProfileId: string
   canWrite: boolean
   canConfirm: boolean
+  /** Opens this booking's form on arrival (Edit on the booking page). */
+  editBookingId?: string | null
 }
 
 type DialogState = { open: boolean; initial?: Partial<BookingFormInput>; peopleLabels?: Record<string, string> }
@@ -51,7 +54,7 @@ type SelectedItem = { id: string; props: CalendarEventProps }
 const WIDE_TEAM_WEEK = 5
 
 /** Client state for the scheduler page: URL-driven params, selection, dialogs and drag moves. */
-export function SchedulerShell({ params, items, blockedOccurrences, myBlockedTimes, rooms, staff, studentLabels, currentProfileId, canWrite, canConfirm }: SchedulerShellProps) {
+export function SchedulerShell({ params, items, blockedOccurrences, myBlockedTimes, rooms, staff, studentLabels, currentProfileId, canWrite, canConfirm, editBookingId }: SchedulerShellProps) {
   const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
   const [selected, setSelected] = useState<SelectedItem | null>(null)
@@ -82,6 +85,23 @@ export function SchedulerShell({ params, items, blockedOccurrences, myBlockedTim
     setDialog({ open: true, initial: bookingDetailToFormInput(booking), peopleLabels: { ...model.peopleLabels, ...bookingDetailPeopleLabels(booking) } })
   }
 
+  // Seven days do not fit a phone: start it on the day instead (once, so Week can still be chosen).
+  const phoneChecked = useRef(false)
+  useEffect(() => {
+    if (phoneChecked.current) return
+    phoneChecked.current = true
+    if (params.mode === 'week' && window.matchMedia('(max-width: 639px)').matches) updateParams({ mode: 'day' })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Open the requested booking once, then drop ?edit= so a refresh does not reopen it.
+  const editHandled = useRef(false)
+  useEffect(() => {
+    if (!editBookingId || editHandled.current) return
+    editHandled.current = true
+    router.replace(returnTo)
+    void openEdit(editBookingId)
+  }, [editBookingId]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleMove = async (reason: string) => {
     if (!pendingMove?.props.bookingId) return
     const result = await moveBooking(pendingMove.props.bookingId, {
@@ -102,16 +122,30 @@ export function SchedulerShell({ params, items, blockedOccurrences, myBlockedTim
 
   return (
     <div className="space-y-3">
-      <SchedulerToolbar params={params} staff={staff} pending={isPending} canWrite={canWrite} onChange={updateParams} onNewBooking={() => openCreate()} onBlockedTimes={() => setBlockedOpen(true)} />
-      <SchedulerFilterBar params={params} rooms={rooms} staff={staff} onChange={updateParams} />
+      <SchedulerToolbar params={params} staff={staff} pending={isPending} canWrite={canWrite} onChange={updateParams} onNewBooking={() => openCreate()} onBlockedTimes={() => setBlockedOpen(true)}>
+        <SchedulerFilterBar params={params} rooms={rooms} staff={staff} onChange={updateParams} />
+      </SchedulerToolbar>
 
-      <div className="rounded-xl border border-border bg-card p-2 shadow-sm sm:p-3">
+      {!teamWithoutPeople && !model.events.some(event => event.extendedProps.source !== 'blocked_time') && (
+        <p className="text-sm text-muted-foreground">
+          Nothing booked {params.mode === 'day' ? 'on this day' : params.mode === 'week' ? 'this week' : 'this month'}.
+          {canWrite ? ' Drag across the calendar to book a time, or use New booking.' : ''}
+        </p>
+      )}
+
+      <div>
         {teamWithoutPeople ? (
-          <div className="flex h-[40vh] flex-col items-center justify-center gap-1 text-center">
-            <p className="text-sm font-medium">Choose colleagues or students to compare their calendars</p>
-            <p className="text-sm text-muted-foreground">
-              Use People in the bar above.{model.personColumns ? ' In Day and Week each person gets their own column.' : ''}
-            </p>
+          <div className="flex h-[40vh] rounded-lg border bg-card flex-col items-center justify-center gap-3 text-center">
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Choose colleagues or students to compare their calendars</p>
+              <p className="text-sm text-muted-foreground">Each person gets their own column in Day and Week.</p>
+            </div>
+            <PeoplePicker
+              staff={staff}
+              profileIds={params.profileIds}
+              studentIds={params.studentIds}
+              onChange={(profileIds, studentIds) => updateParams({ profileIds, studentIds })}
+            />
           </div>
         ) : (
           <>

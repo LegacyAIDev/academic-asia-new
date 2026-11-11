@@ -5,13 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useWatch, type FieldErrors, type UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { bookingFormSchema, type BookingFormInput, type BookingFormValues } from '@/lib/scheduler/booking-schema'
 import { defaultBookingInput } from '@/lib/scheduler/booking-defaults'
@@ -56,7 +50,7 @@ export type BookingDialogProps = {
 /** Form instance shared with every section component. */
 export type BookingForm = UseFormReturn<BookingFormInput, unknown, BookingFormValues>
 
-/** Create/edit dialog for the six spec booking types (rules and calendar DnD live elsewhere). */
+/** Create/edit side drawer for the six spec booking types (rules and calendar DnD live elsewhere). */
 export function BookingDialog({
   open,
   onOpenChange,
@@ -160,15 +154,19 @@ export function BookingDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={v => { if (!v) setProblems([]); onOpenChange(v) }}>
-        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{isEditing ? 'Edit booking' : 'New booking'}</DialogTitle>
-          </DialogHeader>
+      <Sheet open={open} onOpenChange={v => { if (!v) setProblems([]); onOpenChange(v) }}>
+        <SheetContent side="right" className="w-full gap-0 overflow-y-auto p-0 sm:max-w-2xl">
+          <SheetHeader className="sticky top-0 z-20 border-b bg-background px-6 py-4">
+            <SheetTitle>{isEditing ? 'Edit booking' : 'New booking'}</SheetTitle>
+            <SheetDescription>{isEditing ? 'Change what you need, then save.' : 'Pick a type and a time; the rest can follow.'}</SheetDescription>
+          </SheetHeader>
 
-          <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-5 px-6 pt-5">
+            <BookingFormSection title="What">
+              <BookingFormBasics form={form} isEditing={isEditing} part="what" />
+            </BookingFormSection>
             <BookingFormSection title="When">
-              <BookingFormBasics form={form} isEditing={isEditing} />
+              <BookingFormBasics form={form} isEditing={isEditing} part="when" />
               <BookingFormReason form={form} show={timeOrRoomChanged} />
             </BookingFormSection>
             <BookingFormSection title="Where">
@@ -192,12 +190,14 @@ export function BookingDialog({
               </div>
             )}
 
-            <DialogFooter className="gap-2">
+            {/* Save stays in view however long the form gets. */}
+            <div className="sticky bottom-0 z-10 -mx-6 flex flex-wrap items-center justify-end gap-2 border-t bg-background px-6 py-3">
               {showCancel && (
                 <Button type="button" variant="outline" className="mr-auto" onClick={() => setCancelOpen(true)} disabled={isPending}>
                   Cancel booking
                 </Button>
               )}
+              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={isPending}>Close</Button>
               {showConfirm && (
                 <Button type="button" variant="secondary" onClick={handleConfirm} disabled={isPending}>
                   Confirm
@@ -207,10 +207,10 @@ export function BookingDialog({
                 {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 Save
               </Button>
-            </DialogFooter>
+            </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
 
       {isEditing && (
         <BookingCancelDialog

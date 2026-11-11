@@ -54,11 +54,16 @@ export function todayInBusinessTz(now: Date = new Date()): string {
   return format(new TZDate(now, SCHEDULER_TIMEZONE), 'yyyy-MM-dd')
 }
 
+/** Rooms open on one day: a week of every room is too many thin columns to read. */
+export function defaultMode(view: SchedulerView): SchedulerMode {
+  return view === 'rooms' ? 'day' : 'week'
+}
+
 export function parseSchedulerParams(raw: RawSearchParams, now: Date = new Date()): SchedulerParams {
   const people = list(raw.people)
   const dateRaw = first(raw.date)
   const view = pick(first(raw.view), SCHEDULER_VIEWS, 'my')
-  const mode = pick(first(raw.mode), SCHEDULER_MODES, 'week')
+  const mode = pick(first(raw.mode), SCHEDULER_MODES, defaultMode(view))
   return {
     view,
     // The Rooms view has no month layout; a month link falls back to the week.
@@ -76,7 +81,7 @@ export function parseSchedulerParams(raw: RawSearchParams, now: Date = new Date(
 export function serialiseSchedulerParams(params: SchedulerParams): string {
   const q = new URLSearchParams()
   if (params.view !== 'my') q.set('view', params.view)
-  if (params.mode !== 'week') q.set('mode', params.mode)
+  if (params.mode !== defaultMode(params.view)) q.set('mode', params.mode)
   q.set('date', params.date)
   const people = [...params.profileIds.map(id => `p:${id}`), ...params.studentIds.map(id => `s:${id}`)]
   if (people.length) q.set('people', people.join(','))

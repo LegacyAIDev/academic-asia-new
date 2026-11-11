@@ -22,6 +22,8 @@ type Props = {
   onChange: (patch: Partial<SchedulerParams>) => void
   onNewBooking: () => void
   onBlockedTimes: () => void
+  /** The filter chips, shown between the date and the Day / Week / Month switch. */
+  children?: React.ReactNode
 }
 
 function shiftDate(date: string, mode: SchedulerMode, direction: 1 | -1): string {
@@ -35,18 +37,25 @@ function dateLabel(date: string, mode: SchedulerMode): string {
   const [y, m, d] = date.split('-').map(Number)
   const anchor = new TZDate(y, m - 1, d, SCHEDULER_TIMEZONE)
   if (mode === 'month') return format(anchor, 'MMMM yyyy')
-  if (mode === 'day') return format(anchor, 'EEEE dd/MM/yyyy')
-  return `Week of ${format(startOfWeek(anchor, { weekStartsOn: 1 }), 'dd/MM/yyyy')}`
+  if (mode === 'day') return format(anchor, 'EEEE d MMM yyyy')
+  // "9–15 Nov 2026", or "28 Dec 2026 – 3 Jan 2027" across a month or year.
+  const start = startOfWeek(anchor, { weekStartsOn: 1 })
+  const end = addDays(start, 6)
+  if (start.getMonth() === end.getMonth()) return `${format(start, 'd')}–${format(end, 'd MMM yyyy')}`
+  if (start.getFullYear() === end.getFullYear()) return `${format(start, 'd MMM')} – ${format(end, 'd MMM yyyy')}`
+  return `${format(start, 'd MMM yyyy')} – ${format(end, 'd MMM yyyy')}`
 }
 
-/** Command bar: view tabs, date navigation with the mode switch, people picker and the primary action. */
-export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, onNewBooking, onBlockedTimes }: Props) {
+/** Command bar: view tabs and the main actions on top; the date, filters and Day / Week / Month below. */
+export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, onNewBooking, onBlockedTimes, children }: Props) {
   const modes: SchedulerMode[] = params.view === 'rooms' ? ['day', 'week'] : ['day', 'week', 'month']
+  const changeView = (view: SchedulerView) =>
+    onChange({ view, mode: view === 'rooms' ? 'day' : params.view === 'rooms' ? 'week' : params.mode })
 
   return (
-    <div className="rounded-xl border border-border bg-card p-2 shadow-sm sm:p-3">
+    <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Tabs value={params.view} onValueChange={v => onChange({ view: v as SchedulerView, mode: v === 'rooms' && params.mode === 'month' ? 'week' : params.mode })}>
+        <Tabs value={params.view} onValueChange={v => changeView(v as SchedulerView)}>
           <TabsList className="h-9">
             <TabsTrigger value="my">My calendar</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
@@ -54,35 +63,8 @@ export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, o
           </TabsList>
         </Tabs>
 
-        <div className="flex flex-wrap items-center gap-2 lg:mx-auto">
-          <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" className="h-9 w-9" aria-label="Previous" onClick={() => onChange({ date: shiftDate(params.date, params.mode, -1) })}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" className="h-9" onClick={() => onChange({ date: todayInBusinessTz() })}>Today</Button>
-            <Button variant="outline" size="icon" className="h-9 w-9" aria-label="Next" onClick={() => onChange({ date: shiftDate(params.date, params.mode, 1) })}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <SchedulerDatePicker
-            date={params.date}
-            label={dateLabel(params.date, params.mode)}
-            pending={pending}
-            onSelect={date => onChange({ date })}
-          />
-
-          <ToggleGroup type="single" value={params.mode} onValueChange={v => v && onChange({ mode: v as SchedulerMode })} variant="outline" className="h-9">
-            {modes.map(mode => (
-              <ToggleGroupItem key={mode} value={mode} className="h-9 px-3 capitalize data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                {mode}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-        </div>
-
-        <div className="flex items-center gap-2 lg:ml-auto">
-          {params.view === 'team' && (
+        <div className="ml-auto flex items-center gap-2">
+          {params.view === 'team' && params.profileIds.length + params.studentIds.length > 0 && (
             <PeoplePicker
               staff={staff}
               profileIds={params.profileIds}
@@ -92,8 +74,8 @@ export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, o
           )}
           {canWrite ? (
             <>
-              <Button variant="outline" className="h-9" onClick={onBlockedTimes}>
-                <CalendarOff className="mr-1 h-4 w-4" /> Blocked times
+              <Button variant="outline" className="h-9" onClick={onBlockedTimes} aria-label="Blocked times">
+                <CalendarOff className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Blocked times</span>
               </Button>
               <Button className="h-9" onClick={onNewBooking}>
                 <Plus className="mr-1 h-4 w-4" /> New booking
@@ -103,6 +85,35 @@ export function SchedulerToolbar({ params, staff, pending, canWrite, onChange, o
             <ViewOnlyNotice />
           )}
         </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1">
+          <Button variant="outline" size="icon" className="h-9 w-9" aria-label="Previous" onClick={() => onChange({ date: shiftDate(params.date, params.mode, -1) })}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" className="h-9" onClick={() => onChange({ date: todayInBusinessTz() })}>Today</Button>
+          <Button variant="outline" size="icon" className="h-9 w-9" aria-label="Next" onClick={() => onChange({ date: shiftDate(params.date, params.mode, 1) })}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <SchedulerDatePicker
+          date={params.date}
+          label={dateLabel(params.date, params.mode)}
+          pending={pending}
+          onSelect={date => onChange({ date })}
+        />
+
+        {children}
+
+        <ToggleGroup type="single" value={params.mode} onValueChange={v => v && onChange({ mode: v as SchedulerMode })} variant="outline" className="h-9 sm:ml-auto">
+          {modes.map(mode => (
+            <ToggleGroupItem key={mode} value={mode} className="h-9 px-3 capitalize data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+              {mode}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
       </div>
     </div>
   )

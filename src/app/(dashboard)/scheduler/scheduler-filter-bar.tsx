@@ -1,8 +1,9 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { SlidersHorizontal, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BOOKING_TYPES, BOOKING_TYPE_LABELS, type BookingType } from '@/lib/scheduler/config'
 import { colorForType } from '@/lib/scheduler/colors'
@@ -26,12 +27,8 @@ export function SchedulerFilterBar({ params, rooms, staff, onChange }: Props) {
   const activeCount = params.types.length + params.roomIds.length + (params.status ? 1 : 0)
   const staffName = (id: string) => personName(staff.find(person => person.id === id)) || id
 
-  return (
-    <div className="flex flex-wrap items-center gap-2 px-1 text-sm">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-        Filters
-        {activeCount > 0 && <span className="ml-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] text-primary-foreground tabular-nums">{activeCount}</span>}
-      </span>
+  const chips = (
+    <>
 
       <Select value={params.types[0] ?? ALL} onValueChange={v => onChange({ types: v === ALL ? [] : [v as BookingType] })}>
         <SelectTrigger className={CHIP} aria-label="Booking type"><SelectValue placeholder="All types" /></SelectTrigger>
@@ -68,9 +65,25 @@ export function SchedulerFilterBar({ params, rooms, staff, onChange }: Props) {
 
       {activeCount > 0 && (
         <Button variant="ghost" size="sm" className="h-9 rounded-full" onClick={() => onChange({ types: [], roomIds: [], status: null })}>
-          <X className="mr-1 h-3 w-3" /> Clear
+          <X className="mr-1 h-3 w-3" /> Clear filters
         </Button>
       )}
-    </div>
+    </>
+  )
+
+  return (
+    <>
+      <div className="hidden flex-wrap items-center gap-2 text-sm sm:flex">{chips}</div>
+      {/* On a phone the chips sit behind one button, so the calendar keeps the screen. */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="h-9 gap-1.5 sm:hidden">
+            <SlidersHorizontal className="h-4 w-4" /> Filters
+            {activeCount > 0 && <span className="rounded-full bg-primary px-1.5 text-xs text-primary-foreground tabular-nums">{activeCount}</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="flex w-64 flex-col items-stretch gap-2 sm:hidden">{chips}</PopoverContent>
+      </Popover>
+    </>
   )
 }

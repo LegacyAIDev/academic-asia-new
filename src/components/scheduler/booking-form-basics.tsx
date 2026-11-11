@@ -16,8 +16,8 @@ import type { BookingForm } from './booking-dialog'
 
 const TIME_OPTIONS = buildTimeOptions('07:00', '22:00', 15)
 
-/** Type, title, HK date + start/end time (15-minute steps) and a status badge when editing. */
-export function BookingFormBasics({ form, isEditing }: { form: BookingForm; isEditing: boolean }) {
+/** "what": type, title and a status badge when editing. "when": HK date + start/end time (15-minute steps). */
+export function BookingFormBasics({ form, isEditing, part }: { form: BookingForm; isEditing: boolean; part: 'what' | 'when' }) {
   const bookingType = useWatch({ control: form.control, name: 'booking_type' })
   const status = useWatch({ control: form.control, name: 'status' })
   const startAt = useWatch({ control: form.control, name: 'start_at' })
@@ -44,10 +44,10 @@ export function BookingFormBasics({ form, isEditing }: { form: BookingForm; isEd
     form.setValue('end_at', fromHkParts(hkEnd.date, time), { shouldValidate: true })
   }
 
-  return (
-    <div className="space-y-4">
+  if (part === 'what') return (
+    <div className="space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <div className="grid flex-1 grid-cols-2 gap-3">
+        <div className="grid flex-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label className="text-xs font-medium text-muted-foreground">Type</Label>
             <Select
@@ -75,8 +75,12 @@ export function BookingFormBasics({ form, isEditing }: { form: BookingForm; isEd
         )}
       </div>
       {form.formState.errors.title && <p className="text-sm text-destructive">{form.formState.errors.title.message}</p>}
+    </div>
+  )
 
-      <div className="grid grid-cols-3 gap-3">
+  return (
+    <div className="space-y-2">
+      <div className="grid gap-3 sm:grid-cols-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-medium text-muted-foreground">Date</Label>
           <Popover>

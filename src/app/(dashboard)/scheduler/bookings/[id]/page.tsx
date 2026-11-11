@@ -10,6 +10,7 @@ import { getBookingHistory } from '@/lib/supabase/queries/scheduler-history'
 import { BookingDetails } from '@/components/scheduler/booking-details'
 import { BookingHistoryList } from '@/components/scheduler/booking-history-list'
 import { BookingActionBar } from '../../booking-action-bar'
+import { BookingPageActions } from './booking-page-actions'
 import { returnLabel, safeReturnPath } from '@/lib/scheduler/return-path'
 
 type PageProps = {
@@ -22,7 +23,9 @@ export default async function BookingPage({ params, searchParams }: PageProps) {
   await requireAccess(MODULES.SCHEDULER)
   const [{ id }, { from }] = await Promise.all([params, searchParams])
 
-  const [booking, history, canConfirm] = await Promise.all([getBooking(id), getBookingHistory(id), canAccess(MODULES.EXAMS, ACCESS.WRITE)])
+  const [booking, history, canConfirm, canWrite] = await Promise.all([
+    getBooking(id), getBookingHistory(id), canAccess(MODULES.EXAMS, ACCESS.WRITE), canAccess(MODULES.SCHEDULER, ACCESS.WRITE),
+  ])
   if (!booking) notFound()
   const backHref = safeReturnPath(from, `/scheduler?date=${booking.local_date}`)
 
@@ -37,7 +40,11 @@ export default async function BookingPage({ params, searchParams }: PageProps) {
         <h1 className="text-2xl font-semibold tracking-tight">{booking.title}</h1>
       </div>
 
-      <BookingActionBar booking={booking} canConfirm={canConfirm} />
+      <BookingActionBar booking={booking} canConfirm={canConfirm}>
+        {canWrite && booking.status !== 'cancelled' && (
+          <BookingPageActions bookingId={booking.id} editHref={`/scheduler?date=${booking.local_date}&edit=${booking.id}`} />
+        )}
+      </BookingActionBar>
 
       <Panel title="Details">
         <BookingDetails booking={booking} />

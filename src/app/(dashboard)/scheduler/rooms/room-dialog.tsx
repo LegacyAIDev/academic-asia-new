@@ -147,8 +147,8 @@ export function EditRoomButton({ room, locations }: { room: SchedulerRoom; locat
       room={room}
       locations={locations}
       trigger={
-        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-primary" title="Edit room" aria-label="Edit room">
-          <Pencil className="h-3.5 w-3.5" />
+        <Button variant="ghost" size="sm" className="h-8 gap-1.5" aria-label={`Edit ${room.display_name}`}>
+          <Pencil className="h-3.5 w-3.5" /> Edit
         </Button>
       }
     />

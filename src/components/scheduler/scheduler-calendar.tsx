@@ -108,11 +108,14 @@ export default function SchedulerCalendar({
         initialView={viewType}
         initialDate={date}
         headerToolbar={false}
-        height="auto"
+        // A fixed height that scrolls inside, opened at the start of the working day rather than at 7am.
+        height="max(32rem, calc(100dvh - 15rem))"
+        scrollTime="08:30:00"
         firstDay={1}
         allDaySlot={false}
         nowIndicator
-        slotDuration={`00:${String(SLOT_MINUTES).padStart(2, '0')}:00`}
+        slotDuration="00:30:00"
+        snapDuration={`00:${String(SLOT_MINUTES).padStart(2, '0')}:00`}
         slotMinTime="07:00:00"
         slotMaxTime="22:00:00"
         businessHours={{ daysOfWeek: [1, 2, 3, 4, 5, 6], startTime: DAY_START_TIME, endTime: DAY_END_TIME }}

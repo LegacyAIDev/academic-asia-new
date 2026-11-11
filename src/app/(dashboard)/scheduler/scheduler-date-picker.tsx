@@ -37,7 +37,7 @@ export function SchedulerDatePicker({ date, label, pending, onSelect }: Props) {
           <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
           <span aria-live="polite">
             <span className="block text-sm font-semibold tabular-nums">{label}</span>
-            <span className="block text-[11px] uppercase tracking-wide text-muted-foreground">{TIMEZONE_LABEL}</span>
+            <span className="block text-xs text-muted-foreground">{TIMEZONE_LABEL}</span>
           </span>
         </button>
       </PopoverTrigger>

@@ -23,6 +23,7 @@ async function newBooking(page, type, title, { start, end, room, online, student
   await open(page, '/scheduler')
   await click(page, 'New booking')
   await page.waitForSelector(DIALOG)
+  await pause(500) // the form slides in from the side
   await chooseByLabel(page, 'Type', type)
   await page.$eval(`${DIALOG} input[name="title"]`, el => { el.value = '' })
   await page.type(`${DIALOG} input[name="title"]`, title)
@@ -104,7 +105,7 @@ try {
     await click(page, 'Blocked times')
     await page.waitForSelector(DIALOG)
     await pause(500)
-    await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] button')].find(b => b.innerText.trim() === 'Block time')?.click())
+    await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] button')].find(b => b.innerText.trim() === 'Add blocked time')?.click())
     await page.waitForSelector('#block-label')
     await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] button[type="submit"]')].pop()?.click())
     await seeText(page, 'Give the block a name', DIALOG)

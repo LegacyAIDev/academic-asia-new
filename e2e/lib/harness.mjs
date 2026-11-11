@@ -90,10 +90,17 @@ export async function click(page, text, scope = 'body', { prefix = false } = {})
     const matches = el => (p ? text(el).startsWith(t) : text(el) === t)
     return nodes.find(el => matches(el) && el.offsetParent !== null && !el.disabled) ?? null
   }, { polling: 100 }, scope, text, prefix)
+  await clickElement(handle.asElement())
+}
+
+/** Clicks an element handle the way a person would, once it has stopped moving. */
+export async function clickElement(element) {
   // A drawer or dialog may still be sliding in: retry briefly while the element is moving.
   for (let attempt = 0; ; attempt++) {
     try {
-      await handle.asElement().click()
+      // Centre it first, so a sticky Save bar at the bottom of a drawer never covers it.
+      await element.evaluate(el => el.scrollIntoView({ block: 'center' }))
+      await element.click()
       return
     } catch (err) {
       if (attempt >= 5 || !/not clickable/.test(err.message)) throw err
@@ -104,7 +111,7 @@ export async function click(page, text, scope = 'body', { prefix = false } = {})
 
 /** Picks an option in a Radix Select and waits for its list to close, so the next click is not swallowed. */
 export async function choose(page, triggerSelector, optionText) {
-  await page.click(triggerSelector)
+  await clickElement(await page.waitForSelector(triggerSelector))
   await click(page, optionText)
   await page.waitForFunction(() => !document.querySelector('[role="listbox"]'))
   await new Promise(resolve => setTimeout(resolve, 300))

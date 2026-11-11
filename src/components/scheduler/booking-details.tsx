@@ -44,8 +44,8 @@ export function BookingDetails({ booking }: { booking: BookingDetail }) {
         </Fact>
 
         {isOnline ? (
-          <Fact label="Online" wide>
-            {safeLink ? <a href={safeLink} target="_blank" rel="noreferrer" className="text-primary underline underline-offset-2">{safeLink}</a> : 'Online'}
+          <Fact label="Location" wide>
+            {safeLink ? <>Online: <a href={safeLink} target="_blank" rel="noreferrer" className="text-primary underline underline-offset-2">{safeLink}</a></> : 'Online, no link yet'}
           </Fact>
         ) : (
           <>

@@ -21,11 +21,11 @@ export default async function SchedulerRoomsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Rooms</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Manage bookable rooms and the locations they belong to
+          The rooms people can book, grouped by location
         </p>
       </div>
 

@@ -113,7 +113,7 @@ export function BookingFormLocation({
             </div>
           )}
 
-          <div className="max-h-52 space-y-1.5 overflow-y-auto pr-0.5" role="listbox" aria-label="Available rooms">
+          <div className="space-y-1.5" role="listbox" aria-label="Available rooms">
             {availableRooms.length === 0 && (
               <p className="py-2 text-sm text-muted-foreground">No rooms free for this time and seat count. Try another time or fewer seats.</p>
             )}

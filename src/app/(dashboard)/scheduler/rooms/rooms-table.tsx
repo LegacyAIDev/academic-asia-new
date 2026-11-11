@@ -39,7 +39,7 @@ export function RoomsTable({ rooms, locations, blocksByRoom, canManage }: Props)
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-2 shadow-sm sm:p-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
             <SelectTrigger className="h-9 w-[180px] rounded-full text-xs" aria-label="Location">
@@ -66,7 +66,7 @@ export function RoomsTable({ rooms, locations, blocksByRoom, canManage }: Props)
       </div>
 
       {groups.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card px-6 py-14 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-card px-6 py-14 text-center">
           <DoorOpen className="h-6 w-6 text-muted-foreground" aria-hidden />
           <div>
             <p className="text-sm font-semibold">{nothingYet ? "No rooms yet" : "No rooms match this filter"}</p>

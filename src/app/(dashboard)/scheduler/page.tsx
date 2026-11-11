@@ -14,7 +14,11 @@ type PageProps = { searchParams: Promise<RawSearchParams> }
 export default async function SchedulerPage({ searchParams }: PageProps) {
   await requireAccess(MODULES.SCHEDULER)
 
-  const params = parseSchedulerParams(await searchParams)
+  const raw = await searchParams
+  const params = parseSchedulerParams(raw)
+  // The booking page's Edit opens the booking form here, on the booking's day.
+  const editRaw = Array.isArray(raw.edit) ? raw.edit[0] : raw.edit
+  const editBookingId = editRaw && /^[0-9a-f-]{36}$/i.test(editRaw) ? editRaw : null
   const range = visibleRange(params.date, params.mode)
   const user = await getCurrentUser()
   const me = user?.id ?? ''
@@ -56,8 +60,8 @@ export default async function SchedulerPage({ searchParams }: PageProps) {
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Scheduler</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Rooms, meetings and examination bookings for the whole team
+        <p className="mt-1 hidden text-sm text-muted-foreground sm:block">
+          Meetings, exams and rooms for the whole team
         </p>
       </div>
 
@@ -72,6 +76,7 @@ export default async function SchedulerPage({ searchParams }: PageProps) {
         currentProfileId={me}
         canWrite={canWrite}
         canConfirm={canConfirm}
+        editBookingId={canWrite ? editBookingId : null}
       />
     </div>
   )
