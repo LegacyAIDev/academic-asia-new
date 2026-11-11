@@ -6,6 +6,7 @@ import { CalendarClock, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { DeleteEventDialog } from "./delete-event-dialog"
+import { EditEventButton } from "../../event-form-sheet"
 
 /** Schedule sessions (1-to-1 events), Edit details, and Delete kept under More. */
 export function EventHeaderActions({ eventId, eventName, eventType, canSchedule, canWrite }: {
@@ -25,9 +26,7 @@ export function EventHeaderActions({ eventId, eventName, eventType, canSchedule,
       )}
       {canWrite && (
         <>
-          <Button variant="outline" className="gap-2" asChild>
-            <Link href={`/events/${eventType}/${eventId}/edit`}><Pencil className="h-4 w-4" /> Edit details</Link>
-          </Button>
+          <EditEventButton className="gap-2"><Pencil className="h-4 w-4" /> Edit details</EditEventButton>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" aria-label="More actions"><MoreHorizontal className="h-4 w-4" /></Button>

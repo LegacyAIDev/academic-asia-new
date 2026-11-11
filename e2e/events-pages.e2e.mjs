@@ -35,7 +35,7 @@ try {
   })
 
   await step(page, 'event: next step for an event with no schools, Delete under More', async () => {
-    const id = sql(`insert into public.events (name, event_type_id, start_date) select 'UAT Next step', id, (now() + interval '9 days')::date from public.event_types where code = 'expo_fair' returning id`).split('\n')[0]
+    const id = sql(`insert into public.events (name, event_type_id, category_id, start_date) select 'UAT Next step', id, category_id, (now() + interval '9 days')::date from public.event_types where code = 'expo_fair' returning id`).split('\n')[0]
     await open(page, `/events/expo-fair/${id}`)
     await seeText(page, 'Next step:')
     await seeText(page, 'Add the schools taking part')
@@ -43,13 +43,18 @@ try {
     await page.click('main button[aria-label="More actions"]')
     await seeText(page, 'Delete event', '[role="menu"]')
     await page.keyboard.press('Escape')
-    const href = await page.$$eval('main a', as => as.find(a => a.innerText.includes('Add schools'))?.getAttribute('href'))
-    assert(href?.endsWith('/edit#schools'), `prompt links to ${href}`)
+    // The prompt opens the edit drawer at the schools part of the form.
+    await click(page, 'Add schools', 'main')
+    await page.waitForFunction(() => location.search.includes('edit=schools'))
+    await page.waitForSelector('[role="dialog"] #schools', { timeout: 60000 })
+    await page.keyboard.press('Escape')
+    await page.waitForFunction(() => !location.search.includes('edit='), { timeout: 20000 })
     sql(`delete from public.events where id = '${id}'`)
   })
 
   await step(page, 'form: duration worked out from the times', async () => {
     await open(page, '/events/seminar-webinar/new')
+    await page.waitForSelector('[role="dialog"] #start_time', { timeout: 60000 })
     await setValue(page, '#start_time', '10:00')
     await setValue(page, '#end_time', '11:30')
     await seeText(page, 'Lasts 1 h 30 min')

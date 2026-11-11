@@ -27,9 +27,13 @@ export type EventFormProps = {
   existingSchoolIds?: string[]
   /** For a new event: the type of the page it was started from. */
   defaultEventType?: { id: number; categoryId: number | null } | null
+  /** Called after a successful save instead of opening the event page; drawers use it. */
+  onDone?: (eventId: string) => void
+  /** Called by Cancel instead of leaving the page. */
+  onCancel?: () => void
 }
 
-export function EventForm({ mode, eventType, event, referenceData, existingSchoolIds = [], defaultEventType = null }: EventFormProps) {
+export function EventForm({ mode, eventType, event, referenceData, existingSchoolIds = [], defaultEventType = null, onDone, onCancel }: EventFormProps) {
   const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -134,7 +138,8 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
         isEngagement, showRepresentatives, showExamBlocks,
         selectedSchoolIds, representatives, examBlocks,
       })
-      router.push(`/events/${eventType}/${eventId}`)
+      if (onDone) onDone(eventId)
+      else router.push(`/events/${eventType}/${eventId}`)
     })
   }
 
@@ -197,11 +202,13 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
 
       {/* Actions: kept in view at the foot, so Save never needs a scroll */}
       <div className="sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-3 border-t bg-background/95 px-1 py-3 backdrop-blur">
-        <Button variant="outline" type="button" asChild>
-          <Link href={event?.id ? `/events/${eventType}/${event.id}` : `/events/${eventType}`}>
-            Cancel
-          </Link>
-        </Button>
+        {onCancel ? (
+          <Button variant="outline" type="button" onClick={onCancel}>Cancel</Button>
+        ) : (
+          <Button variant="outline" type="button" asChild>
+            <Link href={event?.id ? `/events/${eventType}/${event.id}` : `/events/${eventType}`}>Cancel</Link>
+          </Button>
+        )}
         <Button type="submit" disabled={isPending} className="gap-2">
           {isPending ? (
             <><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>

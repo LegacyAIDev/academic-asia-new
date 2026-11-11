@@ -19,7 +19,8 @@ const TYPES = [
 /** Picks an option in the Select that follows a label in the form. */
 async function chooseAfterLabel(page, labelText, option) {
   const trigger = await page.waitForFunction(l => {
-    const label = [...document.querySelectorAll('main label')].find(el => el.innerText.replace('*', '').trim() === l)
+    // The event form opens in a drawer over the page.
+    const label = [...document.querySelectorAll('[role="dialog"] label')].find(el => el.innerText.replace('*', '').trim() === l)
     return label?.parentElement.querySelector('button[role="combobox"]') ?? null
   }, { polling: 100 }, labelText)
   await trigger.asElement().click()
@@ -41,15 +42,17 @@ try {
 
   await step(page, 'a new event from a type page starts with that type chosen, and a missing type is explained', async () => {
     await open(page, '/events/interview/new')
-    const chosen = await page.evaluate(() => [...document.querySelectorAll('main label')]
+    await page.waitForSelector('[role="dialog"] #name', { timeout: 60000 })
+    const chosen = await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] label')]
       .filter(l => ['Category', 'Event Type'].includes(l.innerText.replace('*', '').trim()))
       .map(l => l.parentElement.querySelector('button[role="combobox"]')?.innerText.trim()).join(' / '))
     assert(chosen === 'Admission & Assessment / Interview Day', `preselected: ${chosen}`)
     // Switching the category clears the preselected type.
     await open(page, '/events/expo-fair/new')
+    await page.waitForSelector('[role="dialog"] #name', { timeout: 60000 })
     await chooseAfterLabel(page, 'Category', 'Admission & Assessment')
     await page.type('#name', 'UAT Event no type')
-    await page.click('main button[type="submit"]')
+    await page.click('[role="dialog"] button[type="submit"]')
     await seeText(page, 'Choose the event type')
     assert(sql(`select count(*) from public.events where name = 'UAT Event no type'`) === '0', 'saved without a type')
   })
@@ -60,6 +63,7 @@ try {
 
     await step(page, `${type}: create, view and find it in the list`, async () => {
       await open(page, `/events/${type}/new`)
+      await page.waitForSelector('[role="dialog"] #name', { timeout: 60000 })
       await chooseAfterLabel(page, 'Category', category)
       await chooseAfterLabel(page, 'Event Type', label)
       await page.type('#name', name)
@@ -67,7 +71,7 @@ try {
       if (await page.$('#start_time')) await setValue(page, '#start_time', '10:00')
       await Promise.all([
         page.waitForFunction(t => new RegExp(`^/events/${t}/[0-9a-f-]{36}$`).test(location.pathname), { polling: 100, timeout: 60000 }, type),
-        click(page, 'Add event', 'main'),
+        click(page, 'Add event', '[role="dialog"]'),
       ])
       id = page.url().split('/').pop()
       await seeText(page, name)
@@ -80,13 +84,15 @@ try {
     await step(page, `${type}: edit the name`, async () => {
       assert(id, 'no event created')
       await open(page, `/events/${type}/${id}/edit`)
+      await page.waitForSelector('[role="dialog"] #name', { timeout: 60000 })
       await page.$eval('#name', el => el.select())
       await page.keyboard.press('Backspace')
       await page.type('#name', `${name} edited`)
       await Promise.all([
         page.waitForFunction(i => location.pathname.endsWith(`/${i}`), { polling: 100, timeout: 60000 }, id),
-        page.click('main button[type="submit"]'),
+        page.click('[role="dialog"] button[type="submit"]'),
       ])
+      await page.waitForFunction(() => !document.querySelector('[role="dialog"]'), { timeout: 30000 })
       await seeText(page, `${name} edited`)
       assert(sql(`select start_date from public.events where id = '${id}'`) === DAY, 'the edit changed the date')
     })

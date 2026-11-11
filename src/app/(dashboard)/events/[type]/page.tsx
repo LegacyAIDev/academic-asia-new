@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
-import { ChevronLeft, Eye, MoreHorizontal, Pencil, Plus } from "lucide-react"
+import { ChevronLeft, Eye, MoreHorizontal, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -12,6 +12,7 @@ import { hkToday } from "@/lib/hk-day"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { EventsFilters } from "./events-filters"
+import { AddEventButton } from "../event-form-sheet"
 
 type PageParams = {
   params: Promise<{ type: string }>
@@ -59,11 +60,7 @@ export default async function EventsListPage({ params, searchParams }: PageParam
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">{label}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{description}. {totalCount.toLocaleString("en-GB")} {filtered ? "matching" : "in total"}, newest first.</p>
         </div>
-        {canWrite && (
-          <Button className="gap-2" asChild>
-            <Link href={`/events/${type}/new`}><Plus className="h-4 w-4" /> Add {label.toLowerCase()}</Link>
-          </Button>
-        )}
+        {canWrite && <AddEventButton typeSlug={type} label={label} />}
       </header>
 
       <section className="overflow-hidden rounded-lg border bg-card">
@@ -140,7 +137,7 @@ function EventRow({ event, eventType, today, showSlots, canWrite }: { event: Eve
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem asChild><Link href={href}><Eye className="h-4 w-4" /> Open event</Link></DropdownMenuItem>
-            {canWrite && <DropdownMenuItem asChild><Link href={`${href}/edit`}><Pencil className="h-4 w-4" /> Edit details</Link></DropdownMenuItem>}
+            {canWrite && <DropdownMenuItem asChild><Link href={`${href}?edit=details`}><Pencil className="h-4 w-4" /> Edit details</Link></DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>
