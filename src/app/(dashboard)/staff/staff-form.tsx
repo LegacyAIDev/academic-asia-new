@@ -1,25 +1,18 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select"
-import {
-  Save, Loader2, ArrowLeft, User, Mail, Phone, Shield, Briefcase, FileText, KeyRound,
-} from "lucide-react"
-import Link from "next/link"
+import { Loader2 } from "lucide-react"
+import { DateField } from "@/components/ui/date-field"
 import { createStaff, updateStaff, type StaffInput } from "@/lib/supabase/actions/staff"
 import type { StaffListItem } from "@/lib/supabase/queries/staff"
 import { setProfilePermissions } from "@/lib/supabase/actions/permissions"
-import { StaffAccessCard } from "./staff-access-card"
+import { StaffAccessSection } from "./staff-access-section"
 import type { MatrixModule } from "@/components/permissions/permission-matrix"
 import type { AccessLevel } from "@/lib/permissions/modules"
-import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 type StaffFormProps = {
   mode: "create" | "edit"
@@ -32,11 +25,27 @@ type StaffFormProps = {
   initialOverrides?: Record<number, AccessLevel>
   /** False when the signed-in user may not change another person's access. */
   canManageAccess: boolean
+  /** Called after a save, with the staff member's id. */
+  onDone: (id: string | undefined) => void
+  onCancel: () => void
 }
 
 const inputStyles = "bg-background"
 
-/** Shared form for creating and editing staff profiles */
+/** One titled block of the staff form. */
+function FormSection({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-3 border-t pt-5 first:border-t-0 first:pt-0">
+      <div>
+        <h3 className="text-sm font-semibold">{title}</h3>
+        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      </div>
+      {children}
+    </section>
+  )
+}
+
+/** Shared form for adding and editing staff, shown in a side drawer. */
 export function StaffForm({
   mode,
   staff,
@@ -46,8 +55,9 @@ export function StaffForm({
   levelDefaults,
   initialOverrides = {},
   canManageAccess,
+  onDone,
+  onCancel,
 }: StaffFormProps) {
-  const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [adminLevel, setAdminLevel] = useState<number | null>(staff?.admin_level ?? null)
@@ -77,6 +87,10 @@ export function StaffForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
+    if (adminLevel === null) {
+      setError("Choose an access level, so they can open the parts of the CRM they need.")
+      return
+    }
     const fd = new FormData(e.currentTarget)
 
     const str = (key: string) => (fd.get(key) as string) || null
@@ -130,131 +144,41 @@ export function StaffForm({
         }
       }
 
-      router.push(staffId ? `/staff/${staffId}` : "/staff")
+      onDone(staffId)
     })
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href={staff?.id ? `/staff/${staff.id}` : "/staff"}>
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {mode === "create" ? "New Staff Member" : "Edit Staff Member"}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {mode === "create" ? "Add a new team member" : `Editing ${staff?.first_name} ${staff?.surname}`}
-          </p>
+    <form onSubmit={handleSubmit} className="@container space-y-5" noValidate>
+      {error && (
+        <div role="alert" className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
         </div>
-      </div>
+      )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
-            {error}
+      <FormSection title="Name and role">
+        <div className="grid gap-4 @md:grid-cols-2 [&>*]:min-w-0">
+          <div className="space-y-2">
+            <Label htmlFor="staff-first-name">First name <span className="text-destructive">*</span></Label>
+            <Input id="staff-first-name" name="first_name" defaultValue={staff?.first_name ?? ""} className={inputStyles} required />
           </div>
-        )}
+          <div className="space-y-2">
+            <Label htmlFor="staff-surname">Surname <span className="text-destructive">*</span></Label>
+            <Input id="staff-surname" name="surname" defaultValue={staff?.surname ?? ""} className={inputStyles} required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="staff-position">Position</Label>
+            <Input id="staff-position" name="position" defaultValue={staff?.position ?? ""} className={inputStyles} placeholder="e.g. Senior Consultant" />
+          </div>
+          <div className="space-y-2">
+            <Label>Joined</Label>
+            <DateField name="join_date" defaultValue={staff?.join_date ?? null} placeholder="Pick a date" />
+          </div>
+        </div>
+      </FormSection>
 
-        {/* Personal Information */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <User className="h-4 w-4 text-muted-foreground" />
-              Personal Information
-            </CardTitle>
-            <CardDescription>Basic details about the staff member</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>First Name <span className="text-destructive">*</span></Label>
-              <Input name="first_name" defaultValue={staff?.first_name ?? ""} className={inputStyles} required />
-            </div>
-            <div className="space-y-2">
-              <Label>Surname <span className="text-destructive">*</span></Label>
-              <Input name="surname" defaultValue={staff?.surname ?? ""} className={inputStyles} required />
-            </div>
-            <div className="space-y-2">
-              <Label>Position</Label>
-              <Input name="position" defaultValue={staff?.position ?? ""} className={inputStyles} placeholder="e.g. Senior Consultant" />
-            </div>
-            <div className="space-y-2">
-              <Label>Join Date</Label>
-              <Input type="date" name="join_date" defaultValue={staff?.join_date ?? ""} className={inputStyles} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Contact */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              Contact Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Email (Primary) {mode === "create" && <span className="text-destructive">*</span>}</Label>
-              <Input type="email" name="email_1" defaultValue={staff?.email_1 ?? ""} className={inputStyles} placeholder="name@academic-asia.com" required={mode === "create"} />
-            </div>
-            <div className="space-y-2">
-              <Label>Email (Secondary)</Label>
-              <Input type="email" name="email_2" defaultValue={staff?.email_2 ?? ""} className={inputStyles} />
-            </div>
-            <div className="space-y-2">
-              <Label>Telephone</Label>
-              <Input name="telephone" defaultValue={staff?.telephone ?? ""} className={inputStyles} />
-            </div>
-            <div className="space-y-2">
-              <Label>Mobile</Label>
-              <Input name="mobile" defaultValue={staff?.mobile ?? ""} className={inputStyles} placeholder="+xx - xxxx" />
-            </div>
-            <div className="space-y-2">
-              <Label>Fax</Label>
-              <Input name="fax" defaultValue={staff?.fax ?? ""} className={inputStyles} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Login Credentials */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <KeyRound className="h-4 w-4 text-muted-foreground" />
-              Login Credentials
-            </CardTitle>
-            <CardDescription>
-              {mode === "create"
-                ? "Set a password for the staff member to log in"
-                : "Leave blank to keep the current password"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Password {mode === "create" && <span className="text-destructive">*</span>}</Label>
-              <Input
-                type="password"
-                name="password"
-                className={inputStyles}
-                placeholder={mode === "create" ? "Set password" : "Leave blank to keep current"}
-                minLength={6}
-                required={mode === "create"}
-              />
-            </div>
-            <div className="space-y-2 flex items-end">
-              <p className="text-xs text-muted-foreground pb-2.5">
-                Minimum 6 characters. The staff member will use their email and this password to sign in.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <StaffAccessCard
+      <FormSection title="Access" hint="What they can open in the CRM.">
+        <StaffAccessSection
           departments={departments}
           adminLevels={adminLevels}
           modules={modules}
@@ -267,58 +191,83 @@ export function StaffForm({
           onOverrideReset={handleOverrideReset}
           canManageAccess={canManageAccess}
         />
+      </FormSection>
 
-        {/* Caseload */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-              Caseload
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-2">
-              <Label>Yearly Cases</Label>
-              <Input type="number" name="yearly_case_count" defaultValue={staff?.yearly_case_count ?? ""} className={inputStyles} />
-            </div>
-            <div className="space-y-2">
-              <Label>Weekly Cases</Label>
-              <Input type="number" name="weekly_case_count" defaultValue={staff?.weekly_case_count ?? ""} className={inputStyles} />
-            </div>
-            <div className="space-y-2">
-              <Label>Daily Cases</Label>
-              <Input type="number" name="daily_case_count" defaultValue={staff?.daily_case_count ?? ""} className={inputStyles} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Remarks */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              Remarks
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Textarea name="remarks" defaultValue={staff?.remarks ?? ""} rows={3} className={inputStyles} placeholder="Additional notes..." />
-          </CardContent>
-        </Card>
-
-        {/* Submit */}
-        <div className="flex items-center justify-end gap-3">
-          <Button type="button" variant="ghost" asChild>
-            <Link href={staff?.id ? `/staff/${staff.id}` : "/staff"}>Cancel</Link>
-          </Button>
-          <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2 shadow-sm">
-            {isPending ? (
-              <><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>
-            ) : (
-              <><Save className="h-4 w-4" />{mode === "create" ? "Create Staff" : "Save Changes"}</>
-            )}
-          </Button>
+      <FormSection
+        title="Signing in"
+        hint={mode === "create" ? "They sign in with this email and password." : "Leave the password blank to keep the current one."}
+      >
+        <div className="grid gap-4 @md:grid-cols-2 [&>*]:min-w-0">
+          <div className="space-y-2">
+            <Label htmlFor="staff-email">Email {mode === "create" && <span className="text-destructive">*</span>}</Label>
+            <Input id="staff-email" type="email" name="email_1" defaultValue={staff?.email_1 ?? ""} className={inputStyles} placeholder="name@academic-asia.com" required={mode === "create"} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="staff-password">Password {mode === "create" && <span className="text-destructive">*</span>}</Label>
+            <Input
+              id="staff-password"
+              type="password"
+              name="password"
+              autoComplete="new-password"
+              className={inputStyles}
+              placeholder={mode === "create" ? "At least 6 characters" : "Leave blank to keep"}
+              minLength={6}
+              required={mode === "create"}
+            />
+          </div>
         </div>
-      </form>
-    </div>
+      </FormSection>
+
+      <FormSection title="Other contact details">
+        <div className="grid gap-4 @md:grid-cols-2 [&>*]:min-w-0">
+          <div className="space-y-2">
+            <Label htmlFor="staff-email-2">Second email</Label>
+            <Input id="staff-email-2" type="email" name="email_2" defaultValue={staff?.email_2 ?? ""} className={inputStyles} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="staff-mobile">Mobile</Label>
+            <Input id="staff-mobile" name="mobile" defaultValue={staff?.mobile ?? ""} className={inputStyles} placeholder="+852 …" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="staff-telephone">Telephone</Label>
+            <Input id="staff-telephone" name="telephone" defaultValue={staff?.telephone ?? ""} className={inputStyles} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="staff-fax">Fax</Label>
+            <Input id="staff-fax" name="fax" defaultValue={staff?.fax ?? ""} className={inputStyles} />
+          </div>
+        </div>
+      </FormSection>
+
+      <FormSection title="Caseload" hint="How many cases they usually handle.">
+        <div className="grid gap-4 @md:grid-cols-3 [&>*]:min-w-0">
+          <div className="space-y-2">
+            <Label htmlFor="staff-yearly">Per year</Label>
+            <Input id="staff-yearly" type="number" min={0} name="yearly_case_count" defaultValue={staff?.yearly_case_count ?? ""} className={inputStyles} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="staff-weekly">Per week</Label>
+            <Input id="staff-weekly" type="number" min={0} name="weekly_case_count" defaultValue={staff?.weekly_case_count ?? ""} className={inputStyles} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="staff-daily">Per day</Label>
+            <Input id="staff-daily" type="number" min={0} name="daily_case_count" defaultValue={staff?.daily_case_count ?? ""} className={inputStyles} />
+          </div>
+        </div>
+      </FormSection>
+
+      <FormSection title="Remarks">
+        <Textarea name="remarks" defaultValue={staff?.remarks ?? ""} rows={3} className={inputStyles} placeholder="Anything colleagues should know" />
+      </FormSection>
+
+      {/* Save stays in view however long the form gets. */}
+      <div className="sticky bottom-0 z-10 -mx-6 flex items-center justify-end gap-2 border-t bg-background px-6 py-3">
+        <Button type="button" variant="ghost" onClick={onCancel} disabled={isPending}>Cancel</Button>
+        <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2">
+          {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          {mode === "create" ? "Add staff member" : "Save changes"}
+        </Button>
+      </div>
+    </form>
   )
 }

@@ -112,7 +112,8 @@ export async function clickElement(element) {
 /** Picks an option in a Radix Select and waits for its list to close, so the next click is not swallowed. */
 export async function choose(page, triggerSelector, optionText) {
   await clickElement(await page.waitForSelector(triggerSelector))
-  await click(page, optionText)
+  // Only inside the open list, so a link with the same words elsewhere is never picked.
+  await click(page, optionText, '[role="listbox"]')
   await page.waitForFunction(() => !document.querySelector('[role="listbox"]'))
   await new Promise(resolve => setTimeout(resolve, 300))
 }

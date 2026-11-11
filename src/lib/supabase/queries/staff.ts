@@ -144,3 +144,18 @@ export async function getDepartments(): Promise<{ id: number; label: string }[]>
 
   return data ?? []
 }
+
+/**
+ * Whether a staff member can sign in, and when they last did. Read from the
+ * auth user with the service role; callers must already have checked staff access.
+ */
+export async function getStaffSignIn(id: string): Promise<{ active: boolean; lastSignInAt: string | null } | null> {
+  const { createAdminClient } = await import('@/lib/supabase/admin')
+  const { data, error } = await createAdminClient().auth.admin.getUserById(id)
+  if (error || !data.user) return null
+  const bannedUntil = (data.user as { banned_until?: string | null }).banned_until
+  return {
+    active: !bannedUntil || new Date(bannedUntil).getTime() <= Date.now(),
+    lastSignInAt: data.user.last_sign_in_at ?? null,
+  }
+}

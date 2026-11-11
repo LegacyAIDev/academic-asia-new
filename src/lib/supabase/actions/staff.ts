@@ -212,3 +212,59 @@ export async function deleteStaff(id: string): Promise<ActionResult> {
     return { success: false, error: 'Failed to delete staff member' }
   }
 }
+
+/** Roughly a hundred years: Supabase has no "forever", and a ban this long never lifts by itself. */
+const DEACTIVATED_FOR = '876000h'
+
+/**
+ * Stop (or allow again) a staff member signing in, keeping their profile and
+ * history. Uses the auth ban, so no profile column is needed.
+ */
+export async function setStaffActive(id: string, active: boolean): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STAFF, ACCESS.WRITE)
+  if (denied) return denied
+
+  try {
+    const caller = await getCurrentUser()
+    if (caller?.id === id) return { success: false, error: 'You cannot deactivate your own account.' }
+    const outranked = await assertOutranksTarget(id)
+    if (outranked) return outranked
+
+    const admin = createAdminClient()
+    const { error } = await admin.auth.admin.updateUserById(id, { ban_duration: active ? 'none' : DEACTIVATED_FOR })
+    if (error) {
+      console.error('Error changing staff sign-in:', error)
+      return { success: false, error: error.message }
+    }
+
+    revalidatePath('/staff')
+    revalidatePath(`/staff/${id}`)
+    return { success: true }
+  } catch (err) {
+    console.error('Error in setStaffActive:', err)
+    return { success: false, error: 'Failed to update the staff member' }
+  }
+}
+
+/** Set a new sign-in password for a staff member, e.g. when they have forgotten theirs. */
+export async function setStaffPassword(id: string, password: string): Promise<ActionResult> {
+  const denied = await assertAccess(MODULES.STAFF, ACCESS.WRITE)
+  if (denied) return denied
+  if (!password || password.length < 6) return { success: false, error: 'Use at least 6 characters.' }
+
+  try {
+    const outranked = await assertOutranksTarget(id)
+    if (outranked) return outranked
+
+    const admin = createAdminClient()
+    const { error } = await admin.auth.admin.updateUserById(id, { password })
+    if (error) {
+      console.error('Error setting staff password:', error)
+      return { success: false, error: error.message }
+    }
+    return { success: true }
+  } catch (err) {
+    console.error('Error in setStaffPassword:', err)
+    return { success: false, error: 'Failed to set the password' }
+  }
+}

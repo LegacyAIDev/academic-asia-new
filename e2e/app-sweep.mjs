@@ -29,7 +29,7 @@ const ROUTES = [
   '/exams', '/exams?view=all',
   '/scheduler', '/scheduler?view=day', '/scheduler?view=month', '/scheduler?mode=team', '/scheduler?mode=rooms', '/scheduler/rooms',
   ...(booking ? [`/scheduler/bookings/${booking}`] : []),
-  '/staff', '/staff/new', ...(profile ? [`/staff/${profile}`, `/staff/${profile}/edit`] : []),
+  '/staff', ...(profile ? [`/staff/${profile}`] : []),
   '/settings', '/settings/access-levels',
 ]
 
