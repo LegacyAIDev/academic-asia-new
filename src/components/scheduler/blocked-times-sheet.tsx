@@ -129,7 +129,7 @@ export function BlockedTimesSheet({ open, onOpenChange, subject, subjectLabel, b
                     ))}
                   </ul>
                 )}
-                <Button className="h-9" onClick={() => { setClashes([]); setMode({ kind: 'form' }) }}>
+                <Button type="button" className="h-9" onClick={() => { setClashes([]); setMode({ kind: 'form' }) }}>
                   <Plus className="mr-1 h-4 w-4" /> Add blocked time
                 </Button>
               </>
