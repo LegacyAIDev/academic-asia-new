@@ -4,7 +4,7 @@
  * Needs psql on PATH and E2E_DB_URL for the local test database.
  */
 import { execFileSync } from 'node:child_process'
-import { assert, BASE, click, hkDay, launch, open, seeText, setValue, signIn, step, summary } from './lib/harness.mjs'
+import { assert, BASE, click, hkDay, launch, open, pickDate, seeText, setValue, signIn, step, summary } from './lib/harness.mjs'
 
 const DB = process.env.E2E_DB_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
 const sql = query => execFileSync('psql', [DB, '-X', '-A', '-t', '-q', '-c', query], { encoding: 'utf8' }).trim()
@@ -63,11 +63,11 @@ try {
       await chooseAfterLabel(page, 'Category', category)
       await chooseAfterLabel(page, 'Event Type', label)
       await page.type('#name', name)
-      await setValue(page, '#start_date', DAY)
+      await pickDate(page, '#start_date', DAY)
       if (await page.$('#start_time')) await setValue(page, '#start_time', '10:00')
       await Promise.all([
         page.waitForFunction(t => new RegExp(`^/events/${t}/[0-9a-f-]{36}$`).test(location.pathname), { polling: 100, timeout: 60000 }, type),
-        click(page, 'Create Event', 'main', { prefix: true }).catch(() => page.click('main button[type="submit"]')),
+        click(page, 'Add event', 'main'),
       ])
       id = page.url().split('/').pop()
       await seeText(page, name)
@@ -102,7 +102,9 @@ try {
 
     await step(page, `${type}: delete it`, async () => {
       await open(page, `/events/${type}/${id}`)
-      await click(page, 'Delete', 'main', { prefix: true })
+      // Delete lives in the More menu, away from everyday buttons.
+      await page.click('main button[aria-label="More actions"]')
+      await click(page, 'Delete event')
       await page.waitForSelector('[role="alertdialog"]')
       await new Promise(r => setTimeout(r, 400))
       await click(page, 'Delete Event', '[role="alertdialog"]')

@@ -21,11 +21,17 @@ type DeleteEventDialogProps = {
   eventId: string
   eventName: string
   eventType: string
+  /** Controlled from a menu item; without these the dialog shows its own button. */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function DeleteEventDialog({ eventId, eventName, eventType }: DeleteEventDialogProps) {
+export function DeleteEventDialog({ eventId, eventName, eventType, open: controlledOpen, onOpenChange }: DeleteEventDialogProps) {
   const router = useRouterWithProgress()
-  const [open, setOpen] = useState(false)
+  const [ownOpen, setOwnOpen] = useState(false)
+  const controlled = controlledOpen !== undefined
+  const open = controlled ? controlledOpen : ownOpen
+  const setOpen = (next: boolean) => (controlled ? onOpenChange?.(next) : setOwnOpen(next))
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -44,12 +50,12 @@ export function DeleteEventDialog({ eventId, eventName, eventType }: DeleteEvent
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
+      {!controlled && <AlertDialogTrigger asChild>
         <Button variant="outline" className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10">
           <Trash2 className="h-4 w-4" />
           Delete
         </Button>
-      </AlertDialogTrigger>
+      </AlertDialogTrigger>}
       <AlertDialogContent className="sm:max-w-[420px]">
         <AlertDialogHeader>
           <div className="flex items-start gap-4">

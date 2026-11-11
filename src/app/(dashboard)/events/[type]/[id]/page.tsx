@@ -1,448 +1,201 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { ChevronLeft, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import {
-  ArrowLeft,
-  Edit,
-  Calendar,
-  Clock,
-  MapPin,
-  Building2,
-  Users,
-  CalendarDays,
-  CalendarClock,
-  FileText,
-  User,
-  Trash2,
-} from "lucide-react"
-import {
-  getEventById,
-  getEventSchools,
-  getEventRepresentatives,
-  URL_TO_TYPE_CODE,
-  EVENT_TYPE_LABELS,
-} from "@/lib/supabase/queries/events"
-import { DeleteEventDialog } from "./delete-event-dialog"
-import { requireAccess } from "@/lib/permissions/guard"
-import { MODULES } from "@/lib/permissions/modules"
+import { Button } from "@/components/ui/button"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { getEventById, getEventSchools, getEventRepresentatives, URL_TO_TYPE_CODE, EVENT_TYPE_LABELS } from "@/lib/supabase/queries/events"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
+import { hkToday } from "@/lib/hk-day"
+import { EventHeaderActions } from "./event-header-actions"
 
-type EventDetailPageParams = {
-  params: Promise<{ type: string; id: string }>
+/** Admission events have one school and (when 1-to-1) representatives; engagement events list the schools taking part. */
+const ADMISSION_TYPES = new Set(["interview", "audition_day", "group_entrance_exam", "school_assessment_scholarship"])
+
+const longDate = (iso: string | null) =>
+  iso ? new Date(`${iso.slice(0, 10)}T00:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : null
+const hhmm = (time: string | null) => (time ? (time.includes("T") ? time.split("T")[1] : time).slice(0, 5) : null)
+
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-[9rem_minmax(0,1fr)] gap-3 py-2 text-sm">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 break-words">{children || <span className="text-muted-foreground/60">Not recorded</span>}</dd>
+    </div>
+  )
 }
 
-export default async function EventDetailPage({ params }: EventDetailPageParams) {
+/**
+ * One event on one page: what and when, a prompt for the next thing to set up,
+ * then the schools and representatives taking part. Adding either happens on
+ * the edit page, and the prompts link straight to its section.
+ */
+export default async function EventDetailPage({ params }: { params: Promise<{ type: string; id: string }> }) {
   await requireAccess(MODULES.EVENTS)
-
   const { type, id } = await params
-
-  // Validate event type
   const typeCode = URL_TO_TYPE_CODE[type]
-  if (!typeCode) {
-    notFound()
-  }
+  if (!typeCode) notFound()
 
-  // Fetch event data and related records in parallel
-  const [event, schools, representatives] = await Promise.all([
-    getEventById(id),
-    getEventSchools(id),
-    getEventRepresentatives(id),
+  const [event, schools, representatives, canWrite] = await Promise.all([
+    getEventById(id), getEventSchools(id), getEventRepresentatives(id), canAccess(MODULES.EVENTS, ACCESS.WRITE),
   ])
-
-  if (!event) {
-    notFound()
-  }
+  if (!event) notFound()
 
   const typeLabel = EVENT_TYPE_LABELS[typeCode]
+  const admission = ADMISSION_TYPES.has(typeCode)
+  const oneToOne = event.scheduling_mode?.code === "one_to_one"
+  const edit = `/events/${type}/${id}/edit`
+  const today = hkToday()
+  const past = Boolean(event.end_date ?? event.start_date) && (event.end_date ?? event.start_date)! < today
+  const dates = [longDate(event.start_date), event.end_date && event.end_date !== event.start_date ? longDate(event.end_date) : null].filter(Boolean).join(" to ")
+  const times = [hhmm(event.start_time), hhmm(event.end_time)].filter(Boolean).join(" to ")
 
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "—"
-    return new Date(dateStr).toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
-  }
-
-  const formatTime = (timeStr: string | null) => {
-    if (!timeStr) return "—"
-    return timeStr.slice(0, 5)
-  }
-
-  const formatDateTime = (dateStr: string | null) => {
-    if (!dateStr) return "—"
-    return new Date(dateStr).toLocaleString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  }
-
-  const isUpcoming = event.start_date && new Date(event.start_date) >= new Date()
+  // The next thing to set up, in plain words, with the link that does it.
+  const next = !canWrite || past ? null
+    : schools.length === 0 ? { text: admission ? "Choose the school this event is for." : "Add the schools taking part.", href: `${edit}#${admission ? "admission" : "schools"}`, label: admission ? "Choose school" : "Add schools" }
+    : oneToOne && representatives.length === 0 ? { text: "Add the school's representatives and when they are free, so 1-to-1 sessions can be booked.", href: `${edit}#representatives`, label: "Add representatives" }
+    : oneToOne ? { text: "Representatives are set. Book students into their sessions.", href: `/events/${type}/${id}/scheduler`, label: "Schedule sessions" }
+    : null
 
   return (
-    <div className="space-y-6">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/events/${type}`}>{typeLabel}</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{event.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      {/* Header */}
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex items-start gap-4">
-          <Button variant="ghost" size="icon" asChild className="mt-1">
-            <Link href={`/events/${type}`}>
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-sm">
-            <Calendar className="h-7 w-7 text-primary" />
-          </div>
-          <div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-semibold tracking-tight">{event.name}</h1>
-              <Badge
-                variant="outline"
-                className={
-                  isUpcoming
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    : "bg-slate-100 text-slate-600 border-slate-200"
-                }
-              >
-                {isUpcoming ? "Upcoming" : "Past"}
+    <div className="mx-auto max-w-[1320px] space-y-6">
+      <div>
+        <Link href={`/events/${type}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <ChevronLeft className="h-4 w-4" /> {typeLabel}
+        </Link>
+        <header className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h1 className="text-2xl font-semibold tracking-tight text-brand-navy">{event.name}</h1>
+              <Badge variant="outline" className={past ? "font-medium text-muted-foreground" : "border-0 bg-emerald-50 font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/15"}>
+                {past ? "Past" : "Upcoming"}
               </Badge>
             </div>
-            <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground flex-wrap">
-              {event.legacy_id && (
-                <code className="font-mono bg-muted px-2 py-0.5 rounded text-xs">
-                  ID: {event.legacy_id}
-                </code>
-              )}
-              <span className="flex items-center gap-1">
-                <CalendarDays className="h-3.5 w-3.5" />
-                {formatDate(event.start_date)}
-              </span>
-              {event.location && (
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {event.location}
-                </span>
-              )}
-            </div>
+            <p className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span>{typeLabel}</span>
+              {dates && <span>{dates}</span>}
+              {times && <span>{times}</span>}
+              {event.location && <span>{event.location}</span>}
+            </p>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          {event.scheduling_mode?.code === 'one_to_one' && (
-            <Button variant="outline" className="gap-2 shadow-sm" asChild>
-              <Link href={`/events/${type}/${id}/scheduler`}>
-                <CalendarClock className="h-4 w-4" />
-                Schedule Sessions
-              </Link>
-            </Button>
-          )}
-          <Button className="gap-2 shadow-sm" asChild>
-            <Link href={`/events/${type}/${id}/edit`}>
-              <Edit className="h-4 w-4" />
-              Edit Event
-            </Link>
-          </Button>
-          <DeleteEventDialog eventId={id} eventName={event.name} eventType={type} />
-        </div>
+          <EventHeaderActions eventId={id} eventName={event.name} eventType={type} canSchedule={oneToOne} canWrite={canWrite} />
+        </header>
       </div>
 
-      {/* Tabs Content */}
-      <Tabs defaultValue="basic" className="space-y-6">
-        <TabsList className="bg-muted/50">
-          <TabsTrigger value="basic" className="gap-2">
-            <FileText className="h-4 w-4" />
-            Basic Info
-          </TabsTrigger>
-          <TabsTrigger value="schools" className="gap-2">
-            <Building2 className="h-4 w-4" />
-            Schools ({schools.length})
-          </TabsTrigger>
-          <TabsTrigger value="representatives" className="gap-2">
-            <Users className="h-4 w-4" />
-            Representatives ({representatives.length})
-          </TabsTrigger>
-        </TabsList>
+      {next && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border-l-2 border-brand-gold bg-brand-gold/10 px-4 py-3">
+          <p className="text-sm"><span className="font-medium">Next step: </span>{next.text}</p>
+          <Button size="sm" asChild><Link href={next.href}><Plus className="h-4 w-4" /> {next.label}</Link></Button>
+        </div>
+      )}
 
-        {/* Basic Info Tab */}
-        <TabsContent value="basic" className="space-y-6">
-          <div className="grid gap-6 lg:grid-cols-3">
-            {/* Event Details */}
-            <Card className="lg:col-span-2 border-0 shadow-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base font-medium flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  Event Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Event Name</p>
-                  <p className="text-sm font-medium">{event.name}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Event Type</p>
-                  <p className="text-sm font-medium">{event.event_type?.label ?? "—"}</p>
-                </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Location / Description</p>
-                  <p className="text-sm font-medium flex items-start gap-2">
-                    <MapPin className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
-                    {event.location || "—"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+      <div className="grid items-start gap-6 lg:grid-cols-3">
+        <Panel title="Details" className="lg:col-span-2">
+          <dl className="-my-2 divide-y">
+            <Row label="Type">{typeLabel}</Row>
+            <Row label="Date">{dates}</Row>
+            <Row label="Time">{times}</Row>
+            {event.duration_minutes ? <Row label="Duration">{event.duration_minutes} min</Row> : null}
+            <Row label="Where">{event.location}</Row>
+            {event.scheduling_mode && <Row label="Scheduling">{event.scheduling_mode.label}</Row>}
+            {event.assigned_to_profile && <Row label="Looked after by">{[event.assigned_to_profile.first_name, event.assigned_to_profile.surname].filter(Boolean).join(" ")}</Row>}
+            {event.remarks && <Row label="Remarks"><span className="whitespace-pre-wrap">{event.remarks}</span></Row>}
+          </dl>
+        </Panel>
+        <Panel title="At a glance">
+          <dl className="-my-2 divide-y">
+            <Row label="Schools">{schools.length ? schools.length : <span className="text-muted-foreground">None yet</span>}</Row>
+            {(admission || representatives.length > 0) && <Row label="Representatives">{representatives.length ? representatives.length : <span className="text-muted-foreground">None yet</span>}</Row>}
+            <Row label="Added">{event.created_at ? new Date(event.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : null}</Row>
+            <Row label="Last changed">{event.updated_at ? new Date(event.updated_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : null}</Row>
+          </dl>
+        </Panel>
+      </div>
 
-            {/* Quick Info */}
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base font-medium">Quick Info</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Schools</span>
-                  <Badge variant="secondary">{schools.length}</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Representatives</span>
-                  <Badge variant="secondary">{representatives.length}</Badge>
-                </div>
-                {event.duration_minutes && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Duration</span>
-                    <span className="text-sm font-medium">{event.duration_minutes} min</span>
-                  </div>
-                )}
-                {event.assigned_to_profile && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Assigned To</span>
-                    <span className="text-sm font-medium">
-                      {event.assigned_to_profile.first_name} {event.assigned_to_profile.surname}
-                    </span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+      <Panel
+        title={admission ? "School" : "Schools taking part"}
+        count={schools.length}
+        flush={schools.length > 0}
+        action={canWrite && schools.length > 0 ? <Button variant="outline" size="sm" className="h-8" asChild><Link href={`${edit}#${admission ? "admission" : "schools"}`}>Change schools</Link></Button> : null}
+      >
+        {schools.length === 0 ? (
+          <PanelEmpty
+            title="No schools yet"
+            action={canWrite ? <Button variant="outline" size="sm" className="h-8 gap-1.5" asChild><Link href={`${edit}#${admission ? "admission" : "schools"}`}><Plus className="h-3.5 w-3.5" /> {admission ? "Choose school" : "Add schools"}</Link></Button> : null}
+          />
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="pl-4">School</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Confirmed</TableHead>
+                <TableHead className="pr-4">Application deadline</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {schools.map(es => (
+                <TableRow key={es.id}>
+                  <TableCell className="pl-4 font-medium">
+                    {es.school ? <Link href={`/schools/${es.school.id}`} className="hover:text-brand-navy hover:underline">{es.school.name}</Link> : "Unknown school"}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{[es.school?.city, es.school?.country?.label].filter(Boolean).join(", ") || "—"}</TableCell>
+                  <TableCell>
+                    {es.is_confirmed
+                      ? <Badge variant="outline" className="border-0 bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/15">Confirmed</Badge>
+                      : <Badge variant="outline" className="text-muted-foreground">Not yet</Badge>}
+                  </TableCell>
+                  <TableCell className="pr-4 text-sm text-muted-foreground">{es.application_deadline ? longDate(es.application_deadline) : "—"}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </Panel>
 
-          {/* Date & Time */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                Date & Time
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Start Date</p>
-                <p className="text-sm font-medium">{formatDate(event.start_date)}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">End Date</p>
-                <p className="text-sm font-medium">{formatDate(event.end_date)}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Start Time</p>
-                <p className="text-sm font-medium">{formatTime(event.start_time)}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">End Time</p>
-                <p className="text-sm font-medium">{formatTime(event.end_time)}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Remarks */}
-          {event.remarks && (
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base font-medium flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  Remarks
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{event.remarks}</p>
-              </CardContent>
-            </Card>
+      {(admission || representatives.length > 0) && (
+        <Panel
+          title="School representatives"
+          count={representatives.length}
+          flush={representatives.length > 0}
+          action={canWrite && representatives.length > 0 ? <Button variant="outline" size="sm" className="h-8" asChild><Link href={`${edit}#representatives`}>Change representatives</Link></Button> : null}
+        >
+          {representatives.length === 0 ? (
+            <PanelEmpty
+              title="No representatives yet"
+              action={canWrite ? <Button variant="outline" size="sm" className="h-8 gap-1.5" asChild><Link href={`${edit}#representatives`}><Plus className="h-3.5 w-3.5" /> Add representatives</Link></Button> : null}
+            >
+              The people the school sends, and when they are free, for 1-to-1 sessions.
+            </PanelEmpty>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="pl-4">Name</TableHead>
+                  <TableHead>School</TableHead>
+                  <TableHead>Free</TableHead>
+                  <TableHead className="pr-4">Remarks</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {representatives.map(rep => (
+                  <TableRow key={rep.id}>
+                    <TableCell className="pl-4 font-medium">{rep.name}</TableCell>
+                    <TableCell className="text-sm">{rep.school?.name ?? "—"}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {rep.available_from && rep.available_to ? `${hhmm(String(rep.available_from))} to ${hhmm(String(rep.available_to))}` : "—"}
+                      {rep.slot_length_minutes ? `, ${rep.slot_length_minutes}-min sessions` : ""}
+                    </TableCell>
+                    <TableCell className="max-w-[260px] truncate pr-4 text-sm text-muted-foreground">{rep.remarks ?? "—"}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
-
-          {/* Metadata */}
-          <Card className="border-0 shadow-sm bg-muted/30">
-            <CardContent className="py-4">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Created: {formatDateTime(event.created_at)}</span>
-                <span>Last Updated: {formatDateTime(event.updated_at)}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Schools Tab */}
-        <TabsContent value="schools" className="space-y-6">
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-4 flex flex-row items-center justify-between">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-muted-foreground" />
-                Participating Schools
-              </CardTitle>
-              <Button size="sm" variant="outline" disabled>
-                Add School
-              </Button>
-            </CardHeader>
-            <CardContent className="p-0">
-              {schools.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground">
-                  No schools added to this event yet.
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent bg-muted/20">
-                      <TableHead className="font-medium">School</TableHead>
-                      <TableHead className="font-medium">Location</TableHead>
-                      <TableHead className="font-medium">Confirmed</TableHead>
-                      <TableHead className="font-medium">Deadline</TableHead>
-                      <TableHead className="w-12"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {schools.map((es) => (
-                      <TableRow key={es.id}>
-                        <TableCell>
-                          <Link
-                            href={`/schools/${es.school?.id}`}
-                            className="font-medium text-foreground hover:text-primary transition-colors"
-                          >
-                            {es.school?.name ?? "Unknown School"}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {es.school?.city ?? "—"}
-                          {es.school?.country?.label && `, ${es.school.country.label}`}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={es.is_confirmed ? "default" : "secondary"}>
-                            {es.is_confirmed ? "Confirmed" : "Pending"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {es.application_deadline
-                            ? new Date(es.application_deadline).toLocaleDateString("en-GB")
-                            : "—"}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Representatives Tab */}
-        <TabsContent value="representatives" className="space-y-6">
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-4 flex flex-row items-center justify-between">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                School Representatives
-              </CardTitle>
-              <Button size="sm" variant="outline" asChild>
-                <Link href={`/events/${type}/${id}/edit`}>
-                  Add Representative
-                </Link>
-              </Button>
-            </CardHeader>
-            <CardContent className="p-0">
-              {representatives.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground">
-                  No representatives added to this event yet.
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent bg-muted/20">
-                      <TableHead className="font-medium">Representative Name</TableHead>
-                      <TableHead className="font-medium">School</TableHead>
-                      <TableHead className="font-medium">Availability</TableHead>
-                      <TableHead className="font-medium">Remarks</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {representatives.map((representative) => (
-                      <TableRow key={representative.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">{representative.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {representative.school?.name ?? "—"}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                          {representative.available_from && representative.available_to
-                            ? `${String(representative.available_from).includes('T') ? String(representative.available_from).split('T')[1].slice(0, 5) : String(representative.available_from).slice(0, 5)} – ${String(representative.available_to).includes('T') ? String(representative.available_to).split('T')[1].slice(0, 5) : String(representative.available_to).slice(0, 5)}`
-                            : "—"}
-                          {representative.slot_length_minutes && (
-                            <span className="ml-1 text-xs">({representative.slot_length_minutes}min)</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground max-w-[200px] truncate">
-                          {representative.remarks ?? "—"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </Panel>
+      )}
     </div>
   )
 }

@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { EventFormSection } from "./event-form-section"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from "@/components/ui/command"
-import { Building2, ChevronsUpDown, Check, X } from "lucide-react"
+import { ChevronsUpDown, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Props = {
@@ -36,15 +36,7 @@ export function EventFormSchoolsSection({ schools, selectedSchoolIds, onSchoolsC
   const selectedSchools = schools.filter((s) => selectedSchoolIds.includes(s.id))
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-muted-foreground" />
-          Participating Schools
-        </CardTitle>
-        <CardDescription>Select schools attending this event</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <EventFormSection id="schools" title="Participating schools" description="Select schools attending this event">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal">
@@ -85,7 +77,6 @@ export function EventFormSchoolsSection({ schools, selectedSchoolIds, onSchoolsC
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </EventFormSection>
   )
 }

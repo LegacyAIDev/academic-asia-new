@@ -1,132 +1,115 @@
 import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import {
-  Calendar, CalendarCheck, CalendarClock,
-  Building2, Users, ArrowRight,
-} from "lucide-react"
-import {
-  getEventsList,
-  getEventStats,
-  EVENT_TYPE_LABELS,
-  URL_TO_TYPE_CODE,
-  type EventListItem,
-} from "@/lib/supabase/queries/events"
-import { UpcomingEventCard } from "./upcoming-event-card"
-import { requireAccess } from "@/lib/permissions/guard"
-import { MODULES } from "@/lib/permissions/modules"
+import { ChevronRight } from "lucide-react"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
+import { getEventsList, EVENT_TYPE_LABELS, URL_TO_TYPE_CODE, type EventListItem } from "@/lib/supabase/queries/events"
+import { canAccess, requireAccess } from "@/lib/permissions/guard"
+import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { hkToday } from "@/lib/hk-day"
+import { cn } from "@/lib/utils"
+import { AddEventMenu } from "./add-event-menu"
 
-const TYPE_CODE_TO_URL = Object.fromEntries(
-  Object.entries(URL_TO_TYPE_CODE).map(([slug, code]) => [code, slug])
-)
+const TYPE_CODE_TO_URL = Object.fromEntries(Object.entries(URL_TO_TYPE_CODE).map(([slug, code]) => [code, slug])) as Record<string, string>
 
-export default async function EventsOverviewPage() {
+const addDays = (day: string, n: number) => new Date(Date.parse(`${day}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
+const daysBetween = (from: string, to: string) => Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000)
+
+/**
+ * Every upcoming event in one list, soonest first, grouped by when it is, with
+ * the categories as filters on this page and "Add event" by category.
+ */
+export default async function EventsOverviewPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
   await requireAccess(MODULES.EVENTS)
-
   const today = hkToday()
+  const { type } = await searchParams
+  const typeCode = type ? URL_TO_TYPE_CODE[type] : undefined
 
-  const [upcomingResult, stats] = await Promise.all([
-    getEventsList({ pageSize: 20, dateFrom: today, sortBy: "start_date", sortOrder: "asc" }),
-    getEventStats(),
+  const [{ events }, canWrite] = await Promise.all([
+    getEventsList({ pageSize: 200, dateFrom: today, sortBy: "start_date", sortOrder: "asc" }),
+    canAccess(MODULES.EVENTS, ACCESS.WRITE),
   ])
+  const counts = new Map<string, number>()
+  for (const e of events) counts.set(e.event_type?.code ?? "", (counts.get(e.event_type?.code ?? "") ?? 0) + 1)
+  const shown = typeCode ? events.filter(e => e.event_type?.code === typeCode) : events
 
-  const { events } = upcomingResult
-
-  // Group events: this week, this month, later
-  const now = new Date()
-  const endOfWeek = new Date(now)
-  endOfWeek.setDate(now.getDate() + (7 - now.getDay()))
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-
-  const thisWeek = events.filter(e => e.start_date && new Date(e.start_date) <= endOfWeek)
-  const thisMonth = events.filter(e => e.start_date && new Date(e.start_date) > endOfWeek && new Date(e.start_date) <= endOfMonth)
-  const later = events.filter(e => e.start_date && new Date(e.start_date) > endOfMonth)
+  const weekEnd = addDays(today, 6)
+  const monthEnd = addDays(today, 30)
+  const groups = [
+    { title: "Next 7 days", events: shown.filter(e => e.start_date && e.start_date <= weekEnd) },
+    { title: "Next 30 days", events: shown.filter(e => e.start_date && e.start_date > weekEnd && e.start_date <= monthEnd) },
+    { title: "Later", events: shown.filter(e => !e.start_date || e.start_date > monthEnd) },
+  ].filter(g => g.events.length > 0)
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Events</h1>
-        <p className="text-sm text-muted-foreground mt-1">Upcoming events across all categories</p>
-      </div>
+    <div className="mx-auto max-w-[1320px] space-y-6">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-brand-navy">Events</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {events.length} upcoming. Open a category for its full list, past events included.
+          </p>
+        </div>
+        {canWrite && <AddEventMenu />}
+      </header>
 
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Calendar} label="Total Events" value={stats.totalEvents} bg="bg-primary/10" color="text-primary" />
-        <StatCard icon={CalendarCheck} label="Upcoming" value={stats.upcomingEvents} bg="bg-emerald-500/10" color="text-emerald-600" />
-        <StatCard icon={Building2} label="Schools Involved" value={stats.totalSchools} bg="bg-blue-500/10" color="text-blue-600" />
-        <StatCard icon={Users} label="Total Schedules" value={stats.totalSchedules} bg="bg-amber-500/10" color="text-amber-600" />
-      </div>
-
-      {/* Category Quick Links */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {Object.entries(EVENT_TYPE_LABELS).map(([code, label]) => {
-          const slug = TYPE_CODE_TO_URL[code]
-          if (!slug) return null
+      <nav aria-label="Category" className="flex flex-wrap gap-1.5">
+        {[[null, "All", events.length] as const, ...Object.entries(EVENT_TYPE_LABELS).map(([code, label]) => [TYPE_CODE_TO_URL[code], label, counts.get(code) ?? 0] as const)].map(([slug, label, count]) => {
+          const current = (type ?? null) === slug
           return (
-            <Link key={code} href={`/events/${slug}`}
-              className="group flex items-center justify-between rounded-lg border border-border/60 bg-card px-4 py-3 transition-all hover:border-primary/30 hover:shadow-sm">
-              <span className="text-sm font-medium group-hover:text-primary transition-colors">{label}</span>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+            <Link
+              key={label}
+              href={slug ? `/events?type=${slug}` : "/events"}
+              aria-current={current ? "true" : undefined}
+              className={cn("flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors", current ? "border-brand-navy bg-brand-navy text-white" : "text-muted-foreground hover:bg-muted hover:text-foreground")}
+            >
+              {label}
+              <span className={cn("tabular-nums", current ? "text-white/80" : "text-muted-foreground/70")}>{count}</span>
             </Link>
           )
         })}
-      </div>
+      </nav>
 
-      {/* Upcoming Events */}
-      {events.length === 0 ? (
-        <Card className="border-0 shadow-sm">
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-muted/80 to-muted/40">
-              <CalendarClock className="h-7 w-7 text-muted-foreground/60" />
-            </div>
-            <h3 className="mt-5 text-lg font-semibold tracking-tight">No upcoming events</h3>
-            <p className="mt-1.5 text-sm text-muted-foreground">All events are in the past or none have been created yet.</p>
-          </CardContent>
-        </Card>
+      {groups.length === 0 ? (
+        <Panel title="Upcoming events">
+          <PanelEmpty title={typeCode ? `No upcoming ${EVENT_TYPE_LABELS[typeCode].toLowerCase()} events` : "No upcoming events"}>
+            {typeCode ? <Link href={`/events/${type}`} className="text-brand-navy underline-offset-4 hover:underline">See past ones in the full list</Link> : "Add one with Add event."}
+          </PanelEmpty>
+        </Panel>
       ) : (
-        <div className="space-y-6">
-          {thisWeek.length > 0 && <EventGroup label="This Week" events={thisWeek} accent="text-emerald-600" badge="bg-emerald-50 text-emerald-700 border-emerald-200" />}
-          {thisMonth.length > 0 && <EventGroup label="This Month" events={thisMonth} accent="text-blue-600" badge="bg-blue-50 text-blue-700 border-blue-200" />}
-          {later.length > 0 && <EventGroup label="Upcoming" events={later} accent="text-muted-foreground" badge="bg-muted text-muted-foreground border-border" />}
-        </div>
+        groups.map(group => (
+          <Panel key={group.title} title={group.title} count={group.events.length} flush>
+            <ul className="divide-y">
+              {group.events.map(event => <EventRow key={event.id} event={event} today={today} />)}
+            </ul>
+          </Panel>
+        ))
       )}
     </div>
   )
 }
 
-function StatCard({ icon: Icon, label, value, bg, color }: {
-  icon: React.ElementType; label: string; value: number; bg: string; color: string
-}) {
+/** One event as a row: date block, name and kind, time and place, and how soon. */
+function EventRow({ event, today }: { event: EventListItem; today: string }) {
+  const slug = TYPE_CODE_TO_URL[event.event_type?.code ?? ""] ?? "interview"
+  const date = event.start_date ? new Date(`${event.start_date}T00:00:00Z`) : null
+  const inDays = event.start_date ? daysBetween(today, event.start_date) : null
+  const when = inDays === null ? "Date to be set" : inDays === 0 ? "Today" : inDays === 1 ? "Tomorrow" : `In ${inDays} days`
+  const time = [event.start_time?.slice(0, 5), event.end_time?.slice(0, 5)].filter(Boolean).join(" to ")
   return (
-    <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${bg}`}>
-            <Icon className={`h-5 w-5 ${color}`} />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold">{value.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground">{label}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function EventGroup({ label, events, accent, badge }: {
-  label: string; events: EventListItem[]; accent: string; badge: string
-}) {
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <h2 className={`text-sm font-semibold uppercase tracking-wider ${accent}`}>{label}</h2>
-        <Badge variant="outline" className={`text-xs ${badge}`}>{events.length}</Badge>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => <UpcomingEventCard key={event.id} event={event} />)}
-      </div>
-    </div>
+    <li>
+      <Link href={`/events/${slug}/${event.id}`} className="group flex items-center gap-4 px-4 py-3 hover:bg-muted/40">
+        <span className="flex w-12 shrink-0 flex-col items-center rounded-md border py-1 text-brand-navy">
+          <span className="text-[11px] font-medium">{date ? date.toLocaleDateString("en-GB", { month: "short", timeZone: "UTC" }) : "TBC"}</span>
+          <span className="text-lg font-semibold leading-tight tabular-nums">{date ? date.getUTCDate() : "–"}</span>
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-medium group-hover:text-brand-navy">{event.name}</span>
+          <span className="block truncate text-sm text-muted-foreground">
+            {[event.event_type?.label, time, event.location].filter(Boolean).join(", ")}
+          </span>
+        </span>
+        <span className="hidden shrink-0 text-sm text-muted-foreground sm:block">{when}</span>
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/60" aria-hidden="true" />
+      </Link>
+    </li>
   )
 }

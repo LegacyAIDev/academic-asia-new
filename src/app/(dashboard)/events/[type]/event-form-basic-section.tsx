@@ -1,12 +1,12 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { EventFormSection } from "./event-form-section"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Calendar, Tag, Radio, Eye, User } from "lucide-react"
+import { Tag, Radio, Eye, User } from "lucide-react"
 import type { EventFormReferenceData, EventData } from "./event-form-types"
 import { selectTriggerStyles } from "./event-form-types"
 
@@ -34,15 +34,7 @@ export function EventFormBasicSection({
   const privateVisibilityId = visibilities.find((v) => v.code === "private")?.id
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          Basic Information
-        </CardTitle>
-        <CardDescription>Core event details and classification</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <EventFormSection id="basics" title="Basics" description="Core event details and classification">
         {/* Category + Event Name */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -136,7 +128,6 @@ export function EventFormBasicSection({
             </Select>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </EventFormSection>
   )
 }

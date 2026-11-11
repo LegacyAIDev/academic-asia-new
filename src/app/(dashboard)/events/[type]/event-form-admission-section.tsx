@@ -1,11 +1,10 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { EventFormSection } from "./event-form-section"
 import { Label } from "@/components/ui/label"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { ClipboardList } from "lucide-react"
 import type { EventFormReferenceData, EventData } from "./event-form-types"
 import { selectTriggerStyles } from "./event-form-types"
 
@@ -25,15 +24,7 @@ export function EventFormAdmissionSection({
   const { schools, parentEvents, schedulingModes } = referenceData
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <ClipboardList className="h-4 w-4 text-muted-foreground" />
-          Admission Settings
-        </CardTitle>
-        <CardDescription>School assignment and scheduling configuration</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <EventFormSection id="admission" title="Admission settings" description="School assignment and scheduling configuration">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label>School</Label>
@@ -81,7 +72,6 @@ export function EventFormAdmissionSection({
             </SelectContent>
           </Select>
         </div>
-      </CardContent>
-    </Card>
+      </EventFormSection>
   )
 }

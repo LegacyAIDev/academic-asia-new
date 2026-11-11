@@ -3,8 +3,9 @@
 import { useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState, useTransition } from 'react'
 import { Input } from '@/components/ui/input'
+import { DateField } from '@/components/ui/date-field'
 import { Button } from '@/components/ui/button'
-import { Search, X, Calendar } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
 type EventsFiltersProps = {
@@ -92,7 +93,7 @@ export function EventsFilters({ eventType }: EventsFiltersProps) {
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search events..."
+            placeholder="Search by name or place"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 bg-background"
@@ -107,29 +108,15 @@ export function EventsFilters({ eventType }: EventsFiltersProps) {
           )}
         </div>
 
-        {/* Date From Filter */}
-        <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <Input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => handleDateFromChange(e.target.value)}
-            className="pl-9 w-[160px] bg-background"
-            placeholder="From date"
-          />
-        </div>
-
-        {/* Date To Filter */}
-        <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <Input
-            type="date"
-            value={dateTo}
-            onChange={(e) => handleDateToChange(e.target.value)}
-            className="pl-9 w-[160px] bg-background"
-            placeholder="To date"
-          />
-        </div>
+        {/* Date range: labelled, with the calendar picker used across the app */}
+        <label className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">From</span>
+          <DateField name="date_from" value={dateFrom || null} onChange={value => handleDateFromChange(value ?? '')} placeholder="Any date" className="w-[170px]" />
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">To</span>
+          <DateField name="date_to" value={dateTo || null} onChange={value => handleDateToChange(value ?? '')} placeholder="Any date" className="w-[170px]" />
+        </label>
       </div>
 
       {/* Clear Filters */}

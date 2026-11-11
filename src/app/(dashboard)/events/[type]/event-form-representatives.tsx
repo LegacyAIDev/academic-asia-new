@@ -1,13 +1,13 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { EventFormSection } from "./event-form-section"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Users, Plus, Trash2, AlertCircle } from "lucide-react"
+import { Plus, Trash2, AlertCircle } from "lucide-react"
 import { inputStyles } from "./event-form-types"
 import type { SchoolContactOption } from "@/lib/supabase/actions/school-contacts"
 
@@ -79,21 +79,10 @@ export function EventFormRepresentatives({
   const usedContactIds = new Set(representatives.map(r => r.school_contact_id).filter(Boolean))
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            Representatives
-          </CardTitle>
-          <CardDescription>School representatives with availability for 1-to-1 slots</CardDescription>
-        </div>
-        <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addRep}
+    <EventFormSection id="representatives" title="School representatives" description="School representatives with availability for 1-to-1 slots" action={<><Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addRep}
           disabled={schoolContacts.length === 0}>
           <Plus className="h-3.5 w-3.5" /> Add Representative
-        </Button>
-      </CardHeader>
-      <CardContent className="space-y-6">
+        </Button></>}>
         {schoolContacts.length === 0 && (
           <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50/50 px-4 py-3 text-sm text-amber-700">
             <AlertCircle className="h-4 w-4 shrink-0" />
@@ -171,7 +160,6 @@ export function EventFormRepresentatives({
             </div>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </EventFormSection>
   )
 }

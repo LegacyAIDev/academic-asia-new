@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { EventFormSection } from "./event-form-section"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { BookOpen, Plus, Trash2, ChevronsUpDown } from "lucide-react"
+import { Plus, Trash2, ChevronsUpDown } from "lucide-react"
 import { inputStyles, selectTriggerStyles } from "./event-form-types"
 
 const EXAM_SUBJECTS = ["Maths", "English", "Verbal", "Others"] as const
@@ -56,20 +56,9 @@ export function EventFormExamBlocks({ examBlocks, onChange, profiles }: Props) {
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-            Exam Blocks
-          </CardTitle>
-          <CardDescription>Exam sessions for group sitting</CardDescription>
-        </div>
-        <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addBlock}>
+    <EventFormSection id="exam-sessions" title="Exam sessions" description="Exam sessions for group sitting" action={<><Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addBlock}>
           <Plus className="h-3.5 w-3.5" /> Add Exam
-        </Button>
-      </CardHeader>
-      <CardContent className="space-y-6">
+        </Button></>}>
         {examBlocks.map((block, idx) => (
           <div key={idx} className="rounded-lg border border-border p-4 space-y-4">
             <div className="flex items-center justify-between">
@@ -193,7 +182,6 @@ export function EventFormExamBlocks({ examBlocks, onChange, profiles }: Props) {
             </div>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </EventFormSection>
   )
 }

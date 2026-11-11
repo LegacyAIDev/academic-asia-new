@@ -1,9 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { EventFormSection } from "./event-form-section"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { FileText } from "lucide-react"
 import type { EventData } from "./event-form-types"
 
 type Props = {
@@ -12,15 +11,7 @@ type Props = {
 
 export function EventFormRemarksSection({ event }: Props) {
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <FileText className="h-4 w-4 text-muted-foreground" />
-          Notes & Remarks
-        </CardTitle>
-        <CardDescription>Additional information about this event</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <EventFormSection id="remarks" title="Notes & remarks" description="Additional information about this event">
         <div className="space-y-2">
           <Label htmlFor="remarks">Remarks</Label>
           <Textarea
@@ -31,7 +22,6 @@ export function EventFormRemarksSection({ event }: Props) {
             defaultValue={event?.remarks ?? ""}
           />
         </div>
-      </CardContent>
-    </Card>
+      </EventFormSection>
   )
 }

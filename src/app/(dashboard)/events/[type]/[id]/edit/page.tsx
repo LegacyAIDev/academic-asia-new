@@ -1,10 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import {
-  Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { ArrowLeft } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import {
   getEventById, getEventSchools, getStaffProfiles, URL_TO_TYPE_CODE, EVENT_TYPE_LABELS,
 } from "@/lib/supabase/queries/events"
@@ -64,29 +60,11 @@ export default async function EditEventPage({ params }: EditEventPageParams) {
   const existingSchoolIds = eventSchools.map((es: { school_id: string }) => es.school_id)
 
   return (
-    <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink href="/">Dashboard</BreadcrumbLink></BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbLink href={`/events/${type}`}>{typeLabel}</BreadcrumbLink></BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbLink href={`/events/${type}/${id}`}>{event.name}</BreadcrumbLink></BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbPage>Edit</BreadcrumbPage></BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href={`/events/${type}/${id}`}><ArrowLeft className="h-5 w-5" /></Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Edit Event</h1>
-          <p className="text-sm text-muted-foreground mt-1">Update {event.name}</p>
-        </div>
-      </div>
-
+    <div className="mx-auto max-w-[1100px] space-y-5">
+      <Link href={`/events/${type}/${id}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <ChevronLeft className="h-4 w-4" /> {event.name} ({typeLabel})
+      </Link>
+      <h1 className="text-2xl font-semibold tracking-tight text-brand-navy">{"Edit details"}</h1>
       <EventForm
         mode="edit"
         eventType={type}

@@ -135,3 +135,26 @@ export async function setValue(page, selector, value) {
 export function hkDay(offsetDays = 0) {
   return new Date(Date.now() + 8 * 3600000 + offsetDays * 86400000).toISOString().slice(0, 10)
 }
+
+/**
+ * Picks a date in one of the app's date fields (DateField): opens the
+ * calendar from the field's button, moves to the month and clicks the day.
+ */
+export async function pickDate(page, triggerSelector, isoDate) {
+  const [year, month, day] = isoDate.split('-').map(Number)
+  const POPOVER = '[data-slot="popover-content"]'
+  await page.click(triggerSelector)
+  await page.waitForSelector(`${POPOVER} select`)
+  await page.$$eval(`${POPOVER} select`, (selects, y, m) => {
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set
+    for (const s of selects) {
+      const isYear = [...s.options].some(o => o.value === String(y))
+      setter.call(s, isYear ? String(y) : String(m - 1))
+      s.dispatchEvent(new Event('change', { bubbles: true }))
+    }
+  }, year, month)
+  const label = await page.evaluate((y, m, d) => new Date(y, m - 1, d).toLocaleDateString(), year, month, day)
+  const button = await page.waitForSelector(`${POPOVER} button[data-day="${label}"]`)
+  await button.click()
+  await page.waitForFunction(sel => !document.querySelector(sel), { polling: 100 }, POPOVER)
+}

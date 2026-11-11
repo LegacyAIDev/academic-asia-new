@@ -195,8 +195,8 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
 
       <EventFormRemarksSection event={event} />
 
-      {/* Actions */}
-      <div className="flex items-center justify-end gap-4">
+      {/* Actions: kept in view at the foot, so Save never needs a scroll */}
+      <div className="sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-3 border-t bg-background/95 px-1 py-3 backdrop-blur">
         <Button variant="outline" type="button" asChild>
           <Link href={event?.id ? `/events/${eventType}/${event.id}` : `/events/${eventType}`}>
             Cancel
@@ -206,7 +206,7 @@ export function EventForm({ mode, eventType, event, referenceData, existingSchoo
           {isPending ? (
             <><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>
           ) : (
-            <><Save className="h-4 w-4" />{mode === "create" ? "Create Event" : "Save Changes"}</>
+            <><Save className="h-4 w-4" />{mode === "create" ? "Add event" : "Save changes"}</>
           )}
         </Button>
       </div>

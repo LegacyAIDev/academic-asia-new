@@ -41,4 +41,4 @@ export type EventData = {
 
 /** Shared input + select styles for the event form */
 export const inputStyles = "h-10 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-export const selectTriggerStyles = "h-10 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+export const selectTriggerStyles = "h-10 w-full bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"

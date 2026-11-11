@@ -13,10 +13,12 @@ import { cn } from "@/lib/utils"
  * own mm/dd/yyyy box) and sent with the form as YYYY-MM-DD under `name`.
  * Optional dates can be cleared.
  */
-export function DateField({ name, id, defaultValue, placeholder = "Pick a date", required, className, fromYear, toYear, onChange }: {
+export function DateField({ name, id, defaultValue, value, placeholder = "Pick a date", required, className, fromYear, toYear, onChange }: {
   name: string
   id?: string
   defaultValue?: string | null
+  /** Controlled value (YYYY-MM-DD or null); pair with onChange. */
+  value?: string | null
   placeholder?: string
   required?: boolean
   className?: string
@@ -25,7 +27,9 @@ export function DateField({ name, id, defaultValue, placeholder = "Pick a date",
   toYear?: number
   onChange?: (value: string | null) => void
 }) {
-  const [date, setDate] = useState<Date | undefined>(parseDateOnly(defaultValue?.slice(0, 10) ?? null))
+  const [ownDate, setOwnDate] = useState<Date | undefined>(parseDateOnly(defaultValue?.slice(0, 10) ?? null))
+  const date = value !== undefined ? parseDateOnly(value?.slice(0, 10) ?? null) : ownDate
+  const setDate = (next: Date | undefined) => { if (value === undefined) setOwnDate(next) }
   const [open, setOpen] = useState(false)
   const set = (next: Date | undefined) => {
     setDate(next)

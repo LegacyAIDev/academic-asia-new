@@ -1,10 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import {
-  Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { ArrowLeft } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { URL_TO_TYPE_CODE, EVENT_TYPE_LABELS } from "@/lib/supabase/queries/events"
 import { getEventFormReferenceData } from "@/lib/supabase/queries/event-reference-queries"
 import { getStaffProfiles } from "@/lib/supabase/queries/events"
@@ -34,27 +30,11 @@ export default async function NewEventPage({ params }: NewEventPageParams) {
   const typeLabel = EVENT_TYPE_LABELS[typeCode]
 
   return (
-    <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink href="/">Dashboard</BreadcrumbLink></BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbLink href={`/events/${type}`}>{typeLabel}</BreadcrumbLink></BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbPage>New Event</BreadcrumbPage></BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href={`/events/${type}`}><ArrowLeft className="h-5 w-5" /></Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Add New Event</h1>
-          <p className="text-sm text-muted-foreground mt-1">Create a new {typeLabel.toLowerCase()} in the system</p>
-        </div>
-      </div>
-
+    <div className="mx-auto max-w-[1100px] space-y-5">
+      <Link href={`/events/${type}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <ChevronLeft className="h-4 w-4" /> {typeLabel}
+      </Link>
+      <h1 className="text-2xl font-semibold tracking-tight text-brand-navy">{`Add ${typeLabel.toLowerCase()}`}</h1>
       <EventForm mode="create" eventType={type} referenceData={referenceData}
         defaultEventType={pageType ? { id: pageType.id, categoryId: pageType.category_id } : null} />
     </div>
