@@ -28,9 +28,9 @@ function formatDate(d: string | null) {
 }
 
 /** One row of the exam list: scheduling state, score entry, booking link and notes. */
-export function ExamManagementRow({ exam, link, canSchedule, notes, scoreColumn, returnTo }: {
+export function ExamManagementRow({ exam, link, canSchedule, notes, scoreColumn }: {
   exam: ExamManagementRecord; link?: ExamBookingLink; canSchedule: boolean
-  notes: { canWrite: boolean; currentUserId: string | null }; scoreColumn: boolean; returnTo: string
+  notes: { canWrite: boolean; currentUserId: string | null }; scoreColumn: boolean
 }) {
   const [isPending, startTransition] = useTransition()
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -109,7 +109,7 @@ export function ExamManagementRow({ exam, link, canSchedule, notes, scoreColumn,
             canWrite={notes.canWrite} currentUserId={notes.currentUserId} />
         </div>
         {link && (
-          <BookingDrawer bookingId={drawerOpen ? link.booking_id : null} onClose={() => setDrawerOpen(false)} canConfirm={notes.canWrite} returnTo={returnTo} />
+          <BookingDrawer bookingId={drawerOpen ? link.booking_id : null} onClose={() => setDrawerOpen(false)} canConfirm={notes.canWrite} />
         )}
       </TableCell>
     </TableRow>

@@ -16,10 +16,8 @@ type Props = {
   studentId: string | null
   /** Decided on the server from the booking's state and the user's rights. */
   actions: ExamDeskActions
-  /** Link to the booking's own page, or null when the user may not open the scheduler. */
-  bookingHref: string | null
-  /** Page the booking leads back to. */
-  returnTo: string
+  /** False when the user may not open the scheduler, so the booking stays closed to them. */
+  canOpenBooking: boolean
   /** Exam team: may confirm bookings and record attendance from the drawer. */
   canWrite: boolean
   /** True for the exam team when at least one chosen paper has a file or link to open. */
@@ -35,11 +33,11 @@ type Props = {
  * (Confirm, or Showed up / No show), papers and notes as icons, the rest under
  * "⋯". Each row has its own instance, so only the row being saved is disabled.
  */
-export function ExamDeskRowActions({ bookingId, studentId, actions, bookingHref, returnTo, canWrite, canPrintPapers, coverSlipHref, notes }: Props) {
+export function ExamDeskRowActions({ bookingId, studentId, actions, canOpenBooking, canWrite, canPrintPapers, coverSlipHref, notes }: Props) {
   const { isPending, confirm, recordAttendance } = useBookingActions()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const hasMore = Boolean(coverSlipHref || bookingHref)
+  const hasMore = Boolean(coverSlipHref || canOpenBooking)
   return (
     <div className="flex items-center justify-end gap-1 whitespace-nowrap">
       {/* The one thing to do next for this row comes first, as a button. */}
@@ -71,14 +69,14 @@ export function ExamDeskRowActions({ bookingId, studentId, actions, bookingHref,
                 <a href={coverSlipHref} target="_blank" rel="noopener noreferrer"><FileText className="h-4 w-4" /> Cover slip</a>
               </DropdownMenuItem>
             )}
-            {bookingHref && (
+            {canOpenBooking && (
               <DropdownMenuItem onSelect={() => setDrawerOpen(true)}><CalendarClock className="h-4 w-4" /> Open booking</DropdownMenuItem>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-      {bookingHref && (
-        <BookingDrawer bookingId={drawerOpen ? bookingId : null} onClose={() => setDrawerOpen(false)} canConfirm={canWrite} returnTo={returnTo} />
+      {canOpenBooking && (
+        <BookingDrawer bookingId={drawerOpen ? bookingId : null} onClose={() => setDrawerOpen(false)} canConfirm={canWrite} />
       )}
     </div>
   )

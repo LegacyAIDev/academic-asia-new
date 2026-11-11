@@ -59,7 +59,6 @@ try {
     await click(page, 'Open booking', MENU)
     await seeText(page, 'UAT exams page maths', DIALOG)
     await seeText(page, 'Showed up', DIALOG)
-    await seeText(page, 'Open full page', DIALOG)
     assert(page.url().includes('/exams'), `left the exam desk: ${page.url()}`)
     await page.keyboard.press('Escape')
   })

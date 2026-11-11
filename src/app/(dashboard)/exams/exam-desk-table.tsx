@@ -7,7 +7,6 @@ import { BookingStatusBadge } from "@/components/scheduler/booking-status-badge"
 import { RoomChip } from "@/components/scheduler/room-chip"
 import { EXAM_DESK_STATUS_LABELS, examDeskActions, type ExamDeskRow } from "@/lib/exams/exam-desk-rows"
 import { examsHref, nextSort, type ExamDeskSortKey, type SortDirection } from "@/lib/exams/exam-page-search-params"
-import { bookingPageHref } from "@/lib/scheduler/return-path"
 import type { RawSearchParams } from "@/lib/scheduler/search-params"
 import { formatHkDate, formatHkTime } from "@/lib/scheduler/time-utils"
 import { ExamDeskRowActions } from "./exam-desk-row-actions"
@@ -18,7 +17,7 @@ type Props = {
   countLabel: string
   emptyText: string
   rows: ExamDeskRow[]
-  /** Current URL parameters, used to build sort links and the way back from a booking. */
+  /** Current URL parameters, used to build sort links. */
   raw: RawSearchParams
   sort: ExamDeskSortKey
   dir: SortDirection
@@ -52,7 +51,6 @@ export function ExamDeskTable(props: Props) {
   const { rows, raw, sort, dir, canWrite, canOpenBooking, canPrintPapers, currentUserId } = props
   // Everyone who sees the desk may print a cover slip, so the column appears as soon as a row has a candidate.
   const showActions = canWrite || canOpenBooking || canPrintPapers || rows.some(row => row.candidates.length > 0 || row.examId)
-  const returnTo = examsHref(raw)
 
   return (
     <Panel
@@ -145,8 +143,7 @@ export function ExamDeskTable(props: Props) {
                         currentUserId,
                       } : null}
                       actions={examDeskActions(row, canWrite)}
-                      bookingHref={canOpenBooking ? bookingPageHref(row.bookingId, returnTo) : null}
-                      returnTo={returnTo}
+                      canOpenBooking={canOpenBooking}
                       canWrite={canWrite}
                       canPrintPapers={canPrintPapers && Boolean(row.availability?.canPrint)}
                       coverSlipHref={row.candidates.length > 0 ? `/api/exams/cover-slip/pdf?booking=${row.bookingId}` : null}

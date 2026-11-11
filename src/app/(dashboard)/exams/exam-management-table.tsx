@@ -78,8 +78,7 @@ export function ExamManagementTable({ exams, links, canSchedule, notes, currentS
             </TableHeader>
             <TableBody>
               {exams.map(exam => (
-                <ExamManagementRow key={exam.id} exam={exam} link={links[exam.id]} canSchedule={canSchedule} notes={notes}
-                  scoreColumn={scoreColumn} returnTo={buildUrl(currentStatus, page)} />
+                <ExamManagementRow key={exam.id} exam={exam} link={links[exam.id]} canSchedule={canSchedule} notes={notes} scoreColumn={scoreColumn} />
               ))}
             </TableBody>
           </Table>
