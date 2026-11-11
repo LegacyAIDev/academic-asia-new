@@ -9,15 +9,13 @@ import { Separator } from '@/components/ui/separator'
 import { BookingDetails } from '@/components/scheduler/booking-details'
 import { BookingDetailsRibbon } from '@/components/scheduler/booking-details-ribbon'
 import { BookingHistoryList } from '@/components/scheduler/booking-history-list'
-import { BookingCopyButtons } from '@/components/scheduler/booking-copy-buttons'
 import { SectionEyebrow } from '@/components/scheduler/booking-form-section'
 import type { CalendarEventProps } from '@/lib/scheduler/calendar-adapter'
 import type { BookingFormInput } from '@/lib/scheduler/booking-schema'
 import { bookingDetailPeopleLabels, bookingDetailToFormInput } from '@/lib/scheduler/booking-defaults'
 import { bookingPageHref } from '@/lib/scheduler/return-path'
-import { isExamBooking } from '@/lib/scheduler/config'
 import { getBookingDetailsAction, type BookingDetailsPayload } from '@/lib/supabase/actions/scheduler-details'
-import { useBookingActions } from './use-booking-actions'
+import { BookingActionBar } from './booking-action-bar'
 
 type Selection = { id: string; props: CalendarEventProps }
 type Loaded = { selection: Selection; payload?: BookingDetailsPayload; error?: string }
@@ -35,7 +33,6 @@ type Props = {
 /** Side panel opened from a calendar card: booking facts, history and the actions the user may take. */
 export function BookingDetailsSheet({ selected, onClose, canWrite, canConfirm, returnTo, onEdit }: Props) {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
-  const { isPending, confirm, recordAttendance } = useBookingActions(onClose)
   const bookingId = selected?.props.bookingId ?? null
 
   // Every click on a card is a new selection object, so each opening loads fresh data.
@@ -90,40 +87,18 @@ export function BookingDetailsSheet({ selected, onClose, canWrite, canConfirm, r
           {booking && (
             <>
               <BookingDetails booking={booking} />
-              <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-border p-1.5">
+              <BookingActionBar booking={booking} canConfirm={canConfirm} onDone={onClose}>
                 <Button asChild variant="ghost" size="sm" className="h-9">
                   <Link href={bookingPageHref(booking.id, returnTo)}>
                     <ExternalLink className="mr-1 h-3.5 w-3.5" /> Open
                   </Link>
                 </Button>
-                <BookingCopyButtons booking={booking} />
                 {canWrite && booking.status !== 'cancelled' && (
                   <Button size="sm" variant="ghost" className="h-9" onClick={() => onEdit(bookingDetailToFormInput(booking), bookingDetailPeopleLabels(booking))}>
                     Edit
                   </Button>
                 )}
-                {canConfirm && booking.status === 'pending' && (
-                  <Button size="sm" className="h-9 ml-auto" onClick={() => bookingId && confirm(bookingId)} disabled={isPending}>Confirm</Button>
-                )}
-                {canConfirm && booking.status === 'confirmed' && !booking.attendance && (
-                  <span className="ml-auto flex items-center gap-1.5">
-                    <Button size="sm" variant="secondary" className="h-9" onClick={() => bookingId && recordAttendance(bookingId, 'show_up')} disabled={isPending}>Showed up</Button>
-                    <Button size="sm" variant="ghost" className="h-9" onClick={() => bookingId && recordAttendance(bookingId, 'no_show')} disabled={isPending}>No show</Button>
-                  </span>
-                )}
-                {booking.attendance && (
-                  <span className="ml-auto px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    {booking.attendance === 'show_up' ? 'Showed up' : 'No show'}
-                  </span>
-                )}
-              </div>
-              {isExamBooking(booking.booking_type) && booking.status !== 'cancelled' && !booking.attendance && (
-                <p className="text-xs text-muted-foreground">
-                  {booking.status === 'pending'
-                    ? 'The examination team confirms this exam. On the day, record attendance here: Showed up completes the exam in All exams.'
-                    : 'On the day, record attendance: Showed up completes the exam in All exams; No show leaves it open to rebook.'}
-                </p>
-              )}
+              </BookingActionBar>
               <Separator />
               <div>
                 <SectionEyebrow className="mb-3">History</SectionEyebrow>

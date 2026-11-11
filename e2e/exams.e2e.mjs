@@ -14,6 +14,7 @@ const DAY = hkDay(3)
 const DESK = `/exams?from=${DAY}&to=${DAY}`
 const ALL = `/exams?view=all&from=${DAY}&to=${DAY}`
 const MENU = '[role="menu"]'
+const DIALOG = '[role="dialog"]'
 
 sql(`delete from public.scheduler_bookings where title like 'UAT exams page%'`)
 sql(`delete from public.student_individual_exams where subject like 'UAT exams page%'`)
@@ -52,7 +53,22 @@ try {
     await page.click('tbody tr button[aria-label="More actions"]')
     await seeText(page, 'Cover slip', MENU)
     await seeText(page, 'Open booking', MENU)
+  })
+
+  await step(page, 'Open booking shows the booking in a drawer with its next step', async () => {
+    await click(page, 'Open booking', MENU)
+    await seeText(page, 'UAT exams page maths', DIALOG)
+    await seeText(page, 'Showed up', DIALOG)
+    await seeText(page, 'Open full page', DIALOG)
+    assert(page.url().includes('/exams'), `left the exam desk: ${page.url()}`)
     await page.keyboard.press('Escape')
+  })
+
+  await step(page, 'the full booking page offers the same next step', async () => {
+    const id = sql(`select id from public.scheduler_bookings where title = 'UAT exams page maths'`)
+    await open(page, `/scheduler/bookings/${id}`)
+    await seeText(page, 'Showed up')
+    await seeText(page, 'History')
   })
 
   await step(page, 'All exams shows counts on its tabs and no stat cards', async () => {

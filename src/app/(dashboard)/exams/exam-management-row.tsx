@@ -1,6 +1,6 @@
 "use client"
 
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -11,7 +11,7 @@ import { updateExamFields } from "@/lib/supabase/actions/student-individual-exam
 import type { ExamManagementRecord } from "@/lib/supabase/queries/exam-management"
 import type { ExamBookingLink } from "@/lib/supabase/queries/scheduler-exams"
 import { ScheduleBookingButton } from "@/components/scheduler/schedule-booking-button"
-import { bookingPageHref } from "@/lib/scheduler/return-path"
+import { BookingDrawer } from "@/components/scheduler/booking-drawer"
 import { BookingStatusBadge } from "@/components/scheduler/booking-status-badge"
 import { RecordNotesDialog } from "@/components/features/record-notes-dialog"
 
@@ -33,6 +33,7 @@ export function ExamManagementRow({ exam, link, canSchedule, notes, scoreColumn,
   notes: { canWrite: boolean; currentUserId: string | null }; scoreColumn: boolean; returnTo: string
 }) {
   const [isPending, startTransition] = useTransition()
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const status = statusMap[exam.status_id] ?? statusMap[1]
   const studentName = [exam.student?.first_name, exam.student?.surname].filter(Boolean).join(" ")
   const canScore = exam.status_id === 2 || exam.status_id === 3
@@ -97,8 +98,8 @@ export function ExamManagementRow({ exam, link, canSchedule, notes, scoreColumn,
       <TableCell className="pr-4">
         <div className="flex items-center justify-end gap-1 whitespace-nowrap">
           {link && (
-            <BookingStatusBadge asChild status={link.status} className="text-[11px]">
-              <Link href={bookingPageHref(link.booking_id, returnTo)} title="Open booking">{link.status}</Link>
+            <BookingStatusBadge asChild status={link.status} className="cursor-pointer text-[11px]">
+              <button type="button" title="Open booking" onClick={() => setDrawerOpen(true)}>{link.status}</button>
             </BookingStatusBadge>
           )}
           {canSchedule && exam.status_id !== 3 && exam.status_id !== 4 && (
@@ -107,6 +108,9 @@ export function ExamManagementRow({ exam, link, canSchedule, notes, scoreColumn,
           <RecordNotesDialog compact target="exam" recordId={exam.id} title={[studentName, exam.subject].filter(Boolean).join(" · ") || "Exam"}
             canWrite={notes.canWrite} currentUserId={notes.currentUserId} />
         </div>
+        {link && (
+          <BookingDrawer bookingId={drawerOpen ? link.booking_id : null} onClose={() => setDrawerOpen(false)} canConfirm={notes.canWrite} returnTo={returnTo} />
+        )}
       </TableCell>
     </TableRow>
   )

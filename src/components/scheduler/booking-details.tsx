@@ -12,7 +12,7 @@ const fullName = (person: NamedPerson | null | undefined) => personName(person) 
 function Fact({ label, children, wide }: { label: string; children: React.ReactNode; wide?: boolean }) {
   return (
     <div className={wide ? 'sm:col-span-2' : undefined}>
-      <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
       <dd className="mt-0.5 min-w-0 break-words text-sm">{children}</dd>
     </div>
   )

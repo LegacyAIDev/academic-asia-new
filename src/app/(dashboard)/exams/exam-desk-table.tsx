@@ -146,6 +146,8 @@ export function ExamDeskTable(props: Props) {
                       } : null}
                       actions={examDeskActions(row, canWrite)}
                       bookingHref={canOpenBooking ? bookingPageHref(row.bookingId, returnTo) : null}
+                      returnTo={returnTo}
+                      canWrite={canWrite}
                       canPrintPapers={canPrintPapers && Boolean(row.availability?.canPrint)}
                       coverSlipHref={row.candidates.length > 0 ? `/api/exams/cover-slip/pdf?booking=${row.bookingId}` : null}
                     />
