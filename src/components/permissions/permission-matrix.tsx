@@ -26,7 +26,7 @@ type PermissionMatrixProps = {
 const OPTIONS: AccessLevel[] = [ACCESS.NONE, ACCESS.READ, ACCESS.WRITE]
 
 /**
- * The legacy "Access Right" grid, one row per module.
+ * The legacy "Access Right" grid, one row per area.
  *
  * Radio buttons rather than the old pair of Read-Write / Read-Only checkboxes:
  * those could both be ticked, which meant nothing. One choice per row cannot
@@ -41,16 +41,19 @@ export function PermissionMatrix({
   disabled = false,
 }: PermissionMatrixProps) {
   return (
-    <div className="rounded-lg border">
-      <div className="grid grid-cols-[1fr_repeat(3,72px)_110px] items-center gap-2 border-b bg-muted/40 px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        <span>Module</span>
+    <div className="overflow-x-auto rounded-lg border">
+      <p className="border-b px-4 py-2 text-xs text-muted-foreground">
+        View: can open and read. View and change: can also add, edit and delete.
+      </p>
+      <div className="grid min-w-[520px] grid-cols-[1fr_repeat(3,88px)_100px] items-center gap-1 border-b bg-muted/40 px-4 py-2 text-xs font-medium text-muted-foreground">
+        <span>Area</span>
         {OPTIONS.map(o => (
           <span key={o} className="text-center">{ACCESS_LABELS[o]}</span>
         ))}
         <span />
       </div>
 
-      <div className="divide-y">
+      <div className="min-w-[520px] divide-y">
         {modules.map(module => {
           const current = value[module.id] ?? ACCESS.NONE
           const base = inherited?.[module.id]
@@ -59,7 +62,7 @@ export function PermissionMatrix({
           return (
             <div
               key={module.id}
-              className="grid grid-cols-[1fr_repeat(3,72px)_110px] items-center gap-2 px-4 py-2.5"
+              className="grid grid-cols-[1fr_repeat(3,88px)_100px] items-center gap-1 px-4 py-1"
             >
               <span className={cn("text-sm", disabled && "text-muted-foreground")}>
                 {module.label}
@@ -72,13 +75,18 @@ export function PermissionMatrix({
                 className="contents"
               >
                 {OPTIONS.map(option => (
-                  <div key={option} className="flex justify-center">
+                  // The whole cell is the click target, not just the small circle.
+                  <label
+                    key={option}
+                    htmlFor={`perm-${module.id}-${option}`}
+                    className={cn("flex justify-center rounded-md py-2", disabled ? "cursor-default" : "cursor-pointer hover:bg-muted")}
+                  >
                     <RadioGroupItem
                       value={String(option)}
                       id={`perm-${module.id}-${option}`}
                       aria-label={`${module.label}: ${ACCESS_LABELS[option]}`}
                     />
-                  </div>
+                  </label>
                 ))}
               </RadioGroup>
 
@@ -86,7 +94,7 @@ export function PermissionMatrix({
                 {isOverride ? (
                   <>
                     <Badge variant="outline" className="text-[10px] font-normal">
-                      Overridden
+                      Changed
                     </Badge>
                     {onReset && !disabled && (
                       <Button
@@ -102,7 +110,7 @@ export function PermissionMatrix({
                   </>
                 ) : (
                   inherited !== undefined && (
-                    <span className="text-[11px] text-muted-foreground">Inherited</span>
+                    <span className="text-xs text-muted-foreground">From level</span>
                   )
                 )}
               </div>

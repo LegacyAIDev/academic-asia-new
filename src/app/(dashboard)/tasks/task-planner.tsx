@@ -4,8 +4,9 @@ import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { ChevronDown, ChevronRight, Loader2, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
   AlertDialogHeader, AlertDialogTitle,
@@ -29,6 +30,7 @@ export function TaskPlanner({ initialActive, initialCompleted, today }: Props) {
   const [priority, setPriority] = useState<TaskPriority>("medium")
   const [dueDate, setDueDate] = useState("")
   const [adding, setAdding] = useState(false)
+  const [titleMissing, setTitleMissing] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [editing, setEditing] = useState<StaffTask | null>(null)
   const [showCompleted, setShowCompleted] = useState(false)
@@ -43,7 +45,7 @@ export function TaskPlanner({ initialActive, initialCompleted, today }: Props) {
 
   const add = async (event: React.FormEvent) => {
     event.preventDefault()
-    if (!title.trim()) return
+    if (!title.trim()) return setTitleMissing(true)
     setAdding(true)
     try {
       const result = await createTask({ title, priority, dueDate })
@@ -100,49 +102,58 @@ export function TaskPlanner({ initialActive, initialCompleted, today }: Props) {
   )
 
   return (
-    <div className="space-y-6">
-      <Card className="border-0 shadow-sm">
-        <CardContent className="pt-6">
-          <form onSubmit={add} className="flex flex-wrap items-center gap-3">
-            <Input value={title} onChange={e => setTitle(e.target.value)} maxLength={200} placeholder="Add a task, e.g. Chase Brighton College for the offer letter"
-              aria-label="New task" className="min-w-64 flex-1" disabled={adding} />
+    <div className="space-y-4">
+      <form onSubmit={add} className="rounded-lg border bg-card p-4" noValidate>
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="min-w-[240px] flex-1 space-y-1.5">
+            <Label htmlFor="task-new-title">Task</Label>
+            <Input id="task-new-title" value={title} maxLength={200} placeholder="e.g. Chase Brighton College for the offer letter"
+              onChange={e => { setTitle(e.target.value); setTitleMissing(false) }}
+              aria-label="New task" aria-invalid={titleMissing || undefined} aria-describedby={titleMissing ? "task-new-title-error" : undefined}
+              disabled={adding} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="task-new-priority">Priority</Label>
             <PrioritySelect id="task-new-priority" value={priority} onChange={setPriority} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="task-new-due">Due</Label>
             <DeadlineInput id="task-new-due" value={dueDate} onChange={setDueDate} />
-            <Button type="submit" disabled={adding || !title.trim()} className="gap-1.5">
-              {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}Add task
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+          <Button type="submit" disabled={adding} className="gap-1.5">
+            {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}Add task
+          </Button>
+        </div>
+        {titleMissing && <p id="task-new-title-error" role="alert" className="mt-2 text-sm text-destructive">Write what the task is first.</p>}
+      </form>
 
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
-          <CardTitle className="text-base font-medium">To do <span className="font-normal text-muted-foreground">({active.length})</span></CardTitle>
-          {overdue > 0 && <span className="text-sm font-medium text-destructive">{overdue} overdue</span>}
-        </CardHeader>
-        <CardContent>
-          {active.length === 0
-            ? <p className="py-6 text-center text-sm text-muted-foreground">Nothing to do. Add a task above.</p>
-            : <ul aria-label="Tasks to do">{active.map(row)}</ul>}
-        </CardContent>
-      </Card>
+      <Panel
+        title="To do"
+        count={active.length}
+        action={overdue > 0 ? <span className="text-sm font-medium text-destructive">{overdue} overdue</span> : null}
+      >
+        {active.length === 0
+          ? <PanelEmpty title="Nothing to do">Add a task above.</PanelEmpty>
+          : <ul aria-label="Tasks to do">{active.map(row)}</ul>}
+      </Panel>
 
       {completed.length > 0 && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
-            <button type="button" className="flex items-center gap-1.5 text-base font-medium" aria-expanded={showCompleted}
-              onClick={() => setShowCompleted(v => !v)}>
+        <Panel
+          title={
+            <button type="button" className="flex items-center gap-1.5" aria-expanded={showCompleted} onClick={() => setShowCompleted(v => !v)}>
               {showCompleted ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               Completed <span className="font-normal text-muted-foreground">({completed.length})</span>
             </button>
-            {showCompleted && (
-              <Button type="button" variant="ghost" size="sm" className="ml-auto" disabled={clearing} onClick={() => setConfirming({ kind: "completed" })}>
-                {clearing && <Loader2 className="h-4 w-4 animate-spin" />}Clear completed
-              </Button>
-            )}
-          </CardHeader>
-          {showCompleted && <CardContent><ul aria-label="Completed tasks">{completed.map(row)}</ul></CardContent>}
-        </Card>
+          }
+          action={showCompleted ? (
+            <Button type="button" variant="ghost" size="sm" disabled={clearing} onClick={() => setConfirming({ kind: "completed" })}>
+              {clearing && <Loader2 className="h-4 w-4 animate-spin" />}Clear completed
+            </Button>
+          ) : null}
+          flush={!showCompleted}
+        >
+          {showCompleted ? <ul aria-label="Completed tasks">{completed.map(row)}</ul> : null}
+        </Panel>
       )}
 
       <AlertDialog open={!!confirming} onOpenChange={open => { if (!open) setConfirming(null) }}>

@@ -49,7 +49,15 @@ export function toAccessLevel(value: unknown): AccessLevel {
 }
 
 export const ACCESS_LABELS: Record<AccessLevel, string> = {
-  [ACCESS.NONE]: 'None',
-  [ACCESS.READ]: 'Read',
-  [ACCESS.WRITE]: 'Write',
+  [ACCESS.NONE]: 'No access',
+  [ACCESS.READ]: 'View',
+  [ACCESS.WRITE]: 'View and change',
+}
+
+/** Areas with nothing to open yet; their rights are kept but not shown to people setting access. */
+const HIDDEN_MODULE_KEYS: readonly string[] = [MODULES.REPORTS]
+
+/** The areas worth showing when setting or reading someone's access. */
+export function shownModules<T extends { key: string }>(modules: T[]): T[] {
+  return modules.filter(module => !HIDDEN_MODULE_KEYS.includes(module.key))
 }

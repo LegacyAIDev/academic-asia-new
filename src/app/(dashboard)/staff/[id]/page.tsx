@@ -7,7 +7,7 @@ import { getStaffById, getStaffSignIn } from "@/lib/supabase/queries/staff"
 import { getAllLevelPermissions, getPermissionModules, getProfileOverrides } from "@/lib/supabase/queries/permissions"
 import { getCurrentUser } from "@/lib/supabase/auth"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
-import { ACCESS, MODULES, type AccessLevel } from "@/lib/permissions/modules"
+import { ACCESS, MODULES, shownModules, type AccessLevel } from "@/lib/permissions/modules"
 import { ADMIN_LEVELS } from "@/lib/auth-utils"
 import { StaffHeaderActions } from "./staff-header-actions"
 
@@ -25,7 +25,7 @@ export default async function StaffDetailPage({ params }: StaffDetailPageParams)
   await requireAccess(MODULES.STAFF)
   const { id } = await params
 
-  const [staff, canWrite, signIn, modules, levelDefaults, overrides, currentUser] = await Promise.all([
+  const [staff, canWrite, signIn, allModules, levelDefaults, overrides, currentUser] = await Promise.all([
     getStaffById(id),
     canAccess(MODULES.STAFF, ACCESS.WRITE),
     getStaffSignIn(id),
@@ -35,6 +35,7 @@ export default async function StaffDetailPage({ params }: StaffDetailPageParams)
     getCurrentUser(),
   ])
   if (!staff) notFound()
+  const modules = shownModules(allModules)
 
   const fullName = [staff.first_name, staff.surname].filter(Boolean).join(" ") || "Unnamed"
   const active = signIn?.active ?? true

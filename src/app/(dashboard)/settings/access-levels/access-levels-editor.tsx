@@ -3,11 +3,11 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Card, CardContent } from "@/components/ui/card"
+import { Panel } from "@/components/ui/panel"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Info, Loader2, Save } from "lucide-react"
+import { Info, Loader2 } from "lucide-react"
 import { PermissionMatrix, type MatrixModule } from "@/components/permissions/permission-matrix"
 import { setLevelPermissions } from "@/lib/supabase/actions/permissions"
 import type { AccessLevel } from "@/lib/permissions/modules"
@@ -19,6 +19,8 @@ type AccessLevelsEditorProps = {
   /** How many staff sit on each level. */
   inheritCounts: Record<number, number>
   callerLevel: number | null
+  /** False for people who may look at access levels but not change them. */
+  canWrite: boolean
 }
 
 const SUPER_ADMIN_LEVEL = 0
@@ -29,6 +31,7 @@ export function AccessLevelsEditor({
   levelDefaults,
   inheritCounts,
   callerLevel,
+  canWrite,
 }: AccessLevelsEditorProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -54,10 +57,11 @@ export function AccessLevelsEditor({
 
   return (
     <Tabs defaultValue={String(firstEditable?.id ?? SUPER_ADMIN_LEVEL)}>
-      <TabsList className="flex-wrap h-auto">
+      <TabsList className="h-auto flex-wrap">
         {adminLevels.map(level => (
-          <TabsTrigger key={level.id} value={String(level.id)}>
+          <TabsTrigger key={level.id} value={String(level.id)} className="gap-1.5">
             {level.label}
+            <span className="text-xs tabular-nums text-muted-foreground">{inheritCounts[level.id] ?? 0}</span>
           </TabsTrigger>
         ))}
       </TabsList>
@@ -67,24 +71,33 @@ export function AccessLevelsEditor({
         // Levels at or above the caller's own are read-only; the server rejects
         // these edits anyway, so showing them as editable would just mislead.
         const outranksCaller = callerLevel !== null && callerLevel !== SUPER_ADMIN_LEVEL && level.id < callerLevel
-        const readOnly = isSuperAdmin || outranksCaller
+        const readOnly = !canWrite || isSuperAdmin || outranksCaller
         const count = inheritCounts[level.id] ?? 0
 
         return (
           <TabsContent key={level.id} value={String(level.id)} className="mt-4">
-            <Card className="border-0 shadow-sm">
-              <CardContent className="space-y-4 pt-6">
+            <Panel
+              title={level.label}
+              action={<span className="text-xs text-muted-foreground">{count === 0 ? "Nobody on this level" : `${count} ${count === 1 ? "person" : "people"} on this level`}</span>}
+            >
+              <div className="space-y-4">
                 {isSuperAdmin && (
                   <Alert>
                     <Info className="h-4 w-4" />
                     <AlertDescription>
-                      Super Admin always resolves to full access, so these values have no
-                      effect and cannot be edited.
+                      Super Admin can always view and change everything, so this level cannot be edited.
                     </AlertDescription>
                   </Alert>
                 )}
 
-                {outranksCaller && (
+                {!canWrite && !isSuperAdmin && (
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>You can see access levels but not change them.</AlertDescription>
+                  </Alert>
+                )}
+
+                {canWrite && outranksCaller && (
                   <Alert>
                     <Info className="h-4 w-4" />
                     <AlertDescription>
@@ -104,18 +117,17 @@ export function AccessLevelsEditor({
                   <div className="flex items-center justify-between gap-4">
                     <p className="text-xs text-muted-foreground">
                       {count === 0
-                        ? "No staff members are on this level."
-                        : `${count} staff member${count === 1 ? "" : "s"} inherit${count === 1 ? "s" : ""} this level. Changes apply to all of them except where individually overridden.`}
+                        ? "Nobody is on this level yet."
+                        : `Saving changes it for ${count === 1 ? "the 1 person" : `all ${count} people`} on this level, except areas changed on their own staff page.`}
                     </p>
-                    <Button onClick={() => handleSave(level.id)} disabled={isPending} className="gap-2 shadow-sm">
-                      {isPending
-                        ? <><Loader2 className="h-4 w-4 animate-spin" />Saving...</>
-                        : <><Save className="h-4 w-4" />Save Changes</>}
+                    <Button onClick={() => handleSave(level.id)} disabled={isPending} className="gap-2">
+                      {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                      Save {level.label}
                     </Button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </Panel>
           </TabsContent>
         )
       })}

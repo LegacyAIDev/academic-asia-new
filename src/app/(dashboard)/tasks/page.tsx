@@ -15,10 +15,10 @@ export default async function TasksPage() {
   const tasks = await getMyTasks()
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Task Planner</h1>
-        <p className="text-muted-foreground">Your own to-do list. Only you can see these tasks.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">Task Planner</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Your own to-do list. Only you can see these tasks.</p>
       </div>
       {tasks ? (
         <TaskPlanner initialActive={tasks.active} initialCompleted={tasks.completed} today={hkToday()} />
