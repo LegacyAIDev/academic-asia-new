@@ -1,4 +1,8 @@
 import Image from "next/image"
+import { Cormorant } from "next/font/google"
+
+// Only for the panel's ornamental "A", drawn like the serif A of Academic Asia's favicon; the app itself uses Inter.
+const cormorant = Cormorant({ subsets: ["latin"], weight: ["500"], display: "swap" })
 
 /**
  * Sign-in pages in Academic Asia's own brand (academic-asia.com): their navy,
@@ -10,6 +14,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <aside className="relative hidden overflow-hidden bg-brand-navy text-white lg:flex lg:flex-col lg:justify-between lg:p-14 xl:p-16 2xl:p-24">
+        {/* Their favicon's serif A, cropped at the panel corner and sized to the window, is the panel's only ornament. */}
+        <span
+          aria-hidden="true"
+          className={`${cormorant.className} pointer-events-none absolute -bottom-[0.24em] -right-[0.04em] select-none text-[26vw] font-medium leading-none text-brand-gold/[0.12]`}
+        >
+          A
+        </span>
+
         <Image src="/brand/aa-logo-white.png" alt="Academic Asia" width={245} height={24} priority className="relative h-auto w-[220px] 2xl:w-[260px]" />
 
         <div className="relative max-w-lg 2xl:max-w-xl">
