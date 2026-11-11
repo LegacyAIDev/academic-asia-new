@@ -46,7 +46,7 @@ try {
     await seeText(page, '09:00–09:45 Lucas Ng')
     await open(page, ALL_EXAMS_TODAY)
     const rows = await rowText(page, 'UAT complete physics')
-    assert(rows.length === 1 && rows[0].includes('Lucas Ng') && rows[0].includes('Pending'), `All exams: ${rows}`)
+    assert(rows.length === 1 && rows[0].includes('Lucas Ng') && rows[0].includes('To schedule'), `All exams: ${rows}`)
   })
 
   await step(page, 'the booking says how to complete it and links to All exams', async () => {

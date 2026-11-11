@@ -1,7 +1,7 @@
 "use client"
 
 import { useId, useState } from "react"
-import { Input } from "@/components/ui/input"
+import { DateField } from "@/components/ui/date-field"
 import { Label } from "@/components/ui/label"
 import { isDeskDate } from "@/lib/exams/exam-page-search-params"
 import { useExamsUrl, type ExamsUrlUpdate } from "./use-exams-url"
@@ -15,10 +15,8 @@ type Props = {
 }
 
 /**
- * From / To date inputs for the exams page.
- *
- * A date input reports an empty value while a date is still being typed, so
- * the URL only changes once the value is a complete date. Callers pass a `key`
+ * From / To dates for the exams page, picked from the app's calendar (shown as
+ * "11 Nov 2026"); clearing one removes it from the address. Callers pass a `key`
  * made of both dates, which resets the drafts whenever the range changes
  * elsewhere (for example through "Clear filters").
  */
@@ -46,28 +44,24 @@ export function ExamDateRangeFilter({ from, to, onUpdate }: Props) {
     <div className="flex items-end gap-2">
       <div className="space-y-1">
         <Label htmlFor={`${id}-from`} className="text-xs text-muted-foreground">From</Label>
-        <Input
+        <DateField
           id={`${id}-from`}
-          type="date"
-          min="2000-01-01"
-          max="2100-12-31"
-          className="h-9 w-[150px] tabular-nums"
-          value={fromDraft}
-          onChange={e => changeFrom(e.target.value)}
-          onBlur={() => { if (!fromDraft && from) update({ from: null }) }}
+          name="from"
+          className="w-[160px]"
+          placeholder="Any date"
+          value={fromDraft || null}
+          onChange={value => (value ? changeFrom(value) : (setFromDraft(""), from && update({ from: null })))}
         />
       </div>
       <div className="space-y-1">
         <Label htmlFor={`${id}-to`} className="text-xs text-muted-foreground">To</Label>
-        <Input
+        <DateField
           id={`${id}-to`}
-          type="date"
-          min="2000-01-01"
-          max="2100-12-31"
-          className="h-9 w-[150px] tabular-nums"
-          value={toDraft}
-          onChange={e => changeTo(e.target.value)}
-          onBlur={() => { if (!toDraft && to) update({ to: null }) }}
+          name="to"
+          className="w-[160px]"
+          placeholder="Any date"
+          value={toDraft || null}
+          onChange={value => (value ? changeTo(value) : (setToDraft(""), to && update({ to: null })))}
         />
       </div>
     </div>

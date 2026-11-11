@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Panel } from "@/components/ui/panel"
 import { SortableTableHead } from "@/components/ui/sortable-table-head"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { BookingStatusBadge } from "@/components/scheduler/booking-status-badge"
@@ -34,14 +34,12 @@ type Props = {
 }
 
 const COLUMNS: { key: ExamDeskSortKey; label: string; className: string }[] = [
-  { key: "time", label: "Time", className: "pl-6 min-w-[110px]" },
-  { key: "student", label: "Student", className: "min-w-[170px]" },
-  { key: "school", label: "School", className: "min-w-[150px]" },
-  { key: "year", label: "Entry point", className: "min-w-[110px]" },
-  { key: "assessment", label: "Assessment format", className: "min-w-[170px]" },
-  { key: "papers", label: "Paper availability", className: "min-w-[170px]" },
-  { key: "room", label: "Room / seat", className: "min-w-[150px]" },
-  { key: "status", label: "Status", className: "min-w-[150px]" },
+  { key: "time", label: "Time", className: "pl-4 w-[96px]" },
+  { key: "student", label: "Student", className: "min-w-[160px]" },
+  { key: "school", label: "School and entry", className: "min-w-[170px]" },
+  { key: "assessment", label: "Assessment and papers", className: "min-w-[170px]" },
+  { key: "room", label: "Room", className: "w-[130px]" },
+  { key: "status", label: "Status", className: "w-[130px]" },
 ]
 
 /** A long group exam would make its row taller than the screen, so only the first few names are listed. */
@@ -57,15 +55,12 @@ export function ExamDeskTable(props: Props) {
   const returnTo = examsHref(raw)
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="flex flex-row items-start justify-between gap-3 border-b bg-muted/30 px-6 py-3">
-        <div>
-          <h2 className="text-sm font-semibold">{props.title}</h2>
-          <p className="text-xs text-muted-foreground">{props.subtitle}</p>
-        </div>
-        <Badge variant="outline" className="tabular-nums">{props.countLabel}</Badge>
-      </CardHeader>
-      <CardContent className="overflow-x-auto p-0">
+    <Panel
+      title={<>{props.title} <span className="font-normal text-muted-foreground">{props.subtitle}</span></>}
+      action={<Badge variant="outline" className="tabular-nums">{props.countLabel}</Badge>}
+      flush
+    >
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/20 hover:bg-transparent">
@@ -78,7 +73,7 @@ export function ExamDeskTable(props: Props) {
                   direction={sort === column.key ? dir : null}
                 />
               ))}
-              {showActions && <TableHead className="min-w-[200px] pr-6">Actions</TableHead>}
+              {showActions && <TableHead className="w-[1%] pr-4 text-right"><span className="sr-only">Actions</span></TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -91,7 +86,7 @@ export function ExamDeskTable(props: Props) {
             )}
             {rows.map(row => (
               <TableRow key={row.rowKey}>
-                <TableCell className="pl-6 align-top">
+                <TableCell className="pl-4 align-top">
                   <span className="block font-medium tabular-nums">{formatHkTime(row.startAt)}–{formatHkTime(row.endAt)}</span>
                   {props.showDate && (
                     <span className="block text-xs text-muted-foreground tabular-nums">{formatHkDate(row.startAt)}</span>
@@ -115,15 +110,17 @@ export function ExamDeskTable(props: Props) {
                     <p className="mt-1.5 text-xs text-muted-foreground tabular-nums">+{row.candidates.length - MAX_NAMES} more</p>
                   )}
                 </TableCell>
-                <TableCell className="align-top text-sm">{row.schoolName ?? dash}</TableCell>
                 <TableCell className="align-top text-sm">
-                  {row.yearLevels.length > 0 && <span className="block font-medium">{row.yearLevels.join(", ")}</span>}
-                  {row.entryYear && <span className="block tabular-nums">{row.entryYear} entry</span>}
-                  {row.yearLevels.length === 0 && !row.entryYear && dash}
+                  {row.schoolName ?? <span className="text-muted-foreground/60">No school</span>}
+                  {(row.yearLevels.length > 0 || row.entryYear) && (
+                    <span className="block text-xs text-muted-foreground">
+                      {[row.yearLevels.join(", "), row.entryYear ? `${row.entryYear} entry` : null].filter(Boolean).join(", ")}
+                    </span>
+                  )}
                 </TableCell>
-                <TableCell className="align-top text-sm">{row.assessment ?? dash}</TableCell>
-                <TableCell className="align-top text-sm tabular-nums">
-                  {row.availability?.label ?? <span className="text-muted-foreground">No papers chosen</span>}
+                <TableCell className="align-top text-sm">
+                  {row.assessment ?? <span className="text-muted-foreground/60">Not set</span>}
+                  <span className="block text-xs tabular-nums text-muted-foreground">{row.availability?.label ?? "No papers chosen"}</span>
                 </TableCell>
                 <TableCell className="align-top text-sm">
                   {row.room ? <RoomChip size="sm" {...row.room} /> : row.isOnline ? "Online" : dash}
@@ -136,7 +133,7 @@ export function ExamDeskTable(props: Props) {
                   </div>
                 </TableCell>
                 {showActions && (
-                  <TableCell className="pr-6 align-top">
+                  <TableCell className="pr-4 align-top">
                     <ExamDeskRowActions
                       bookingId={row.bookingId}
                       studentId={row.studentId}
@@ -158,7 +155,7 @@ export function ExamDeskTable(props: Props) {
             ))}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
+      </div>
+    </Panel>
   )
 }

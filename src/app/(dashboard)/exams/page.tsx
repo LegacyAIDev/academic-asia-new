@@ -22,15 +22,15 @@ export default async function ExamManagementPage({ searchParams }: PageParams) {
   const hint = VIEWS.find(v => v.view === current)?.hint
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Exam Management</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Exams</h1>
           <p className="mt-1 text-sm text-muted-foreground">{hint}</p>
         </div>
-        <nav aria-label="Exam views" className="flex items-center gap-1">
+        <nav aria-label="Exam views" className="flex items-center gap-1 rounded-lg border bg-card p-1">
           {VIEWS.map(({ view, label, href }) => (
-            <Button key={view} variant={view === current ? "default" : "ghost"} size="sm" asChild>
+            <Button key={view} variant={view === current ? "secondary" : "ghost"} size="sm" className="h-8" asChild>
               <Link href={href} aria-current={view === current ? "page" : undefined}>{label}</Link>
             </Button>
           ))}

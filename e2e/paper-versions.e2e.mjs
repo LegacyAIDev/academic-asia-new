@@ -86,7 +86,7 @@ try {
   await step(page, 'the exam desk offers only the current paper for printing', async () => {
     await open(page, '/exams')
     await seeText(page, 'Lucas Ng')
-    await click(page, 'Print available')
+    await page.click('button[aria-label="Print the papers"]')
     await seeText(page, 'Papers for this examination', DIALOG)
     await page.waitForFunction(() => !document.querySelector('[role="dialog"]').innerText.includes('Loading the papers'), { polling: 100 })
     await seeText(page, '1 uploaded')

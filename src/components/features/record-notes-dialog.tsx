@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { Loader2 } from "lucide-react"
+import { Loader2, StickyNote } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import type { RecordNote } from "@/lib/notes/record-note"
@@ -15,12 +15,14 @@ type Props = {
   title: string
   canWrite: boolean
   currentUserId: string | null
+  /** An icon-only button, for crowded rows. */
+  compact?: boolean
 }
 
 type Loaded = { notes: RecordNote[]; more: boolean }
 
 /** A "Notes" button that loads the list when opened, for rows that cannot afford a query each. */
-export function RecordNotesDialog({ target, recordId, title, canWrite, currentUserId }: Props) {
+export function RecordNotesDialog({ target, recordId, title, canWrite, currentUserId, compact = false }: Props) {
   const [open, setOpen] = useState(false)
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -48,7 +50,13 @@ export function RecordNotesDialog({ target, recordId, title, canWrite, currentUs
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" size="sm" variant="outline" className="min-h-9">Notes</Button>
+        {compact ? (
+          <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" aria-label="Notes" title="Notes">
+            <StickyNote className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button type="button" size="sm" variant="outline" className="min-h-9">Notes</Button>
+        )}
       </DialogTrigger>
       <DialogContent
         className="max-h-[85vh] overflow-y-auto sm:max-w-lg"

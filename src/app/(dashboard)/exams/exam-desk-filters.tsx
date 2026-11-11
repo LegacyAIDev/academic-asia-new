@@ -4,7 +4,6 @@ import { useState } from "react"
 import { Loader2, Search } from "lucide-react"
 import { useDebouncedCallback } from "use-debounce"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { ExamDeskOption, ExamDeskOptions } from "@/lib/exams/exam-desk-filter-sort"
@@ -69,46 +68,33 @@ export function ExamDeskFilters({ params, options, canClear }: Props) {
   const entryYears = options.entryYears.map(year => ({ id: String(year), label: `${year} entry` }))
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardContent className="space-y-3 p-4">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <h2 className="flex items-center gap-2 text-sm font-semibold">
-              Filter examination bookings
-              {isPending && <Loader2 role="status" aria-label="Updating the list" className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
-            </h2>
-            <p className="text-xs text-muted-foreground">Narrow the list here; sort it from any column heading.</p>
-          </div>
-          {canClear && (
-            <Button variant="outline" size="sm" onClick={clearAll}>Clear filters</Button>
-          )}
+    <section aria-label="Filters" className="space-y-2 rounded-lg border bg-card p-4">
+      <div className="flex flex-wrap items-end gap-2">
+        <ExamDateRangeFilter key={`${params.from}|${params.to}`} from={params.from} to={params.to} onUpdate={update} />
+        {selectFilter("room", params.roomId, "All rooms", options.rooms)}
+        {selectFilter("school", params.schoolId, "All schools", options.schools)}
+        {selectFilter("year", params.entryYear === null ? null : String(params.entryYear), "All entry years", entryYears)}
+        <div className="relative min-w-[200px] flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            aria-label="Search examinations"
+            maxLength={100}
+            placeholder="Student, school, assessment…"
+            className="h-9 pl-9"
+            value={search}
+            onChange={e => {
+              setSearch(e.target.value)
+              pushSearch(e.target.value)
+            }}
+          />
         </div>
+        {isPending && <Loader2 role="status" aria-label="Updating the list" className="mb-2.5 h-4 w-4 animate-spin text-muted-foreground" />}
+        {canClear && <Button variant="ghost" size="sm" className="ml-auto" onClick={clearAll}>Clear filters</Button>}
+      </div>
 
-        <div className="flex flex-wrap items-end gap-2">
-          <ExamDateRangeFilter key={`${params.from}|${params.to}`} from={params.from} to={params.to} onUpdate={update} />
-          {selectFilter("room", params.roomId, "All rooms", options.rooms)}
-          {selectFilter("school", params.schoolId, "All schools", options.schools)}
-          {selectFilter("year", params.entryYear === null ? null : String(params.entryYear), "All entry years", entryYears)}
-          <div className="relative min-w-[200px] flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              aria-label="Search examinations"
-              maxLength={100}
-              placeholder="Student, school, assessment…"
-              className="h-9 pl-9"
-              value={search}
-              onChange={e => {
-                setSearch(e.target.value)
-                pushSearch(e.target.value)
-              }}
-            />
-          </div>
-        </div>
-
-        {params.rangeClamped && (
-          <p className="text-xs text-muted-foreground">The desk shows at most 62 days at a time, so the range was shortened.</p>
-        )}
-      </CardContent>
-    </Card>
+      {params.rangeClamped && (
+        <p className="text-xs text-muted-foreground">The desk shows at most 62 days at a time, so the range was shortened.</p>
+      )}
+    </section>
   )
 }

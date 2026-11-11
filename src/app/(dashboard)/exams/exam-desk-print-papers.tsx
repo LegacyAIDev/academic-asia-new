@@ -13,7 +13,7 @@ import { getBookingPaperFilesAction, type BookingPaperFiles } from "@/lib/supaba
  * new tab per click, and the links are fetched when the dialog opens because
  * they expire after a few minutes.
  */
-export function ExamDeskPrintPapers({ bookingId }: { bookingId: string }) {
+export function ExamDeskPrintPapers({ bookingId, compact = false }: { bookingId: string; /** An icon-only button, for crowded rows. */ compact?: boolean }) {
   const [open, setOpen] = useState(false)
   const [papers, setPapers] = useState<BookingPaperFiles | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -38,10 +38,16 @@ export function ExamDeskPrintPapers({ bookingId }: { bookingId: string }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="gap-1">
-          <Printer className="h-3.5 w-3.5" />
-          Print available
-        </Button>
+        {compact ? (
+          <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" aria-label="Print the papers" title="Print the papers">
+            <Printer className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button size="sm" variant="outline" className="gap-1">
+            <Printer className="h-3.5 w-3.5" />
+            Print available
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>

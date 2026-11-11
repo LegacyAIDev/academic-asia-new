@@ -1,6 +1,4 @@
 import { redirect } from "next/navigation"
-import { AlertCircle, CheckCircle2, ClipboardCheck, Clock } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
 import { canAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { examListHref, parseExamListParams } from "@/lib/exams/exam-page-search-params"
@@ -35,18 +33,11 @@ export async function ExamListView({ raw }: { raw: RawSearchParams }) {
   ])
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={AlertCircle} label="Pending" value={stats.pending} bg="bg-amber-500/10" color="text-amber-600" />
-        <StatCard icon={Clock} label="Confirmed" value={stats.confirmed} bg="bg-blue-500/10" color="text-blue-600" />
-        <StatCard icon={CheckCircle2} label="Completed" value={stats.completed} bg="bg-emerald-500/10" color="text-emerald-600" />
-        <StatCard icon={ClipboardCheck} label="Total" value={stats.total} bg="bg-primary/10" color="text-primary" />
-      </div>
-
+    <div className="space-y-4">
       <div className="flex flex-wrap items-end gap-3">
         <ExamDateRangeFilter key={`${from ?? ""}|${to ?? ""}`} from={from ?? ""} to={to ?? ""} />
         <p className="pb-2 text-xs text-muted-foreground">
-          Filters by scheduled date. Requests that are not scheduled yet have none and drop out.
+          Dates look at when the exam is booked, so requests without a date are left out.
         </p>
       </div>
 
@@ -56,6 +47,7 @@ export async function ExamListView({ raw }: { raw: RawSearchParams }) {
         canSchedule={canSchedule}
         notes={{ canWrite: canWriteNotes, currentUserId }}
         currentStatus={statusId}
+        stats={stats}
         range={{ from, to }}
         page={page}
         totalPages={totalPages}
@@ -65,22 +57,3 @@ export async function ExamListView({ raw }: { raw: RawSearchParams }) {
   )
 }
 
-function StatCard({ icon: Icon, label, value, bg, color }: {
-  icon: React.ElementType; label: string; value: number; bg: string; color: string
-}) {
-  return (
-    <Card className="border-0 shadow-sm">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${bg}`}>
-            <Icon className={`h-5 w-5 ${color}`} />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold">{value.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground">{label}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}

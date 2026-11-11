@@ -1,7 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import { CalendarClock, FileText, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { RecordNotesDialog } from "@/components/features/record-notes-dialog"
 import { useBookingActions } from "@/app/(dashboard)/scheduler/use-booking-actions"
 import type { ExamDeskActions } from "@/lib/exams/exam-desk-rows"
@@ -24,40 +26,50 @@ type Props = {
 }
 
 /**
- * Buttons of one exam desk row. Each row has its own instance, so only the row
- * being saved is disabled while the request runs.
+ * Actions of one exam desk row on a single line: the next step as a button
+ * (Confirm, or Showed up / No show), papers and notes as icons, the rest under
+ * "⋯". Each row has its own instance, so only the row being saved is disabled.
  */
 export function ExamDeskRowActions({ bookingId, studentId, actions, bookingHref, canPrintPapers, coverSlipHref, notes }: Props) {
   const { isPending, confirm, recordAttendance } = useBookingActions()
 
+  const hasMore = Boolean(coverSlipHref || bookingHref)
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex items-center justify-end gap-1 whitespace-nowrap">
+      {/* The one thing to do next for this row comes first, as a button. */}
       {actions.confirm && (
-        <Button size="sm" disabled={isPending} onClick={() => confirm(bookingId)}>Confirm</Button>
+        <Button size="sm" className="h-8" disabled={isPending} onClick={() => confirm(bookingId)}>Confirm</Button>
       )}
       {actions.showUp && (
-        <Button size="sm" disabled={isPending} onClick={() => recordAttendance(bookingId, "show_up", studentId)}>Showed up</Button>
+        <Button size="sm" className="h-8" disabled={isPending} onClick={() => recordAttendance(bookingId, "show_up", studentId)}>Showed up</Button>
       )}
       {actions.noShow && (
-        <Button size="sm" variant="ghost" disabled={isPending} onClick={() => recordAttendance(bookingId, "no_show", studentId)}>
+        <Button size="sm" variant="outline" className="h-8" disabled={isPending} onClick={() => recordAttendance(bookingId, "no_show", studentId)}>
           No show
         </Button>
       )}
-      {canPrintPapers && <ExamDeskPrintPapers bookingId={bookingId} />}
-      {coverSlipHref && (
-        <Button size="sm" variant="outline" asChild>
-          {/* A plain link on purpose: a prefetching router link would start a PDF render nobody asked for. */}
-          <a href={coverSlipHref} target="_blank" rel="noopener noreferrer">Cover slip</a>
-        </Button>
-      )}
+      {canPrintPapers && <ExamDeskPrintPapers bookingId={bookingId} compact />}
       {notes && (
         <RecordNotesDialog target="exam" recordId={notes.examId} title={notes.title}
-          canWrite={notes.canWrite} currentUserId={notes.currentUserId} />
+          canWrite={notes.canWrite} currentUserId={notes.currentUserId} compact />
       )}
-      {bookingHref && (
-        <Button size="sm" variant="outline" asChild>
-          <Link href={bookingHref}>Open booking</Link>
-        </Button>
+      {hasMore && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" aria-label="More actions"><MoreHorizontal className="h-4 w-4" /></Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            {coverSlipHref && (
+              <DropdownMenuItem asChild>
+                {/* A plain link on purpose: a prefetching router link would start a PDF render nobody asked for. */}
+                <a href={coverSlipHref} target="_blank" rel="noopener noreferrer"><FileText className="h-4 w-4" /> Cover slip</a>
+              </DropdownMenuItem>
+            )}
+            {bookingHref && (
+              <DropdownMenuItem asChild><Link href={bookingHref}><CalendarClock className="h-4 w-4" /> Open booking</Link></DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   )
