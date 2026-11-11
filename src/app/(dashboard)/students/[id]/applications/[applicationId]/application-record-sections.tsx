@@ -19,11 +19,11 @@ export function ApplicationRecordSections({ application: app }: { application: A
       filled: true,
       fields: (
         <>
-          <Field label="Enrol status" value={app.status?.label} />
+          <Field label="School status" value={app.status?.label} />
           <Field label="Sub-status" value={app.sub_status?.label} />
           <Field label="Mode" value={app.mode?.code === "suspended" ? "Suspended" : "Normal"} />
           <Field label="Year group" value={app.year_group?.toString()} />
-          {app.result_remarks && <Field label="Enrol status remarks" value={app.result_remarks} wide />}
+          {app.result_remarks && <Field label="About the status or result" value={app.result_remarks} wide />}
         </>
       ),
     },
@@ -32,9 +32,9 @@ export function ApplicationRecordSections({ application: app }: { application: A
       filled: Boolean(app.entry_year || app.entry_month || app.course_start_year || app.course_start_month || app.registration_date || app.course_detail),
       fields: (
         <>
-          <Field label="Year apply" value={yearApply === "—" ? null : yearApply} />
-          <Field label="Course start (C.S.D.)" value={csd === "—" ? null : csd} />
-          <Field label="Registration date" value={app.registration_date && formatDate(app.registration_date)} />
+          <Field label="Entry" value={yearApply === "—" ? null : yearApply} />
+          <Field label="Course starts" value={csd === "—" ? null : csd} />
+          <Field label="Registered with the school" value={app.registration_date && formatDate(app.registration_date)} />
           {app.course_detail && <Field label="Course detail" value={app.course_detail} wide />}
         </>
       ),
@@ -44,11 +44,11 @@ export function ApplicationRecordSections({ application: app }: { application: A
       filled: Boolean(app.is_referral || app.scholarship_types?.length || app.scholarship_amount != null || app.scholarship_detail),
       fields: (
         <>
-          <Field label="Referral" value={app.is_referral ? "Yes" : "No"} />
+          <Field label="Referred by Academic Asia" value={app.is_referral ? "Yes" : "No"} />
           <Field label="Scholarship types" value={
             app.scholarship_types?.length ? <span className="capitalize">{app.scholarship_types.join(", ")}</span> : null
           } />
-          {app.scholarship_amount != null && <Field label="Scholarship amount" value={<span className="tabular-nums">{formatMoney(app.scholarship_amount)}</span>} />}
+          {app.scholarship_amount != null && app.scholarship_amount > 0 && <Field label="Scholarship amount" value={<span className="tabular-nums">{formatMoney(app.scholarship_amount)}</span>} />}
           {app.scholarship_detail && <Field label="Scholarship detail" value={app.scholarship_detail} wide />}
         </>
       ),
@@ -70,8 +70,8 @@ export function ApplicationRecordSections({ application: app }: { application: A
       fields: (
         <>
           <Field label="Date and time" value={app.visit_date && `${formatDate(app.visit_date)}${app.visit_time ? ` · ${formatTime(app.visit_time)}` : ""}`} />
-          <Field label="School contact" value={app.school_contact} />
-          {app.visit_remarks && <Field label="Visit remarks" value={app.visit_remarks} wide />}
+          <Field label="Contact at the school" value={app.school_contact} />
+          {app.visit_remarks && <Field label="Visit notes" value={app.visit_remarks} wide />}
         </>
       ),
     },
@@ -80,8 +80,8 @@ export function ApplicationRecordSections({ application: app }: { application: A
       filled: Boolean(app.aa_remarks || app.remarks_to_school),
       fields: (
         <>
-          <Field label="AA remarks" value={app.aa_remarks} wide />
-          <Field label="Remarks to school" value={app.remarks_to_school} wide />
+          <Field label="Internal (staff only)" value={app.aa_remarks} wide />
+          <Field label="Sent to the school" value={app.remarks_to_school} wide />
         </>
       ),
     },
@@ -90,7 +90,7 @@ export function ApplicationRecordSections({ application: app }: { application: A
   const empty = groups.filter(group => !group.filled)
 
   return (
-    <section aria-label="Application record" className="space-y-4 rounded-xl border bg-card p-4 sm:p-5">
+    <section aria-label="Application record" className="space-y-4 rounded-lg border bg-card p-4 sm:p-5">
       <Eyebrow>Record</Eyebrow>
       <div className="space-y-4">
         {groups.filter(group => group.filled).map(group => (

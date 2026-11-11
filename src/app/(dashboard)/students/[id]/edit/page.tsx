@@ -1,15 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { ArrowLeft } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { getStudentById, getReferenceData } from "@/lib/supabase/queries/students"
 import { getPresentSchools } from "@/lib/supabase/queries/present-schools"
 import { StudentForm } from "../../student-form"
@@ -36,50 +27,13 @@ export default async function EditStudentPage({ params }: EditStudentPageParams)
   }
 
   return (
-    <div className="space-y-6">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/students">Students</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/students/${id}`}>
-              {student.first_name} {student.surname}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Edit</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href={`/students/${id}`}>
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Edit Student
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Update information for {student.first_name} {student.surname}
-            {student.student_code && (
-              <code className="ml-2 font-mono bg-muted px-1.5 py-0.5 rounded text-xs">
-                {student.student_code}
-              </code>
-            )}
-          </p>
-        </div>
+    <div className="mx-auto max-w-[1100px] space-y-5">
+      <Link href={`/students/${id}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <ChevronLeft className="h-4 w-4" /> {student.first_name} {student.surname}
+      </Link>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-brand-navy">Edit details</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{student.first_name} {student.surname}{student.student_code ? `, ${student.student_code}` : ""}</p>
       </div>
 
       {/* Form */}

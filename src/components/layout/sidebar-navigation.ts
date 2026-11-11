@@ -38,9 +38,9 @@ export const navigation: NavItem[] = [
     children: [
       {
         items: [
-          { name: "All Students", href: "/students", icon: Users },
-          { name: "Current Schools", href: "/students/present-schools", icon: School },
-          { name: "Brief Intro Export", href: "/students/brief-intros/export", icon: Languages },
+          { name: "All students", href: "/students", icon: Users },
+          { name: "Current schools (HK)", href: "/students/present-schools", icon: School },
+          { name: "Export brief intros", href: "/students/brief-intros/export", icon: Languages },
         ],
       },
     ],

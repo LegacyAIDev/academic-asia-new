@@ -36,7 +36,7 @@ export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSc
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-2 shadow-sm sm:p-3">
+      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-2 shadow-sm sm:p-3">
         <div className="relative min-w-0 flex-1 basis-[240px]">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input
@@ -61,7 +61,8 @@ export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSc
           {searching && more && `Showing ${matches.length.toLocaleString("en-GB")} of `}
           {total.toLocaleString("en-GB")} {searching ? (total === 1 ? "match" : "matches") : total === 1 ? "school" : "schools"}
         </p>
-        {canManage && (
+        {/* When nothing matches, the one Add button is the one in the empty state below. */}
+        {canManage && matches.length > 0 && (
           <div className="ml-auto">
             <PresentSchoolDialog mode="create" defaultName={query} />
           </div>
@@ -69,7 +70,7 @@ export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSc
       </div>
 
       {matches.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card px-6 py-14 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border bg-card px-6 py-14 text-center">
           <School className="h-6 w-6 text-muted-foreground" aria-hidden />
           <div>
             <p className="text-sm font-semibold">
@@ -90,10 +91,10 @@ export function PresentSchoolsTable({ schools, canManage }: { schools: PresentSc
       ) : !searching ? (
         <PresentSchoolsDirectory schools={everySchool} canManage={canManage} />
       ) : (
-        <section aria-label="Matching schools" className="rounded-xl border border-border bg-card">
+        <section aria-label="Matching schools" className="rounded-lg border border-border bg-card">
           <header className="flex items-center justify-between border-b border-border px-4 py-2">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">School</p>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Students</p>
+            <p className="text-xs font-medium text-muted-foreground">School</p>
+            <p className="text-xs font-medium text-muted-foreground">Students</p>
           </header>
           <ul role="list" className="divide-y divide-border">
             {matches.map((school) => (

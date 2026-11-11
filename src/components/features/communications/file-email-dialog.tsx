@@ -83,7 +83,11 @@ export function FileEmailDialog({ open, onOpenChange, context }: Props) {
           ))}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="sm:items-center">
+          {/* Say why the button is not ready rather than leave it faded and silent. */}
+          {!staged.saving && staged.pendingCount === 0 && (
+            <p className="mr-auto text-xs text-muted-foreground">{staged.items.length === 0 ? "Add an email file above to continue." : "Fix the file above to continue."}</p>
+          )}
           <Button type="button" variant="outline" disabled={staged.saving} onClick={() => close(false)}>Cancel</Button>
           <Button type="button" disabled={staged.saving || staged.pendingCount === 0} onClick={save} className="gap-1.5">
             {staged.saving && <Loader2 className="h-4 w-4 animate-spin" />}

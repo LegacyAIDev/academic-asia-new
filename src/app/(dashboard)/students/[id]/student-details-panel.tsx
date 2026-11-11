@@ -8,7 +8,7 @@ type Student = NonNullable<Awaited<ReturnType<typeof getStudentById>>>
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })
-const LEAD_SOURCES: Record<string, string> = { walk_in: "Walk-in", referral: "Referral", event: "Event", website: "Website", other: "Other" }
+const LEAD_SOURCES: Record<string, string> = { walk_in: "Walk-in", referral: "Referral", events: "Event", direct: "Direct" }
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (

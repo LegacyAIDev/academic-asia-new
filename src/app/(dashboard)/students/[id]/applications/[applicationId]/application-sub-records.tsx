@@ -5,8 +5,8 @@ import { AttachmentField } from "@/components/features/attachment-field"
 import { RecordNotesDialog } from "@/components/features/record-notes-dialog"
 import { BOOKING_TYPE_LABELS, TIMEZONE_LABEL, type BookingType } from "@/lib/scheduler/config"
 import { assessmentLabel } from "@/lib/scheduler/booking-text-formatters"
-import { formatHkDate, formatHkTime } from "@/lib/scheduler/time-utils"
-import { formatDate, formatMoney, formatTime } from "@/lib/applications/application-display"
+import { formatHkTime } from "@/lib/scheduler/time-utils"
+import { formatDate, formatHkDay, formatMoney, formatTime } from "@/lib/applications/application-display"
 import type { ApplicationWithJoins } from "@/lib/supabase/queries/student-applications"
 import type { ApplicationBooking } from "@/lib/supabase/queries/application-bookings"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
@@ -88,7 +88,7 @@ export function ApplicationSubRecords({ application: app, bookings, attachments,
                         <span className="font-medium">{BOOKING_TYPE_LABELS[b.booking_type as BookingType] ?? b.title}</span>
                         {papers && <span className="text-muted-foreground"> · {papers}</span>}
                         <span className="block text-xs tabular-nums text-muted-foreground">
-                          {formatHkDate(b.start_at)} {formatHkTime(b.start_at)}–{formatHkTime(b.end_at)} {TIMEZONE_LABEL}
+                          {formatHkDay(b.start_at)}, {formatHkTime(b.start_at)}–{formatHkTime(b.end_at)} {TIMEZONE_LABEL}
                           {b.room && ` · ${b.room.display_name}`}
                         </span>
                       </span>

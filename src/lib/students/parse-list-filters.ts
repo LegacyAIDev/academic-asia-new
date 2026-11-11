@@ -23,6 +23,8 @@ export type StudentListSearchParams = {
   event?: string
   has_email?: string
   has_phone?: string
+  /** Brief introduction written: "yes" / "no" (export screen). */
+  intro?: string
 }
 
 export interface StudentListFilters {
@@ -40,6 +42,7 @@ export interface StudentListFilters {
   eventId?: string
   hasEmail?: boolean
   hasTelephone?: boolean
+  hasBriefIntro?: boolean
 }
 
 /** Undefined rather than NaN for a non-numeric parameter, so the filter is skipped. */
@@ -72,5 +75,6 @@ export function parseStudentListFilters(params: StudentListSearchParams): Studen
     eventId: params.event || undefined,
     hasEmail: toPresence(params.has_email),
     hasTelephone: toPresence(params.has_phone),
+    hasBriefIntro: toPresence(params.intro),
   }
 }

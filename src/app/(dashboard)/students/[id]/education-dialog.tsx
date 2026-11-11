@@ -49,6 +49,7 @@ import {
 import type { EducationWithJoins } from "@/lib/supabase/queries/student-education"
 import { FormSection } from "@/components/forms/form-section"
 import { useAddParam } from "@/lib/students/use-add-param"
+import { DateField } from "@/components/ui/date-field"
 
 type CourseItem = { id: number; code: string; label: string; category: string | null }
 type StatusItem = { id: number; code: string; label: string }
@@ -214,10 +215,10 @@ export function EducationDialog({
             <FormSection icon={Calendar} title="Schedule" accentColor="teal">
               <div className="grid grid-cols-2 gap-3">
                 <FormField label="Start Date">
-                  <Input name="start_date" type="date" className={inputStyles} defaultValue={education?.start_date ?? ""} />
+                  <DateField name="start_date" defaultValue={education?.start_date ?? null} />
                 </FormField>
                 <FormField label="End Date">
-                  <Input name="end_date" type="date" className={inputStyles} defaultValue={education?.end_date ?? ""} />
+                  <DateField name="end_date" defaultValue={education?.end_date ?? null} />
                 </FormField>
               </div>
               <FormField label="Total Hours">

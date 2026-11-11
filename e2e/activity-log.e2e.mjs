@@ -62,6 +62,8 @@ try {
 
   await step(page, 'the application page shows the history of that application only', async () => {
     await open(page, `/students/${SEED.student}/applications/${SEED.application}`)
+    // Every change is folded under the History panel's dated milestones.
+    await page.evaluate(() => [...document.querySelectorAll('summary')].find(s => s.innerText.includes('Show every change')).click())
     await seeText(page, 'Created exam · Headington Year 9 entrance exam', ACTIVITY)
     await seeText(page, 'Created email · Year 9 entry – confirmed', ACTIVITY)
     await notSeeText(page, 'Updated student record', ACTIVITY)

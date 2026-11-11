@@ -53,6 +53,7 @@ import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments
 import { SchoolSearchField } from "@/components/features/school-search-field"
 import { FormSection } from "@/components/forms/form-section"
 import { useAddParam } from "@/lib/students/use-add-param"
+import { DateField } from "@/components/ui/date-field"
 
 type ExamTypeItem = { id: number; code: string; label: string }
 type SubjectItem = { id: number; code: string; label: string; exam_type_code: string | null }
@@ -238,17 +239,17 @@ export function ExamResultDialog({
               </div>
             )}
 
-            <FormSection icon={FileCheck} title="Test Details" accentColor="primary">
-              <FormField label="AA Test Date">
-                <Input name="test_date" type="date" className={inputStyles} defaultValue={examResult?.test_date ?? ""} />
+            <FormSection icon={FileCheck} title="When and where" accentColor="primary">
+              <FormField label="Test date">
+                <DateField name="test_date" defaultValue={examResult?.test_date ?? null} />
               </FormField>
               <FormField label="School">
                 <SchoolSearchField name="school_id" className={inputStyles} defaultSchool={examResult?.school ?? null} />
               </FormField>
             </FormSection>
 
-            <FormSection icon={GraduationCap} title="Exam Classification" accentColor="teal">
-              <FormField label="Exam Paper">
+            <FormSection icon={GraduationCap} title="Which test" accentColor="teal">
+              <FormField label="Paper">
                 <Select name="paper_id" defaultValue={examResult?.paper_id?.toString() ?? ""}>
                   <SelectTrigger className={selectTriggerStyles}>
                     <SelectValue placeholder="Select exam paper" />
@@ -260,7 +261,7 @@ export function ExamResultDialog({
                   </SelectContent>
                 </Select>
               </FormField>
-              <FormField label="Test / Exam">
+              <FormField label="Type of test">
                 <Select
                   name="exam_type_id"
                   defaultValue={examResult?.exam_type_id?.toString() ?? ""}
@@ -293,9 +294,9 @@ export function ExamResultDialog({
               </FormField>
             </FormSection>
 
-            <FormSection icon={ClipboardList} title="Results & Status" accentColor="amber">
+            <FormSection icon={ClipboardList} title="Result" accentColor="amber">
               <div className="grid grid-cols-2 gap-3">
-                <FormField label="Paper Ready">
+                <FormField label="Paper prepared?">
                   <Select name="paper_ready" defaultValue={examResult?.paper_ready ? "true" : "false"}>
                     <SelectTrigger className={selectTriggerStyles}>
                       <SelectValue />
@@ -320,10 +321,10 @@ export function ExamResultDialog({
                 </FormField>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <FormField label="Score (Results)">
+                <FormField label="Score">
                   <Input name="score" type="number" step="0.01" className={inputStyles} defaultValue={examResult?.score ?? ""} placeholder="e.g. 88" />
                 </FormField>
-                <FormField label="Max Score">
+                <FormField label="Out of">
                   <Input name="max_score" type="number" step="0.01" className={inputStyles} defaultValue={examResult?.max_score ?? "100"} placeholder="100" />
                 </FormField>
               </div>

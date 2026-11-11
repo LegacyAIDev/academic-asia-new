@@ -53,6 +53,7 @@ import { AttachmentField, type AttachmentFieldHandle } from "@/components/featur
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import { FormSection } from "@/components/forms/form-section"
 import { useAddParam } from "@/lib/students/use-add-param"
+import { DateField } from "@/components/ui/date-field"
 
 type AirlineItem = { id: number; code: string; label: string }
 type AirportItem = { id: number; code: string; label: string; city: string | null }
@@ -289,7 +290,7 @@ export function TravelDialog({
                   </FormField>
                   <div className="grid grid-cols-2 gap-3">
                     <FormField label="Arrival Date">
-                      <Input name="arrival_date" type="date" className={inputStyles} defaultValue={travel?.arrival_date ?? ""} />
+                      <DateField name="arrival_date" defaultValue={travel?.arrival_date ?? null} />
                     </FormField>
                     <FormField label="Arrival Time">
                       <Input name="arrival_time" className={inputStyles} defaultValue={travel?.arrival_time ?? ""} placeholder="e.g. 19:05" />

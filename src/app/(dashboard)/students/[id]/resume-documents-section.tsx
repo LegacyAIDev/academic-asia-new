@@ -10,6 +10,7 @@ import { uploadStudentDocument, deleteStudentDocument, getDocumentSignedUrl } fr
 import type { StudentDocumentRecord } from "@/lib/supabase/queries/student-resume-profile"
 import { formatFileSize } from "@/lib/attachments/constraints"
 import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
+import { DateField } from "@/components/ui/date-field"
 
 type Props = {
   /** False for read-only staff: hides adding, editing and deleting. */
@@ -125,7 +126,7 @@ export function ResumeDocumentsSection({ studentId, documents, categoryId, title
           {categoryId === 2 && (
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Date Taken</Label>
-              <Input name="academic_year" type="date" className="h-9 text-sm" />
+              <DateField name="academic_year" />
             </div>
           )}
           <div className="flex justify-end gap-2">

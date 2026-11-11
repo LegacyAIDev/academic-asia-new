@@ -293,10 +293,10 @@ export function ContactDialog({
                     </Select>
                   </FormField>
                   <FormField label="First Name">
-                    <Input name="first_name" className={inputStyles} defaultValue={contact?.first_name ?? ""} placeholder="John" />
+                    <Input name="first_name" className={inputStyles} defaultValue={contact?.first_name ?? ""} placeholder="e.g. Mei Ling" />
                   </FormField>
                   <FormField label="Surname">
-                    <Input name="surname" className={inputStyles} defaultValue={contact?.surname ?? ""} placeholder="Smith" />
+                    <Input name="surname" className={inputStyles} defaultValue={contact?.surname ?? ""} placeholder="e.g. CHAN" />
                   </FormField>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -320,22 +320,22 @@ export function ContactDialog({
 
               <FormSection icon={Phone} title="Contact Details" accentColor="teal">
                 <FormField label="Mobile">
-                  <PhoneInput name="mobile" defaultValue={contact?.mobile ?? ""} defaultCountryCode="852" placeholder="9XXX XXXX" />
+                  <PhoneInput name="mobile" defaultValue={contact?.mobile ?? ""} defaultCountryCode="852" placeholder="e.g. 9123 4567" />
                 </FormField>
                 <FormField label="Telephone">
-                  <PhoneInput name="telephone" defaultValue={contact?.telephone ?? ""} defaultCountryCode="852" placeholder="2XXX XXXX" />
+                  <PhoneInput name="telephone" defaultValue={contact?.telephone ?? ""} defaultCountryCode="852" placeholder="e.g. 2577 8048" />
                 </FormField>
                 <FormField label="Office Phone">
-                  <PhoneInput name="office_telephone" defaultValue={contact?.office_telephone ?? ""} defaultCountryCode="852" placeholder="2XXX XXXX" />
+                  <PhoneInput name="office_telephone" defaultValue={contact?.office_telephone ?? ""} defaultCountryCode="852" placeholder="e.g. 2577 8048" />
                 </FormField>
                 <FormField label="Fax">
                   <PhoneInput name="fax" defaultValue={contact?.fax ?? ""} defaultCountryCode="852" placeholder="Optional" />
                 </FormField>
                 <FormField label="Email 1">
-                  <Input name="email_1" type="email" className={inputStyles} defaultValue={contact?.email_1 ?? ""} placeholder="email@example.com" />
+                  <Input name="email_1" type="email" className={inputStyles} defaultValue={contact?.email_1 ?? ""} placeholder="e.g. name@email.com" />
                 </FormField>
                 <FormField label="Email 2">
-                  <Input name="email_2" type="email" className={inputStyles} defaultValue={contact?.email_2 ?? ""} placeholder="second email (optional)" />
+                  <Input name="email_2" type="email" className={inputStyles} defaultValue={contact?.email_2 ?? ""} placeholder="Optional" />
                 </FormField>
               </FormSection>
 
@@ -371,7 +371,7 @@ export function ContactDialog({
               <FormSection icon={MessageSquare} title="Remarks" accentColor="amber">
                 <Textarea
                   name="remarks"
-                  placeholder="Additional notes about this contact..."
+                  placeholder="Anything staff should know about this person"
                   rows={3}
                   className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                   defaultValue={contact?.remarks ?? ""}

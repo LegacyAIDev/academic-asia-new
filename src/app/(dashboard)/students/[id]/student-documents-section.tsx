@@ -9,10 +9,12 @@ import type { StudentDocumentRecord } from "@/lib/supabase/queries/student-resum
 
 /** Student document manager — thin wrapper over the shared DocumentManager. */
 export function StudentDocumentsSection({
-  studentId, documents,
+  studentId, documents, canWrite,
 }: {
   studentId: string
   documents: StudentDocumentRecord[]
+  /** Read-only staff can download only. */
+  canWrite: boolean
 }) {
   return (
     <DocumentManager
@@ -24,6 +26,7 @@ export function StudentDocumentsSection({
       deleteAction={deleteStudentDocument}
       signedUrlAction={getDocumentSignedUrl}
       getFilePath={(doc) => (doc as StudentDocumentRecord).file_path}
+      canWrite={canWrite}
     />
   )
 }

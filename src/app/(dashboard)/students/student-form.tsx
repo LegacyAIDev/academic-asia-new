@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useTransition } from "react"
 import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,23 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { DateField } from "@/components/ui/date-field"
 import { PhoneInput } from "@/components/ui/phone-input"
-import {
-  Save,
-  User,
-  Phone,
-  GraduationCap,
-  FileText,
-  Loader2,
-  CalendarDays,
-} from "lucide-react"
+import { Loader2, Save } from "lucide-react"
 import { createStudent, updateStudent, type CreateStudentInput} from "@/lib/supabase/actions/students"
 import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
@@ -39,8 +24,50 @@ import type { StudentWithJoins } from "@/lib/supabase/queries/students"
 import type { PresentSchoolOption } from "@/lib/supabase/queries/present-schools"
 import { PresentSchoolPicker } from "./present-school-picker"
 import { parseDateOnly, toDateOnly } from "@/lib/date-only"
-import { hkToday } from "@/lib/hk-day"
 import { useRouterWithProgress } from "@/components/layout/navigation-progress"
+
+const GRID = "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+/** This year and the next five, plus a saved year outside that range so it still shows. */
+function entryYears(saved: number | null | undefined): number[] {
+  const now = new Date().getFullYear()
+  const years = Array.from({ length: 6 }, (_, i) => now + i)
+  return saved && !years.includes(saved) ? [saved, ...years] : years
+}
+
+/** A titled group of fields. */
+function FormBlock({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-4 rounded-lg border bg-card p-5">
+      <div>
+        <h2 className="text-base font-semibold text-foreground">{title}</h2>
+        {description && <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>}
+      </div>
+      {children}
+    </section>
+  )
+}
+
+/** A label, the control and an optional line of help under it. */
+function Field({ id, label, required, hint, className, children }: {
+  id: string
+  label: string
+  required?: boolean
+  hint?: string
+  className?: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className={`min-w-0 space-y-2 ${className ?? ""}`}>
+      <Label htmlFor={id}>
+        {label}{required && <span className="text-destructive"> *</span>}
+      </Label>
+      {children}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+    </div>
+  )
+}
 
 type ReferenceItem = {
   id: number
@@ -65,8 +92,8 @@ export type StudentFormProps = {
   presentSchools: PresentSchoolOption[]
   examPaperAttachments?: AttachmentRecord[]
   canWrite?: boolean
-  /** Called after a successful save instead of opening the student page (the edit drawer closes itself). */
-  onDone?: () => void
+  /** Called after a successful save (with the new student's id when adding) instead of the form navigating itself; drawers use it. */
+  onDone?: (studentId?: string) => void
   /** Called by Cancel instead of leaving the page. */
   onCancel?: () => void
 }
@@ -81,7 +108,6 @@ export function StudentForm({
   const [conflict, setConflict] = useState(false)
   const errorRef = useRef<HTMLDivElement>(null)
   const [addingSchool, setAddingSchool] = useState(false)
-  const [dobOpen, setDobOpen] = useState(false)
   const [dob, setDob] = useState<Date | undefined>(
     parseDateOnly(student?.date_of_birth)
   )
@@ -143,7 +169,7 @@ export function StudentForm({
         }
 
         if (onDone) {
-          onDone()
+          onDone(result.data?.id ?? student?.id)
         } else if (mode === "create" && result.data?.id) {
           router.push(`/students/${result.data.id}`)
         } else if (student?.id) {
@@ -176,438 +202,205 @@ export function StudentForm({
         </div>
       )}
 
-      {/* Personal Information */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <User className="h-4 w-4 text-muted-foreground" />
-            Personal Information
-          </CardTitle>
-          <CardDescription>Basic details about the student</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="surname">
-                Surname <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="surname"
-                name="surname"
-                placeholder="e.g. CHAN"
-                required
-                className="uppercase"
-                defaultValue={student?.surname ?? ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="first_name">
-                First Name <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="first_name"
-                name="first_name"
-                placeholder="e.g. Sophie"
-                required
-                defaultValue={student?.first_name ?? ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="chinese_name">Chinese Name</Label>
-              <Input
-                id="chinese_name"
-                name="chinese_name"
-                placeholder="e.g. 陳思穎"
-                defaultValue={student?.chinese_name ?? ""}
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
-              <Select name="gender" defaultValue={student?.gender ?? ""}>
-                <SelectTrigger id="gender">
-                  <SelectValue placeholder="Select gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="M">Male</SelectItem>
-                  <SelectItem value="F">Female</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Date of Birth</Label>
-              <Popover open={dobOpen} onOpenChange={setDobOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start font-normal"
-                  >
-                    <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {dob ? dob.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : <span className="text-muted-foreground">Select date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dob}
-                    defaultMonth={dob}
-                    captionLayout="dropdown"
-                    fromYear={1990}
-                    toYear={new Date().getFullYear()}
-                    onSelect={(date) => {
-                      setDob(date)
-                      setDobOpen(false)
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="nationality_id">Nationality</Label>
-              <Select name="nationality_id" defaultValue={student?.nationality?.id?.toString() ?? ""}>
-                <SelectTrigger id="nationality_id">
-                  <SelectValue placeholder="Select nationality" />
-                </SelectTrigger>
-                <SelectContent>
-                  {nationalities.map((nat) => (
-                    <SelectItem key={nat.id} value={nat.id.toString()}>
-                      {nat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="passport_type">Passport Type</Label>
-              <Input
-                id="passport_type"
-                name="passport_type"
-                placeholder="e.g. HKSAR"
-                defaultValue={student?.passport_type ?? ""}
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="passport_number">Passport Number</Label>
-              <Input
-                id="passport_number"
-                name="passport_number"
-                placeholder="e.g. K1234567"
-                defaultValue={student?.passport_number ?? ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="assigned_to">Consultant</Label>
-              <Select name="assigned_to" defaultValue={student?.assigned_to ?? ""}>
-                <SelectTrigger id="assigned_to">
-                  <SelectValue placeholder="Select consultant" />
-                </SelectTrigger>
-                <SelectContent>
-                  {profiles.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {[p.first_name, p.surname].filter(Boolean).join(" ")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Contact Information */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Phone className="h-4 w-4 text-muted-foreground" />
-            Contact Information
-          </CardTitle>
-          <CardDescription>How to reach the student</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="e.g. student@email.com"
-                defaultValue={student?.email ?? ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="mobile">Mobile Phone</Label>
-              <PhoneInput
-                name="mobile"
-                defaultValue={student?.mobile ?? ""}
-                defaultCountryCode="852"
-                placeholder="e.g. 9123 4567"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="telephone">Telephone</Label>
-              <PhoneInput
-                name="telephone"
-                defaultValue={student?.telephone ?? ""}
-                defaultCountryCode="852"
-                placeholder="e.g. 2577 8048"
-              />
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <Label htmlFor="address_line_1">Address</Label>
-            <Input
-              id="address_line_1"
-              name="address_line_1"
-              placeholder="e.g. Flat B, 15/F, 41 Conduit Road, Mid-Levels, Hong Kong"
-              defaultValue={student?.address_line_1 ?? ""}
+      <FormBlock title="Personal details">
+        <div className={GRID}>
+          <Field id="surname" label="Surname" required>
+            <Input id="surname" name="surname" placeholder="e.g. CHAN" required className="uppercase placeholder:normal-case" defaultValue={student?.surname ?? ""} />
+          </Field>
+          <Field id="first_name" label="First name" required>
+            <Input id="first_name" name="first_name" placeholder="e.g. Sophie" required defaultValue={student?.first_name ?? ""} />
+          </Field>
+          <Field id="chinese_name" label="Chinese name">
+            <Input id="chinese_name" name="chinese_name" placeholder="e.g. 陳思穎" defaultValue={student?.chinese_name ?? ""} />
+          </Field>
+          <Field id="gender" label="Gender">
+            <Select name="gender" defaultValue={student?.gender ?? ""}>
+              <SelectTrigger id="gender" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="M">Male</SelectItem>
+                <SelectItem value="F">Female</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="date_of_birth" label="Date of birth">
+            <DateField
+              id="date_of_birth"
+              name="date_of_birth_display"
+              defaultValue={student?.date_of_birth ?? null}
+              fromYear={1990}
+              toYear={new Date().getFullYear()}
+              onChange={value => setDob(parseDateOnly(value))}
             />
-          </div>
+          </Field>
+          <Field id="nationality_id" label="Nationality">
+            <Select name="nationality_id" defaultValue={student?.nationality?.id?.toString() ?? ""}>
+              <SelectTrigger id="nationality_id" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                {nationalities.map(nat => <SelectItem key={nat.id} value={nat.id.toString()}>{nat.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="passport_type" label="Passport type">
+            <Input id="passport_type" name="passport_type" placeholder="e.g. HKSAR" defaultValue={student?.passport_type ?? ""} />
+          </Field>
+          <Field id="passport_number" label="Passport number">
+            <Input id="passport_number" name="passport_number" placeholder="e.g. K1234567" defaultValue={student?.passport_number ?? ""} />
+          </Field>
+        </div>
+      </FormBlock>
 
-          <div className="space-y-2">
-            <Label htmlFor="chinese_address">Chinese Address</Label>
-            <Input
-              id="chinese_address"
-              name="chinese_address"
-              placeholder="中文地址"
-              defaultValue={student?.chinese_address ?? ""}
+      <FormBlock title="Contact">
+        <div className={GRID}>
+          <Field id="email" label="Email">
+            <Input id="email" name="email" type="email" placeholder="e.g. student@email.com" defaultValue={student?.email ?? ""} />
+          </Field>
+          <Field id="mobile" label="Mobile">
+            <PhoneInput name="mobile" defaultValue={student?.mobile ?? ""} defaultCountryCode="852" placeholder="e.g. 9123 4567" />
+          </Field>
+          <Field id="telephone" label="Home phone">
+            <PhoneInput name="telephone" defaultValue={student?.telephone ?? ""} defaultCountryCode="852" placeholder="e.g. 2577 8048" />
+          </Field>
+          <Field id="address_line_1" label="Address" className="sm:col-span-2 lg:col-span-3">
+            <Input id="address_line_1" name="address_line_1" placeholder="e.g. Flat B, 15/F, 41 Conduit Road, Mid-Levels, Hong Kong" defaultValue={student?.address_line_1 ?? ""} />
+          </Field>
+          <Field id="chinese_address" label="Address in Chinese" className="sm:col-span-2 lg:col-span-3">
+            <Input id="chinese_address" name="chinese_address" placeholder="中文地址" defaultValue={student?.chinese_address ?? ""} />
+          </Field>
+        </div>
+      </FormBlock>
+
+      <FormBlock title="School and course">
+        <div className={GRID}>
+          <Field id="present_school" label="Current school" className="sm:col-span-2">
+            <PresentSchoolPicker
+              id="present_school"
+              schools={presentSchools}
+              value={student?.present_school_id ?? null}
+              legacyText={student?.present_school ?? ""}
+              canAdd={canWrite}
+              onAddingChange={setAddingSchool}
             />
-          </div>
-        </CardContent>
-      </Card>
+          </Field>
+          <Field id="present_school_type_id" label="School type">
+            <Select name="present_school_type_id" defaultValue={student?.school_type?.id?.toString() ?? ""}>
+              <SelectTrigger id="present_school_type_id" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                {schoolTypes.map(type => <SelectItem key={type.id} value={type.id.toString()}>{type.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="course_id" label="Course applying for">
+            <Select name="course_id" defaultValue={student?.course?.id?.toString() ?? ""}>
+              <SelectTrigger id="course_id" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                {courses.map(course => <SelectItem key={course.id} value={course.id.toString()}>{course.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="entry_year" label="Entry year">
+            <Select name="entry_year" defaultValue={student?.entry_year?.toString() ?? ""}>
+              <SelectTrigger id="entry_year" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                {entryYears(student?.entry_year).map(y => <SelectItem key={y} value={y.toString()}>{y}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="entry_month" label="Entry month">
+            <Select name="entry_month" defaultValue={student?.entry_month?.toString() ?? ""}>
+              <SelectTrigger id="entry_month" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                {MONTHS.map((m, i) => <SelectItem key={i + 1} value={(i + 1).toString()}>{m}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+      </FormBlock>
 
-      {/* Academic Information */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-            Academic Information
-          </CardTitle>
-          <CardDescription>Current school and enrollment details</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="present_school">Current School</Label>
-              <PresentSchoolPicker
-                id="present_school"
-                schools={presentSchools}
-                value={student?.present_school_id ?? null}
-                legacyText={student?.present_school ?? ""}
-                canAdd={canWrite}
-                onAddingChange={setAddingSchool}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="present_school_type_id">School Type</Label>
-              <Select name="present_school_type_id" defaultValue={student?.school_type?.id?.toString() ?? ""}>
-                <SelectTrigger id="present_school_type_id">
-                  <SelectValue placeholder="Select school type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {schoolTypes.map((type) => (
-                    <SelectItem key={type.id} value={type.id.toString()}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
+      <FormBlock title="With Academic Asia" description="Where the student stands with us, who looks after them and how they found us.">
+        <div className={GRID}>
+          <Field id="status_id" label="Status" hint="New enquiry, active client, on hold (pending), closed or lost (dead).">
+            <Select name="status_id" defaultValue={student?.status?.id?.toString() ?? statuses.find(s => s.code === "new")?.id?.toString() ?? ""}>
+              <SelectTrigger id="status_id" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                {statuses.map(status => <SelectItem key={status.id} value={status.id.toString()}>{status.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="placement_id" label="Lead" hint="How likely the family is to go ahead, from cold to very hot.">
+            <Select name="placement_id" defaultValue={student?.placement?.id?.toString() ?? placements.find(p => p.code === "cold")?.id?.toString() ?? ""}>
+              <SelectTrigger id="placement_id" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                {placements.map(placement => <SelectItem key={placement.id} value={placement.id.toString()}>{placement.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="assigned_to" label="Consultant" hint="The member of staff who looks after this student.">
+            <Select name="assigned_to" defaultValue={student?.assigned_to ?? ""}>
+              <SelectTrigger id="assigned_to" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                {profiles.map(p => <SelectItem key={p.id} value={p.id}>{[p.first_name, p.surname].filter(Boolean).join(" ")}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="lead_source" label="How they found us">
+            <Select value={leadCategory} onValueChange={setLeadCategory}>
+              <SelectTrigger id="lead_source" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="walk_in">Walk-in</SelectItem>
+                <SelectItem value="referral">Referral</SelectItem>
+                <SelectItem value="events">Event</SelectItem>
+                <SelectItem value="direct">Direct</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+          {leadCategory === "referral" && (
+            <Field id="lead_source_referral_detail" label="Referred by">
+              <Input id="lead_source_referral_detail" name="lead_source_referral_detail" defaultValue={student?.lead_source_referral_detail ?? ""} placeholder="Who referred them?" />
+            </Field>
+          )}
+          {leadCategory === "events" && (
+            <Field id="lead_source_event_id" label="Event">
+              <Select name="lead_source_event_id" defaultValue={student?.lead_source_event_id ?? ""}>
+                <SelectTrigger id="lead_source_event_id" className="w-full"><SelectValue placeholder="Select event" /></SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {events.map(evt => <SelectItem key={evt.id} value={evt.id}>{evt.name}</SelectItem>)}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-2">
-              <Label htmlFor="course_id">Target Course</Label>
-              <Select name="course_id" defaultValue={student?.course?.id?.toString() ?? ""}>
-                <SelectTrigger id="course_id">
-                  <SelectValue placeholder="Select course" />
-                </SelectTrigger>
-                <SelectContent>
-                  {courses.map((course) => (
-                    <SelectItem key={course.id} value={course.id.toString()}>
-                      {course.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="entry_year">Entry Year</Label>
-              <Select name="entry_year" defaultValue={student?.entry_year?.toString() ?? ""}>
-                <SelectTrigger id="entry_year">
-                  <SelectValue placeholder="Select year" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[2026, 2027, 2028, 2029, 2030].map((y) => (
-                    <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="entry_month">Entry Month</Label>
-              <Select name="entry_month" defaultValue={student?.entry_month?.toString() ?? ""}>
-                <SelectTrigger id="entry_month">
-                  <SelectValue placeholder="Select month" />
-                </SelectTrigger>
-                <SelectContent>
-                  {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
-                    <SelectItem key={i + 1} value={(i + 1).toString()}>{m}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="enrollment_date">Enrollment Date</Label>
-              <Input
-                id="enrollment_date"
-                name="enrollment_date"
-                type="date"
-                defaultValue={student?.enrollment_date ?? hkToday()}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Lead Source</Label>
-              <Select value={leadCategory} onValueChange={setLeadCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="How did they find us?" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="walk_in">Walk In</SelectItem>
-                  <SelectItem value="referral">Referral</SelectItem>
-                  <SelectItem value="events">Events</SelectItem>
-                  <SelectItem value="direct">Direct</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {leadCategory === "referral" && (
-              <div className="space-y-2">
-                <Label>Referral Detail</Label>
-                <Input name="lead_source_referral_detail" defaultValue={student?.lead_source_referral_detail ?? ""} placeholder="Who referred them?" />
-              </div>
-            )}
-            {leadCategory === "events" && (
-              <div className="space-y-2">
-                <Label>Event</Label>
-                <Select name="lead_source_event_id" defaultValue={student?.lead_source_event_id ?? ""}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select event" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {events.map((evt) => (
-                      <SelectItem key={evt.id} value={evt.id}>{evt.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-2">
-              <Label htmlFor="status_id">Status</Label>
-              <Select name="status_id" defaultValue={student?.status?.id?.toString() ?? statuses.find(s => s.code === 'new')?.id?.toString() ?? ""}>
-                <SelectTrigger id="status_id">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {statuses.map((status) => (
-                    <SelectItem key={status.id} value={status.id.toString()}>
-                      {status.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="placement_id">Placement</Label>
-              <Select name="placement_id" defaultValue={student?.placement?.id?.toString() ?? placements.find(p => p.code === 'cold')?.id?.toString() ?? ""}>
-                <SelectTrigger id="placement_id">
-                  <SelectValue placeholder="Select lead temp" />
-                </SelectTrigger>
-                <SelectContent>
-                  {placements.map((placement) => (
-                    <SelectItem key={placement.id} value={placement.id.toString()}>
-                      {placement.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 lg:col-span-2">
-              <Label htmlFor="exam_paper">Exam Paper</Label>
-              <Input
-                id="exam_paper"
-                name="exam_paper"
-                placeholder="e.g. Year 12"
-                defaultValue={student?.exam_paper ?? ""}
-              />
-              <AttachmentField
-                ref={attachRef}
-                attachPoint="student_exam_paper"
-                ownerId={student?.id ?? ""}
-                attachableId={mode === "edit" ? student?.id ?? null : null}
-                attachments={examPaperAttachments}
-                canWrite={canWrite}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Additional Information */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            Additional Information
-          </CardTitle>
-          <CardDescription>Preferences and notes</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex flex-wrap gap-6">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="aa_news"
-                name="aa_news"
-                defaultChecked={student?.aa_news ?? true}
-              />
-              <Label htmlFor="aa_news" className="text-sm font-normal">
-                Subscribe to AA News
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="airport_pickup"
-                name="airport_pickup"
-                defaultChecked={student?.airport_pickup ?? false}
-              />
-              <Label htmlFor="airport_pickup" className="text-sm font-normal">
-                Needs Airport Pickup
-              </Label>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="remarks">Remarks / Notes</Label>
-            <Textarea
-              id="remarks"
-              name="remarks"
-              placeholder="Any additional notes about the student..."
-              rows={4}
-              defaultValue={student?.remarks ?? ""}
+            </Field>
+          )}
+          <Field id="enrollment_date" label="Enrolled with us" hint="Leave empty until the family signs up.">
+            <DateField id="enrollment_date" name="enrollment_date" defaultValue={student?.enrollment_date ?? null} placeholder="Not enrolled yet" />
+          </Field>
+          <Field id="exam_paper" label="Exam paper" className="sm:col-span-2 lg:col-span-3" hint="The entrance paper level the student sits, with the paper attached if you have it.">
+            <Input id="exam_paper" name="exam_paper" placeholder="e.g. Year 12" defaultValue={student?.exam_paper ?? ""} />
+            <AttachmentField
+              ref={attachRef}
+              attachPoint="student_exam_paper"
+              ownerId={student?.id ?? ""}
+              attachableId={mode === "edit" ? student?.id ?? null : null}
+              attachments={examPaperAttachments}
+              canWrite={canWrite}
             />
+          </Field>
+        </div>
+      </FormBlock>
+
+      <FormBlock title="Preferences and notes">
+        <div className="flex flex-wrap gap-6">
+          <div className="flex items-center gap-2">
+            {/* Opt in: nobody is put on the newsletter without being asked. */}
+            <Checkbox id="aa_news" name="aa_news" defaultChecked={student?.aa_news ?? false} />
+            <Label htmlFor="aa_news" className="text-sm font-normal">Receives the Academic Asia newsletter</Label>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex items-center gap-2">
+            <Checkbox id="airport_pickup" name="airport_pickup" defaultChecked={student?.airport_pickup ?? false} />
+            <Label htmlFor="airport_pickup" className="text-sm font-normal">Needs an airport pickup</Label>
+          </div>
+        </div>
+        <Field id="remarks" label="Remarks">
+          <Textarea id="remarks" name="remarks" placeholder="Anything else staff should know" rows={4} defaultValue={student?.remarks ?? ""} />
+        </Field>
+      </FormBlock>
 
       {/* Form Actions: kept in view at the foot, so Save never needs a scroll */}
       <div className="sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-3 border-t bg-background/95 px-1 py-3 backdrop-blur">

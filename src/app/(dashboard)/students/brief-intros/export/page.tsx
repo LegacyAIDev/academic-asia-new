@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, Languages } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { requireAccess } from '@/lib/permissions/guard'
 import { MODULES } from '@/lib/permissions/modules'
@@ -13,10 +13,11 @@ import {
   parseStudentListFilters,
   type StudentListSearchParams,
 } from '@/lib/students/parse-list-filters'
-import { studentSortName } from '@/lib/brief-intro/export-shaping'
 import { StudentsFilters } from '../../students-filters'
 import { ExportControls } from './export-controls'
 import { StudentPicker, type PickerStudent } from './student-picker'
+import { studentsListHref } from '@/lib/students/list-url'
+import { cn } from '@/lib/utils'
 
 /**
  * Bulk export screen for Brief Introductions.
@@ -54,7 +55,8 @@ export default async function BriefIntroExportPage({
 
   const pickerStudents: PickerStudent[] = students.map((student) => ({
     id: student.id,
-    name: studentSortName(student.first_name, student.surname),
+    // Same name order as the students list.
+    name: [student.first_name, student.surname].filter(Boolean).join(' ') || 'Unnamed student',
     code: student.student_code,
     hasIntro: withIntro.has(student.id),
   }))
@@ -62,40 +64,48 @@ export default async function BriefIntroExportPage({
   const exportableCount = selectedIds.filter((id) => withIntro.has(id)).length
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="space-y-3">
-        <Button variant="ghost" size="sm" asChild className="-ml-2">
-          <Link href="/students">
-            <ArrowLeft className="mr-1.5 h-4 w-4" />
-            Back to students
-          </Link>
-        </Button>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
-            <Languages className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold">Export brief introductions</h1>
-            <p className="text-sm text-muted-foreground">
-              Filter, pick the students, and download a PDF booklet or a spreadsheet.
-            </p>
-          </div>
-        </div>
+    <div className="mx-auto max-w-[1100px] space-y-5">
+      <Link href="/students" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <ChevronLeft className="h-4 w-4" /> Students
+      </Link>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-brand-navy">Export brief introductions</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Filter, tick the students, then download a PDF booklet or a spreadsheet.
+        </p>
       </div>
 
       <StudentsFilters preserveParams={['ids']} />
 
-      <ExportControls
-        selectedIds={selectedIds}
-        exportableCount={exportableCount}
-        pdfCap={MAX_PDF_INTROS}
-        excelCap={MAX_EXCEL_INTROS}
-      />
+      <nav aria-label="Introduction" className="flex flex-wrap gap-1.5">
+        {([[null, 'All students'], ['yes', 'Introduction written'], ['no', 'Not written yet']] as const).map(([value, label]) => {
+          const current = (params.intro ?? null) === value
+          return (
+            <Link
+              key={label}
+              href={studentsListHref(params, { intro: value }, '/students/brief-intros/export')}
+              aria-current={current ? 'true' : undefined}
+              className={cn('rounded-full border px-3 py-1 text-sm transition-colors', current ? 'border-brand-navy bg-brand-navy text-white' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}
+            >
+              {label}
+            </Link>
+          )
+        })}
+      </nav>
 
       <StudentPicker students={pickerStudents} selectedIds={selectedIds} cap={MAX_EXCEL_INTROS} />
 
       <Pagination page={page} totalPages={totalPages} totalCount={totalCount} params={params} />
+
+      {/* Kept at the foot of the screen, so the choice and the download are always in reach. */}
+      <div className="sticky bottom-0 z-20 -mx-4 border-t bg-background/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <ExportControls
+          selectedIds={selectedIds}
+          exportableCount={exportableCount}
+          pdfCap={MAX_PDF_INTROS}
+          excelCap={MAX_EXCEL_INTROS}
+        />
+      </div>
     </div>
   )
 }

@@ -30,8 +30,8 @@ export const PresentSchoolsDirectory = memo(function PresentSchoolsDirectory({ s
 
       <div className="rounded-xl border border-border bg-card">
         <div className="flex items-center justify-between border-b border-border px-4 py-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">School</p>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Students</p>
+          <p className="text-xs font-medium text-muted-foreground">School</p>
+          <p className="text-xs font-medium text-muted-foreground">Students</p>
         </div>
         {groups.map(({ letter, schools: inGroup }) => (
           <section key={letter} id={anchorFor(letter)} className="scroll-mt-16">

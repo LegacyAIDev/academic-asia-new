@@ -45,7 +45,7 @@ async function saveStudent(page, studentId) {
 }
 
 async function saveApplication(page) {
-  await click(page, 'Save Changes', DIALOG)
+  await click(page, 'Save changes', DIALOG)
   await page.waitForFunction(() => !document.querySelector('[role="dialog"]'), { polling: 100, timeout: 60000 })
   await pause(500)
 }
@@ -58,9 +58,10 @@ try {
 
   await step(page, 'a new student keeps the date of birth picked (15 Jan 2012)', async () => {
     await open(page, '/students/new')
+    await page.waitForSelector('[role="dialog"] #surname', { timeout: 60000 })
     await page.type('#surname', SURNAME)
     await page.type('#first_name', 'Ava')
-    await click(page, 'Select date')
+    await click(page, 'Pick a date')
     await showMonth(page, 2012, 1)
     await pickDay(page, 2012, 1, 15)
     await seeText(page, '15 Jan 2012')
@@ -102,16 +103,16 @@ try {
   await step(page, 'a new application keeps the registration date picked (single-digit day)', async () => {
     await open(page, `/students/${studentId}?tab=applications`)
     await click(page, 'Add application', 'main')
-    await click(page, 'Select school', DIALOG)
+    await click(page, 'Search for the school', DIALOG)
     await click(page, 'Headington School')
     await page.waitForFunction(() => document.querySelectorAll('[role="dialog"] [role="combobox"][aria-expanded="true"]').length === 0, { polling: 100 })
     const regButton = await page.waitForFunction(() => {
-      const label = [...document.querySelectorAll('[role="dialog"] label, [role="dialog"] span, [role="dialog"] p')].find(el => el.innerText.trim() === 'Reg. Date')
+      const label = [...document.querySelectorAll('[role="dialog"] label, [role="dialog"] span, [role="dialog"] p')].find(el => el.innerText.trim() === 'Registered with the school')
       return label?.parentElement?.querySelector('button') ?? null
     }, { polling: 100 })
     await regButton.asElement().click()
     await pickDay(page, year, month, 5)
-    await click(page, 'Create Application', DIALOG)
+    await click(page, 'Add application', DIALOG)
     await page.waitForFunction(() => !document.querySelector('[role="dialog"]'), { polling: 100, timeout: 60000 })
     applicationId = sql(`select id from public.student_applications where student_id = '${studentId}'`)
     const saved = sql(`select registration_date from public.student_applications where id = '${applicationId}'`)
@@ -123,6 +124,8 @@ try {
       await open(page, `/students/${studentId}/applications/${applicationId}`)
       await click(page, 'Edit application')
       await page.waitForSelector(`${DIALOG} input[name="${field}"]`)
+      // Visit details sit in a folded group: open it before typing.
+      await page.$eval(`${DIALOG} input[name="${field}"]`, el => { el.closest('details')?.setAttribute('open', '') })
       await page.type(`${DIALOG} input[name="${field}"]`, value)
       await saveApplication(page)
       const row = sql(`select registration_date || ' | ' || coalesce(${field}, '') from public.student_applications where id = '${applicationId}'`)

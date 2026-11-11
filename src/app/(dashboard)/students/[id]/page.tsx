@@ -68,7 +68,7 @@ function age(dateOfBirth: string): number | null {
 
 type StudentDetailPageParams = {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ tab?: string }>
+  searchParams: Promise<{ tab?: string; from?: string }>
 }
 
 /**
@@ -79,7 +79,8 @@ type StudentDetailPageParams = {
 export default async function StudentDetailPage({ params, searchParams }: StudentDetailPageParams) {
   await requireAccess(MODULES.STUDENTS)
   const { id } = await params
-  const section = sectionFromParam((await searchParams).tab)
+  const query = await searchParams
+  const section = sectionFromParam(query.tab)
 
   const [student, canWrite, counts, contacts] = await Promise.all([
     getStudentById(id),
@@ -143,7 +144,7 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
       <StudentSectionBar studentId={id} current={section} counts={counts} />
 
       <div className="pt-6">
-        <Section id={id} section={section} canWrite={canWrite} student={student} contacts={contacts} name={name} />
+        <Section id={id} section={section} canWrite={canWrite} student={student} contacts={contacts} name={name} calendarFrom={query.from} />
       </div>
     </div>
   )
@@ -153,13 +154,14 @@ type Student = NonNullable<Awaited<ReturnType<typeof getStudentById>>>
 type Contacts = Awaited<ReturnType<typeof getStudentContacts>>
 
 /** The open section, loading only its own data. */
-async function Section({ id, section, canWrite, student, contacts, name }: {
+async function Section({ id, section, canWrite, student, contacts, name, calendarFrom }: {
   id: string
   section: ReturnType<typeof sectionFromParam>
   canWrite: boolean
   student: Student
   contacts: Contacts
   name: string
+  calendarFrom?: string
 }) {
   switch (section) {
     case "overview": {
@@ -245,7 +247,7 @@ async function Section({ id, section, canWrite, student, contacts, name }: {
       )
     }
     case "documents":
-      return <StudentDocumentsSection studentId={id} documents={await getStudentDocuments(id)} />
+      return <StudentDocumentsSection studentId={id} documents={await getStudentDocuments(id)} canWrite={canWrite} />
     case "communications":
       return <CommunicationsSection context={{ kind: "student", student: { id, name } }} />
     case "events": {
@@ -253,7 +255,7 @@ async function Section({ id, section, canWrite, student, contacts, name }: {
       return <StudentEventApplicationsSection studentId={id} applications={applications} referenceData={referenceData} canWrite={canWrite} />
     }
     case "calendar":
-      return <StudentCalendarSection studentId={id} canBook={await canAccess(MODULES.SCHEDULER, ACCESS.WRITE)} />
+      return <StudentCalendarSection studentId={id} canBook={await canAccess(MODULES.SCHEDULER, ACCESS.WRITE)} start={calendarFrom} />
     case "immigration": {
       const [visas, visaReference, legalDocuments, travel, travelReference] = await Promise.all([
         getStudentVisas(id), getVisaReferenceData(id), getStudentDocuments(id, "legal_documents"),

@@ -25,7 +25,7 @@ export function ExportControls({
   const missing = selectedIds.length - exportableCount
 
   return (
-    <div className="flex flex-wrap items-start justify-between gap-4 rounded-lg border bg-muted/20 p-4">
+    <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4">
       <div className="space-y-1">
         <p className="text-sm font-medium">
           {selectedIds.length === 0
@@ -37,7 +37,7 @@ export function ExportControls({
           <p className="flex items-center gap-1.5 text-xs text-amber-700">
             <AlertTriangle className="h-3.5 w-3.5" />
             {missing} of them {missing === 1 ? 'has' : 'have'} no introduction yet and will be
-            left out — {exportableCount} will be exported.
+            left out, so {exportableCount} will be exported.
           </p>
         )}
 

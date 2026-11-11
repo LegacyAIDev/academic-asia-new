@@ -23,3 +23,11 @@ export async function loadStudentEditForm(id: string) {
   if (!student) return { success: false as const, error: 'This student no longer exists.' }
   return { success: true as const, data: { student, referenceData, presentSchools, examPaperAttachments } }
 }
+
+/** What the add-student drawer needs: the dropdown choices, loaded when it opens. */
+export async function loadStudentCreateForm() {
+  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
+  if (denied) return denied
+  const [referenceData, presentSchools] = await Promise.all([getReferenceData(), getPresentSchools()])
+  return { success: true as const, data: { referenceData, presentSchools } }
+}

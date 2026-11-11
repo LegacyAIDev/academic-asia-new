@@ -1,6 +1,4 @@
-import Link from "next/link"
 import { CalendarDays, ListTodo, School, Search, UserPlus } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScheduleBookingButton } from "@/components/scheduler/schedule-booking-button"
 import { AttentionPanel } from "@/components/dashboard/attention-panel"
@@ -10,6 +8,7 @@ import { PipelinePanel } from "@/components/dashboard/pipeline-panel"
 import { RecentActivityPanel } from "@/components/dashboard/recent-activity-panel"
 import { ShortcutsPanel, type Shortcut } from "@/components/dashboard/shortcuts-panel"
 import { TodayPanel } from "@/components/dashboard/today-panel"
+import { AddStudentSheet } from "./students/[id]/edit-student-sheet"
 import { attentionItems, greeting } from "@/lib/dashboard/attention"
 import { hkToday } from "@/lib/hk-day"
 import { EXAM_PAPER_ACCESS } from "@/lib/attachments/exam-paper-access"
@@ -77,7 +76,7 @@ export default async function DashboardPage() {
   ]
 
   const shortcuts: Shortcut[] = [
-    ...(studentsWrite ? [{ label: "Add a student", href: "/students/new", icon: UserPlus }] : []),
+    ...(studentsWrite ? [{ label: "Add a student", href: "/?add=student", icon: UserPlus }] : []),
     ...(schoolsWrite ? [{ label: "Add a school", href: "/schools/new", icon: School }] : []),
     ...(eventsWrite ? [{ label: "Plan an event", href: "/events", icon: CalendarDays }] : []),
     { label: "Add a task", href: "/tasks", icon: ListTodo },
@@ -100,11 +99,7 @@ export default async function DashboardPage() {
             </form>
           )}
           {schedulerWrite && <ScheduleBookingButton label="New booking" variant="outline" size="default" />}
-          {studentsWrite && (
-            <Button asChild>
-              <Link href="/students/new"><UserPlus className="h-4 w-4" /> Add student</Link>
-            </Button>
-          )}
+          {studentsWrite && <AddStudentSheet />}
         </div>
       </header>
 

@@ -57,6 +57,8 @@ export function DocumentManager({
   // click reads as a dead button and people click it again.
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState("")
+  // Filter chips: null shows every type.
+  const [shownType, setShownType] = useState<string | null>(null)
 
   useEffect(() => {
     let query = createClient()
@@ -142,13 +144,13 @@ export function DocumentManager({
         )}
 
         {staged.length > 0 && (
-          <div className="space-y-2 rounded-xl border border-border bg-background p-3">
+          <div className="space-y-2 rounded-lg border border-border bg-background p-3">
             {staged.map((s, i) => (
               <div key={i} className="flex items-center gap-2">
                 <Input value={s.name} onChange={(e) => patchStaged(i, { name: e.target.value })}
                   placeholder={s.file.name} className="h-9 flex-1 text-sm" />
                 <Select value={s.categoryId} onValueChange={(v) => patchStaged(i, { categoryId: v })}>
-                  <SelectTrigger className="h-9 w-[190px] text-sm"><SelectValue placeholder="Category" /></SelectTrigger>
+                  <SelectTrigger className="h-9 w-[190px] text-sm" aria-label="Document type"><SelectValue placeholder="Type" /></SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (<SelectItem key={c.id} value={c.id.toString()}>{c.label}</SelectItem>))}
                   </SelectContent>
@@ -170,10 +172,27 @@ export function DocumentManager({
           </div>
         )}
 
+        {staged.length > 0 && <p className="-mt-2 text-xs text-muted-foreground">Give each file a name and a type, then upload.</p>}
+
+        {groupByCategory(documents).length > 1 && (
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Show documents of type">
+            {[["All", documents.length] as const, ...groupByCategory(documents).map(([label, docs]) => [label, docs.length] as const)].map(([label, count]) => {
+              const value = label === "All" ? null : label
+              const active = shownType === value
+              return (
+                <Button key={label} type="button" size="sm" variant={active ? "secondary" : "ghost"} aria-pressed={active}
+                  className="h-7 gap-1.5 rounded-full px-3 text-xs" onClick={() => setShownType(value)}>
+                  {label}<span className="tabular-nums text-muted-foreground">{count}</span>
+                </Button>
+              )
+            })}
+          </div>
+        )}
+
         {documents.length === 0 ? (
-          <p className="py-4 text-center text-sm text-muted-foreground">No documents uploaded yet.</p>
+          <p className="py-4 text-center text-sm text-muted-foreground">{canWrite ? "No documents yet. Add the first above." : "No documents yet."}</p>
         ) : (
-          groupByCategory(documents).map(([label, docs]) => (
+          groupByCategory(documents).filter(([label]) => shownType === null || label === shownType).map(([label, docs]) => (
             <div key={label} className="space-y-2">
               <p className="text-sm font-medium text-foreground">{label}</p>
               {docs.map((doc) => (
@@ -195,7 +214,7 @@ export function DocumentManager({
                         <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
                       </div>
                       {canWrite && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0"
+                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" aria-label="Rename" title="Rename"
                           onClick={() => { setRenamingId(doc.id); setRenameValue(doc.title || doc.file_name) }}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
@@ -208,7 +227,7 @@ export function DocumentManager({
                           : <Download className="h-3.5 w-3.5" />}
                       </Button>
                       {canWrite && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" aria-label="Delete" title="Delete"
                           onClick={() => handleDelete(doc.id)} disabled={isPending}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>

@@ -28,7 +28,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -36,19 +38,15 @@ import {
   Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from "@/components/ui/command"
 import {
-  Plus,
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ChevronsUpDown,
   Loader2,
   Pencil,
-  Trash2,
+  Plus,
   School,
-  Calendar,
-  ClipboardList,
-  Award,
-  CalendarDays,
-  MessageSquare,
-  Check,
-  ChevronsUpDown,
-  Paperclip,
+  Trash2,
 } from "lucide-react"
 import {
   createStudentApplication,
@@ -64,7 +62,7 @@ import { ApplicationExamSection } from "./application-exam-section"
 import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import { parseDateOnly, toDateOnly } from "@/lib/date-only"
-import { FormSection } from "@/components/forms/form-section"
+import { groupStatusesByStage } from "@/lib/applications/application-journey"
 import { useAddParam } from "@/lib/students/use-add-param"
 
 type ReferenceItem = { id: number; code: string; label: string }
@@ -105,6 +103,25 @@ function FormField({
       {children}
     </div>
   )
+}
+
+/** A folded group of optional fields; native <details>, so it stays in the form when closed. */
+function MoreDetails({ title, open, children }: { title: string; open?: boolean; children: React.ReactNode }) {
+  return (
+    <details open={open} className="group rounded-lg border bg-card">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-medium hover:bg-muted/40 [&::-webkit-details-marker]:hidden">
+        {title}
+        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+      </summary>
+      <div className="space-y-4 border-t px-4 py-4">{children}</div>
+    </details>
+  )
+}
+
+/** `count` years from `from`, plus a saved year outside that range so it still shows. */
+function yearOptions(from: number, count: number, saved?: number | null): number[] {
+  const years = Array.from({ length: count }, (_, i) => from + i)
+  return saved && !years.includes(saved) ? [saved, ...years] : years
 }
 
 const MONTHS = [
@@ -173,6 +190,18 @@ export function ApplicationDialog({
     date ? toDateOnly(date) : null
 
   const { statuses, modes, schools, events } = referenceData
+  const statusGroups = useMemo(() => groupStatusesByStage(statuses), [statuses])
+  // A new application starts at the first step of the journey.
+  const defaultStatusId = statusGroups[0]?.statuses[0]?.id.toString() ?? ""
+  // Optional groups that already hold something open by themselves when editing.
+  const has = {
+    course: Boolean(application?.course_start_year || application?.is_referral || (application?.mode_id && application.mode_id !== 1)),
+    scholarship: Boolean(application?.scholarship_types?.length || application?.scholarship_detail),
+    event: Boolean(application?.event_id || application?.music_audition),
+    visit: Boolean(application?.visit_date || application?.school_contact || application?.visit_remarks),
+    remarks: Boolean(application?.result_remarks || application?.remarks_to_school || application?.aa_remarks),
+    depositOrExam: Boolean(application?.deposits?.length || application?.exams?.length),
+  }
   const [selectedEventId, setSelectedEventId] = useState(application?.event_id ?? "")
 
   // Only show events linked to the selected school
@@ -313,7 +342,7 @@ export function ApplicationDialog({
         )}
       </DialogTrigger>
       <DialogContent
-        className="sm:!max-w-[960px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col"
+        className="sm:!max-w-[680px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col"
         showCloseButton={false}
       >
         {/* Header */}
@@ -328,12 +357,12 @@ export function ApplicationDialog({
 
             <DialogHeader className="flex-1 space-y-1">
               <DialogTitle className="text-lg font-semibold">
-                {mode === "create" ? "New School Application" : "Edit Application"}
+                {mode === "create" ? "New school application" : "Edit application"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground">
                 {mode === "create"
-                  ? "Submit a new school application for this student"
-                  : "Update application details and status"}
+                  ? "Only the school is needed to start; add the rest as it happens."
+                  : "Change any detail; optional groups open below."}
               </p>
             </DialogHeader>
 
@@ -362,144 +391,159 @@ export function ApplicationDialog({
               </div>
             )}
 
-            <div className="grid lg:grid-cols-2 gap-5">
-              {/* Left Column */}
-              <div className="space-y-5">
-                {/* School & Course */}
-                <FormSection icon={School} title="School" accentColor="primary">
-                  <FormField label="School *">
-                    <input type="hidden" name="school_id" value={selectedSchoolId} />
-                    <Popover open={schoolSearchOpen} onOpenChange={setSchoolSearchOpen}>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" role="combobox" aria-expanded={schoolSearchOpen}
-                          className={`${selectTriggerStyles} w-full justify-between font-normal`}>
-                          {selectedSchoolId
-                            ? schools.find(s => s.id === selectedSchoolId)?.name ?? "Select school"
-                            : "Select school"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                        <Command>
-                          <CommandInput placeholder="Search schools..." />
-                          <CommandList>
-                            <CommandEmpty>No school found.</CommandEmpty>
-                            <CommandGroup>
-                              {schools.map((s) => (
-                                <CommandItem key={s.id} value={s.name} onSelect={() => {
-                                  setSelectedSchoolId(s.id)
-                                  setSchoolSearchOpen(false)
-                                }}>
-                                  <Check className={`mr-2 h-4 w-4 ${selectedSchoolId === s.id ? "opacity-100" : "opacity-0"}`} />
-                                  {s.name}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </FormField>
-                </FormSection>
+            <div className="space-y-5">
+              {/* The essentials: enough to save an application. */}
+              <FormField label="School *">
+                <input type="hidden" name="school_id" value={selectedSchoolId} />
+                <Popover open={schoolSearchOpen} onOpenChange={setSchoolSearchOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" role="combobox" aria-expanded={schoolSearchOpen} aria-label="School"
+                      className={`${selectTriggerStyles} w-full justify-between font-normal`}>
+                      {selectedSchoolId
+                        ? schools.find(s => s.id === selectedSchoolId)?.name ?? "Search for the school"
+                        : <span className="text-muted-foreground">Search for the school</span>}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Type the school's name" />
+                      <CommandList>
+                        <CommandEmpty>No school found.</CommandEmpty>
+                        <CommandGroup>
+                          {schools.map((s) => (
+                            <CommandItem key={s.id} value={s.name} onSelect={() => {
+                              setSelectedSchoolId(s.id)
+                              setSchoolSearchOpen(false)
+                            }}>
+                              <Check className={`mr-2 h-4 w-4 ${selectedSchoolId === s.id ? "opacity-100" : "opacity-0"}`} />
+                              {s.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </FormField>
 
-                {/* Entry & Timing */}
-                <FormSection icon={Calendar} title="Entry & Timing" accentColor="teal">
-                  <FormField label="Year Group">
-                    <Select name="year_group" defaultValue={application?.year_group?.toString() ?? ""}>
-                      <SelectTrigger className={selectTriggerStyles}>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <FormField label="Year group">
+                  <Select name="year_group" defaultValue={application?.year_group?.toString() ?? ""}>
+                    <SelectTrigger className={`${selectTriggerStyles} w-full`}>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 13 }, (_, i) => i + 1).map((y) => (
+                        <SelectItem key={y} value={y.toString()}>Year {y}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                <FormField label="Entry" className="sm:col-span-2">
+                  <div className="flex gap-2">
+                    <Select value={entryMonth} onValueChange={handleEntryMonth}>
+                      <SelectTrigger className={`${selectTriggerStyles} w-full`} aria-label="Entry month">
+                        <SelectValue placeholder="Month" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MONTHS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <Select value={entryYear} onValueChange={handleEntryYear}>
+                      <SelectTrigger className={`${selectTriggerStyles} w-full`} aria-label="Entry year">
                         <SelectValue placeholder="Year" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Array.from({ length: 13 }, (_, i) => i + 1).map((y) => (
-                          <SelectItem key={y} value={y.toString()}>Year {y}</SelectItem>
+                        {yearOptions(new Date().getFullYear(), 6, application?.entry_year).map((y) => (
+                          <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                  </FormField>
-
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-medium text-muted-foreground">Entry</p>
-                    <div className="flex gap-1.5">
-                      <Select value={entryMonth} onValueChange={handleEntryMonth}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="Month" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {MONTHS.map((m) => (
-                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Select value={entryYear} onValueChange={handleEntryYear}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="Year" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 5 }, (_, i) => 2026 + i).map((y) => (
-                            <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </div>
+                </FormField>
+              </div>
 
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-medium text-muted-foreground">Course Start Date (C.S.D.)</p>
-                    <div className="flex gap-1.5">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField label="Status">
+                  <Select name="status_id" defaultValue={application?.status_id?.toString() ?? defaultStatusId}>
+                    <SelectTrigger className={`${selectTriggerStyles} w-full`} aria-label="Status">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {statusGroups.map(group => (
+                        <SelectGroup key={group.key}>
+                          <SelectLabel>{group.label}</SelectLabel>
+                          {group.statuses.map(s => <SelectItem key={s.id} value={s.id.toString()}>{s.label}</SelectItem>)}
+                        </SelectGroup>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">The school&apos;s own status, grouped by step of the journey.</p>
+                </FormField>
+                <FormField label="Registered with the school">
+                  <Popover open={regDateOpen} onOpenChange={setRegDateOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className={`w-full justify-start font-normal ${inputStyles}`} aria-label="Registration date">
+                        <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
+                        {formatDateDisplay(regDate) ?? <span className="text-muted-foreground">Not registered yet</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={regDate}
+                        defaultMonth={regDate}
+                        onSelect={(date) => { setRegDate(date); setRegDateOpen(false) }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormField>
+              </div>
+
+              {/* Everything else, folded away until it is needed. */}
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-foreground">More details <span className="font-normal text-muted-foreground">(optional)</span></p>
+
+                <MoreDetails title="Course start, mode and referral" open={has.course}>
+                  <FormField label="Course starts">
+                    <div className="flex gap-2">
                       <Select value={csdMonth} onValueChange={(v) => { setCsdTouched(true); setCsdMonth(v) }}>
-                        <SelectTrigger className={selectTriggerStyles}>
+                        <SelectTrigger className={`${selectTriggerStyles} w-full`} aria-label="Course start month">
                           <SelectValue placeholder="Month" />
                         </SelectTrigger>
                         <SelectContent>
-                          {MONTHS.map((m) => (
-                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                          ))}
+                          {MONTHS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
                         </SelectContent>
                       </Select>
                       <Select value={csdYear} onValueChange={(v) => { setCsdTouched(true); setCsdYear(v) }}>
-                        <SelectTrigger className={selectTriggerStyles}>
+                        <SelectTrigger className={`${selectTriggerStyles} w-full`} aria-label="Course start year">
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
                         <SelectContent>
-                          {Array.from({ length: 7 }, (_, i) => 2025 + i).map((y) => (
+                          {yearOptions(new Date().getFullYear() - 1, 7, application?.course_start_year).map((y) => (
                             <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-                </FormSection>
-
-                {/* Status */}
-                <FormSection icon={ClipboardList} title="Application Status" accentColor="amber">
-                  <FormField label="Enrol Status">
-                    <Select name="status_id" defaultValue={application?.status_id?.toString() ?? ""}>
-                      <SelectTrigger className={selectTriggerStyles}>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {statuses.map((s) => (
-                          <SelectItem key={s.id} value={s.id.toString()}>{s.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <p className="text-xs text-muted-foreground">Follows the entry date unless you change it.</p>
                   </FormField>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <FormField label="Mode">
                       <Select name="mode_id" defaultValue={application?.mode_id?.toString() ?? "1"}>
-                        <SelectTrigger className={selectTriggerStyles}>
-                          <SelectValue placeholder="Select mode" />
+                        <SelectTrigger className={`${selectTriggerStyles} w-full`}>
+                          <SelectValue placeholder="Select" />
                         </SelectTrigger>
                         <SelectContent>
-                          {modes.map((m) => (
-                            <SelectItem key={m.id} value={m.id.toString()}>{m.label}</SelectItem>
-                          ))}
+                          {modes.map((m) => <SelectItem key={m.id} value={m.id.toString()}>{m.label}</SelectItem>)}
                         </SelectContent>
                       </Select>
+                      <p className="text-xs text-muted-foreground">Suspended hides it from the usual lists.</p>
                     </FormField>
-                    <FormField label="Referral">
+                    <FormField label="Referred by Academic Asia">
                       <Select name="is_referral" defaultValue={application?.is_referral ? "true" : "false"}>
-                        <SelectTrigger className={selectTriggerStyles}>
+                        <SelectTrigger className={`${selectTriggerStyles} w-full`}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -509,23 +553,17 @@ export function ApplicationDialog({
                       </Select>
                     </FormField>
                   </div>
-                </FormSection>
-              </div>
+                </MoreDetails>
 
-              {/* Right Column */}
-              <div className="space-y-5">
-                {/* Scholarship */}
-                <FormSection icon={Award} title="Scholarship" accentColor="primary">
+                <MoreDetails title="Scholarship" open={has.scholarship}>
                   <FormField label="Type">
                     <div className="flex flex-wrap gap-4">
                       {SCHOLARSHIP_TYPES.map((t) => (
-                        <label key={t.value} className="flex items-center gap-2 cursor-pointer">
+                        <label key={t.value} className="flex cursor-pointer items-center gap-2">
                           <Checkbox
                             checked={scholarshipTypes.includes(t.value)}
                             onCheckedChange={(checked) => {
-                              setScholarshipTypes(prev =>
-                                checked ? [...prev, t.value] : prev.filter(v => v !== t.value)
-                              )
+                              setScholarshipTypes(prev => checked ? [...prev, t.value] : prev.filter(v => v !== t.value))
                             }}
                           />
                           <span className="text-sm">{t.label}</span>
@@ -533,167 +571,116 @@ export function ApplicationDialog({
                       ))}
                     </div>
                   </FormField>
-                  <FormField label="Detail">
-                    <Input name="scholarship_detail" className={inputStyles} defaultValue={application?.scholarship_detail ?? ""} placeholder="Scholarship info" />
+                  <FormField label="Details">
+                    <Input name="scholarship_detail" className={inputStyles} defaultValue={application?.scholarship_detail ?? ""} placeholder="e.g. 20% music scholarship" />
                   </FormField>
-                </FormSection>
+                </MoreDetails>
 
-                {/* Event */}
-                <FormSection icon={CalendarDays} title="Event" accentColor="teal">
-                  <FormField label="Event">
+                <MoreDetails title="Admission event and audition" open={has.event}>
+                  <FormField label="Admission event">
                     <input type="hidden" name="event_id" value={selectedEventId} />
                     {filteredEvents.length === 0 ? (
-                      <p className="text-sm text-muted-foreground py-2">
-                        {selectedSchoolId ? "No admission events for this school" : "Select a school first"}
+                      <p className="py-2 text-sm text-muted-foreground">
+                        {selectedSchoolId
+                          ? "This school has no admission events in the system."
+                          : "Choose the school above to see its admission events."}
                       </p>
                     ) : (
                       <Select value={selectedEventId} onValueChange={handleEventSelect}>
-                        <SelectTrigger className={selectTriggerStyles}>
+                        <SelectTrigger className={`${selectTriggerStyles} w-full`}>
                           <SelectValue placeholder="Select event" />
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
-                          {filteredEvents.map((ev) => (
-                            <SelectItem key={ev.id} value={ev.id}>{ev.name}</SelectItem>
-                          ))}
+                          {filteredEvents.map((ev) => <SelectItem key={ev.id} value={ev.id}>{ev.name}</SelectItem>)}
                         </SelectContent>
                       </Select>
                     )}
+                    {selectedEvent && (
+                      <p className="text-xs text-muted-foreground">
+                        {selectedEvent.start_date ? new Date(selectedEvent.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Date to be set"}
+                        {selectedEvent.start_time ? `, ${selectedEvent.start_time.slice(0, 5)}` : ""}
+                      </p>
+                    )}
                   </FormField>
-                  {selectedEvent && (
-                    <div className="grid grid-cols-2 gap-3">
-                      <FormField label="Event Date">
-                        <Input className={`${inputStyles} bg-muted/50`} readOnly value={selectedEvent.start_date ? new Date(selectedEvent.start_date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—"} />
-                      </FormField>
-                      <FormField label="Event Time">
-                        <Input className={`${inputStyles} bg-muted/50`} readOnly value={selectedEvent.start_time?.slice(0, 5) ?? "—"} />
-                      </FormField>
-                    </div>
-                  )}
-                  <FormField label="Music Audition">
-                    <Input name="music_audition" className={inputStyles} defaultValue={application?.music_audition ?? ""} placeholder="Music audition details" />
+                  <FormField label="Music audition">
+                    <Input name="music_audition" className={inputStyles} defaultValue={application?.music_audition ?? ""} placeholder="e.g. Grade 8 violin, 15 Jan" />
                   </FormField>
-                </FormSection>
+                </MoreDetails>
 
-                {/* Remarks */}
-                <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
-                  <FormField label="Application documents (file or link)">
-                    <AttachmentField
-                      ref={attachRef}
-                      attachPoint="student_application"
-                      ownerId={studentId}
-                      attachableId={mode === "edit" ? application?.id ?? null : null}
-                      attachments={attachments}
-                      canWrite={canWrite}
-                    />
-                  </FormField>
-                </FormSection>
-
-                <FormSection icon={MessageSquare} title="Remarks" accentColor="amber">
-                  <FormField label="Enrol Status Remarks">
-                    <Textarea
-                      name="result_remarks"
-                      rows={3}
-                      className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                      defaultValue={application?.result_remarks ?? ""}
-                      placeholder="Remarks about the enrol status / result..."
-                    />
-                  </FormField>
-                  <FormField label="Remarks to School">
-                    <Textarea
-                      name="remarks_to_school"
-                      rows={3}
-                      className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                      defaultValue={application?.remarks_to_school ?? ""}
-                      placeholder="Remarks sent to school..."
-                    />
-                  </FormField>
-                  <FormField label="AA Remarks / Logs">
-                    <Textarea
-                      name="aa_remarks"
-                      rows={3}
-                      className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                      defaultValue={application?.aa_remarks ?? ""}
-                      placeholder="Internal AA remarks..."
-                    />
-                  </FormField>
-                </FormSection>
-
-                {/* Registration & Visit */}
-                <FormSection icon={CalendarDays} title="Registration & Visit" accentColor="rose">
-                  <FormField label="Reg. Date">
-                    <Popover open={regDateOpen} onOpenChange={setRegDateOpen}>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className={`w-full justify-start font-normal ${inputStyles}`}>
-                          <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
-                          {formatDateDisplay(regDate) ?? <span className="text-muted-foreground">Select date</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                        <CalendarComponent
-                          mode="single"
-                          selected={regDate}
-                          defaultMonth={regDate}
-                          onSelect={(date) => { setRegDate(date); setRegDateOpen(false) }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormField>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField label="Visit Date">
+                <MoreDetails title="School visit" open={has.visit}>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField label="Visit date">
                       <Popover open={visitDateOpen} onOpenChange={setVisitDateOpen}>
                         <PopoverTrigger asChild>
-                          <Button variant="outline" className={`w-full justify-start font-normal ${inputStyles}`}>
+                          <Button variant="outline" className={`w-full justify-start font-normal ${inputStyles}`} aria-label="Visit date">
                             <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
-                            {formatDateDisplay(visitDate) ?? <span className="text-muted-foreground">Select date</span>}
+                            {formatDateDisplay(visitDate) ?? <span className="text-muted-foreground">Pick a date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                          <CalendarComponent
-                            mode="single"
-                            selected={visitDate}
-                            defaultMonth={visitDate}
-                            onSelect={(date) => { setVisitDate(date); setVisitDateOpen(false) }}
-                          />
+                          <CalendarComponent mode="single" selected={visitDate} defaultMonth={visitDate} onSelect={(date) => { setVisitDate(date); setVisitDateOpen(false) }} />
                         </PopoverContent>
                       </Popover>
                     </FormField>
-                    <FormField label="Visit Time">
+                    <FormField label="Visit time">
                       <Input name="visit_time" type="time" className={inputStyles} defaultValue={application?.visit_time ?? ""} />
                     </FormField>
                   </div>
-                  <FormField label="School Contact">
-                    <Input name="school_contact" className={inputStyles} defaultValue={application?.school_contact ?? ""} placeholder="Contact person at school" />
+                  <FormField label="Contact at the school">
+                    <Input name="school_contact" className={inputStyles} defaultValue={application?.school_contact ?? ""} placeholder="e.g. Mrs Smith, Admissions" />
                   </FormField>
-                  <FormField label="Visit Remarks">
-                    <Input name="visit_remarks" className={inputStyles} defaultValue={application?.visit_remarks ?? ""} placeholder="Notes about the visit" />
+                  <FormField label="Visit notes">
+                    <Input name="visit_remarks" className={inputStyles} defaultValue={application?.visit_remarks ?? ""} placeholder="How the visit went" />
                   </FormField>
-                </FormSection>
+                </MoreDetails>
 
-                {/* Deposits */}
-                <ApplicationDepositSection
-                  applicationId={application?.id ?? ""}
-                  studentId={studentId}
-                  deposits={application?.deposits ?? []}
-                  isCreate={mode === "create"}
-                  depositDate={depositDate}
-                  onDepositDateChange={setDepositDate}
-                  commission={depositCommission}
-                  onCommissionChange={setDepositCommission}
-                  attachmentsByDeposit={attachmentsByDeposit}
-                  canWrite={canWrite}
-                />
+                <MoreDetails title="Remarks" open={has.remarks}>
+                  <FormField label="About the status or result">
+                    <Textarea name="result_remarks" rows={3} className="resize-y" defaultValue={application?.result_remarks ?? ""} placeholder="e.g. Offer conditional on interview" />
+                  </FormField>
+                  <FormField label="Sent to the school">
+                    <Textarea name="remarks_to_school" rows={3} className="resize-y" defaultValue={application?.remarks_to_school ?? ""} placeholder="What we told the school" />
+                  </FormField>
+                  <FormField label="Internal (staff only)">
+                    <Textarea name="aa_remarks" rows={3} className="resize-y" defaultValue={application?.aa_remarks ?? ""} placeholder="Notes for the team" />
+                  </FormField>
+                </MoreDetails>
 
-                {/* Entrance Exam Booking */}
-                <ApplicationExamSection
-                  applicationId={application?.id ?? ""}
-                  studentId={studentId}
-                  schoolId={application?.school_id ?? ""}
-                  exams={application?.exams ?? []}
-                  isCreate={mode === "create"}
-                  defaultYear={application?.entry_year?.toString() ?? ""}
-                  examPrefDate={examPrefDate}
-                  onExamPrefDateChange={setExamPrefDate}
-                />
+                <MoreDetails title="Attachments" open={attachments.length > 0}>
+                  <AttachmentField
+                    ref={attachRef}
+                    attachPoint="student_application"
+                    ownerId={studentId}
+                    attachableId={mode === "edit" ? application?.id ?? null : null}
+                    attachments={attachments}
+                    canWrite={canWrite}
+                  />
+                </MoreDetails>
+
+                <MoreDetails title="Deposit and entrance exam" open={has.depositOrExam}>
+                  <ApplicationDepositSection
+                    applicationId={application?.id ?? ""}
+                    studentId={studentId}
+                    deposits={application?.deposits ?? []}
+                    isCreate={mode === "create"}
+                    depositDate={depositDate}
+                    onDepositDateChange={setDepositDate}
+                    commission={depositCommission}
+                    onCommissionChange={setDepositCommission}
+                    attachmentsByDeposit={attachmentsByDeposit}
+                    canWrite={canWrite}
+                  />
+                  <ApplicationExamSection
+                    applicationId={application?.id ?? ""}
+                    studentId={studentId}
+                    schoolId={application?.school_id ?? ""}
+                    exams={application?.exams ?? []}
+                    isCreate={mode === "create"}
+                    defaultYear={application?.entry_year?.toString() ?? ""}
+                    examPrefDate={examPrefDate}
+                    onExamPrefDateChange={setExamPrefDate}
+                  />
+                </MoreDetails>
               </div>
             </div>
           </div>
@@ -717,7 +704,7 @@ export function ApplicationDialog({
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="min-w-[140px] gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all duration-200"
+                  className="min-w-[140px] gap-2"
                 >
                   {isPending ? (
                     <>
@@ -727,7 +714,7 @@ export function ApplicationDialog({
                   ) : (
                     <>
                       {mode === "create" ? <Plus className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                      {mode === "create" ? "Create Application" : "Save Changes"}
+                      {mode === "create" ? "Add application" : "Save changes"}
                     </>
                   )}
                 </Button>

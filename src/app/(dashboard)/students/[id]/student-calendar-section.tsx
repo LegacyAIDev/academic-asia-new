@@ -14,7 +14,15 @@ import { RoomChip } from '@/components/scheduler/room-chip'
 import { canAccess } from '@/lib/permissions/guard'
 import { MODULES } from '@/lib/permissions/modules'
 
-type Props = { studentId: string; canBook: boolean }
+type Props = {
+  studentId: string
+  canBook: boolean
+  /** First day shown (YYYY-MM-DD) from the address; defaults to two weeks ago. */
+  start?: string
+}
+
+/** Days in one view, and the step of Earlier / Later. */
+const SPAN = 60
 
 const SOURCE_LABELS: Record<string, string> = { booking: 'Scheduler', exam: 'Exams', event_schedule: 'Event' }
 const EYEBROW = 'text-sm font-medium text-foreground'
@@ -29,13 +37,16 @@ function groupByDate(items: CalendarItem[]): [string, CalendarItem[]][] {
 }
 
 /** Agenda of everything scheduled for one student: bookings, confirmed exams and event slots. */
-export async function StudentCalendarSection({ studentId, canBook }: Props) {
+export async function StudentCalendarSection({ studentId, canBook, start }: Props) {
   if (!(await canAccess(MODULES.SCHEDULER))) {
     return <p className="text-sm text-muted-foreground">You do not have access to the scheduler.</p>
   }
   const today = new TZDate(new Date(), SCHEDULER_TIMEZONE)
-  const from = format(addDays(today, -14), 'yyyy-MM-dd')
-  const to = format(addDays(today, 45), 'yyyy-MM-dd')
+  const defaultFrom = format(addDays(today, -14), 'yyyy-MM-dd')
+  const from = start && /^\d{4}-\d{2}-\d{2}$/.test(start) ? start : defaultFrom
+  const fromDate = new Date(`${from}T00:00:00`)
+  const to = format(addDays(fromDate, SPAN - 1), 'yyyy-MM-dd')
+  const shift = (days: number) => `/students/${studentId}?tab=calendar&from=${format(addDays(fromDate, days), 'yyyy-MM-dd')}`
   const items = await getCalendarItems({ from, to, studentIds: [studentId] })
   const groups = groupByDate(items)
 
@@ -58,9 +69,24 @@ export async function StudentCalendarSection({ studentId, canBook }: Props) {
       }
     >
       <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Two weeks back to six weeks ahead: {formatHkDate(from)} to {formatHkDate(to)}, {TIMEZONE_LABEL}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm text-muted-foreground">
+          {formatHkDate(from)} to {formatHkDate(to)}, {TIMEZONE_LABEL}
+        </p>
+        <nav aria-label="Dates shown" className="flex items-center gap-1">
+          <Button asChild variant="outline" size="sm" className="h-8">
+            <Link href={shift(-SPAN)} scroll={false}>Earlier</Link>
+          </Button>
+          {from !== defaultFrom && (
+            <Button asChild variant="ghost" size="sm" className="h-8">
+              <Link href={`/students/${studentId}?tab=calendar`} scroll={false}>Today</Link>
+            </Button>
+          )}
+          <Button asChild variant="outline" size="sm" className="h-8">
+            <Link href={shift(SPAN)} scroll={false}>Later</Link>
+          </Button>
+        </nav>
+      </div>
 
       {groups.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border px-4 py-8 text-center">

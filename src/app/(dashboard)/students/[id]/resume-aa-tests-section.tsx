@@ -12,6 +12,7 @@ import {
 import { Plus, Loader2, ClipboardList, Check } from "lucide-react"
 import { createAATestBooking } from "@/lib/supabase/actions/student-resume-aa-tests"
 import type { IndividualExamRecord } from "@/lib/supabase/queries/student-individual-exams"
+import { DateField } from "@/components/ui/date-field"
 
 type Props = { studentId: string; aaTests: IndividualExamRecord[]; canWrite?: boolean }
 
@@ -117,7 +118,7 @@ export function ResumeAATestsSection({ studentId, aaTests, canWrite = true }: Pr
             </div>
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Preferred Date</Label>
-              <Input name="preferred_date" type="date" className="h-9 text-sm" />
+              <DateField name="preferred_date" />
             </div>
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Preferred Time</Label>

@@ -16,6 +16,7 @@ import { canAccess, requireAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { cn } from "@/lib/utils"
 import { StudentsFilters } from "./students-filters"
+import { AddStudentSheet } from "./[id]/edit-student-sheet"
 
 const statusStyles: Record<string, string> = {
   active: "bg-emerald-50 text-emerald-700 ring-emerald-600/15",
@@ -82,11 +83,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
             {counts.all === null ? "Every student profile" : `${counts.all.toLocaleString("en-GB")} ${filtered ? "matching" : "in total"}`}
           </p>
         </div>
-        {canWrite && (
-          <Button asChild>
-            <Link href="/students/new"><Plus className="h-4 w-4" /> Add student</Link>
-          </Button>
-        )}
+        {canWrite && <AddStudentSheet />}
       </header>
 
       <section className="overflow-hidden rounded-lg border bg-card">
@@ -273,7 +270,7 @@ function EmptyList({ filtered, canWrite }: { filtered: boolean; canWrite: boolea
         {filtered ? (
           <Button variant="outline" asChild><Link href="/students">Clear search and filters</Link></Button>
         ) : canWrite ? (
-          <Button asChild><Link href="/students/new"><Plus className="h-4 w-4" /> Add student</Link></Button>
+          <Button asChild><Link href="/students?add=student"><Plus className="h-4 w-4" /> Add student</Link></Button>
         ) : null}
       </div>
     </div>

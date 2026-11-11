@@ -12,11 +12,11 @@ const PAGE = 20
  * Read-only history of what happened to a record and who did it (meeting note
  * 18, SEC-06). Kept apart from notes, which staff write themselves (STU-14).
  */
-export function ActivityHistory({ entries, title = "Activity", limit }: { entries: ActivityEntry[] | null; title?: string; limit?: number }) {
+export function ActivityHistory({ entries, title = "Activity", limit, bare = false }: { entries: ActivityEntry[] | null; title?: string; limit?: number; /** Without its own panel, inside another section. */ bare?: boolean }) {
   const [shown, setShown] = useState(PAGE)
 
-  return (
-    <Panel title={title}>
+  const content = (
+    <>
         {entries === null ? (
           <p className="text-sm text-destructive" role="alert">The activity could not be loaded. Refresh the page to try again.</p>
         ) : entries.length === 0 ? (
@@ -46,6 +46,7 @@ export function ActivityHistory({ entries, title = "Activity", limit }: { entrie
             )}
           </>
         )}
-    </Panel>
+    </>
   )
+  return bare ? content : <Panel title={title}>{content}</Panel>
 }

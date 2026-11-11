@@ -118,7 +118,7 @@ try {
     await page.type('[cmdk-input]', 'Head')
     const option = await page.waitForFunction(() => [...document.querySelectorAll('[cmdk-list] [cmdk-item]')].find(o => o.innerText.includes('Headington School')) ?? null, { polling: 100 })
     await option.asElement().click()
-    await chooseByLabel(page, 'Test / Exam', 'AA Test')
+    await chooseByLabel(page, 'Type of test', 'AA Test')
     await page.type(`${DIALOG} textarea[name="remarks"], ${DIALOG} input[name="remarks"]`, 'UAT rem result')
     await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] button[type="submit"]')].pop().click())
     await page.waitForFunction(() => !document.querySelector('[role="dialog"]'), { polling: 100, timeout: 30000 })

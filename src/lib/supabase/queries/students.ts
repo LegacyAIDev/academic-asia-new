@@ -67,6 +67,8 @@ export type StudentsListParams = {
   eventId?: string | null
   hasEmail?: boolean | null
   hasTelephone?: boolean | null
+  /** Has a brief introduction (true), has none (false), either (undefined). */
+  hasBriefIntro?: boolean | null
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
 }
@@ -111,7 +113,16 @@ function filteredStudents(
   filters: ListFilters,
   relatedStudentIds: string[] | null,
 ) {
-  let query = supabase.from('students').select(select, count)
+  // Brief introduction written or not: joined in the database (13k+ intros are
+  // too many to pass as an id list). Inner join keeps students with one; a
+  // left join filtered to null keeps those without.
+  const introJoin = filters.hasBriefIntro === true
+    ? ', intro_filter:student_brief_intro!student_brief_intro_student_id_fkey!inner(id)'
+    : filters.hasBriefIntro === false
+      ? ', intro_filter:student_brief_intro!student_brief_intro_student_id_fkey(id)'
+      : ''
+  let query = supabase.from('students').select(select + introJoin, count)
+  if (filters.hasBriefIntro === false) query = query.is('intro_filter' as 'id', null)
 
   // Search: each whitespace-separated token must match at least one searchable
   // field, so multi-word and cross-field queries work (e.g. "Lily LUEN" where

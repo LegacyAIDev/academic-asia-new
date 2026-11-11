@@ -1,6 +1,7 @@
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { JOURNEY_STAGES, journeyFor, stageLabel } from "@/lib/applications/application-journey"
+import { nextStep } from "@/lib/applications/next-step"
 import { formatHkDay } from "@/lib/applications/application-display"
 import { Eyebrow } from "./application-section"
 
@@ -25,13 +26,18 @@ export function ApplicationJourney({ status, since }: Props) {
   const tone = closed ? "bg-destructive" : "bg-primary"
 
   return (
-    <section aria-label="Application journey" className="rounded-xl border bg-card px-4 py-4 sm:px-6 sm:py-5">
+    <section aria-label="Application journey" className="rounded-lg border bg-card px-4 py-4 sm:px-6 sm:py-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <Eyebrow>Journey</Eyebrow>
         <p className="text-sm">
-          {outcome === "placed" && <span className="font-medium text-primary">Placed</span>}
+          {outcome === "placed" && <span><span className="font-medium text-primary">Placed</span>{status?.label && <span className="text-muted-foreground"> (school status “{status.label}”)</span>}</span>}
           {closed && <span className="font-medium text-destructive">Closed · {status?.label}</span>}
-          {outcome === "open" && stage && <span>At <span className="font-medium">{stageLabel(stage)}</span></span>}
+          {outcome === "open" && stage && (
+            <span>
+              Step {current + 1} of {JOURNEY_STAGES.length}: <span className="font-medium">{stageLabel(stage)}</span>
+              {status?.label && status.label !== stageLabel(stage) && <span className="text-muted-foreground"> (school status “{status.label}”)</span>}
+            </span>
+          )}
           {outcome === "open" && !stage && (
             <span className="text-muted-foreground">{status?.label ? `“${status.label}” has no step on the journey` : "No status yet"}</span>
           )}
@@ -76,6 +82,11 @@ export function ApplicationJourney({ status, since }: Props) {
           )
         })}
       </ol>
+      {nextStep(status?.code) && (
+        <p className="mt-5 rounded-md border-l-2 border-brand-gold bg-brand-gold/10 px-3 py-2 text-sm">
+          <span className="font-medium">Next step: </span>{nextStep(status?.code)}
+        </p>
+      )}
     </section>
   )
 }

@@ -12,7 +12,6 @@ import { buildApplicationTimeline } from "@/lib/applications/application-timelin
 import { isUuid } from "@/lib/scheduler/uuid"
 import { RecordNotes } from "@/components/features/record-notes"
 import { CommunicationsSection } from "@/components/features/communications/communications-section"
-import { ActivityHistory } from "@/components/features/activity-history"
 import { getActivity, MAX_ACTIVITY } from "@/lib/supabase/queries/activity-log"
 import { getRecordNotes, getSignedInUserId } from "@/lib/supabase/queries/record-notes"
 import { ApplicationHeader } from "./application-header"
@@ -120,8 +119,7 @@ export default async function StudentApplicationPage({ params }: Props) {
             canWrite={canWrite}
             currentUserId={currentUserId}
           />
-          <ApplicationTimeline entries={timeline} />
-          <ActivityHistory entries={activity} limit={MAX_ACTIVITY} />
+          <ApplicationTimeline entries={timeline} activity={activity} activityLimit={MAX_ACTIVITY} />
         </div>
       </div>
     </div>
