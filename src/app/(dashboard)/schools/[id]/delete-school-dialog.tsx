@@ -20,11 +20,17 @@ import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 type DeleteSchoolDialogProps = {
   schoolId: string
   schoolName: string
+  /** Controlled from a menu item; without these the dialog shows its own button. */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function DeleteSchoolDialog({ schoolId, schoolName }: DeleteSchoolDialogProps) {
+export function DeleteSchoolDialog({ schoolId, schoolName, open: controlledOpen, onOpenChange }: DeleteSchoolDialogProps) {
   const router = useRouterWithProgress()
-  const [open, setOpen] = useState(false)
+  const [ownOpen, setOwnOpen] = useState(false)
+  const controlled = controlledOpen !== undefined
+  const open = controlled ? controlledOpen : ownOpen
+  const setOpen = (next: boolean) => (controlled ? onOpenChange?.(next) : setOwnOpen(next))
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -43,12 +49,14 @@ export function DeleteSchoolDialog({ schoolId, schoolName }: DeleteSchoolDialogP
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="gap-2">
-          <Trash2 className="h-4 w-4" />
-          Delete School
-        </Button>
-      </AlertDialogTrigger>
+      {!controlled && (
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="gap-2">
+            <Trash2 className="h-4 w-4" />
+            Delete School
+          </Button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete School</AlertDialogTitle>

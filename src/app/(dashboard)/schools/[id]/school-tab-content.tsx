@@ -79,7 +79,7 @@ async function NotesTab({ schoolId, canWrite, supPage }: SchoolTabProps) {
     <div className="space-y-6">
       <SchoolNotesSection schoolId={schoolId} notes={notes} referenceData={referenceData} attachmentsByNote={attachments} canWrite={canWrite} />
       <SchoolSupplementaryInfo schoolId={schoolId} page={supPage} canWrite={canWrite} />
-      <ActivityHistory entries={activity} limit={MAX_ACTIVITY} />
+      <ActivityHistory entries={activity} limit={MAX_ACTIVITY} initial={5} />
     </div>
   )
 }
@@ -93,8 +93,8 @@ async function CommunicationsTab({ schoolId, school }: SchoolTabProps) {
   return <CommunicationsSection context={{ kind: "school", school: { id: schoolId, name: school.name } }} />
 }
 
-async function OverviewTab({ school }: SchoolTabProps) {
-  return <SchoolOverview school={school} />
+async function OverviewTab({ school, canWrite }: SchoolTabProps) {
+  return <SchoolOverview school={school} canWrite={canWrite} />
 }
 
 export const SCHOOL_TAB_CONTENT: Record<SchoolTabKey, (props: SchoolTabProps) => Promise<React.ReactElement>> = {

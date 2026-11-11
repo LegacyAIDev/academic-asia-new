@@ -1,8 +1,8 @@
 import Link from "next/link"
-import { Calendar, Info } from "lucide-react"
+import { Calendar } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { getSchoolSupplementaryInfo, getSupInfoCategories } from "@/lib/supabase/queries/school-supplementary-info"
 import { SupInfoDialog, EditSupInfoButton, DeleteSupInfoButton } from "./sup-info-dialog"
@@ -20,7 +20,7 @@ function PageButton({ href, children }: { href: string | null; children: React.R
   )
 }
 
-/** Supplementary information of a school, 25 rows per page, shown under the notes on the "Notes & Info" tab. */
+/** Supplementary information of a school ("background information"), 25 rows per page, under the notes on the Notes tab. */
 export async function SchoolSupplementaryInfo({ schoolId, page, canWrite }: Props) {
   const [result, categories] = await Promise.all([
     getSchoolSupplementaryInfo({ schoolId, page, pageSize: PAGE_SIZE }),
@@ -29,18 +29,12 @@ export async function SchoolSupplementaryInfo({ schoolId, page, canWrite }: Prop
   const pageHref = (target: number) => `/schools/${schoolId}?tab=notes&supPage=${target}`
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base font-medium">
-            <Info className="h-4 w-4 text-muted-foreground" />
-            Supplementary Information
-            <Badge variant="secondary" className="ml-2">{result.totalCount} records</Badge>
-          </CardTitle>
-          {canWrite && <SupInfoDialog schoolId={schoolId} mode="create" categories={categories} />}
-        </div>
-      </CardHeader>
-      <CardContent>
+    <Panel
+      title="Background information"
+      count={result.totalCount}
+      action={canWrite && result.totalCount > 0 ? <SupInfoDialog schoolId={schoolId} mode="create" categories={categories} /> : null}
+    >
+      <p className="-mt-1 mb-3 text-sm text-muted-foreground">Facts about the school by year (results, scholarships, term dates), kept apart from day-to-day notes.</p>
         {result.items.length === 0 && result.totalCount > 0 ? (
           // A hand-edited or stale ?supPage= past the last page.
           <p className="py-8 text-center text-sm text-muted-foreground">
@@ -48,18 +42,7 @@ export async function SchoolSupplementaryInfo({ schoolId, page, canWrite }: Prop
             <Link href={pageHref(1)} scroll={false} className="text-primary underline-offset-2 hover:underline">Back to page 1</Link>
           </p>
         ) : result.items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/50">
-              <Info className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="mb-1 text-lg font-medium">No Supplementary Info</h3>
-            {canWrite && (
-              <>
-                <p className="mb-4 text-sm text-muted-foreground">Add supplementary information for this school.</p>
-                <SupInfoDialog schoolId={schoolId} mode="create" categories={categories} />
-              </>
-            )}
-          </div>
+          <PanelEmpty title="Nothing recorded yet" action={canWrite ? <SupInfoDialog schoolId={schoolId} mode="create" categories={categories} /> : null} />
         ) : (
           <>
             <div className="rounded-lg border">
@@ -113,7 +96,6 @@ export async function SchoolSupplementaryInfo({ schoolId, page, canWrite }: Prop
             )}
           </>
         )}
-      </CardContent>
-    </Card>
+    </Panel>
   )
 }

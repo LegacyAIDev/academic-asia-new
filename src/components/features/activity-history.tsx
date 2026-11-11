@@ -12,8 +12,16 @@ const PAGE = 20
  * Read-only history of what happened to a record and who did it (meeting note
  * 18, SEC-06). Kept apart from notes, which staff write themselves (STU-14).
  */
-export function ActivityHistory({ entries, title = "Activity", limit, bare = false }: { entries: ActivityEntry[] | null; title?: string; limit?: number; /** Without its own panel, inside another section. */ bare?: boolean }) {
-  const [shown, setShown] = useState(PAGE)
+export function ActivityHistory({ entries, title = "Activity", limit, bare = false, initial = PAGE }: {
+  entries: ActivityEntry[] | null
+  title?: string
+  limit?: number
+  /** Without its own panel, inside another section. */
+  bare?: boolean
+  /** How many show before "Show more". */
+  initial?: number
+}) {
+  const [shown, setShown] = useState(initial)
 
   const content = (
     <>

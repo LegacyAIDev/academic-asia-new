@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { ArrowLeft, Download, Loader2, Printer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useRouterWithProgress } from '@/components/layout/navigation-progress'
 
 /**
@@ -70,6 +71,16 @@ export function ExportControls({
     }
   }
 
+  // The name is kept in the address, so the printed sheet, the PDF and a shared link all carry it.
+  const setStudent = (name: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    const value = name.trim()
+    if ((params.get('student') ?? '') === value) return
+    if (value) params.set('student', value)
+    else params.delete('student')
+    router.replace(`${pathname}?${params.toString()}`)
+  }
+
   const setLayout = (next: 'stacked' | 'matrix') => {
     const params = new URLSearchParams(searchParams.toString())
     params.set('layout', next)
@@ -77,7 +88,8 @@ export function ExportControls({
   }
 
   return (
-    <div className="no-print mx-auto mb-4 flex max-w-[210mm] flex-wrap items-center gap-3 print:hidden">
+    // As wide as the sheet below it (A4 portrait or landscape), so the controls line up with the page.
+    <div className={`no-print mx-auto mb-4 flex flex-wrap items-center gap-3 rounded-lg border bg-card p-3 print:hidden ${layout === 'matrix' ? 'max-w-[297mm]' : 'max-w-[210mm]'}`}>
       <Button variant="ghost" size="sm" asChild>
         <Link href="/schools">
           <ArrowLeft className="mr-1.5 h-4 w-4" />
@@ -103,6 +115,17 @@ export function ExportControls({
           Comparison matrix
         </Button>
       </div>
+
+      <label className="flex items-center gap-2 text-sm">
+        <span className="text-muted-foreground">Prepared for</span>
+        <Input
+          defaultValue={studentName ?? ''}
+          placeholder="Student's name (optional)"
+          className="h-8 w-56"
+          onBlur={event => setStudent(event.target.value)}
+          onKeyDown={event => { if (event.key === 'Enter') setStudent((event.target as HTMLInputElement).value) }}
+        />
+      </label>
 
       {matrixDisabledReason && (
         <span className="text-xs text-muted-foreground">{matrixDisabledReason}</span>

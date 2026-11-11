@@ -9,12 +9,12 @@
 
 export const SCHOOL_TABS = [
   { key: 'basic', label: 'Overview', group: 'main' },
-  { key: 'entrance-exams', label: 'Entrance Assessments', group: 'main' },
+  { key: 'entrance-exams', label: 'Entrance exams', group: 'main' },
   { key: 'fees', label: 'Fees', group: 'main' },
-  { key: 'academic-results', label: 'Exam Results', group: 'main' },
+  { key: 'academic-results', label: 'Exam results', group: 'main' },
   { key: 'contacts', label: 'Contacts', group: 'main' },
   { key: 'events', label: 'Events', group: 'main' },
-  { key: 'notes', label: 'Notes & Info', group: 'main' },
+  { key: 'notes', label: 'Notes', group: 'main' },
   { key: 'documents', label: 'Documents', group: 'main' },
   { key: 'communications', label: 'Communications', group: 'main' },
   { key: 'courses', label: 'Courses', group: 'more' },

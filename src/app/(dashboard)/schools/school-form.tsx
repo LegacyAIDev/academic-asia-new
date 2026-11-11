@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react"
 import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,14 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { PhoneInput } from "@/components/ui/phone-input"
 import {
   Save,
-  Building2,
-  Phone,
-  MapPin,
-  FileText,
   Loader2,
 } from "lucide-react"
 import { createSchool, updateSchool, type CreateSchoolInput } from "@/lib/supabase/actions/schools"
@@ -53,9 +47,13 @@ export type SchoolFormProps = {
     religiousAffiliations: ReferenceItem[]
     coedFromOptions: ReferenceItem[]
   }
+  /** Called after a successful save (with the school's id) instead of the form navigating itself; drawers use it. */
+  onDone?: (schoolId?: string) => void
+  /** Called by Cancel instead of leaving the page. */
+  onCancel?: () => void
 }
 
-export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
+export function SchoolForm({ mode, school, referenceData, onDone, onCancel }: SchoolFormProps) {
   const router = useRouterWithProgress()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -113,7 +111,9 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
       }
 
       if (result?.success) {
-        if (mode === "create" && result.data?.id) {
+        if (onDone) {
+          onDone(result.data?.id ?? school?.id)
+        } else if (mode === "create" && result.data?.id) {
           router.push(`/schools/${result.data.id}`)
         } else if (school?.id) {
           router.push(`/schools/${school.id}`)
@@ -127,7 +127,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="@container space-y-6">
       {error && (
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
           {error}
@@ -135,15 +135,12 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
       )}
 
       {/* Basic Information */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-            Basic Information
-          </CardTitle>
-          <CardDescription>School name and classification</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <section className="space-y-4 rounded-lg border bg-card p-5">
+        <div>
+          <h2 className="text-base font-semibold text-foreground">Basic Information</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">School name and classification</p>
+        </div>
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">
               School Name <span className="text-destructive">*</span>
@@ -192,7 +189,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
             )}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 @md:grid-cols-2 @3xl:grid-cols-4 [&>*]:min-w-0">
             <div className="space-y-2">
               <Label htmlFor="institution_type_id">Institution Type</Label>
               <Select name="institution_type_id" defaultValue={school?.institution_type?.id?.toString() ?? ""}>
@@ -240,7 +237,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 @md:grid-cols-2 @3xl:grid-cols-4 [&>*]:min-w-0">
             <div className="space-y-2">
               <Label htmlFor="pupil_count">Pupil Count</Label>
               <Input
@@ -248,7 +245,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
                 name="pupil_count"
                 type="number"
                 placeholder="e.g. 1500"
-                defaultValue={school?.pupil_count ?? ""}
+                defaultValue={school?.pupil_count || ""}
               />
             </div>
             <div className="space-y-2">
@@ -258,7 +255,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
                 name="boarder_count"
                 type="number"
                 placeholder="e.g. 500"
-                defaultValue={school?.boarder_count ?? ""}
+                defaultValue={school?.boarder_count || ""}
               />
             </div>
             <div className="space-y-2">
@@ -318,7 +315,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
               for No and "NP" for Unknown, which are different claims — so an
               unanswered question must stay unanswered rather than defaulting
               to No when someone edits an unrelated field. */}
-          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid gap-4 @md:grid-cols-2 @3xl:grid-cols-4 [&>*]:min-w-0">
             <div className="space-y-2">
               <Label htmlFor="offers_a_level">Offers A-Levels</Label>
               <Select name="offers_a_level" defaultValue={boolToSelect(school?.offers_a_level)}>
@@ -346,20 +343,17 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
               </Select>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Contact Information */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Phone className="h-4 w-4 text-muted-foreground" />
-            Contact Information
-          </CardTitle>
-          <CardDescription>How to reach the school</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
+      <section className="space-y-4 rounded-lg border bg-card p-5">
+        <div>
+          <h2 className="text-base font-semibold text-foreground">Contact Information</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">How to reach the school</p>
+        </div>
+        <div className="space-y-4">
+          <div className="grid gap-4 @md:grid-cols-2 [&>*]:min-w-0">
             <div className="space-y-2">
               <Label htmlFor="telephone">Telephone</Label>
               <PhoneInput
@@ -380,7 +374,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 @md:grid-cols-2 [&>*]:min-w-0">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -401,19 +395,16 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Address */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            Address
-          </CardTitle>
-          <CardDescription>School location details</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <section className="space-y-4 rounded-lg border bg-card p-5">
+        <div>
+          <h2 className="text-base font-semibold text-foreground">Address</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">School location details</p>
+        </div>
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="address">Street Address</Label>
             <Input
@@ -424,7 +415,7 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
             />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 @md:grid-cols-2 @3xl:grid-cols-4 [&>*]:min-w-0">
             <div className="space-y-2">
               <Label htmlFor="city">City</Label>
               <Input
@@ -468,19 +459,16 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
               </Select>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Visa & Admissions */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            Visa & Admissions
-          </CardTitle>
-          <CardDescription>Visa acceptance and admissions status</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <section className="space-y-4 rounded-lg border bg-card p-5">
+        <div>
+          <h2 className="text-base font-semibold text-foreground">Visa & Admissions</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">Visa acceptance and admissions status</p>
+        </div>
+        <div className="space-y-4">
           <div className="flex flex-wrap gap-6">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -524,19 +512,16 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
               defaultValue={school?.child_visa_age ?? ""}
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Additional Information */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            Additional Information
-          </CardTitle>
-          <CardDescription>Keywords and notes</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <section className="space-y-4 rounded-lg border bg-card p-5">
+        <div>
+          <h2 className="text-base font-semibold text-foreground">Additional Information</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">Keywords and notes</p>
+        </div>
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="keywords">Keywords</Label>
             <Input
@@ -557,16 +542,18 @@ export function SchoolForm({ mode, school, referenceData }: SchoolFormProps) {
               defaultValue={school?.remarks ?? ""}
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      {/* Form Actions */}
-      <div className="flex items-center justify-end gap-4 pb-8">
-        <Button type="button" variant="outline" asChild>
-          <Link href={school?.id ? `/schools/${school.id}` : "/schools"}>
-            Cancel
-          </Link>
-        </Button>
+      {/* Form Actions: kept in view at the foot, so Save never needs a scroll */}
+      <div className="sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-3 border-t bg-background/95 px-1 py-3 backdrop-blur">
+        {onCancel ? (
+          <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
+        ) : (
+          <Button type="button" variant="outline" asChild>
+            <Link href={school?.id ? `/schools/${school.id}` : "/schools"}>Cancel</Link>
+          </Button>
+        )}
         <Button type="submit" disabled={isPending} className="gap-2">
           {isPending ? (
             <>

@@ -36,9 +36,14 @@ export function DocumentMasthead({
       <div className="mast-rule-thin" />
 
       <div className="mast-meta">
+        {/* Only when the sheet is for someone; an empty "Prepared for" reads as a mistake. */}
         <div className="mfield grow">
-          <div className="l">Prepared for</div>
-          <div className="v name">{meta.studentName ?? '—'}</div>
+          {meta.studentName && (
+            <>
+              <div className="l">Prepared for</div>
+              <div className="v name">{meta.studentName}</div>
+            </>
+          )}
         </div>
         {meta.adviserName && (
           <div className="mfield">

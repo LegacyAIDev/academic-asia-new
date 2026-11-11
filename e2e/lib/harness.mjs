@@ -90,7 +90,16 @@ export async function click(page, text, scope = 'body', { prefix = false } = {})
     const matches = el => (p ? text(el).startsWith(t) : text(el) === t)
     return nodes.find(el => matches(el) && el.offsetParent !== null && !el.disabled) ?? null
   }, { polling: 100 }, scope, text, prefix)
-  await handle.asElement().click()
+  // A drawer or dialog may still be sliding in: retry briefly while the element is moving.
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await handle.asElement().click()
+      return
+    } catch (err) {
+      if (attempt >= 5 || !/not clickable/.test(err.message)) throw err
+      await new Promise(resolve => setTimeout(resolve, 250))
+    }
+  }
 }
 
 /** Picks an option in a Radix Select and waits for its list to close, so the next click is not swallowed. */

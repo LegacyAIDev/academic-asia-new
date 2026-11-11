@@ -148,7 +148,8 @@ export async function getSchoolsList(params: SchoolsListParams = {}): Promise<Sc
     'name', 'city', 'county', 'pupil_count', 'boarder_count', 'current_course_fee', 'created_at',
   ]
   const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'name'
-  query = query.order(sortColumn, { ascending: sortOrder === 'asc' })
+  // Ends on id, so schools sharing a value never swap between pages; blanks sort last.
+  query = query.order(sortColumn, { ascending: sortOrder === 'asc', nullsFirst: false }).order('id', { ascending: true })
 
   // Apply pagination
   query = query.range(offset, offset + pageSize - 1)

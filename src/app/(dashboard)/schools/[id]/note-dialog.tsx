@@ -49,6 +49,7 @@ import {
   type CreateSchoolNoteInput,
 } from "@/lib/supabase/actions/school-notes"
 import { FormSection } from "@/components/forms/form-section"
+import { useAddParam } from "@/lib/students/use-add-param"
 
 type CategoryItem = { id: number; code: string; label: string }
 export type NoteReferenceData = { categories: CategoryItem[] }
@@ -90,7 +91,7 @@ export function NoteDialog({
   attachments = [],
   canWrite = true,
 }: NoteDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useAddParam(mode === "create" ? "note" : null)
   const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -139,9 +140,9 @@ export function NoteDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
-            <Plus className="h-4 w-4" />
-            New Note
+          <Button size="sm" variant="outline" className="h-8 gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            Add note
           </Button>
         )}
       </DialogTrigger>

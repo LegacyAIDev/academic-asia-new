@@ -50,6 +50,7 @@ import type { SchoolBankDetailWithJoins, BankAccountType, Currency } from "@/lib
 import { AttachmentField, type AttachmentFieldHandle } from "@/components/features/attachment-field"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import { FormSection } from "@/components/forms/form-section"
+import { useAddParam } from "@/lib/students/use-add-param"
 
 export type BankReferenceData = {
   accountTypes: BankAccountType[]
@@ -85,7 +86,7 @@ function FormField({
 }
 
 export function BankDetailDialog({ schoolId, referenceData, mode, bankDetail, trigger, attachments = [], canWrite = true }: BankDetailDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useAddParam(mode === "create" ? "bank-detail" : null)
   const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -140,9 +141,9 @@ export function BankDetailDialog({ schoolId, referenceData, mode, bankDetail, tr
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
-            <Plus className="h-4 w-4" />
-            Add Bank
+          <Button size="sm" variant="outline" className="h-8 gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            Add bank details
           </Button>
         )}
       </DialogTrigger>

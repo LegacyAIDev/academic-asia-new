@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -14,7 +14,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Contact, Mail, Phone as PhoneIcon } from "lucide-react"
+import { Mail, Phone as PhoneIcon } from "lucide-react"
 import { SchoolContactDialog, EditSchoolContactButton, DeleteSchoolContactButton } from "./contact-dialog"
 import { ContactActiveToggle } from "./contact-active-toggle"
 import { countInactive, visibleContacts } from "@/lib/schools/contact-visibility"
@@ -34,38 +34,16 @@ export function SchoolContactsSection({ schoolId, contacts, canWrite }: SchoolCo
 
   if (contacts.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <Contact className="h-4 w-4 text-muted-foreground" />
-              Contacts
-            </CardTitle>
-            {canWrite && <SchoolContactDialog schoolId={schoolId} mode="create" />}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <Contact className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No contacts recorded</h3>
-            <p className="text-sm text-muted-foreground">
-              Add contact persons for this school
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <Panel title="Contacts">
+        <PanelEmpty title="No contacts recorded" action={canWrite && <SchoolContactDialog schoolId={schoolId} mode="create" />}>
+          Add contact persons for this school
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Contact className="h-4 w-4 text-muted-foreground" />
-            Contacts ({contacts.length - inactive})
-          </CardTitle>
-          <div className="flex items-center gap-4">
+    <Panel title="Contacts" flush action={<><div className="flex items-center gap-4">
             {inactive > 0 && (
               <div className="flex items-center gap-2">
                 <Switch id="show-inactive-contacts" checked={showInactive} onCheckedChange={setShowInactive} />
@@ -73,28 +51,23 @@ export function SchoolContactsSection({ schoolId, contacts, canWrite }: SchoolCo
               </div>
             )}
             {canWrite && <SchoolContactDialog schoolId={schoolId} mode="create" />}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+          </div></>}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[50px]">#</TableHead>
-                <TableHead className="min-w-[180px]">Name</TableHead>
-                <TableHead className="min-w-[160px]">Position</TableHead>
+                <TableHead className="min-w-[220px] pl-4">Name and role</TableHead>
                 <TableHead className="min-w-[140px]">Phone</TableHead>
                 <TableHead className="min-w-[200px]">Email</TableHead>
                 <TableHead className="min-w-[120px]">Responsible</TableHead>
                 <TableHead className="min-w-[80px]">Status</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                <TableHead className="pr-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {listed.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                     No active contacts. Switch on &quot;Show inactive&quot; to see earlier ones.
                   </TableCell>
                 </TableRow>
@@ -103,25 +76,13 @@ export function SchoolContactsSection({ schoolId, contacts, canWrite }: SchoolCo
                 const fullName = [item.title, item.first_name, item.surname].filter(Boolean).join(" ")
                 return (
                   <TableRow key={item.id} className={item.is_active ? undefined : "opacity-60"}>
-                    <TableCell className="pl-6">
-                      {item.priority != null ? (
-                        <Badge variant="outline" className="text-xs font-medium tabular-nums">
-                          {item.priority}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="text-sm font-medium">{fullName || "—"}</p>
-                        {item.gender && (
-                          <span className="text-xs text-muted-foreground">{item.gender === "M" ? "Male" : "Female"}</span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {item.position || "—"}
+                    <TableCell className="pl-4">
+                      <p className="text-sm font-medium">
+                        {fullName || <span className="font-normal text-muted-foreground">Name not recorded</span>}
+                        {/* Priority 1 is who staff call first. */}
+                        {item.priority === 1 && <Badge variant="outline" className="ml-2 border-brand-navy/30 text-[10px] font-medium text-brand-navy">Main contact</Badge>}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{item.position || "Role not recorded"}</p>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-0.5">
@@ -162,14 +123,15 @@ export function SchoolContactsSection({ schoolId, contacts, canWrite }: SchoolCo
                         <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 text-xs">Inactive</Badge>
                       )}
                     </TableCell>
-                    <TableCell className="pr-6">
+                    <TableCell className="pr-4">
                       <div className="flex items-center justify-end gap-1">
                         {item.email_1 && (
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10"
-                            title={`Send email to ${item.email_1}`}
+                            title={`Email ${item.email_1}`}
+                            aria-label={`Email ${fullName || item.email_1}`}
                             asChild
                           >
                             <a href={`mailto:${item.email_1}`}>
@@ -192,7 +154,6 @@ export function SchoolContactsSection({ schoolId, contacts, canWrite }: SchoolCo
             </TableBody>
           </Table>
         </div>
-      </CardContent>
-    </Card>
+      </Panel>
   )
 }

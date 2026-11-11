@@ -22,7 +22,15 @@ const MIN_SCHOOLS = 2
 export function SchoolSelectionToolbar() {
   const { selected, count, remove, clear } = useSchoolSelection()
 
-  if (count === 0) return null
+  // Nothing ticked yet: say what ticking does, so Compare and Export are not a secret.
+  if (count === 0) {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/30 px-4 py-3 text-sm text-muted-foreground sm:px-5">
+        <span className="flex items-center gap-2"><FileText className="h-4 w-4" aria-hidden="true" /> Tick {MIN_SCHOOLS} to {MAX_SCHOOLS} schools to compare them side by side or export them as a PDF.</span>
+        <Button size="sm" variant="outline" disabled>Compare and export</Button>
+      </div>
+    )
+  }
 
   const tooFew = count < MIN_SCHOOLS
   const tooMany = count > MAX_SCHOOLS

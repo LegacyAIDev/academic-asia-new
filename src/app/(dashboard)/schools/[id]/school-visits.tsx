@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { CalendarSearch } from "lucide-react"
 import { SchoolVisitDialog, EditSchoolVisitButton, DeleteSchoolVisitButton } from "./visit-dialog"
 import type { SchoolVisitWithJoins } from "@/lib/supabase/queries/school-visits"
 
@@ -33,56 +32,31 @@ function formatDate(dateStr: string | null): string {
 export function SchoolVisitsSection({ schoolId, visits, canWrite = true }: SchoolVisitsSectionProps) {
   if (visits.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <CalendarSearch className="h-4 w-4 text-muted-foreground" />
-              Visits
-            </CardTitle>
-            {canWrite && <SchoolVisitDialog schoolId={schoolId} mode="create" />}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <CalendarSearch className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No visits recorded</h3>
-            <p className="text-sm text-muted-foreground">
-              Log a school visit to keep track of site tours and meetings
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <Panel title="Visits">
+        <PanelEmpty title="No visits recorded" action={canWrite && <SchoolVisitDialog schoolId={schoolId} mode="create" />}>
+          Log a school visit to keep track of site tours and meetings
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <CalendarSearch className="h-4 w-4 text-muted-foreground" />
-            Visits ({visits.length})
-          </CardTitle>
-          {canWrite && <SchoolVisitDialog schoolId={schoolId} mode="create" />}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+    <Panel title="Visits" flush action={<>{canWrite && <SchoolVisitDialog schoolId={schoolId} mode="create" />}</>}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[110px]">Date</TableHead>
+                <TableHead className="pl-4 min-w-[110px]">Date</TableHead>
                 <TableHead className="min-w-[140px]">Contact</TableHead>
                 <TableHead className="min-w-[240px]">Visit Log</TableHead>
                 <TableHead className="min-w-[120px]">Result</TableHead>
-                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
+                {canWrite && <TableHead className="pr-4 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {visits.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell className="pl-6">
+                  <TableCell className="pl-4">
                     <Badge variant="outline" className="text-xs font-medium whitespace-nowrap">
                       {formatDate(item.visit_date)}
                     </Badge>
@@ -99,7 +73,7 @@ export function SchoolVisitsSection({ schoolId, visits, canWrite = true }: Schoo
                     {item.result || "—"}
                   </TableCell>
                   {canWrite && (
-                    <TableCell className="pr-6">
+                    <TableCell className="pr-4">
                       <div className="flex items-center justify-end gap-1">
                         <EditSchoolVisitButton
                           visit={item}
@@ -118,7 +92,6 @@ export function SchoolVisitsSection({ schoolId, visits, canWrite = true }: Schoo
             </TableBody>
           </Table>
         </div>
-      </CardContent>
-    </Card>
+      </Panel>
   )
 }

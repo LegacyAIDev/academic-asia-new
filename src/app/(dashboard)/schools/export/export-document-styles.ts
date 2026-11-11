@@ -28,9 +28,10 @@ export const EXPORT_DOCUMENT_CSS = `/* ═════════════�
   --rule:   #9ea4ab;   /* structural hairlines              */
   --rule-2: #d5d9dd;   /* inner separators                  */
   --paper:  #ffffff;
-  --accent: #8c1d2a;   /* oxblood, from the AA logo bar.
-                          Decorative + one legended marker.
-                          Reads as dark grey in mono.       */
+  --accent: #11294b;   /* Academic Asia navy. Decorative +
+                          one legended marker; reads as near
+                          black in mono.                    */
+  --gold:   #bea585;   /* champagne gold, for the masthead rule */
   --serif: "Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",
            "URW Palladio L",Georgia,"Times New Roman",serif;
   --sans:  "Helvetica Neue",Helvetica,Arial,"Liberation Sans","Nimbus Sans",
@@ -67,17 +68,17 @@ table,.n,.val,.fig{font-variant-numeric:tabular-nums lining-nums;
 .wordmark{font-family:var(--serif);font-size:16pt;line-height:1;letter-spacing:.14em;
   color:var(--ink);white-space:nowrap}
 .wordmark .sp{letter-spacing:0;padding:0 .16em}
-.tagline{font-family:var(--serif);font-style:italic;font-size:7.5pt;color:var(--ink-2);
+.tagline{font-family:var(--serif);font-style:italic;font-size:8pt;color:var(--ink-2);
   margin-top:1.5mm}
 .doctitle{text-align:right}
-.doctitle .t{font-size:9pt;font-weight:700;letter-spacing:.20em;text-transform:uppercase;
+.doctitle .t{font-size:9pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
   white-space:nowrap}
-.doctitle .s{font-size:7pt;color:var(--ink-3);letter-spacing:.04em;margin-top:1.1mm}
+.doctitle .s{font-size:8pt;color:var(--ink-3);letter-spacing:.04em;margin-top:1.1mm}
 .mast-rule{margin-top:2.8mm;border-top:.7mm solid var(--accent)}
-.mast-rule-thin{border-top:.2mm solid var(--ink);margin-top:.5mm}
+.mast-rule-thin{border-top:.3mm solid var(--gold);margin-top:.6mm}
 .mast-meta{display:flex;gap:8mm;padding-top:2.2mm}
 .mfield.grow{flex:1}
-.mfield .l{font-size:5.6pt;letter-spacing:.17em;text-transform:uppercase;color:var(--ink-3);
+.mfield .l{font-size:7pt;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
   font-weight:700;margin-bottom:.6mm}
 .mfield .v{font-size:8.5pt}
 .mfield .v.name{font-family:var(--serif);font-size:10pt}
@@ -91,7 +92,7 @@ table.roster>tbody>tr>td{padding:0}
 table.roster>tbody>tr{break-inside:avoid;page-break-inside:avoid}
 
 .keybar{display:grid;grid-template-columns:var(--idw) 1fr;margin-bottom:1.2mm}
-.keybar .spacer{font-size:5.6pt;letter-spacing:.17em;text-transform:uppercase;
+.keybar .spacer{font-size:7pt;letter-spacing:.08em;text-transform:uppercase;
   color:var(--ink-3);font-weight:700;align-self:end;padding-bottom:1mm}
 
 table.grid{width:100%;border-collapse:collapse;table-layout:fixed}
@@ -101,10 +102,10 @@ table.grid col.c-gap{width:3mm}
 table.grid col.c-a{width:9.4mm}
 table.grid col.c-ib{width:12mm}
 
-.grp{font-size:5.6pt;letter-spacing:.17em;text-transform:uppercase;font-weight:700;
+.grp{font-size:7pt;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
   color:var(--ink-3);text-align:center;padding:0 0 .8mm;border-bottom:.2mm solid var(--rule)}
 .grp .unit{font-weight:400;letter-spacing:.06em;text-transform:none}
-.thr{font-size:6.2pt;font-weight:700;color:var(--ink);padding:1mm .6mm .8mm 0;white-space:nowrap}
+.thr{font-size:7pt;font-weight:700;color:var(--ink);padding:1mm .6mm .8mm 0;white-space:nowrap}
 .thr .n>i{padding-right:0}
 .keybar .thr{border-bottom:.2mm solid var(--ink)}
 .keybar .grp-gap,.keybar .thr-gap{border-bottom:0}
@@ -123,9 +124,9 @@ table.roster>tbody>tr:last-child .school{border-bottom:.2mm solid var(--ink)}
   float:left;width:8mm;letter-spacing:.02em}
 .sname{font-family:var(--serif);font-size:11.5pt;line-height:1.14;font-weight:400;
   margin:0;letter-spacing:.005em;hyphens:none;overflow-wrap:break-word}
-.sloc{font-size:7pt;color:var(--ink-2);margin:.8mm 0 0 8mm}
+.sloc{font-size:8pt;color:var(--ink-2);margin:.8mm 0 0 8mm}
 
-.yr-lab{font-size:6.4pt;font-weight:700;color:var(--ink-3);text-align:left;
+.yr-lab{font-size:7pt;font-weight:700;color:var(--ink-3);text-align:left;
   padding:.85mm 1.2mm .85mm 0;letter-spacing:.04em}
 tr.now .yr-lab{color:var(--ink)}
 .val{padding:.85mm .6mm}
@@ -139,19 +140,19 @@ tr.now td{border-top:.15mm solid var(--rule-2)}
 
 /* Two distinct missing-data states, which the legacy conflated as blank. */
 .np,.na{font-weight:400!important;color:var(--ink-3)!important}
-.np{font-size:5.8pt!important;letter-spacing:.09em;vertical-align:.35mm}
-.na{font-size:7.4pt!important}
+.np{font-size:7pt!important;letter-spacing:.09em;vertical-align:.35mm}
+.na{font-size:8pt!important}
 
 /* Band 2 — profile strip */
 .strip{margin-left:8mm;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 4mm}
 .strip-facts{margin-top:2mm;padding-top:1.4mm;border-top:.15mm solid var(--rule-2)}
-.strip .cat{font-size:6pt;letter-spacing:.13em;text-transform:uppercase;font-weight:700;
+.strip .cat{font-size:7pt;letter-spacing:.13em;text-transform:uppercase;font-weight:700;
   color:var(--ink)}
 .strip .cat .sep{color:var(--rule);font-weight:400;padding:0 .3em}
 .f{display:flex;align-items:baseline;gap:1mm;white-space:nowrap}
-.f .l{font-size:5.5pt;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+.f .l{font-size:7pt;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
   font-weight:700}
-.f .v{font-size:7.6pt;color:var(--ink)}
+.f .v{font-size:8pt;color:var(--ink)}
 /* Boarding proportion — derived (boarders/pupils). Surfaces what the legacy
    buried: Harrow is 100% boarding, Abingdon 13%. Mono-safe: solid ink fill
    in a hairline track. */
@@ -162,16 +163,16 @@ tr.now td{border-top:.15mm solid var(--rule-2)}
 /* Band 3 — fees + references */
 .strip-fee{margin-top:1.6mm;justify-content:space-between;gap:0 5mm}
 .fee-l{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 3mm}
-.fee-l .cap{font-size:5.5pt;letter-spacing:.13em;text-transform:uppercase;font-weight:700;
+.fee-l .cap{font-size:7pt;letter-spacing:.13em;text-transform:uppercase;font-weight:700;
   color:var(--ink)}
 .fee-l .cap em{font-style:normal;font-weight:400;color:var(--ink-3);letter-spacing:.05em}
 .band{display:flex;align-items:baseline;gap:1.4mm;white-space:nowrap}
 .band+.band{padding-left:3mm;border-left:.15mm solid var(--rule-2)}
-.band .yr{font-size:6.8pt;color:var(--ink-2)}
+.band .yr{font-size:8pt;color:var(--ink-2)}
 .band .amt{font-size:9pt;font-weight:700;color:var(--ink)}
-.refs{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 3.5mm;font-size:6.6pt;
+.refs{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 3.5mm;font-size:8pt;
   text-align:right}
-.refs .k{font-size:5.4pt;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+.refs .k{font-size:7pt;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
   font-weight:700;margin-right:.8mm}
 .refs a{color:var(--ink);text-decoration:none;border-bottom:.15mm solid var(--rule)}
 .refs .remark{color:var(--ink-2);font-style:italic}
@@ -197,8 +198,8 @@ table.matrix thead th{padding:0;text-align:left;font-weight:400;vertical-align:b
 .mx-name{font-family:var(--serif);font-size:10.5pt;line-height:1.14;min-height:6mm;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   align-items:flex-end}
-.mx-loc{font-size:6.6pt;color:var(--ink-2);margin-top:.7mm}
-.mx-web{font-size:6.2pt;color:var(--ink-3);margin-top:.3mm}
+.mx-loc{font-size:8pt;color:var(--ink-2);margin-top:.7mm}
+.mx-web{font-size:7pt;color:var(--ink-3);margin-top:.3mm}
 .mx-web .url{word-break:break-all}
 .mx-web .nb{white-space:nowrap}
 .mx-web a{color:var(--ink-3);text-decoration:none;white-space:nowrap;
@@ -206,18 +207,18 @@ table.matrix thead th{padding:0;text-align:left;font-weight:400;vertical-align:b
 th.mx-col{border-bottom:.4mm solid var(--ink);border-left:.15mm solid var(--rule-2);
   padding-left:2mm}
 th.mx-corner{border-bottom:.4mm solid var(--ink)}
-.mx-corner .cap{font-size:5.6pt;letter-spacing:.17em;text-transform:uppercase;font-weight:700;
+.mx-corner .cap{font-size:7pt;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
   color:var(--ink-3);padding-bottom:1.4mm}
 /* Year sub-header: declared once, obeyed by every figure below. */
 tr.mx-years th{border-bottom:.15mm solid var(--rule);border-left:.15mm solid var(--rule-2);
   padding:.7mm 0 .7mm 2mm}
 tr.mx-years th.mx-corner{border-left:0;border-bottom:.15mm solid var(--rule)}
 .yy{display:grid;grid-template-columns:1fr 1fr}
-.yy span{text-align:right;padding-right:2.4mm;font-size:5.8pt;font-weight:700;
+.yy span{text-align:right;padding-right:2.4mm;font-size:7pt;font-weight:700;
   letter-spacing:.11em;color:var(--ink-3)}
 .yy span.now{color:var(--ink)}
 
-table.matrix tbody th{text-align:left;font-weight:400;font-size:7.3pt;color:var(--ink-2);
+table.matrix tbody th{text-align:left;font-weight:400;font-size:8pt;color:var(--ink-2);
   padding:.55mm 3mm .55mm 0;border-bottom:.15mm solid var(--rule-2);vertical-align:top}
 table.matrix tbody td{padding:.55mm 2mm .55mm 2mm;font-size:8pt;vertical-align:top;
   border-bottom:.15mm solid var(--rule-2);border-left:.15mm solid var(--rule-2)}
@@ -225,15 +226,15 @@ table.matrix tbody tr{break-inside:avoid;page-break-inside:avoid}
 /* Section band: a rule and small caps. No grey fill anywhere in this document. */
 tr.band-row th,tr.band-row td{border-bottom:0;padding-top:1.2mm;padding-bottom:.5mm}
 tr.band-row td{white-space:nowrap}
-tr.band-row th{font-size:5.8pt;letter-spacing:.17em;text-transform:uppercase;font-weight:700;
+tr.band-row th{font-size:7pt;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
   color:var(--ink);border-bottom:.2mm solid var(--ink)}
 tr.band-row td{border-bottom:.2mm solid var(--ink);border-left:0}
 tr.band-row .unit{font-weight:400;letter-spacing:.05em;text-transform:none;color:var(--ink-3);
-  font-size:6.4pt}
+  font-size:7pt}
 
 .pair{display:grid;grid-template-columns:1fr 1fr}
 .pair>span{padding-right:2.4mm}
-.pair .p24 .n{font-size:7.4pt;color:var(--ink-2)}
+.pair .p24 .n{font-size:8pt;color:var(--ink-2)}
 .pair .p25 .n{font-size:8.4pt;font-weight:700;color:var(--ink)}
 /* Highest current-year figure in the row. Mono-safe, legended, and
    suppressed when only one school published — an unopposed number is not
@@ -243,33 +244,33 @@ tr.band-row .unit{font-weight:400;letter-spacing:.05em;text-transform:none;color
 
 .mx-fee div{display:flex;align-items:baseline;gap:1.4mm;white-space:nowrap}
 .mx-fee .amt{font-size:8.6pt;font-weight:700}
-.mx-fee .yr{font-size:6pt;color:var(--ink-3)}
+.mx-fee .yr{font-size:7pt;color:var(--ink-3)}
 .mx-fee .b2{margin-top:.7mm;padding-top:.7mm;border-top:.15mm dotted var(--rule)}
-.mx-note{font-size:6.8pt;color:var(--ink-2);font-style:italic}
+.mx-note{font-size:8pt;color:var(--ink-2);font-style:italic}
 .mx-num{font-size:8.6pt;font-weight:700}
-.mx-sub{font-size:6pt;color:var(--ink-3);letter-spacing:.04em}
+.mx-sub{font-size:7pt;color:var(--ink-3);letter-spacing:.04em}
 .mx-prop{margin-top:.9mm;height:1.2mm;border:.15mm solid var(--rule);background:var(--paper)}
 .mx-prop i{display:block;height:100%;background:var(--ink)}
 .mx-link a{color:var(--ink);text-decoration:none;border-bottom:.15mm solid var(--rule);
-  font-size:6.8pt}
+  font-size:8pt}
 
 /* ══ FOOTER ═════════════════════════════════════════════════════════════ */
 .docfoot{margin-top:4mm;break-inside:avoid}
-.docfoot .legend{display:flex;gap:6mm;flex-wrap:wrap;font-size:6.2pt;color:var(--ink-3);
+.docfoot .legend{display:flex;gap:6mm;flex-wrap:wrap;font-size:7pt;color:var(--ink-3);
   padding-bottom:1.8mm;border-bottom:.2mm solid var(--rule)}
 .docfoot .legend b{color:var(--ink);font-weight:700}
 .docfoot .thanks{margin:2.2mm 0 0;font-family:var(--serif);font-size:8.4pt;line-height:1.5}
-.docfoot .small{margin:1.4mm 0 0;font-size:6.4pt;color:var(--ink-3);line-height:1.5}
+.docfoot .small{margin:1.4mm 0 0;font-size:7pt;color:var(--ink-3);line-height:1.5}
 .doc--b .masthead{margin-bottom:3mm}
 .doc--b .mast-rule{margin-top:2.2mm}
 .docfoot--tight{margin-top:2mm}
-.docfoot--tight .legend{font-size:6pt;padding-bottom:1.2mm;gap:0 4.5mm}
+.docfoot--tight .legend{font-size:7pt;padding-bottom:1.2mm;gap:0 4.5mm}
 .docfoot--tight .legend .sig-inline{margin-left:auto;letter-spacing:.13em;
-  text-transform:uppercase;font-size:5.8pt}
-.docfoot--tight .thanks{font-size:7.6pt;margin-top:1.3mm;line-height:1.45}
-.docfoot--tight .small{display:inline;margin:0;font-size:6.3pt}
+  text-transform:uppercase;font-size:7pt}
+.docfoot--tight .thanks{font-size:8pt;margin-top:1.3mm;line-height:1.45}
+.docfoot--tight .small{display:inline;margin:0;font-size:7pt}
 .docfoot .sig{margin-top:2.6mm;padding-top:1.4mm;border-top:.15mm solid var(--rule-2);
-  display:flex;justify-content:space-between;font-size:5.8pt;letter-spacing:.13em;
+  display:flex;justify-content:space-between;font-size:7pt;letter-spacing:.13em;
   text-transform:uppercase;color:var(--ink-3)}
 
 /* ══ PRINT ══════════════════════════════════════════════════════════════ */

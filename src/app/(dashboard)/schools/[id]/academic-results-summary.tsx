@@ -96,7 +96,7 @@ export function AcademicResultsSummary({ results }: { results: SchoolAcademicRes
                 <div className="min-w-0 flex-1 space-y-5">
                   {lines.map(line => (
                     <div key={line.code} className="flex flex-col gap-2 sm:flex-row sm:gap-4">
-                      <p className="w-20 shrink-0 pt-px text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      <p className="w-20 shrink-0 pt-px text-xs text-muted-foreground">
                         {line.examType}
                       </p>
                       {/* Capped columns keep a two-band line compact; a long IB line scrolls inside itself on a phone. */}

@@ -4,7 +4,7 @@ import { SCHOOL_TABS, isMoreTab, resolveSchoolTab, schoolTabHref, schoolTabLabel
 describe('SCHOOL_TABS', () => {
   it('shows the prototype tabs in order, then Communications', () => {
     expect(SCHOOL_TABS.filter(t => t.group === 'main').map(t => t.label)).toEqual([
-      'Overview', 'Entrance Assessments', 'Fees', 'Exam Results', 'Contacts', 'Events', 'Notes & Info', 'Documents', 'Communications',
+      'Overview', 'Entrance exams', 'Fees', 'Exam results', 'Contacts', 'Events', 'Notes', 'Documents', 'Communications',
     ])
   })
 
@@ -28,7 +28,7 @@ describe('resolveSchoolTab', () => {
     expect(resolveSchoolTab('visits')).toBe('visits')
   })
 
-  it('sends the old supplementary info tab to "Notes & Info"', () => {
+  it('sends the old supplementary info tab to Notes', () => {
     expect(resolveSchoolTab('supplementary')).toBe('notes')
   })
 
@@ -48,7 +48,7 @@ describe('resolveSchoolTab', () => {
 describe('schoolTabHref and schoolTabLabel', () => {
   it('links to the tab by its key and names it as the tab bar does', () => {
     expect(schoolTabHref('s1', 'academic-results')).toBe('/schools/s1?tab=academic-results')
-    expect(schoolTabLabel('academic-results')).toBe('Exam Results')
+    expect(schoolTabLabel('academic-results')).toBe('Exam results')
     expect(schoolTabLabel('bank-details')).toBe('Bank details')
   })
 })

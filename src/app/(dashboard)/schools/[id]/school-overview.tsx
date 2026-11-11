@@ -1,130 +1,123 @@
-import { Building2, ClipboardList, FileText, Tags } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel } from "@/components/ui/panel"
+import { EditSchoolSheet } from "../school-form-sheet"
 import type { SchoolWithJoins } from "@/lib/supabase/queries/schools"
 import { getSchoolPlacementHistory } from "@/lib/supabase/queries/school-placement-history"
 import { SchoolPlacementHistory } from "./school-placement-history"
 import { currentAcademicYearStart, defaultPlacementYear } from "@/lib/schools/placement-history"
 
-function Fact({ label, children, wide }: { label: string; children: React.ReactNode; wide?: boolean }) {
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className={wide ? "space-y-1 sm:col-span-2" : "space-y-1"}>
-      <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</dt>
-      <dd className="break-words text-sm font-medium">{children || "—"}</dd>
+    <div className="grid grid-cols-[9rem_minmax(0,1fr)] gap-3 py-2 text-sm">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 break-words">{children || <span className="text-muted-foreground/60">Not recorded</span>}</dd>
     </div>
   )
 }
 
 const YesNo = ({ value }: { value: boolean | null }) =>
-  value ? <Badge className="border-0 bg-emerald-50 text-emerald-700">Yes</Badge> : <Badge variant="secondary">No</Badge>
+  value ? <span className="font-medium text-emerald-700">Yes</span> : <span className="text-muted-foreground">No</span>
 
-const linkClass = "text-primary underline-offset-2 hover:underline"
+const linkClass = "text-brand-navy underline-offset-2 hover:underline"
 
 function websiteHref(website: string) {
   return /^https?:\/\//i.test(website) ? website : `https://${website}`
 }
 
-function CardBlock({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) {
-  return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-base font-medium">
-          <Icon className="h-4 w-4 text-muted-foreground" /> {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
-  )
-}
-
 /**
- * First tab of the school page: what staff need at a glance, in two cards
- * (the school itself, and admissions), then remarks, keywords and placement
- * history. Each contact detail appears once.
+ * First tab of the school page: the school's details and admissions at a
+ * glance, a prompt naming what is still missing, then remarks, keywords and
+ * placement history. A zero pupil count counts as not recorded.
  */
-export async function SchoolOverview({ school }: { school: SchoolWithJoins }) {
+export async function SchoolOverview({ school, canWrite }: { school: SchoolWithJoins; canWrite: boolean }) {
   const placementHistory = await getSchoolPlacementHistory(school.id)
   const defaultPlacementYearKey = defaultPlacementYear(placementHistory ?? [], currentAcademicYearStart())
-  const address = [school.address, [school.city, school.county].filter(Boolean).join(", "), school.postcode, school.country?.label]
-    .filter(Boolean)
-  const boarders = school.boarder_count != null
+  const address = [school.address, [school.city, school.county].filter(Boolean).join(", "), school.postcode, school.country?.label].filter(Boolean)
+  const boarders = school.boarder_count
     ? `${school.boarder_count.toLocaleString("en-GB")}${school.boarder_age_min != null || school.boarder_age_max != null
-      ? ` (ages ${school.boarder_age_min ?? "?"}–${school.boarder_age_max ?? "?"})` : ""}`
+      ? ` (ages ${school.boarder_age_min ?? "?"} to ${school.boarder_age_max ?? "?"})` : ""}`
     : null
   const gender = school.gender_type?.label
-    ? `${school.gender_type.label}${school.coed_from?.label ? ` · co-ed from ${school.coed_from.label}` : ""}`
+    ? `${school.gender_type.label}${school.coed_from?.label ? `, co-ed from ${school.coed_from.label}` : ""}`
     : null
+
+  const missing = [
+    !school.institution_type && "type",
+    !school.gender_type && "gender",
+    !school.phase && "phase",
+    address.length === 0 && "address",
+    !school.website && "website",
+    !school.email && "email",
+    !school.telephone && "telephone",
+    !school.pupil_count && "pupil numbers",
+  ].filter(Boolean) as string[]
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-3">
-          <CardBlock icon={Building2} title="School details">
-            <dl className="grid gap-4 sm:grid-cols-2">
-              <Fact label="Institution type">{school.institution_type?.label}</Fact>
-              <Fact label="Gender">{gender}</Fact>
-              <Fact label="Phase">{school.phase?.label}</Fact>
-              <Fact label="Religious affiliation">{school.religious_affiliation?.label}</Fact>
-              <Fact label="Pupils">{school.pupil_count?.toLocaleString("en-GB")}</Fact>
-              <Fact label="Boarders">{boarders}</Fact>
-              <Fact label="Address" wide>
-                {address.length > 0 && <span className="whitespace-pre-line">{address.join("\n")}</span>}
-              </Fact>
-              <Fact label="Website">
-                {school.website && <a href={websiteHref(school.website)} target="_blank" rel="noopener noreferrer" className={linkClass}>{school.website}</a>}
-              </Fact>
-              <Fact label="Email">
-                {school.email && <a href={`mailto:${school.email}`} className={linkClass}>{school.email}</a>}
-              </Fact>
-              <Fact label="Telephone">
-                {school.telephone && <a href={`tel:${school.telephone}`} className={linkClass}>{school.telephone}</a>}
-              </Fact>
-              {school.fax && <Fact label="Fax">{school.fax}</Fact>}
-            </dl>
-          </CardBlock>
+      {canWrite && missing.length >= 3 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border-l-2 border-brand-gold bg-brand-gold/10 px-4 py-3">
+          <p className="text-sm">
+            <span className="font-medium">Complete the profile: </span>
+            {missing.join(", ")} {missing.length === 1 ? "is" : "are"} not recorded yet.
+          </p>
+          <EditSchoolSheet schoolId={school.id} schoolName={school.name} />
         </div>
+      )}
 
-        <div className="lg:col-span-2">
-          <CardBlock icon={ClipboardList} title="Admissions">
-            <dl className="grid grid-cols-2 gap-4">
-              <Fact label="Accepting applications"><YesNo value={school.accepts_applications} /></Fact>
-              <Fact label="Status"><span className="capitalize">{school.status || "normal"}</span></Fact>
-              <Fact label="Child visa">
-                <span className="flex items-center gap-2">
-                  <YesNo value={school.accepts_child_visa} />
-                  {school.accepts_child_visa && school.child_visa_age != null && (
-                    <span className="text-xs text-muted-foreground">from age {school.child_visa_age}</span>
-                  )}
+      <div className="grid items-start gap-6 lg:grid-cols-5">
+        <Panel title="School details" className="lg:col-span-3">
+          <dl className="-my-2 divide-y">
+            <Row label="Type">{school.institution_type?.label}</Row>
+            <Row label="Gender">{gender}</Row>
+            <Row label="Phase">{school.phase?.label}</Row>
+            <Row label="Religion">{school.religious_affiliation?.label}</Row>
+            <Row label="Pupils">{school.pupil_count ? school.pupil_count.toLocaleString("en-GB") : null}</Row>
+            <Row label="Boarders">{boarders}</Row>
+            <Row label="Address">{address.length > 0 && <span className="whitespace-pre-line">{address.join("\n")}</span>}</Row>
+            <Row label="Website">
+              {school.website && <a href={websiteHref(school.website)} target="_blank" rel="noopener noreferrer" className={linkClass}>{school.website}</a>}
+            </Row>
+            <Row label="Email">{school.email && <a href={`mailto:${school.email}`} className={linkClass}>{school.email}</a>}</Row>
+            <Row label="Telephone">{school.telephone && <a href={`tel:${school.telephone}`} className={linkClass}>{school.telephone}</a>}</Row>
+            {school.fax && <Row label="Fax">{school.fax}</Row>}
+          </dl>
+        </Panel>
+
+        <Panel title="Admissions" className="lg:col-span-2">
+          <dl className="-my-2 divide-y">
+            <Row label="Accepting applications"><YesNo value={school.accepts_applications} /></Row>
+            <Row label="Status"><span className="capitalize">{school.status || "normal"}</span></Row>
+            <Row label="Child visa">
+              <YesNo value={school.accepts_child_visa} />
+              {school.accepts_child_visa && school.child_visa_age != null && <span className="text-muted-foreground">, from age {school.child_visa_age}</span>}
+            </Row>
+            <Row label="General visa"><YesNo value={school.accepts_general_visa} /></Row>
+            <Row label="Current course fee">
+              {school.current_course_fee != null && (
+                <span className="tabular-nums">
+                  £{Number(school.current_course_fee).toLocaleString("en-GB", { maximumFractionDigits: 0 })}
+                  {school.current_course_fee_year && <span className="text-muted-foreground">, {school.current_course_fee_year}</span>}
                 </span>
-              </Fact>
-              <Fact label="General visa"><YesNo value={school.accepts_general_visa} /></Fact>
-              <Fact label="Current course fee" wide>
-                {school.current_course_fee != null && (
-                  <span className="tabular-nums">
-                    £{Number(school.current_course_fee).toLocaleString("en-GB", { maximumFractionDigits: 0 })}
-                    {school.current_course_fee_year && <span className="text-muted-foreground"> · {school.current_course_fee_year}</span>}
-                  </span>
-                )}
-              </Fact>
-            </dl>
-          </CardBlock>
-        </div>
+              )}
+            </Row>
+          </dl>
+        </Panel>
       </div>
 
       {school.remarks && (
-        <CardBlock icon={FileText} title="Remarks">
+        <Panel title="Remarks">
           <p className="whitespace-pre-wrap text-sm text-muted-foreground">{school.remarks}</p>
-        </CardBlock>
+        </Panel>
       )}
 
       {school.keywords && (
-        <CardBlock icon={Tags} title="Keywords">
+        <Panel title="Keywords">
           <div className="flex flex-wrap gap-2">
             {school.keywords.split(",").map(k => k.trim()).filter(Boolean).map((keyword, index) => (
               <Badge key={`${keyword}-${index}`} variant="outline" className="text-xs">{keyword}</Badge>
             ))}
           </div>
-        </CardBlock>
+        </Panel>
       )}
 
       <SchoolPlacementHistory counts={placementHistory} defaultYear={defaultPlacementYearKey} />

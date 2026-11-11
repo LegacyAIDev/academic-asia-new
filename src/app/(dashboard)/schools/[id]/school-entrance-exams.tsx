@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ClipboardCheck, Check, Minus, Paperclip } from "lucide-react"
+import { Paperclip } from "lucide-react"
 import { EntranceExamDialog, EditEntranceExamButton, DeleteEntranceExamButton } from "./entrance-exam-dialog"
 import type { SchoolEntranceExamWithJoins } from "@/lib/supabase/queries/school-entrance-exams"
 import type { EntranceExamReferenceData } from "./entrance-exam-dialog"
@@ -25,10 +25,6 @@ type SchoolEntranceExamsSectionProps = {
   canManagePapers?: boolean
 }
 
-function BoolIndicator({ value }: { value: boolean | null }) {
-  if (value) return <Check className="h-4 w-4 text-emerald-600" />
-  return <Minus className="h-4 w-4 text-muted-foreground/40" />
-}
 
 export function SchoolEntranceExamsSection({
   schoolId,
@@ -40,64 +36,39 @@ export function SchoolEntranceExamsSection({
 }: SchoolEntranceExamsSectionProps) {
   if (exams.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
-              Entrance Exams
-            </CardTitle>
-            {canWrite && <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <ClipboardCheck className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No entrance exams recorded</h3>
-            <p className="text-sm text-muted-foreground">
-              Add entrance exam information for this school
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <Panel title="Entrance exams">
+        <PanelEmpty title="No entrance exams recorded" action={canWrite && <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />}>
+          Add entrance exam information for this school
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
-            Entrance Exams ({exams.length})
-          </CardTitle>
-          {canWrite && <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+    <Panel title="Entrance exams" flush action={<>{canWrite && <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="create" canManagePapers={canManagePapers} />}</>}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[100px]">Entry Year</TableHead>
+                <TableHead className="pl-4 min-w-[100px]">Entry Year</TableHead>
                 <TableHead className="min-w-[120px]">Exam Type</TableHead>
                 <TableHead className="min-w-[100px]">Year Level</TableHead>
                 <TableHead className="min-w-[180px]">Subject</TableHead>
                 <TableHead className="min-w-[80px]">Duration</TableHead>
-                <TableHead className="min-w-[70px] text-center">Paper</TableHead>
-                {(canWrite || canManagePapers) && <TableHead className="pr-6 text-right">Actions</TableHead>}
+                <TableHead className="min-w-[160px]">Paper</TableHead>
+                {(canWrite || canManagePapers) && <TableHead className="pr-4 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {exams.map((exam) => (
                 <TableRow key={exam.id}>
-                  <TableCell className="pl-6 font-medium text-sm">
+                  <TableCell className="pl-4 font-medium text-sm">
                     {exam.entry_year || "—"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="text-xs font-medium whitespace-nowrap">
-                      {exam.exam_type?.label ?? "—"}
-                    </Badge>
+                    {exam.exam_type
+                      ? <Badge variant="outline" className="whitespace-nowrap text-xs font-medium">{exam.exam_type.label}</Badge>
+                      : <span className="text-sm text-muted-foreground/60">Not set</span>}
                   </TableCell>
                   <TableCell className="text-sm">{exam.year_level || "—"}</TableCell>
                   <TableCell className="text-sm">
@@ -113,23 +84,17 @@ export function SchoolEntranceExamsSection({
                   <TableCell className="text-sm">
                     {exam.duration_minutes ? `${exam.duration_minutes} min` : "—"}
                   </TableCell>
-                  <TableCell className="text-center">
-                    {/* The flag covers papers held physically in the office; the
-                        clip covers digitally attached ones. Staff need both. */}
-                    <div className="flex items-center justify-center gap-1.5">
-                      <BoolIndicator value={exam.has_paper} />
-                      {exam.paper_request_from_school && <Badge variant="outline" className="text-[10px]">On request</Badge>}
-                      {(attachmentsByExam?.get(exam.id)?.length ?? 0) > 0 && (
-                        <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
-                          <Paperclip className="h-3 w-3" />
-                          {attachmentsByExam?.get(exam.id)?.length}
-                        </span>
-                      )}
-                    </div>
+                  <TableCell className="text-sm">
+                    {/* In words: a paper held in the office, files attached, or one to request from the school. */}
+                    <PaperStatus
+                      inOffice={exam.has_paper}
+                      onRequest={exam.paper_request_from_school}
+                      files={attachmentsByExam?.get(exam.id) ?? []}
+                    />
                   </TableCell>
                   {/* The examination team opens papers through the edit dialog, so it is offered with either right. */}
                   {(canWrite || canManagePapers) && (
-                    <TableCell className="pr-6">
+                    <TableCell className="pr-4">
                       <div className="flex items-center justify-end gap-1">
                         <EditEntranceExamButton
                           exam={exam}
@@ -154,7 +119,17 @@ export function SchoolEntranceExamsSection({
             </TableBody>
           </Table>
         </div>
-      </CardContent>
-    </Card>
+      </Panel>
   )
+}
+
+/** Where the paper is, said plainly: "Paper in the office", "english-v3.pdf", "Ask the school for it". */
+function PaperStatus({ inOffice, onRequest, files }: { inOffice: boolean | null; onRequest: boolean | null; files: AttachmentRecord[] }) {
+  const parts: React.ReactNode[] = []
+  if (files.length === 1) parts.push(<span key="f" className="flex items-center gap-1"><Paperclip className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{files[0].title || files[0].file_name || "Attached file"}</span></span>)
+  if (files.length > 1) parts.push(<span key="f" className="flex items-center gap-1"><Paperclip className="h-3 w-3 shrink-0" aria-hidden="true" />{files.length} files attached</span>)
+  if (inOffice) parts.push(<span key="o">Paper in the office</span>)
+  if (onRequest) parts.push(<span key="r" className="text-amber-700">Ask the school for it</span>)
+  if (parts.length === 0) return <span className="text-muted-foreground/60">No paper yet</span>
+  return <div className="max-w-[220px] space-y-0.5 text-muted-foreground">{parts}</div>
 }

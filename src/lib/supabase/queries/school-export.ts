@@ -212,8 +212,9 @@ export async function getSchoolExportData(
     website: school.website,
     genderType: school.gender_type?.label ?? null,
     religion: school.religious_affiliation?.label ?? null,
-    pupilCount: school.pupil_count,
-    boarderCount: school.boarder_count,
+    // Older rows store 0 for "not recorded"; a school never has no pupils.
+    pupilCount: school.pupil_count || null,
+    boarderCount: school.pupil_count ? school.boarder_count : null,
     boardingPercent: boardingPercent(school.pupil_count, school.boarder_count),
     boarderAge: ageRange(school.boarder_age_min, school.boarder_age_max),
     schoolAge: ageRange(school.school_age_min, school.school_age_max),

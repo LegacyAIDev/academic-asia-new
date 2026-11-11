@@ -50,6 +50,7 @@ import {
 import { getAcademicYearOptions } from "@/lib/utils"
 import type { SchoolCourseWithJoins, CourseItem } from "@/lib/supabase/queries/school-courses"
 import { FormSection } from "@/components/forms/form-section"
+import { useAddParam } from "@/lib/students/use-add-param"
 
 export type CourseReferenceData = { courses: CourseItem[] }
 
@@ -98,7 +99,7 @@ function FormField({
 }
 
 export function CourseDialog({ schoolId, referenceData, mode, course, trigger }: CourseDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useAddParam(mode === "create" ? "course" : null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -157,9 +158,9 @@ export function CourseDialog({ schoolId, referenceData, mode, course, trigger }:
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
-            <Plus className="h-4 w-4" />
-            Add Course
+          <Button size="sm" variant="outline" className="h-8 gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            Add course
           </Button>
         )}
       </DialogTrigger>
@@ -204,7 +205,7 @@ export function CourseDialog({ schoolId, referenceData, mode, course, trigger }:
                   <SelectContent position="popper" className="max-h-[300px]">
                     {Object.entries(groupedCourses).map(([category, items]) => (
                       <SelectGroup key={category}>
-                        <SelectLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        <SelectLabel className="text-xs font-medium text-muted-foreground">
                           {categoryLabels[category] || category}
                         </SelectLabel>
                         {items.map((c) => (

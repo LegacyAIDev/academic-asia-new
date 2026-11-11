@@ -49,6 +49,7 @@ import {
 } from "@/lib/supabase/actions/school-contacts"
 import type { SchoolContactWithJoins } from "@/lib/supabase/queries/school-contacts"
 import { FormSection } from "@/components/forms/form-section"
+import { useAddParam } from "@/lib/students/use-add-param"
 
 type ContactDialogProps = {
   schoolId: string
@@ -76,7 +77,7 @@ function FormField({
 }
 
 export function SchoolContactDialog({ schoolId, mode, contact, trigger }: ContactDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useAddParam(mode === "create" ? "contact" : null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [isActive, setIsActive] = useState(contact?.is_active ?? true)
@@ -130,9 +131,9 @@ export function SchoolContactDialog({ schoolId, mode, contact, trigger }: Contac
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
-            <Plus className="h-4 w-4" />
-            Add Contact
+          <Button size="sm" variant="outline" className="h-8 gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            Add contact
           </Button>
         )}
       </DialogTrigger>

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
  * the right) over its content. The one section style across the app.
  */
 export function Panel({ title, count, link, action, children, className, flush = false, id }: {
-  title: string
+  title: ReactNode
   count?: number
   link?: { href: string; label: string }
   /** A button for the header bar (e.g. "Add visa"). */

@@ -22,27 +22,21 @@ const download = (page, url, body) => page.evaluate(async (u, b) => {
   return { status: res.status, type: res.headers.get('content-type') ?? '', size: blob.size }
 }, url, body ?? null)
 
-async function confirmDelete(page, title) {
-  await click(page, title, 'main')
-  await page.waitForSelector('[role="alertdialog"]')
-  await pause(400)
-  await click(page, title.replace('Delete ', 'Delete '), '[role="alertdialog"]').catch(() =>
-    page.evaluate(() => [...document.querySelectorAll('[role="alertdialog"] button')].pop().click()))
-}
-
 const browser = await launch()
 try {
   const { page } = await signIn(browser, 'manager@aa.test')
   let schoolId = null
 
   await step(page, 'a new school saves with its boarder ages', async () => {
+    // Adding a school happens in a drawer over the list; /schools/new opens it.
     await open(page, '/schools/new')
-    await page.type('input[name="name"]', 'UAT School Riverside')
-    await page.type('#boarder_age_min', '11')
-    await page.type('#boarder_age_max', '17')
+    await page.waitForSelector('[role="dialog"] input[name="name"]', { timeout: 60000 })
+    await page.type('[role="dialog"] input[name="name"]', 'UAT School Riverside')
+    await page.type('[role="dialog"] #boarder_age_min', '11')
+    await page.type('[role="dialog"] #boarder_age_max', '17')
     await Promise.all([
       page.waitForFunction(() => /^\/schools\/[0-9a-f-]{36}$/.test(location.pathname), { polling: 100, timeout: 60000 }),
-      page.click('main button[type="submit"]'),
+      page.click('[role="dialog"] button[type="submit"]'),
     ])
     schoolId = page.url().split('/').pop()
     await seeText(page, 'UAT School Riverside')
@@ -63,7 +57,12 @@ try {
 
   await step(page, 'the school can be deleted', async () => {
     await open(page, `/schools/${schoolId}`)
-    await confirmDelete(page, 'Delete School')
+    // Delete lives in the More menu, away from everyday buttons.
+    await page.click('main button[aria-label="More actions"]')
+    await click(page, 'Delete school')
+    await page.waitForSelector('[role="alertdialog"]')
+    await pause(400)
+    await page.evaluate(() => [...document.querySelectorAll('[role="alertdialog"] button')].pop().click())
     await page.waitForFunction(() => location.pathname === '/schools', { polling: 100, timeout: 60000 })
     assert(sql(`select count(*) from public.schools where id = '${schoolId}'`) === '0', 'school still in the database')
   })

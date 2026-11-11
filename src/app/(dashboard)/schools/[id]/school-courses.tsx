@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { GraduationCap } from "lucide-react"
 import { CourseDialog, EditCourseButton, DeleteCourseButton } from "./course-dialog"
 import type { SchoolCourseWithJoins } from "@/lib/supabase/queries/school-courses"
 import type { CourseReferenceData } from "./course-dialog"
@@ -65,51 +64,26 @@ export function SchoolCoursesSection({
 }: SchoolCoursesSectionProps) {
   if (courses.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <GraduationCap className="h-4 w-4 text-muted-foreground" />
-              Courses
-            </CardTitle>
-            {canWrite && <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <GraduationCap className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No courses recorded</h3>
-            <p className="text-sm text-muted-foreground">
-              Add courses offered by this school
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <Panel title="Courses">
+        <PanelEmpty title="No courses recorded" action={canWrite && <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}>
+          Add courses offered by this school
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-            Courses ({courses.length})
-          </CardTitle>
-          {canWrite && <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+    <Panel title="Courses" flush action={<>{canWrite && <CourseDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}</>}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[180px]">Course</TableHead>
+                <TableHead className="pl-4 min-w-[180px]">Course</TableHead>
                 <TableHead className="min-w-[100px]">Category</TableHead>
                 <TableHead className="min-w-[100px]">Year</TableHead>
                 <TableHead className="min-w-[150px]">Description</TableHead>
                 <TableHead className="min-w-[120px]">Subject</TableHead>
-                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
+                {canWrite && <TableHead className="pr-4 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -117,7 +91,7 @@ export function SchoolCoursesSection({
                 const cat = item.course?.category || "other"
                 return (
                   <TableRow key={item.id}>
-                    <TableCell className="pl-6 font-medium text-sm">
+                    <TableCell className="pl-4 font-medium text-sm">
                       {item.course?.label ?? "—"}
                     </TableCell>
                     <TableCell>
@@ -135,7 +109,7 @@ export function SchoolCoursesSection({
                       {item.subject || "—"}
                     </TableCell>
                     {canWrite && (
-                      <TableCell className="pr-6">
+                      <TableCell className="pr-4">
                         <div className="flex items-center justify-end gap-1">
                           <EditCourseButton
                             course={item}
@@ -156,7 +130,6 @@ export function SchoolCoursesSection({
             </TableBody>
           </Table>
         </div>
-      </CardContent>
-    </Card>
+      </Panel>
   )
 }

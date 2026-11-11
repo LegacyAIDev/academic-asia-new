@@ -46,6 +46,7 @@ import {
 import { getAcademicYearOptions } from "@/lib/utils"
 import type { SupInfoCategory } from "@/lib/supabase/queries/school-supplementary-info"
 import { FormSection } from "@/components/forms/form-section"
+import { useAddParam } from "@/lib/students/use-add-param"
 
 type SchoolSupplementaryInfo = {
   id: string
@@ -98,7 +99,7 @@ export function SupInfoDialog({
   trigger,
   categories,
 }: SupInfoDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useAddParam(mode === "create" ? "info" : null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -145,9 +146,9 @@ export function SupInfoDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm" className="gap-2 shadow-sm bg-primary hover:bg-primary/90 transition-all duration-200">
-            <Plus className="h-4 w-4" />
-            Add Info
+          <Button size="sm" variant="outline" className="h-8 gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            Add background info
           </Button>
         )}
       </DialogTrigger>

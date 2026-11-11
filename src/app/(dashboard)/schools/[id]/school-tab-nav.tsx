@@ -1,89 +1,70 @@
 import Link from "next/link"
-import {
-  Banknote, Building2, CalendarDays, CalendarSearch, ChevronDown, ClipboardCheck, Contact, Files,
-  GraduationCap, Landmark, Mail, StickyNote, Trophy,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { ChevronDown } from "lucide-react"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { SCHOOL_TABS, isMoreTab, schoolTabHref, schoolTabLabel, type SchoolTabKey } from "@/lib/schools/school-tabs"
+import type { SchoolSectionCounts } from "@/lib/supabase/queries/school-sections"
 
-const TAB_ICONS: Record<SchoolTabKey, React.ElementType> = {
-  basic: Building2,
-  "entrance-exams": ClipboardCheck,
-  fees: Banknote,
-  "academic-results": Trophy,
-  contacts: Contact,
-  events: CalendarDays,
-  notes: StickyNote,
-  documents: Files,
-  communications: Mail,
-  courses: GraduationCap,
-  "bank-details": Landmark,
-  visits: CalendarSearch,
-}
+export type SchoolTabCounts = SchoolSectionCounts
 
-/** Only these counts are worth a query on every view; the rest show inside their tab. */
-export type SchoolTabCounts = Partial<Record<SchoolTabKey, number>>
+const tabClass = (active: boolean) =>
+  cn(
+    "-mb-px flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-3 text-sm font-medium transition-colors",
+    active ? "border-brand-navy text-brand-navy" : "border-transparent text-muted-foreground hover:border-border hover:text-foreground",
+  )
 
-const itemClass =
-  "inline-flex h-[calc(100%-1px)] items-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-2.5 py-1 text-sm font-medium transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-const activeClass = "bg-background text-foreground shadow-sm"
-
-function CountBadge({ count }: { count: number | undefined }) {
-  if (count == null) return null
-  return <Badge variant="secondary" className="ml-0.5 h-5 px-1.5 text-xs">{count}</Badge>
+function Count({ count, active }: { count: number | null | undefined; active: boolean }) {
+  if (!count) return null
+  return <span className={cn("rounded-full px-1.5 py-px text-xs tabular-nums", active ? "bg-brand-navy text-white" : "bg-muted text-muted-foreground")}>{count}</span>
 }
 
 /**
- * Tab bar of the school page. Each tab is a plain link, so the server loads
- * only the open tab's data; the three rarely used tabs sit in a "More" menu
- * that names the open one when it is selected.
+ * The school's sections as one bar that stays in view, each with how many
+ * records it holds. The three rarely used ones sit under "More", which names
+ * and underlines the one that is open.
  */
 export function SchoolTabNav({ schoolId, current, counts }: { schoolId: string; current: SchoolTabKey; counts: SchoolTabCounts }) {
   const main = SCHOOL_TABS.filter(tab => tab.group === "main")
   const more = SCHOOL_TABS.filter(tab => tab.group === "more")
   const moreOpen = isMoreTab(current)
+  const moreTotal = more.reduce((sum, tab) => sum + (counts[tab.key] ?? 0), 0)
 
   return (
-    <div className="-mx-1 overflow-x-auto px-1 scrollbar-hide">
-      <nav aria-label="School sections" className="inline-flex h-9 w-max items-center rounded-lg bg-muted/50 p-[3px] text-muted-foreground">
+    <nav aria-label="School sections" className="sticky top-14 z-30 -mx-4 border-b bg-background/95 px-4 backdrop-blur sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-8 lg:px-8">
+      <ul className="flex gap-1 overflow-x-auto">
         {main.map(tab => {
-          const Icon = TAB_ICONS[tab.key]
           const active = tab.key === current
           return (
-            <Link key={tab.key} href={schoolTabHref(schoolId, tab.key)} scroll={false}
-              aria-current={active ? "page" : undefined} className={cn(itemClass, active && activeClass)}>
-              <Icon className="h-4 w-4" />
-              {tab.label}
-              <CountBadge count={counts[tab.key]} />
-            </Link>
+            <li key={tab.key} className="shrink-0">
+              <Link href={schoolTabHref(schoolId, tab.key)} scroll={false} aria-current={active ? "page" : undefined} className={tabClass(active)}>
+                {tab.label}
+                <Count count={counts[tab.key]} active={active} />
+              </Link>
+            </li>
           )
         })}
-        <DropdownMenu>
-          <DropdownMenuTrigger className={cn(itemClass, moreOpen && activeClass)}>
-            {moreOpen ? `More: ${schoolTabLabel(current)}` : "More"}
-            <ChevronDown className="h-3.5 w-3.5" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {more.map(tab => {
-              const Icon = TAB_ICONS[tab.key]
-              return (
+        <li className="shrink-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger className={tabClass(moreOpen)} aria-current={moreOpen ? "page" : undefined}>
+              {moreOpen ? schoolTabLabel(current) : "More"}
+              {!moreOpen && <Count count={moreTotal} active={false} />}
+              <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {more.map(tab => (
                 <DropdownMenuItem key={tab.key} asChild>
-                  <Link href={schoolTabHref(schoolId, tab.key)} scroll={false}
-                    aria-current={tab.key === current ? "page" : undefined} className="gap-2">
-                    <Icon className="h-4 w-4" />
+                  <Link href={schoolTabHref(schoolId, tab.key)} scroll={false} aria-current={tab.key === current ? "page" : undefined}>
                     {tab.label}
-                    <span className="ml-auto pl-4 text-xs tabular-nums text-muted-foreground">{counts[tab.key] ?? ""}</span>
+                    <span className="ml-auto pl-4 text-xs tabular-nums text-muted-foreground">{counts[tab.key] || ""}</span>
                   </Link>
                 </DropdownMenuItem>
-              )
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </nav>
-    </div>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </li>
+      </ul>
+    </nav>
   )
 }

@@ -26,7 +26,7 @@ import { PresentSchoolPicker } from "./present-school-picker"
 import { parseDateOnly, toDateOnly } from "@/lib/date-only"
 import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
-const GRID = "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+const GRID = "grid gap-4 @md:grid-cols-2 @3xl:grid-cols-3 [&>*]:min-w-0"
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 /** This year and the next five, plus a saved year outside that range so it still shows. */
@@ -190,7 +190,7 @@ export function StudentForm({
   }, [error])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="@container space-y-6">
       {error && (
         <div ref={errorRef} role="alert" className="flex flex-wrap items-center gap-3 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
           <span className="flex-1">{error}</span>
@@ -260,10 +260,10 @@ export function StudentForm({
           <Field id="telephone" label="Home phone">
             <PhoneInput name="telephone" defaultValue={student?.telephone ?? ""} defaultCountryCode="852" placeholder="e.g. 2577 8048" />
           </Field>
-          <Field id="address_line_1" label="Address" className="sm:col-span-2 lg:col-span-3">
+          <Field id="address_line_1" label="Address" className="@md:col-span-2 @3xl:col-span-3">
             <Input id="address_line_1" name="address_line_1" placeholder="e.g. Flat B, 15/F, 41 Conduit Road, Mid-Levels, Hong Kong" defaultValue={student?.address_line_1 ?? ""} />
           </Field>
-          <Field id="chinese_address" label="Address in Chinese" className="sm:col-span-2 lg:col-span-3">
+          <Field id="chinese_address" label="Address in Chinese" className="@md:col-span-2 @3xl:col-span-3">
             <Input id="chinese_address" name="chinese_address" placeholder="中文地址" defaultValue={student?.chinese_address ?? ""} />
           </Field>
         </div>
@@ -271,7 +271,7 @@ export function StudentForm({
 
       <FormBlock title="School and course">
         <div className={GRID}>
-          <Field id="present_school" label="Current school" className="sm:col-span-2">
+          <Field id="present_school" label="Current school" className="@md:col-span-2">
             <PresentSchoolPicker
               id="present_school"
               schools={presentSchools}
@@ -371,7 +371,7 @@ export function StudentForm({
           <Field id="enrollment_date" label="Enrolled with us" hint="Leave empty until the family signs up.">
             <DateField id="enrollment_date" name="enrollment_date" defaultValue={student?.enrollment_date ?? null} placeholder="Not enrolled yet" />
           </Field>
-          <Field id="exam_paper" label="Exam paper" className="sm:col-span-2 lg:col-span-3" hint="The entrance paper level the student sits, with the paper attached if you have it.">
+          <Field id="exam_paper" label="Exam paper" className="@md:col-span-2 @3xl:col-span-3" hint="The entrance paper level the student sits, with the paper attached if you have it.">
             <Input id="exam_paper" name="exam_paper" placeholder="e.g. Year 12" defaultValue={student?.exam_paper ?? ""} />
             <AttachmentField
               ref={attachRef}

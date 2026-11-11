@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { StickyNote } from "lucide-react"
 import { personName } from "@/lib/scheduler/person-name"
 import { schoolNoteByline } from "@/lib/notes/note-format"
 import { NoteDialog, EditNoteButton, DeleteNoteButton } from "./note-dialog"
@@ -49,48 +48,23 @@ export function SchoolNotesSection({
 }: SchoolNotesSectionProps) {
   if (notes.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <StickyNote className="h-4 w-4 text-muted-foreground" />
-              Notes
-            </CardTitle>
-            {canWrite && <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
-          </div>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center">
-            <StickyNote className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-sm font-medium text-foreground mb-1">No notes recorded</h3>
-            <p className="text-sm text-muted-foreground">
-              Add notes and information for this school
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <Panel title="Notes">
+        <PanelEmpty title="No notes recorded" action={canWrite && <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}>
+          Add notes and information for this school
+        </PanelEmpty>
+      </Panel>
     )
   }
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <StickyNote className="h-4 w-4 text-muted-foreground" />
-            Notes ({notes.length})
-          </CardTitle>
-          {canWrite && <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}
-        </div>
-      </CardHeader>
-      <CardContent className="px-0 pb-0">
+    <Panel title="Notes" flush action={<>{canWrite && <NoteDialog schoolId={schoolId} referenceData={referenceData} mode="create" />}</>}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-6 min-w-[150px]">Category</TableHead>
+                <TableHead className="pl-4 min-w-[150px]">Category</TableHead>
                 <TableHead>Detail</TableHead>
-                {canWrite && <TableHead className="pr-6 text-right">Actions</TableHead>}
+                {canWrite && <TableHead className="pr-4 text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -98,7 +72,7 @@ export function SchoolNotesSection({
                 const badgeStyle = categoryStyles[note.category?.code ?? ""] ?? "bg-slate-50 text-slate-700 border-slate-200"
                 return (
                   <TableRow key={note.id}>
-                    <TableCell className="pl-6">
+                    <TableCell className="pl-4">
                       <Badge variant="outline" className={`${badgeStyle} border text-xs font-medium whitespace-nowrap`}>
                         {note.category?.label ?? "—"}
                       </Badge>
@@ -117,7 +91,7 @@ export function SchoolNotesSection({
                       </p>
                     </TableCell>
                     {canWrite && (
-                      <TableCell className="pr-6">
+                      <TableCell className="pr-4">
                         <div className="flex items-center justify-end gap-1">
                           <EditNoteButton
                             note={note}
@@ -140,7 +114,6 @@ export function SchoolNotesSection({
             </TableBody>
           </Table>
         </div>
-      </CardContent>
-    </Card>
+      </Panel>
   )
 }

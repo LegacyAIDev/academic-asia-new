@@ -15,7 +15,7 @@ export function PlacementKpiTiles({ figures }: { figures: PlacementRow }) {
       {tiles.map((tile, index) => (
         // The rate takes the full last row on a phone instead of sitting alone in half of it.
         <div key={tile.label} className={`border-t pt-3 ${index === tiles.length - 1 ? "col-span-2 sm:col-span-1" : ""}`}>
-          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{tile.label}</dt>
+          <dt className="text-xs text-muted-foreground">{tile.label}</dt>
           <dd className="mt-1 text-2xl font-semibold tabular-nums">{tile.value}</dd>
         </div>
       ))}
