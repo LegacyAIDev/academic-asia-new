@@ -6,7 +6,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Panel, PanelEmpty } from "@/components/ui/panel"
-import { getStaffList, getDepartments } from "@/lib/supabase/queries/staff"
+import { getStaffList } from "@/lib/supabase/queries/staff"
+import { filterStaff, parseStaffFilters, staffFilterOptions } from "@/lib/staff/filter-staff"
 import { StaffFilters } from "./staff-filters"
 import { AddStaffButton } from "./staff-form-sheet"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
@@ -14,6 +15,7 @@ import { ACCESS, MODULES } from "@/lib/permissions/modules"
 
 type SearchParams = Promise<{
   search?: string
+  level?: string
   department?: string
 }>
 
@@ -21,14 +23,12 @@ export default async function StaffPage({ searchParams }: { searchParams: Search
   await requireAccess(MODULES.STAFF)
   const canWrite = await canAccess(MODULES.STAFF, ACCESS.WRITE)
 
-  const params = await searchParams
-  const departmentId = params.department ? parseInt(params.department, 10) : undefined
-  const filtered = Boolean(params.search || departmentId)
+  const filters = parseStaffFilters(await searchParams)
+  const filtered = Boolean(filters.search || filters.level !== null || filters.departmentId !== null)
 
-  const [staff, departments] = await Promise.all([
-    getStaffList({ search: params.search, departmentId }),
-    getDepartments(),
-  ])
+  const team = await getStaffList()
+  const options = staffFilterOptions(team)
+  const staff = filterStaff(team, filters)
 
   // Show a column only when someone has something in it.
   const show = {
@@ -47,13 +47,13 @@ export default async function StaffPage({ searchParams }: { searchParams: Search
       </div>
 
       <Suspense fallback={<Skeleton className="h-9 w-full max-w-md" />}>
-        <StaffFilters departments={departments} />
+        <StaffFilters levels={options.levels} departments={options.departments} total={team.length} />
       </Suspense>
 
-      <Panel title="Team" count={staff.length} flush>
+      <Panel title={filtered ? `${staff.length} of ${team.length}` : "Team"} count={filtered ? undefined : staff.length} flush>
         {staff.length === 0 ? (
           <PanelEmpty title={filtered ? "No one matches" : "No staff yet"}>
-            {filtered ? "Try another name or department." : "Add the first staff member so they can sign in."}
+            {filtered ? "Try another name, or clear the filters." : "Add the first staff member so they can sign in."}
           </PanelEmpty>
         ) : (
           <div className="overflow-x-auto">

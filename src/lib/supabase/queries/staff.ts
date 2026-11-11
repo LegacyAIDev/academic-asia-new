@@ -38,18 +38,12 @@ function withAdminLevelLabel<T extends Record<string, unknown>>(row: T) {
   return { ...rest, admin_level_label: ref?.label ?? null }
 }
 
-export type StaffListParams = {
-  search?: string
-  departmentId?: number
-}
-
-/** Fetch all staff profiles with department info */
-export async function getStaffList(params: StaffListParams = {}): Promise<StaffListItem[]> {
-  const { search, departmentId } = params
+/** Every staff profile with its department and access level; the list page filters these itself. */
+export async function getStaffList(): Promise<StaffListItem[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  let query = supabase
+  const query = supabase
     .from('profiles')
     .select(`
       id, first_name, surname, email_1, telephone, mobile,
@@ -58,14 +52,6 @@ export async function getStaffList(params: StaffListParams = {}): Promise<StaffL
       admin_level_ref:admin_levels!profiles_admin_level_fkey(label)
     `)
     .order('surname')
-
-  if (search) {
-    query = query.or(`first_name.ilike.%${search}%,surname.ilike.%${search}%,email_1.ilike.%${search}%`)
-  }
-
-  if (departmentId) {
-    query = query.eq('department_id', departmentId)
-  }
 
   const { data, error } = await query
 

@@ -81,6 +81,21 @@ try {
     ])
   })
 
+  await step(page, 'the filters are accurate: full-name search, access level with counts, no empty department filter', async () => {
+    await open(page, '/staff?search=una%20tester')
+    const names = () => page.$$eval('tbody tr', rows => rows.map(r => r.querySelector('td a')?.innerText.trim()))
+    assert(JSON.stringify(await names()) === '["Una Tester"]', `search found ${await names()}`)
+    await open(page, '/staff')
+    const expected = Number(sql(`select count(*) from public.profiles where admin_level = 6`))
+    await page.click('button[aria-label="Access level"]')
+    await seeText(page, `Staff (${expected})`, '[role="listbox"]')
+    await page.keyboard.press('Escape')
+    await open(page, '/staff?level=6')
+    assert((await names()).length === expected, `level filter showed ${(await names()).length}, expected ${expected}`)
+    const anyDepartment = sql(`select count(*) from public.profiles where department_id is not null`) !== '0'
+    assert(Boolean(await page.$('button[aria-label="Department"]')) === anyDepartment, 'department filter shown without anyone in a department')
+  })
+
   await step(page, 'the new staff member can sign in with the password set', async () => {
     assert(await canSignIn(browser, PASSWORD), 'could not sign in')
   })
