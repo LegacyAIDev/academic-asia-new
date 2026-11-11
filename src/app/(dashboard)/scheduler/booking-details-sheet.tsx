@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
@@ -13,7 +11,6 @@ import { SectionEyebrow } from '@/components/scheduler/booking-form-section'
 import type { CalendarEventProps } from '@/lib/scheduler/calendar-adapter'
 import type { BookingFormInput } from '@/lib/scheduler/booking-schema'
 import { bookingDetailPeopleLabels, bookingDetailToFormInput } from '@/lib/scheduler/booking-defaults'
-import { bookingPageHref } from '@/lib/scheduler/return-path'
 import { getBookingDetailsAction, type BookingDetailsPayload } from '@/lib/supabase/actions/scheduler-details'
 import { BookingActionBar } from './booking-action-bar'
 
@@ -25,13 +22,11 @@ type Props = {
   onClose: () => void
   canWrite: boolean
   canConfirm: boolean
-  /** Calendar URL the booking page should return to. */
-  returnTo: string
   onEdit: (initial: BookingFormInput, labels: Record<string, string>) => void
 }
 
 /** Side panel opened from a calendar card: booking facts, history and the actions the user may take. */
-export function BookingDetailsSheet({ selected, onClose, canWrite, canConfirm, returnTo, onEdit }: Props) {
+export function BookingDetailsSheet({ selected, onClose, canWrite, canConfirm, onEdit }: Props) {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const bookingId = selected?.props.bookingId ?? null
 
@@ -88,11 +83,6 @@ export function BookingDetailsSheet({ selected, onClose, canWrite, canConfirm, r
             <>
               <BookingDetails booking={booking} />
               <BookingActionBar booking={booking} canConfirm={canConfirm} onDone={onClose}>
-                <Button asChild variant="ghost" size="sm" className="h-9">
-                  <Link href={bookingPageHref(booking.id, returnTo)}>
-                    <ExternalLink className="mr-1 h-3.5 w-3.5" /> Open
-                  </Link>
-                </Button>
                 {canWrite && booking.status !== 'cancelled' && (
                   <Button size="sm" variant="ghost" className="h-9" onClick={() => onEdit(bookingDetailToFormInput(booking), bookingDetailPeopleLabels(booking))}>
                     Edit

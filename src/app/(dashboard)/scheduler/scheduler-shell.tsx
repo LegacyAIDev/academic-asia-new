@@ -186,7 +186,6 @@ export function SchedulerShell({ params, items, blockedOccurrences, myBlockedTim
         onClose={() => setSelected(null)}
         canWrite={canWrite}
         canConfirm={canConfirm}
-        returnTo={returnTo}
         onEdit={(initial, labels) => {
           setSelected(null)
           setDialog({ open: true, initial, peopleLabels: { ...model.peopleLabels, ...labels } })
