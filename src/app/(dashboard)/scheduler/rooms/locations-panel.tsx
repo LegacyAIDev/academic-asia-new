@@ -2,60 +2,58 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { Loader2, MapPin } from "lucide-react"
+import { Loader2, MapPin, Pencil, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { setLocationActive } from "@/lib/supabase/actions/scheduler-locations"
-import { LocationDialog, EditLocationButton } from "./location-dialog"
+import { LocationForm } from "./location-form"
 import type { SchedulerLocation } from "@/lib/supabase/queries/scheduler-rooms"
 
-/** "Manage locations" dialog — a lightweight list with inline add/edit/toggle. */
+/** "Manage locations" side drawer: the list, with adding and editing done in place. */
 export function LocationsPanel({ locations }: { locations: SchedulerLocation[] }) {
   const [open, setOpen] = useState(false)
+  // "new" while adding, a location id while editing it, null otherwise.
+  const [editing, setEditing] = useState<string | null>(null)
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <Sheet open={open} onOpenChange={v => { setOpen(v); setEditing(null) }}>
+      <SheetTrigger asChild>
         <Button size="sm" variant="outline" className="h-9 gap-2">
           <MapPin className="h-4 w-4" />
           Manage locations
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-primary" />
-            Locations
-          </DialogTitle>
-        </DialogHeader>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full gap-0 overflow-y-auto p-0 sm:max-w-lg">
+        <SheetHeader className="sticky top-0 z-20 border-b bg-background px-6 py-4">
+          <SheetTitle>Locations</SheetTitle>
+          <SheetDescription>The buildings rooms belong to. Switch one off to stop offering its rooms.</SheetDescription>
+        </SheetHeader>
 
-        <div className="space-y-2">
-          {locations.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">No locations yet.</p>
+        <div className="space-y-2 px-6 py-5">
+          {locations.length === 0 && editing !== "new" && (
+            <p className="py-4 text-center text-sm text-muted-foreground">No locations yet.</p>
+          )}
+          {locations.map(location =>
+            editing === location.id
+              ? <LocationForm key={location.id} location={location} onDone={() => setEditing(null)} />
+              : <LocationRow key={location.id} location={location} onEdit={() => setEditing(location.id)} />,
+          )}
+          {editing === "new" ? (
+            <LocationForm onDone={() => setEditing(null)} />
           ) : (
-            locations.map((location) => <LocationRow key={location.id} location={location} />)
+            <Button size="sm" variant="outline" className="w-full gap-2" onClick={() => setEditing("new")}>
+              <Plus className="h-4 w-4" /> Add location
+            </Button>
           )}
         </div>
-
-        <div className="border-t border-border pt-4">
-          <LocationDialog mode="create" trigger={
-            <Button size="sm" variant="outline" className="w-full gap-2">Add location</Button>
-          } />
-        </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 }
 
-function LocationRow({ location }: { location: SchedulerLocation }) {
+function LocationRow({ location, onEdit }: { location: SchedulerLocation; onEdit: () => void }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -72,22 +70,24 @@ function LocationRow({ location }: { location: SchedulerLocation }) {
   }
 
   return (
-    <div className={`flex items-center justify-between rounded-lg border border-border px-3 py-2.5 ${!location.is_active ? "opacity-60" : ""}`}>
+    <div className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 ${!location.is_active ? "opacity-60" : ""}`}>
       <div className="min-w-0">
-        <p className="text-sm font-medium truncate">{location.name}</p>
+        <p className="truncate text-sm font-medium">{location.name}</p>
         {(location.building || location.address) && (
-          <p className="text-xs text-muted-foreground truncate">
+          <p className="truncate text-xs text-muted-foreground">
             {[location.building, location.address].filter(Boolean).join(" · ")}
           </p>
         )}
       </div>
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex shrink-0 items-center gap-2">
         {isPending ? (
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
         ) : (
-          <Switch checked={location.is_active} onCheckedChange={handleToggle} title="Active" />
+          <Switch checked={location.is_active} onCheckedChange={handleToggle} aria-label={`${location.name} in use`} />
         )}
-        <EditLocationButton location={location} />
+        <Button variant="ghost" size="sm" className="h-8 gap-1.5" onClick={onEdit} aria-label={`Edit ${location.name}`}>
+          <Pencil className="h-3.5 w-3.5" /> Edit
+        </Button>
       </div>
     </div>
   )

@@ -42,13 +42,13 @@ export function RoomFormFields({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <FormField label="Room name *">
           <Input name="display_name" className={inputStyles} defaultValue={room?.display_name ?? ""} placeholder="e.g. Room 401" />
         </FormField>
         <FormField label="Location *">
           <Select name="location_id" defaultValue={room?.location_id ?? selectableLocations[0]?.id ?? ""}>
-            <SelectTrigger className={inputStyles}>
+            <SelectTrigger className={`${inputStyles} w-full`}>
               <SelectValue placeholder="Select location" />
             </SelectTrigger>
             <SelectContent>
@@ -60,7 +60,7 @@ export function RoomFormFields({
         </FormField>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         <FormField label="Floor">
           <Input name="floor" className={inputStyles} defaultValue={room?.floor ?? ""} placeholder="e.g. 4F" />
         </FormField>
@@ -72,7 +72,7 @@ export function RoomFormFields({
         </FormField>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
           <Label className="text-sm font-normal">Exam suitable</Label>
           <Switch checked={isExamSuitable} onCheckedChange={setIsExamSuitable} />

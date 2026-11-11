@@ -2,15 +2,9 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Plus, Pencil, Loader2, DoorOpen } from "lucide-react"
+import { Plus, Pencil, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { createRoom, updateRoom } from "@/lib/supabase/actions/scheduler-rooms"
 import { roomFormSchema } from "@/lib/scheduler/room-schema"
@@ -24,7 +18,7 @@ type RoomDialogProps = {
   trigger?: React.ReactNode
 }
 
-/** Create/edit dialog shared by the "New room" button and each row's Edit action. */
+/** Create/edit side drawer shared by the "New room" button and each row's Edit action. */
 export function RoomDialog({ locations, mode, room, trigger }: RoomDialogProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -86,26 +80,24 @@ export function RoomDialog({ locations, mode, room, trigger }: RoomDialogProps) 
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) resetState() }}>
-      <DialogTrigger asChild>
+    <Sheet open={open} onOpenChange={(v) => { setOpen(v); if (v) resetState() }}>
+      <SheetTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="h-9 gap-2">
             <Plus className="h-4 w-4" />
             New room
           </Button>
         )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <DoorOpen className="h-5 w-5 text-primary" />
-            {mode === "create" ? "New Room" : "Edit Room"}
-          </DialogTitle>
-        </DialogHeader>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full gap-0 overflow-y-auto p-0 sm:max-w-xl">
+        <SheetHeader className="sticky top-0 z-20 border-b bg-background px-6 py-4">
+          <SheetTitle>{mode === "create" ? "New room" : `Edit ${room?.display_name ?? "room"}`}</SheetTitle>
+          <SheetDescription>{mode === "create" ? "A name, a location and the number of seats are enough to start." : "Change what you need, then save."}</SheetDescription>
+        </SheetHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 px-6 pt-5">
           {error && (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+            <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
               {error}
             </div>
           )}
@@ -124,7 +116,7 @@ export function RoomDialog({ locations, mode, room, trigger }: RoomDialogProps) 
             setIsActive={setIsActive}
           />
 
-          <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
+          <div className="sticky bottom-0 z-10 -mx-6 flex items-center justify-end gap-2 border-t bg-background px-6 py-3">
             <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isPending}>
               Cancel
             </Button>
@@ -134,8 +126,8 @@ export function RoomDialog({ locations, mode, room, trigger }: RoomDialogProps) 
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 }
 

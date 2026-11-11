@@ -120,6 +120,7 @@ try {
     await open(page, '/scheduler/rooms')
     await click(page, 'New room')
     await page.waitForSelector(`${DIALOG} input[name="display_name"]`)
+    await pause(500) // the form slides in from the side
     await page.type(`${DIALOG} input[name="display_name"]`, 'UAT Room 501')
     const capacity = await page.$(`${DIALOG} input[name="capacity"]`)
     if (capacity) { await capacity.click({ clickCount: 3 }); await capacity.type('4') }

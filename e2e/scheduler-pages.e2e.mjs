@@ -16,6 +16,7 @@ const MENU = '[role="menu"]'
 const DAY = hkDay(4)
 
 sql(`delete from public.scheduler_bookings where title like 'UAT pages%'`)
+sql(`delete from public.scheduler_locations where name like 'UAT pages%'`)
 const manager = sql(`select id from auth.users where email = 'manager@aa.test'`)
 const bookingId = sql(`select set_config('request.jwt.claims', '{"sub":"${manager}","role":"authenticated"}', false);
   select public.scheduler_save_booking(jsonb_build_object(
@@ -79,6 +80,29 @@ try {
     await page.keyboard.press('Escape')
   })
 
+  await step(page, 'New room opens as a drawer', async () => {
+    await open(page, '/scheduler/rooms')
+    await click(page, 'New room')
+    await seeText(page, 'A name, a location and the number of seats are enough to start.', DIALOG)
+    await page.keyboard.press('Escape')
+    await page.waitForFunction(() => !document.querySelector('[role="dialog"]'), { polling: 100 })
+  })
+
+  await step(page, 'a location is added inside the Locations drawer, with no second pop-up', async () => {
+    await click(page, 'Manage locations')
+    await seeText(page, 'Locations', DIALOG)
+    await click(page, 'Add location', DIALOG)
+    await page.waitForSelector('#location-name')
+    await page.type('#location-name', 'UAT pages office')
+    await click(page, 'Add location', `${DIALOG} form`)
+    await seeText(page, 'Location created')
+    const dialogs = await page.$$eval('[role="dialog"]', ds => ds.length)
+    assert(dialogs === 1, `${dialogs} dialogs open`)
+    await seeText(page, 'UAT pages office', DIALOG)
+    assert(sql(`select count(*) from public.scheduler_locations where name = 'UAT pages office'`) === '1', 'location not saved')
+    await page.keyboard.press('Escape')
+  })
+
   await step(page, 'a phone starts the calendar on the day', async () => {
     await page.setViewport({ width: 390, height: 844 })
     await open(page, '/scheduler')
@@ -89,6 +113,7 @@ try {
   })
 } finally {
   sql(`delete from public.scheduler_bookings where title like 'UAT pages%'`)
+  sql(`delete from public.scheduler_locations where name like 'UAT pages%'`)
   await browser.close()
 }
 summary()
