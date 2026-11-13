@@ -239,8 +239,8 @@ tr.band-row .unit{font-weight:400;letter-spacing:.05em;text-transform:none;color
 /* Highest current-year figure in the row. Mono-safe, legended, and
    suppressed when only one school published — an unopposed number is not
    a comparison. */
-.pair .p25.lead .n>i,
-.pair .p25.lead .n>u:not(:empty){box-shadow:inset 0 -.4mm 0 0 var(--accent)}
+.pair .p25.lead .n{text-decoration:underline;text-decoration-color:var(--accent);
+  text-decoration-thickness:.4mm;text-underline-offset:.6mm;text-decoration-skip-ink:none}
 
 .mx-fee div{display:flex;align-items:baseline;gap:1.4mm;white-space:nowrap}
 .mx-fee .amt{font-size:8.6pt;font-weight:700}
@@ -281,11 +281,17 @@ tr.band-row .unit{font-weight:400;letter-spacing:.05em;text-transform:none;color
 @page land{size:A4 landscape;margin:9mm 14mm 8mm}
 @media print{
   body{background:#fff}
+  /* The app's full-height page background would print as a grey block and push
+     a blank page after the document. */
+  .min-h-screen{min-height:0!important;background:#fff!important}
   /* The dashboard shell has no place on a printed document. */
   .no-print{display:none!important}
   .export-stage{padding:0!important}
   .sheet{width:auto;min-height:0;margin:0;padding:0;box-shadow:none}
   .doc--b{page:land}
+  /* Everything else on the page (empty containers after the document) must be on
+     the same landscape page, or Chrome starts a blank portrait page for them. */
+  body:has(.doc--b){page:land}
   .school,table.roster>tbody>tr,.docfoot,table.matrix tbody tr{
     break-inside:avoid!important;page-break-inside:avoid!important}
   /* Repeat the column key at the top of every continuation page. */

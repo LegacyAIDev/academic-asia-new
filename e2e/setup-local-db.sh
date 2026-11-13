@@ -21,7 +21,7 @@ mkdir -p "$WORK/supabase/migrations" "$WORK/patched"
 cp "$REPO/supabase/config.toml" "$WORK/supabase/config.toml"
 sed -i '' 's/^project_id = .*/project_id = "aa-local-e2e"/' "$WORK/supabase/config.toml"
 
-supabase status --workdir "$WORK" >/dev/null 2>&1 || supabase start --workdir "$WORK"
+supabase status --workdir "$WORK" >/dev/null 2>&1 || supabase start --workdir "$WORK" -x logflare,vector,realtime,studio,edge-runtime  # not used by the app or tests; they often fail health checks on a busy machine
 
 # Scratch patches (see header).
 M="$REPO/supabase/migrations"
