@@ -77,9 +77,8 @@ describe('getSchoolDocuments - the Documents tab', () => {
     expect((await getSchoolDocuments('school-1')).map(d => d.id)).toEqual(['prospectus', 'fee-schedule'])
   })
 
-  it('shows everything to the exam team', async () => {
+  it('leaves papers out for the exam team too: they open from the Entrance exams tab', async () => {
     setup(EXAM_TEAM, rows)
-    expect((await getSchoolDocuments('school-1')).map(d => d.id))
-      .toEqual(['prospectus', 'paper-by-category', 'paper-by-record', 'fee-schedule'])
+    expect((await getSchoolDocuments('school-1')).map(d => d.id)).toEqual(['prospectus', 'fee-schedule'])
   })
 })

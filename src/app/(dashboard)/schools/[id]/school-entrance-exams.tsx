@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -11,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Paperclip } from "lucide-react"
-import { EntranceExamDialog, EditEntranceExamButton, DeleteEntranceExamButton } from "./entrance-exam-dialog"
+import { EntranceExamDialog, DeleteEntranceExamButton } from "./entrance-exam-dialog"
 import type { SchoolEntranceExamWithJoins } from "@/lib/supabase/queries/school-entrance-exams"
 import type { EntranceExamReferenceData } from "./entrance-exam-dialog"
 import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
@@ -34,6 +35,10 @@ export function SchoolEntranceExamsSection({
   canWrite = true,
   canManagePapers = false,
 }: SchoolEntranceExamsSectionProps) {
+  // The exam whose details are open in the drawer.
+  const [openId, setOpenId] = useState<string | null>(null)
+  const openExam = exams.find(exam => exam.id === openId) ?? null
+
   if (exams.length === 0) {
     return (
       <Panel title="Entrance exams">
@@ -56,14 +61,19 @@ export function SchoolEntranceExamsSection({
                 <TableHead className="min-w-[180px]">Subject</TableHead>
                 <TableHead className="min-w-[80px]">Duration</TableHead>
                 <TableHead className="min-w-[160px]">Paper</TableHead>
-                {(canWrite || canManagePapers) && <TableHead className="pr-4 text-right">Actions</TableHead>}
+                {canWrite && <TableHead className="w-[1%] pr-4"><span className="sr-only">Delete</span></TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {exams.map((exam) => (
-                <TableRow key={exam.id}>
+                // The whole row opens the exam's details; the entry year is the keyboard target.
+                <TableRow key={exam.id} className="cursor-pointer" onClick={() => setOpenId(exam.id)}>
                   <TableCell className="pl-4 font-medium text-sm">
-                    {exam.entry_year || "—"}
+                    <button type="button" className="text-left hover:text-brand-navy focus-visible:outline-none focus-visible:underline"
+                      aria-label={`Open entrance exam: ${[exam.subject, exam.year_level, exam.entry_year].filter(Boolean).join(", ")}`}
+                      onClick={event => { event.stopPropagation(); setOpenId(exam.id) }}>
+                      {exam.entry_year || "—"}
+                    </button>
                   </TableCell>
                   <TableCell>
                     {exam.exam_type
@@ -92,26 +102,9 @@ export function SchoolEntranceExamsSection({
                       files={attachmentsByExam?.get(exam.id) ?? []}
                     />
                   </TableCell>
-                  {/* The examination team opens papers through the edit dialog, so it is offered with either right. */}
-                  {(canWrite || canManagePapers) && (
-                    <TableCell className="pr-4">
-                      <div className="flex items-center justify-end gap-1">
-                        <EditEntranceExamButton
-                          exam={exam}
-                          schoolId={schoolId}
-                          referenceData={referenceData}
-                          attachments={attachmentsByExam?.get(exam.id) ?? []}
-                          canWrite={canWrite}
-                          canManagePapers={canManagePapers}
-                        />
-                        {canWrite && (
-                          <DeleteEntranceExamButton
-                            examId={exam.id}
-                            schoolId={schoolId}
-                            label={exam.subject || "this exam"}
-                          />
-                        )}
-                      </div>
+                  {canWrite && (
+                    <TableCell className="pr-4" onClick={event => event.stopPropagation()}>
+                      <DeleteEntranceExamButton examId={exam.id} schoolId={schoolId} label={exam.subject || "this exam"} />
                     </TableCell>
                   )}
                 </TableRow>
@@ -119,6 +112,21 @@ export function SchoolEntranceExamsSection({
             </TableBody>
           </Table>
         </div>
+        {openExam && (
+          <EntranceExamDialog
+            key={openExam.id}
+            mode="edit"
+            exam={openExam}
+            schoolId={schoolId}
+            referenceData={referenceData}
+            attachments={attachmentsByExam?.get(openExam.id) ?? []}
+            canWrite={canWrite}
+            canManagePapers={canManagePapers}
+            trigger={null}
+            open
+            onOpenChange={open => { if (!open) setOpenId(null) }}
+          />
+        )}
       </Panel>
   )
 }

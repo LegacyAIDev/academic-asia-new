@@ -63,11 +63,12 @@ describe('uploadSchoolDocuments - the paper category', () => {
     expect(writes(queries)).toHaveLength(0)
   })
 
-  it('stores a paper for the exam team', async () => {
+  it('sends even the exam team to the Entrance exams tab for a paper', async () => {
     const { storageCalls } = setup(EXAM_TEAM)
     const result = await uploadSchoolDocuments('school-1', [{ category_id: 7 }], formWithFile('file_0'))
-    expect(result.data).toMatchObject({ uploaded: 1, failed: 0 })
-    expect(uploads(storageCalls as never)).toHaveLength(1)
+    expect(result.data).toMatchObject({ uploaded: 0 })
+    expect(result.data?.errors[0]).toMatch(/Entrance exams tab/)
+    expect(uploads(storageCalls as never)).toHaveLength(0)
   })
 
   it('still stores an ordinary document for Schools staff', async () => {

@@ -1,4 +1,5 @@
 import { getSchoolCourses, getCourseReferenceData } from "@/lib/supabase/queries/school-courses"
+import { getSchoolEntranceExams } from "@/lib/supabase/queries/school-entrance-exams"
 import { getSchoolBankDetails, getBankReferenceData } from "@/lib/supabase/queries/school-bank-details"
 import { getSchoolVisits } from "@/lib/supabase/queries/school-visits"
 import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
@@ -10,8 +11,8 @@ import type { SchoolTabProps } from "./school-tab-content"
 /** Loaders for the tabs behind the "More" menu; each fetches only its own rows. */
 
 export async function CoursesTab({ schoolId, canWrite }: SchoolTabProps) {
-  const [courses, referenceData] = await Promise.all([getSchoolCourses(schoolId), getCourseReferenceData()])
-  return <SchoolCoursesSection schoolId={schoolId} courses={courses} referenceData={referenceData} canWrite={canWrite} />
+  const [courses, referenceData, exams] = await Promise.all([getSchoolCourses(schoolId), getCourseReferenceData(), getSchoolEntranceExams(schoolId)])
+  return <SchoolCoursesSection schoolId={schoolId} courses={courses} referenceData={referenceData} exams={exams} canWrite={canWrite} />
 }
 
 export async function BankDetailsTab({ schoolId, canWrite }: SchoolTabProps) {

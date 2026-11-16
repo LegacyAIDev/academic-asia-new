@@ -15,8 +15,9 @@ const examsTab = `/schools/${SEED.headington}?tab=entrance-exams`
 
 async function openExamDialog(page) {
   await open(page, examsTab)
-  await page.click('button[aria-label="Edit entrance exam: English"]')
-  await seeText(page, 'Update entrance exam details', DIALOG)
+  await page.click('button[aria-label^="Open entrance exam: English"]')
+  await seeText(page, 'View or change the details of this entrance exam.', DIALOG)
+  await new Promise(resolve => setTimeout(resolve, 500)) // the drawer slides in
 }
 
 async function newTabUrl(browser, page, trigger) {
@@ -76,9 +77,10 @@ try {
     assert(rows.join(' | ') === 'Version 2 · english-v2.pdf | Version 1 · english-v1.pdf', `history was ${rows.join(' | ')}`)
   })
 
-  await step(page, 'the Documents tab lists only the current paper', async () => {
+  await step(page, 'exam papers stay out of the Documents tab, even for the exam team', async () => {
     await open(page, `/schools/${SEED.headington}?tab=documents`)
-    await seeText(page, 'english-v3.pdf')
+    await page.waitForSelector('main')
+    await notSeeText(page, 'english-v3.pdf')
     await notSeeText(page, 'english-v1.pdf')
     await notSeeText(page, 'english-v2.pdf')
   })
@@ -105,7 +107,7 @@ try {
   const staff = (await signIn(browser, 'staff@aa.test')).page
   await step(staff, 'staff outside the exam team see neither the papers nor their history', async () => {
     await open(staff, examsTab)
-    const editable = await staff.$('button[aria-label="Edit entrance exam: English"]')
+    const editable = await staff.$('button[aria-label^="Open entrance exam: English"]')
     if (editable) {
       await editable.click()
       await seeText(staff, 'Papers are kept by the examination team.', DIALOG)

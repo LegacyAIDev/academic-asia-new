@@ -1,13 +1,7 @@
 "use client"
 
 import { useRef, useState, useTransition } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,9 +26,7 @@ import {
 import {
   Plus,
   Loader2,
-  Pencil,
   Trash2,
-  ClipboardCheck,
   BookOpen,
   Clock,
   MessageSquare,
@@ -70,6 +62,9 @@ type EntranceExamDialogProps = {
   canWrite?: boolean
   /** Papers are for the examination team only; everyone else sees the exam format without them. */
   canManagePapers?: boolean
+  /** Controlled opening, for a table row that opens the record. */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 
@@ -99,8 +94,14 @@ export function EntranceExamDialog({
   attachments = [],
   canWrite = true,
   canManagePapers = false,
+  open: openProp,
+  onOpenChange,
 }: EntranceExamDialogProps) {
-  const [open, setOpen] = useAddParam(mode === "create" ? "entrance-exam" : null)
+  const [ownOpen, setOwnOpen] = useAddParam(mode === "create" ? "entrance-exam" : null)
+  const open = openProp ?? ownOpen
+  const setOpen = onOpenChange ?? setOwnOpen
+  // Without the Schools edit right the record is shown for reading; the exam team can still manage papers.
+  const readOnly = mode === "edit" && !canWrite
   const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -163,38 +164,26 @@ export function EntranceExamDialog({
   const selectTriggerStyles = "h-10 bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        {trigger ?? (
-          <Button size="sm" variant="outline" className="h-8 gap-1.5">
-            <Plus className="h-3.5 w-3.5" />
-            Add entrance assessment
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:!max-w-[560px] !max-h-[92vh] !overflow-hidden !p-0 !gap-0 bg-background flex flex-col" showCloseButton={false}>
-        <div className="relative shrink-0 border-b border-border">
-          <div className="relative flex items-center gap-3 px-6 py-4">
-            <div className="relative">
-              <div className="relative flex h-9 w-9 items-center justify-center rounded-md bg-brand-navy/[0.07] text-brand-navy">
-                <ClipboardCheck className="h-5 w-5" />
-              </div>
-            </div>
-            <DialogHeader className="flex-1 space-y-1">
-              <DialogTitle className="text-lg font-semibold">
-                {mode === "create" ? "New Entrance Exam" : "Edit Entrance Exam"}
-              </DialogTitle>
-              <p className="text-sm text-muted-foreground">
-                {mode === "create" ? "Add an entrance exam to this school" : "Update entrance exam details"}
-              </p>
-            </DialogHeader>
-            <button onClick={() => setOpen(false)} className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors">
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
+      {(trigger !== null) && (
+        <SheetTrigger asChild>
+          {trigger ?? (
+            <Button size="sm" variant="outline" className="h-8 gap-1.5">
+              <Plus className="h-3.5 w-3.5" />
+              Add entrance assessment
+            </Button>
+          )}
+        </SheetTrigger>
+      )}
+      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-xl">
+        <SheetHeader className="shrink-0 border-b px-6 py-4">
+          <SheetTitle>
+            {mode === "create" ? "New entrance exam" : [exam?.subject, exam?.year_level, exam?.entry_year && `${exam.entry_year} entry`].filter(Boolean).join(" · ") || "Entrance exam"}
+          </SheetTitle>
+          <SheetDescription>
+            {mode === "create" ? "Add an entrance exam to this school." : readOnly ? "The details of this entrance exam." : "View or change the details of this entrance exam."}
+          </SheetDescription>
+        </SheetHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
           <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
@@ -204,7 +193,8 @@ export function EntranceExamDialog({
               </div>
             )}
 
-            <FormSection icon={BookOpen} title="Exam Details" accentColor="primary">
+            <fieldset disabled={readOnly || isPending} className="space-y-5">
+            <FormSection icon={BookOpen} title="Exam details" accentColor="primary">
               <div className="grid grid-cols-2 gap-3">
                 <FormField label="Entry Year *">
                   <Select name="entry_year" required defaultValue={exam?.entry_year ?? defaultEntryYear}>
@@ -267,7 +257,9 @@ export function EntranceExamDialog({
               </FormField>
             </FormSection>
 
-            <FormSection icon={Paperclip} title="Attachments" accentColor="rose">
+            </fieldset>
+
+            <FormSection icon={Paperclip} title="Exam paper" accentColor="rose">
               <FormField label="Exam paper (file or link)">
                 {requestFromSchool && (
                   <p className="text-sm text-muted-foreground">The school asked us not to keep this paper. Request it from the school for each sitting; nothing is uploaded.</p>
@@ -290,6 +282,7 @@ export function EntranceExamDialog({
               </FormField>
             </FormSection>
 
+            <fieldset disabled={readOnly || isPending} className="space-y-5">
             <FormSection icon={MessageSquare} title="Remarks" accentColor="rose">
               <FormField label="Remarks">
                 <Textarea name="remarks" rows={3} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={exam?.remarks ?? ""} placeholder="General remarks about this exam..." />
@@ -298,27 +291,22 @@ export function EntranceExamDialog({
                 <Textarea name="aa_remarks" rows={3} className="resize-none bg-background border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200" defaultValue={exam?.aa_remarks ?? ""} placeholder="Internal AA remarks..." />
               </FormField>
             </FormSection>
+            </fieldset>
           </div>
 
-          <div className="shrink-0 border-t border-border bg-muted/40 px-6 py-3">
+          <div className="shrink-0 border-t border-border bg-background px-6 py-3">
             <div className="flex items-center justify-end gap-3">
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isPending} className="text-muted-foreground hover:text-foreground">Cancel</Button>
-              <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all duration-200">
-                {isPending ? (<><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>) : (<>{mode === "create" ? <Plus className="h-4 w-4" /> : <Check className="h-4 w-4" />}{mode === "create" ? "Create Exam" : "Save Changes"}</>)}
-              </Button>
+              <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isPending}>{readOnly ? "Close" : "Cancel"}</Button>
+              {!readOnly && (
+                <Button type="submit" disabled={isPending} className="min-w-[140px] gap-2">
+                  {isPending ? (<><Loader2 className="h-4 w-4 animate-spin" />{mode === "create" ? "Creating..." : "Saving..."}</>) : (<>{mode === "create" ? <Plus className="h-4 w-4" /> : <Check className="h-4 w-4" />}{mode === "create" ? "Create exam" : "Save changes"}</>)}
+                </Button>
+              )}
             </div>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-export function EditEntranceExamButton({ exam, schoolId, referenceData, attachments = [], canWrite = true, canManagePapers = false }: { exam: SchoolEntranceExamWithJoins; schoolId: string; referenceData: EntranceExamReferenceData; attachments?: AttachmentRecord[]; canWrite?: boolean; canManagePapers?: boolean }) {
-  return (
-    <EntranceExamDialog schoolId={schoolId} referenceData={referenceData} mode="edit" exam={exam} attachments={attachments} canWrite={canWrite} canManagePapers={canManagePapers}
-      trigger={<Button variant="ghost" size="icon" aria-label={`Edit entrance exam${exam.subject ? `: ${exam.subject}` : ""}`} className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-3.5 w-3.5" /></Button>}
-    />
+      </SheetContent>
+    </Sheet>
   )
 }
 

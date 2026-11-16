@@ -33,6 +33,8 @@ type DocumentManagerProps = {
   documents: ManagedDocument[]
   /** Restrict the category picker to these document_categories.section values. */
   categorySections?: string[]
+  /** Categories not offered here (e.g. exam papers, which are added on their entrance exam). */
+  hiddenCategoryCodes?: string[]
   uploadAction: (ownerId: string, items: { category_id: number; title: string | null }[], formData: FormData) => Promise<ActionResult<BatchResult>>
   renameAction: (docId: string, ownerId: string, title: string) => Promise<ActionResult>
   deleteAction: (docId: string, ownerId: string) => Promise<ActionResult>
@@ -46,7 +48,7 @@ type DocumentManagerProps = {
 /** Reusable multi-file document manager: staged upload with per-file name +
  *  category, plus rename / download / delete of existing documents. */
 export function DocumentManager({
-  ownerId, documents, categorySections,
+  ownerId, documents, categorySections, hiddenCategoryCodes,
   uploadAction, renameAction, deleteAction, signedUrlAction, getFilePath, canWrite = true,
 }: DocumentManagerProps) {
   const [categories, setCategories] = useState<Category[]>([])
@@ -68,8 +70,10 @@ export function DocumentManager({
     if (categorySections && categorySections.length > 0) {
       query = query.in("section", categorySections)
     }
-    query.then(({ data }) => { if (data) setCategories(data as Category[]) })
-  }, [categorySections])
+    query.then(({ data }) => {
+      if (data) setCategories((data as Category[]).filter(c => !hiddenCategoryCodes?.includes(c.code)))
+    })
+  }, [categorySections, hiddenCategoryCodes])
 
   const defaultCategoryId = () =>
     (categories.find((c) => c.code === "other") ?? categories[0])?.id.toString() ?? ""

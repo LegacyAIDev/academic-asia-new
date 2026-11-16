@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
-import { canAccess } from '@/lib/permissions/guard'
 import {
-  EXAM_PAPER_ACCESS, EXAM_PAPER_ATTACHABLE_TYPE, EXAM_PAPER_CATEGORY_CODE, isExamPaperRow,
+  EXAM_PAPER_ATTACHABLE_TYPE, EXAM_PAPER_CATEGORY_CODE, isExamPaperRow,
 } from '@/lib/attachments/exam-paper-access'
 import { getCategoryId } from '@/lib/supabase/document-categories'
 
@@ -20,7 +19,8 @@ export type SchoolDocumentRecord = {
 
 /**
  * All documents for a school, newest first. Entrance exam papers are stored in
- * the same table, so they are left out unless the user belongs to the exam team.
+ * the same table but never listed here, for anyone: they are confidential and
+ * open only from the Entrance exams tab, for the examination team.
  */
 export async function getSchoolDocuments(schoolId: string): Promise<SchoolDocumentRecord[]> {
   const cookieStore = await cookies()
@@ -39,7 +39,6 @@ export async function getSchoolDocuments(schoolId: string): Promise<SchoolDocume
     return []
   }
   const documents = (data ?? []) as unknown as (SchoolDocumentRecord & { attachable_type: string | null })[]
-  if (await canAccess(EXAM_PAPER_ACCESS.module, EXAM_PAPER_ACCESS.read)) return documents
   return documents.filter(document => !isExamPaperRow(document))
 }
 

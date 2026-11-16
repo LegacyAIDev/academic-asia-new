@@ -54,8 +54,13 @@ export async function uploadSchoolDocuments(
       if (!ALLOWED_MIME.includes(file.type)) { errors.push(`${label}: only PDF and image files are allowed`); continue }
       if (file.size > MAX_BYTES) { errors.push(`${label}: exceeds 10 MB limit`); continue }
 
-      if (paperDenied && (paperCategoryId === null || items[i].category_id === paperCategoryId)) {
-        errors.push(`${label}: ${paperCategoryId === null ? 'the document category could not be checked, please try again' : 'exam papers can only be added by the examination team'}`)
+      if (paperCategoryId === null) {
+        errors.push(`${label}: the document category could not be checked, please try again`)
+        continue
+      }
+      // Papers are kept out of Documents; they are added on their entrance exam, by the exam team.
+      if (items[i].category_id === paperCategoryId) {
+        errors.push(`${label}: ${paperDenied ? 'exam papers can only be added by the examination team' : 'add exam papers from the Entrance exams tab, on the exam they belong to'}`)
         continue
       }
       const categoryCode = await getCategoryCode(supabase, items[i].category_id)

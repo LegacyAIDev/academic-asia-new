@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import type { SchoolTabKey } from '@/lib/schools/school-tabs'
+import { getCategoryId } from '@/lib/supabase/document-categories'
+import { EXAM_PAPER_CATEGORY_CODE } from '@/lib/attachments/exam-paper-access'
 
 export type SchoolSectionCounts = Partial<Record<SchoolTabKey, number | null>>
 
@@ -21,6 +23,7 @@ export async function getSchoolSectionCounts(schoolId: string): Promise<SchoolSe
   }
   const sum = (...values: (number | null)[]) => (values.some(v => v === null) ? null : values.reduce<number>((a, b) => a + (b ?? 0), 0))
 
+  const paperCategoryId = await getCategoryId(supabase, EXAM_PAPER_CATEGORY_CODE)
   const [entrance, fees, results, contacts, events, notes, info, documents, emails, courses, bank, visits] = await Promise.all([
     count('school_entrance_exams'),
     count('school_fees'),
@@ -29,7 +32,10 @@ export async function getSchoolSectionCounts(schoolId: string): Promise<SchoolSe
     count('event_schools'),
     count('school_notes'),
     count('school_supplementary_info'),
-    count('school_documents', q => q.is('superseded_by' as 'id', null)),
+    // Exam papers live under Entrance exams, so the Documents count leaves them out, as its list does.
+    count('school_documents', q => q.is('superseded_by' as 'id', null)
+      .or('attachable_type.is.null,attachable_type.neq.school_entrance_exams')
+      .neq('category_id' as 'id', String(paperCategoryId ?? -1))),
     count('filed_emails', q => q.is('archived_at' as 'id', null)),
     count('school_courses'),
     count('school_bank_details'),
