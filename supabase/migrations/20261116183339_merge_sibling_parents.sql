@@ -22,13 +22,14 @@ declare
   merged integer := 0;
 begin
   for pair in
-    with sibling_links as (
+    with sibling_links as materialized (
       select distinct least(c.student_id, c.related_student_id) as a, greatest(c.student_id, c.related_student_id) as b
       from student_contacts c
       join contact_relationships r on r.id = c.relationship_id
       where c.related_student_id is not null and r.code in ('brother', 'sister')
     ),
-    parents as (
+    -- Only the parents of linked students are compared; matching every parent against every other is far too slow.
+    parents as materialized (
       select c.*, r.code as rel_code,
              nullif(lower(trim(c.email_1)), '') as email_key,
              nullif(right(regexp_replace(coalesce(c.mobile, ''), '\D', '', 'g'), 8), '') as mobile_key,
@@ -37,6 +38,7 @@ begin
       from student_contacts c
       join contact_relationships r on r.id = c.relationship_id
       where c.related_student_id is null and r.code in ('mother', 'father', 'guardian')
+        and c.student_id in (select a from sibling_links union select b from sibling_links)
     )
     select distinct on (drop_row.id)
       case when pa.created_at <= pb.created_at then pa.id else pb.id end as keep_id,
