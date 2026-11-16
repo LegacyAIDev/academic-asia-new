@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
-/** Routes that don't require authentication */
-const publicRoutes = ['/login', '/forgot-password', '/reset-password', '/auth/callback']
+/** Routes that don't require authentication. /register is the families' online form, opened with a one-use link. */
+const publicRoutes = ['/login', '/forgot-password', '/reset-password', '/auth/callback', '/register/']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl

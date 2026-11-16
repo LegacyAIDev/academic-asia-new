@@ -15,7 +15,11 @@ const ACTIONS_GLOB = 'src/lib/supabase/actions/*.ts'
 /** Pages that legitimately have no guard. */
 const PAGE_ALLOWLIST = ['src/app/(dashboard)/403/page.tsx']
 /** Action files that legitimately have no guard. */
-const ACTION_ALLOWLIST = ['src/lib/supabase/actions/auth.ts']
+const ACTION_ALLOWLIST = [
+  'src/lib/supabase/actions/auth.ts',
+  // The families' online registration form: not signed in; the one-use link is the permission.
+  'src/lib/supabase/actions/registration-public.ts',
+]
 
 const problems = []
 

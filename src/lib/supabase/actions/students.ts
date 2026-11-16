@@ -11,6 +11,7 @@ import { getPresentSchoolName } from '@/lib/supabase/queries/present-schools'
 import { getLinkedStudent } from '@/lib/supabase/queries/student-family'
 import { missingRequired, type RequiredRule } from '@/lib/forms/required-fields'
 import { PARENT_CODES, SIBLING_CODES, fillBlanks, parentMerges } from '@/lib/students/shared-parents'
+import { nextStudentCode } from '@/lib/students/student-code'
 
 export type CreateStudentInput = {
   surname: string
@@ -91,20 +92,7 @@ export async function createStudent(
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    // Generate student code (get max and increment)
-    const { data: codes } = await supabase
-      .from('students')
-      .select('student_code')
-      .like('student_code', 'S%')
-      .order('student_code', { ascending: false })
-      .limit(1)
-
-    let newCode = 'S000001'
-    const latestCode = (codes as { student_code: string | null }[] | null)?.[0]?.student_code
-    if (latestCode) {
-      const num = parseInt(latestCode.replace('S', ''), 10)
-      newCode = `S${String(num + 1).padStart(6, '0')}`
-    }
+    const newCode = await nextStudentCode(supabase as never)
 
     const withSchool = await withListSchoolName(input)
     if (!withSchool) return UNKNOWN_SCHOOL

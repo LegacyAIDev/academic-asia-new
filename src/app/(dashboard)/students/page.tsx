@@ -17,6 +17,7 @@ import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { cn } from "@/lib/utils"
 import { StudentsFilters } from "./students-filters"
 import { AddStudentSheet } from "./[id]/edit-student-sheet"
+import { RegistrationLinkDialog } from "./registration-link-dialog"
 
 const statusStyles: Record<string, string> = {
   active: "bg-emerald-50 text-emerald-700 ring-emerald-600/15",
@@ -83,7 +84,12 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
             {counts.all === null ? "Every student profile" : `${counts.all.toLocaleString("en-GB")} ${filtered ? "matching" : "in total"}`}
           </p>
         </div>
-        {canWrite && <AddStudentSheet />}
+        {canWrite && (
+          <div className="flex flex-wrap items-center gap-2">
+            <RegistrationLinkDialog />
+            <AddStudentSheet />
+          </div>
+        )}
       </header>
 
       <section className="overflow-hidden rounded-lg border bg-card">
