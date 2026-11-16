@@ -12,13 +12,15 @@ type FamilyParentCardProps = {
   referenceData: ContactReferenceData
   studentAddress?: string | null
   canWrite: boolean
+  /** Set when this parent is recorded on a brother or sister and shared with this student. */
+  sharedWith?: string
 }
 
 /**
  * A parent or guardian: the people staff call. Who they are to the student and
  * whether they are the main contact come first, then how to reach them.
  */
-export function FamilyParentCard({ contact, studentId, referenceData, studentAddress, canWrite }: FamilyParentCardProps) {
+export function FamilyParentCard({ contact, studentId, referenceData, studentAddress, canWrite, sharedWith }: FamilyParentCardProps) {
   const name = contact.related_student ? linkedStudentName(contact.related_student) : contactName(contact)
   const priority = contactPriorityLabel(contact.priority)
 
@@ -40,6 +42,7 @@ export function FamilyParentCard({ contact, studentId, referenceData, studentAdd
             <p className={name ? "mt-1 truncate text-base font-semibold" : "mt-1 text-sm text-muted-foreground"}>{name || "Name not recorded"}</p>
           )}
           {contact.occupation && <p className="truncate text-sm text-muted-foreground">{contact.occupation}</p>}
+          {sharedWith && <p className="mt-1 text-xs text-muted-foreground">Shared with {sharedWith}: changes show on both</p>}
         </div>
         {canWrite && (
           <MemberActions contact={contact} studentId={studentId} referenceData={referenceData} studentAddress={studentAddress} name={name} />

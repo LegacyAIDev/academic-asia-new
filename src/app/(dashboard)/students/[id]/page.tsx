@@ -2,7 +2,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ChevronLeft } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { getStudentById, getStudentContacts, getContactReferenceData } from "@/lib/supabase/queries/students"
+import { getStudentById, getStudentContacts, getContactReferenceData, getSiblingParents } from "@/lib/supabase/queries/students"
+import { PARENT_CODES, SIBLING_CODES, combineParents } from "@/lib/students/shared-parents"
 import { getFamilyLinksToStudent, getFamilySuggestions } from "@/lib/supabase/queries/student-family"
 import { getStudentApplications, getApplicationReferenceData } from "@/lib/supabase/queries/student-applications"
 import { getStudentEducation, getEducationReferenceData } from "@/lib/supabase/queries/student-education"
@@ -214,9 +215,16 @@ async function Section({ id, section, canWrite, student, contacts, name, calenda
         // Suggestions only help someone who can link them.
         canWrite ? getFamilySuggestions(id) : Promise.resolve([]),
       ])
+      // Brothers and sisters share their parents: those recorded on a linked sibling show here too.
+      const siblingIds = [...new Set([
+        ...contacts.filter(c => c.related_student_id && SIBLING_CODES.has(c.relationship?.code ?? "")).map(c => c.related_student_id!),
+        ...links.filter(l => SIBLING_CODES.has(l.relationshipCode ?? "")).map(l => l.student.id),
+      ])]
+      const ownParents = contacts.filter(c => !c.related_student_id && PARENT_CODES.has(c.relationship?.code ?? ""))
+      const { shared: sharedParents } = combineParents(ownParents, await getSiblingParents(siblingIds))
       return (
         <StudentFamilySection
-          studentId={id} student={student} contacts={contacts} linksToStudent={links} suggestions={suggestions}
+          studentId={id} student={student} contacts={contacts} linksToStudent={links} suggestions={suggestions} sharedParents={sharedParents}
           referenceData={referenceData} studentAddress={student.address_line_1} canWrite={canWrite}
         />
       )

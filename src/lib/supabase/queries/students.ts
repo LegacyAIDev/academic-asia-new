@@ -391,6 +391,38 @@ export async function getStudentContacts(studentId: string): Promise<StudentCont
   return (data ?? []) as unknown as StudentContactWithRelations[]
 }
 
+/** A parent recorded on a brother or sister: shown on this student's Family tab too. */
+export type SharedParent = StudentContactWithRelations & { owner: { id: string; first_name: string | null; surname: string | null } }
+
+/**
+ * The parents and guardians recorded on these students (a student's brothers
+ * and sisters), for sharing on the student's own Family tab.
+ */
+export async function getSiblingParents(siblingIds: string[]): Promise<SharedParent[]> {
+  if (siblingIds.length === 0) return []
+  const supabase = createClient(await cookies())
+  const { data, error } = await supabase
+    .from('student_contacts')
+    .select(`
+      *,
+      relationship:contact_relationships!student_contacts_relationship_id_fkey(id, code, label),
+      title:contact_titles!student_contacts_title_id_fkey(id, code, label),
+      owner:students!student_contacts_student_id_fkey(id, first_name, surname)
+    `)
+    .in('student_id', siblingIds)
+    .is('related_student_id', null)
+    .order('priority', { ascending: true })
+
+  if (error) {
+    console.error('Error fetching sibling parents:', error)
+    return []
+  }
+  const rows = (data ?? []) as unknown as SharedParent[]
+  return rows
+    .filter(row => row.relationship && ['mother', 'father', 'guardian'].includes(row.relationship.code))
+    .map(row => ({ ...row, related_student: null }))
+}
+
 /**
  * Get student stats for dashboard
  */

@@ -10,6 +10,7 @@ import { purgeOwnerStorage } from '@/lib/supabase/actions/record-attachments'
 import { getPresentSchoolName } from '@/lib/supabase/queries/present-schools'
 import { getLinkedStudent } from '@/lib/supabase/queries/student-family'
 import { missingRequired, type RequiredRule } from '@/lib/forms/required-fields'
+import { PARENT_CODES, SIBLING_CODES, fillBlanks, parentMerges } from '@/lib/students/shared-parents'
 
 export type CreateStudentInput = {
   surname: string
@@ -79,7 +80,10 @@ const STALE_STUDENT: ActionResult<never> = {
 /**
  * Create a new student with auto-generated student code
  */
-export async function createStudent(input: CreateStudentInput): Promise<ActionResult<{ id: string }>> {
+export async function createStudent(
+  input: CreateStudentInput,
+  options: { sibling?: { id: string; relationship: 'brother' | 'sister' } | null } = {},
+): Promise<ActionResult<{ id: string }>> {
   const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
   if (denied) return denied
 
@@ -122,8 +126,15 @@ export async function createStudent(input: CreateStudentInput): Promise<ActionRe
       return { success: false, error: error.message }
     }
 
+    const newId = (data as { id: string }).id
+    // A brother or sister already in the CRM: linking them shares their parents with the new student.
+    if (options.sibling) {
+      const linked = await linkSibling(supabase, newId, options.sibling.id, options.sibling.relationship)
+      if (linked) return { success: true, data: { id: newId }, error: `Student created, but the sibling link failed: ${linked}` }
+    }
+
     revalidatePath('/students')
-    return { success: true, data: { id: (data as { id: string }).id } }
+    return { success: true, data: { id: newId } }
   } catch (err) {
     console.error('Error in createStudent:', err)
     return { success: false, error: 'Failed to create student' }
@@ -279,6 +290,85 @@ function revalidateFamilyPages(studentId: string, linkedIds: (string | null | un
   for (const id of new Set(linkedIds.filter(Boolean))) revalidatePath(`/students/${id}`)
 }
 
+type SupabaseServer = ReturnType<typeof createClient>
+
+/** The contact fields a merged parent keeps: anything the kept record lacks is taken from the other. */
+const PARENT_FIELDS = [
+  'title_id', 'surname', 'first_name', 'gender', 'telephone', 'mobile', 'fax', 'email_1', 'email_2', 'email_3',
+  'address_1', 'address_2', 'occupation', 'office_telephone', 'office_fax', 'priority', 'remarks',
+] as const
+
+type ParentRow = Record<(typeof PARENT_FIELDS)[number], unknown> & {
+  id: string; student_id: string; created_at: string | null
+  first_name: string | null; surname: string | null; mobile: string | null; telephone: string | null; email_1: string | null
+  relationship: { code: string } | null
+}
+
+/** The students linked to this one as brother or sister, whichever side made the link. */
+async function siblingIdsOf(supabase: SupabaseServer, studentId: string): Promise<string[]> {
+  // Only used to refresh pages, so a failure here never fails the save that asked.
+  try {
+    return await readSiblingIds(supabase, studentId)
+  } catch (err) {
+    console.error('Could not read the siblings to refresh:', err)
+    return []
+  }
+}
+
+async function readSiblingIds(supabase: SupabaseServer, studentId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('student_contacts')
+    .select('student_id, related_student_id, relationship:contact_relationships!student_contacts_relationship_id_fkey(code)')
+    .or(`student_id.eq.${studentId},related_student_id.eq.${studentId}`)
+    .not('related_student_id', 'is', null)
+  if (error) return []
+  const rows = (data ?? []) as unknown as { student_id: string; related_student_id: string; relationship: { code: string } | null }[]
+  const ids = rows
+    .filter(row => row.relationship && SIBLING_CODES.has(row.relationship.code))
+    .map(row => (row.student_id === studentId ? row.related_student_id : row.student_id))
+  return [...new Set(ids)]
+}
+
+/**
+ * Two linked siblings who each hold the same parent end up with one record: the
+ * older one is kept, takes any detail only the other had, and the other goes.
+ * Different people in the same role (a parent and a step-parent) stay as they are.
+ */
+async function mergeSiblingParents(supabase: SupabaseServer, firstId: string, secondId: string): Promise<void> {
+  const { data, error } = await supabase
+    .from('student_contacts')
+    .select(`id, student_id, created_at, ${PARENT_FIELDS.join(', ')}, relationship:contact_relationships!student_contacts_relationship_id_fkey(code)`)
+    .in('student_id', [firstId, secondId])
+    .is('related_student_id', null)
+  if (error) { console.error('Could not read parents to merge:', error.message); return }
+  const parents = ((data ?? []) as unknown as ParentRow[]).filter(row => row.relationship && PARENT_CODES.has(row.relationship.code))
+  const merges = parentMerges(parents.filter(p => p.student_id === firstId), parents.filter(p => p.student_id === secondId))
+  for (const { keep, drop } of merges) {
+    const patch = fillBlanks(keep, drop, [...PARENT_FIELDS])
+    if (Object.keys(patch).length > 0) {
+      const { error: updateError } = await supabase.from('student_contacts').update(patch as never).eq('id', keep.id)
+      if (updateError) { console.error('Could not merge parent details:', updateError.message); continue }
+    }
+    const { error: deleteError } = await supabase.from('student_contacts').delete().eq('id', drop.id)
+    if (deleteError) console.error('Could not remove the duplicate parent:', deleteError.message)
+  }
+}
+
+/** Links a new student to an existing brother or sister; returns an error message, or null. */
+async function linkSibling(supabase: SupabaseServer, studentId: string, siblingId: string, relationship: 'brother' | 'sister'): Promise<string | null> {
+  const { data: rel } = await supabase.from('contact_relationships').select('id').eq('code', relationship).maybeSingle()
+  if (!rel) return 'the brother/sister relationship is missing'
+  const linked = await withLinkedStudent({ related_student_id: siblingId }, studentId)
+  if ('error' in linked) return linked.error
+  const { error } = await supabase.from('student_contacts').insert({
+    student_id: studentId, relationship_id: (rel as { id: number }).id, ...linked.input,
+  } as never)
+  if (error) return error.code === UNIQUE_VIOLATION ? ALREADY_LINKED : error.message
+  await mergeSiblingParents(supabase, studentId, siblingId)
+  revalidateFamilyPages(studentId, [siblingId, ...(await siblingIdsOf(supabase, siblingId))])
+  return null
+}
+
 /**
  * Create a new contact for a student
  */
@@ -307,7 +397,18 @@ export async function createStudentContact(input: CreateContactInput): Promise<A
       return { success: false, error: error.message }
     }
 
-    revalidateFamilyPages(input.student_id, [linked.input.related_student_id])
+    const relatedId = linked.input.related_student_id
+    if (relatedId) {
+      // Brothers and sisters share their parents: the same parent held on both is merged into one record.
+      // The link is already saved; a failed merge is logged and leaves both records showing.
+      try {
+        const { data: rel } = await supabase.from('contact_relationships').select('code').eq('id', input.relationship_id).maybeSingle()
+        if (rel && SIBLING_CODES.has((rel as { code: string }).code)) await mergeSiblingParents(supabase, input.student_id, relatedId)
+      } catch (err) {
+        console.error('Could not merge the siblings\' parents:', err)
+      }
+    }
+    revalidateFamilyPages(input.student_id, [relatedId, ...(relatedId ? await siblingIdsOf(supabase, relatedId) : [])])
     return { success: true, data: { id: (data as { id: string }).id } }
   } catch (err) {
     console.error('Error in createStudentContact:', err)
@@ -361,7 +462,7 @@ export async function updateStudentContact(
       return { success: false, error: error.message }
     }
 
-    revalidateFamilyPages(studentId, [current.related_student_id, linked.input.related_student_id])
+    revalidateFamilyPages(studentId, [current.related_student_id, linked.input.related_student_id, ...(await siblingIdsOf(supabase, studentId))])
     return { success: true }
   } catch (err) {
     console.error('Error in updateStudentContact:', err)
@@ -392,7 +493,7 @@ export async function deleteStudentContact(contactId: string, studentId: string)
       return { success: false, error: error.message }
     }
 
-    revalidateFamilyPages(studentId, (data ?? []).map((row) => row.related_student_id))
+    revalidateFamilyPages(studentId, [...(data ?? []).map((row) => row.related_student_id), ...(await siblingIdsOf(supabase, studentId))])
     return { success: true }
   } catch (err) {
     console.error('Error in deleteStudentContact:', err)

@@ -2,7 +2,7 @@
 
 import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { groupFamily } from "@/lib/students/family-relationships"
-import type { StudentContactWithRelations } from "@/lib/supabase/queries/students"
+import type { SharedParent, StudentContactWithRelations } from "@/lib/supabase/queries/students"
 import type { FamilyLinkToStudent, FamilySuggestion } from "@/lib/supabase/queries/student-family"
 import { ContactDialog } from "./contact-dialog"
 import type { ContactReferenceData } from "./family-contact-bits"
@@ -20,6 +20,8 @@ type StudentFamilySectionProps = {
   linksToStudent: FamilyLinkToStudent[]
   /** Students who are possibly family; loaded only for staff who may link them. */
   suggestions: FamilySuggestion[]
+  /** Parents recorded on a linked brother or sister: the same people, shared. */
+  sharedParents?: SharedParent[]
   referenceData: ContactReferenceData
   studentAddress?: string | null
   canWrite: boolean
@@ -41,10 +43,11 @@ function Eyebrow({ children, count }: { children: React.ReactNode; count?: numbe
  * their own profile, and show on both students' tabs.
  */
 export function StudentFamilySection({
-  studentId, student, contacts, linksToStudent, suggestions, referenceData, studentAddress, canWrite,
+  studentId, student, contacts, linksToStudent, suggestions, sharedParents = [], referenceData, studentAddress, canWrite,
 }: StudentFamilySectionProps) {
   const groups = groupFamily(contacts, linksToStudent)
-  const total = groups.parents.length + groups.siblings.length + groups.others.length
+  const parentCount = groups.parents.length + sharedParents.length
+  const total = parentCount + groups.siblings.length + groups.others.length
   const shared = { studentId, referenceData, studentAddress, canWrite }
 
   return (
@@ -62,17 +65,22 @@ export function StudentFamilySection({
             action={canWrite ? <ContactDialog studentId={studentId} referenceData={referenceData} mode="create" studentAddress={studentAddress} /> : null}
           >
             {canWrite
-              ? "Add the parents first. A brother or sister who is a student too can be picked from the students."
+              ? "Add the parents first. Link a brother or sister who is a student too, and their parents are shared."
               : "No parents, brothers or sisters have been recorded for this student."}
           </PanelEmpty>
         )}
 
-        {groups.parents.length > 0 && (
+        {parentCount > 0 && (
           <section className="space-y-3">
-            <Eyebrow count={groups.parents.length}>Parents and guardians</Eyebrow>
+            <Eyebrow count={parentCount}>Parents and guardians</Eyebrow>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {groups.parents.map(entry => entry.kind === "contact" && (
                 <FamilyParentCard key={entry.contact.id} contact={entry.contact} {...shared} />
+              ))}
+              {/* Recorded on a brother or sister: one record, so a change shows on every child. */}
+              {sharedParents.map(parent => (
+                <FamilyParentCard key={parent.id} contact={parent} {...shared} studentId={parent.owner.id}
+                  sharedWith={[parent.owner.first_name, parent.owner.surname].filter(Boolean).join(" ")} />
               ))}
             </div>
           </section>

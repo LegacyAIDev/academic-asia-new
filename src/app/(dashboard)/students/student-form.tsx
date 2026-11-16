@@ -23,6 +23,11 @@ import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments
 import type { StudentWithJoins } from "@/lib/supabase/queries/students"
 import type { PresentSchoolOption } from "@/lib/supabase/queries/present-schools"
 import { PresentSchoolPicker } from "./present-school-picker"
+import { FamilyStudentPicker } from "./[id]/family-student-picker"
+import type { LinkedStudent } from "@/lib/supabase/queries/student-family"
+
+/** Stands in for the id of a student not saved yet. */
+const NO_STUDENT_YET = "00000000-0000-0000-0000-000000000000"
 import { parseDateOnly, toDateOnly } from "@/lib/date-only"
 import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 
@@ -104,6 +109,9 @@ export function StudentForm({
   const router = useRouterWithProgress()
   const attachRef = useRef<AttachmentFieldHandle>(null)
   const [isPending, startTransition] = useTransition()
+  // New students only: a brother or sister already in the CRM, whose parents are then shared.
+  const [sibling, setSibling] = useState<LinkedStudent | null>(null)
+  const [siblingIs, setSiblingIs] = useState<"brother" | "sister">("brother")
   const [error, setError] = useState<string | null>(null)
   const [conflict, setConflict] = useState(false)
   const errorRef = useRef<HTMLDivElement>(null)
@@ -157,7 +165,7 @@ export function StudentForm({
     startTransition(async () => {
       let result
       if (mode === "create") {
-        result = await createStudent(input)
+        result = await createStudent(input, { sibling: sibling ? { id: sibling.id, relationship: siblingIs } : null })
       } else if (student?.id) {
         result = await updateStudent(student.id, input, { expectedUpdatedAt: student.updated_at })
       }
@@ -384,6 +392,34 @@ export function StudentForm({
           </Field>
         </div>
       </FormBlock>
+
+      {mode === "create" && (
+        <FormBlock title="Family" description="A brother or sister already in the CRM: linking them shares their parents' details with this student.">
+          <div className={GRID}>
+            <div className="space-y-2">
+              <Label>Brother or sister in the CRM</Label>
+              {/* No id yet for the new student, so a placeholder keeps the search from excluding anyone real. */}
+              <FamilyStudentPicker studentId={NO_STUDENT_YET} value={sibling} onChange={picked => {
+                setSibling(picked)
+                if (picked?.gender === "M") setSiblingIs("brother")
+                if (picked?.gender === "F") setSiblingIs("sister")
+              }} />
+            </div>
+            {sibling && (
+              <div className="space-y-2">
+                <Label htmlFor="sibling_is">They are this student&apos;s</Label>
+                <Select value={siblingIs} onValueChange={value => setSiblingIs(value as "brother" | "sister")}>
+                  <SelectTrigger id="sibling_is" className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="brother">Brother</SelectItem>
+                    <SelectItem value="sister">Sister</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+        </FormBlock>
+      )}
 
       <FormBlock title="Preferences and notes">
         <div className="flex flex-wrap gap-6">
