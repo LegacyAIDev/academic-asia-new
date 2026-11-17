@@ -48,6 +48,7 @@ import {
   type CreateSchoolAcademicResultInput,
 } from "@/lib/supabase/actions/school-academic-results"
 import { FormSection } from "@/components/forms/form-section"
+import { GRADE_OPTIONS } from "@/lib/schools/result-grades"
 import { useAddParam } from "@/lib/students/use-add-param"
 
 type ExamTypeItem = { id: number; code: string; label: string; country: string }
@@ -64,20 +65,6 @@ type AcademicResultDialogProps = {
   trigger?: React.ReactNode
 }
 
-/** Grade dropdown options per exam type code */
-const GRADE_OPTIONS: Record<string, string[]> = {
-  a_level: ["A*", "A", "B", "C", "D", "E"],
-  gcse: ["A*", "A", "B", "C", "9", "8", "7", "6", "5", "4", "3"],
-  igcse: ["A*", "A", "B", "C", "9", "8", "7", "6", "5", "4"],
-  ib: ["HL 7", "HL 6", "HL 5", "HL 4", "HL 3", "SL 7", "SL 6", "SL 5", "SL 4", "SL 3"],
-  pre_u: ["Distinction", "Merit", "Pass", "D1", "D2", "D3", "M1", "M2", "M3"],
-  btec: ["D*", "D", "M", "P"],
-  higher: ["A", "B", "C"],
-  advanced_higher: ["A", "B", "C"],
-  national_5: ["A", "B", "C"],
-  s5_higher: ["A", "B", "C"],
-  s6_higher: ["A", "B", "C"],
-}
 
 
 function FormField({

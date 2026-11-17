@@ -15,6 +15,7 @@ import { SchoolsFilters } from "./schools-filters"
 import { SchoolSelectCheckbox, SchoolSelectAllCheckbox } from "./school-select-checkbox"
 import { SchoolSelectionToolbar } from "./school-selection-toolbar"
 import { AddSchoolSheet } from "./school-form-sheet"
+import { ResultsImportSheet } from "./results-import-sheet"
 
 type SearchParams = Promise<{
   page?: string
@@ -100,7 +101,12 @@ export default async function SchoolsPage({
             {totalCount.toLocaleString("en-GB")} {filtered ? "matching" : "schools"}. Tick schools to compare them or export a PDF.
           </p>
         </div>
-        {canWrite && <AddSchoolSheet />}
+        {canWrite && (
+          <div className="flex flex-wrap items-center gap-2">
+            <ResultsImportSheet />
+            <AddSchoolSheet />
+          </div>
+        )}
       </header>
 
       <section className="overflow-hidden rounded-lg border bg-card">

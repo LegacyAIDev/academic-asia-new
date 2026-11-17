@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Panel, PanelEmpty } from "@/components/ui/panel"
+import { Upload } from "lucide-react"
+import { ResultsImportSheet } from "../results-import-sheet"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -53,6 +55,7 @@ export function SchoolAcademicResultsSection({
 
   return (
     <Panel title="Exam Results" flush action={<><div className="flex items-center gap-2">
+            {canWrite && <ResultsImportSheet trigger={<Button size="sm" variant="ghost" className="h-8 gap-1.5"><Upload className="h-3.5 w-3.5" /> Import CSV</Button>} />}
             <div role="group" aria-label="View" className="flex items-center gap-1 rounded-lg bg-muted/50 p-[3px]">
               {(["summary", "records"] as const).map(option => (
                 <Button key={option} type="button" size="sm" className="h-7 px-2.5 text-xs"
