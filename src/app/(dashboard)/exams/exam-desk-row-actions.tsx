@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { CalendarClock, FileText, MoreHorizontal } from "lucide-react"
+import { CalendarClock, FileText, KeyRound, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { RecordNotesDialog } from "@/components/features/record-notes-dialog"
@@ -9,6 +9,7 @@ import { useBookingActions } from "@/app/(dashboard)/scheduler/use-booking-actio
 import { BookingDrawer } from "@/components/scheduler/booking-drawer"
 import type { ExamDeskActions } from "@/lib/exams/exam-desk-rows"
 import { ExamDeskPrintPapers } from "./exam-desk-print-papers"
+import { ExamAccessDocsDialog, type ExamAccessDocs } from "./exam-access-docs-dialog"
 
 type Props = {
   bookingId: string
@@ -26,6 +27,8 @@ type Props = {
   coverSlipHref: string | null
   /** Set when the booking has an exam record to hang notes on. */
   notes: { examId: string; title: string; canWrite: boolean; currentUserId: string | null } | null
+  /** The candidate's own exam documents (access codes); null outside the exam team or without an exam record. */
+  accessDocs?: ExamAccessDocs | null
 }
 
 /**
@@ -33,11 +36,13 @@ type Props = {
  * (Confirm, or Showed up / No show), papers and notes as icons, the rest under
  * "⋯". Each row has its own instance, so only the row being saved is disabled.
  */
-export function ExamDeskRowActions({ bookingId, studentId, actions, canOpenBooking, canWrite, canPrintPapers, coverSlipHref, notes }: Props) {
+export function ExamDeskRowActions({ bookingId, studentId, actions, canOpenBooking, canWrite, canPrintPapers, coverSlipHref, notes, accessDocs = null }: Props) {
   const { isPending, confirm, recordAttendance } = useBookingActions()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [docsOpen, setDocsOpen] = useState(false)
+  const docCount = accessDocs?.files.length ?? 0
 
-  const hasMore = Boolean(coverSlipHref || canOpenBooking)
+  const hasMore = Boolean(coverSlipHref || canOpenBooking || accessDocs)
   return (
     <div className="flex items-center justify-end gap-1 whitespace-nowrap">
       {/* The one thing to do next for this row comes first, as a button. */}
@@ -53,6 +58,13 @@ export function ExamDeskRowActions({ bookingId, studentId, actions, canOpenBooki
         </Button>
       )}
       {canPrintPapers && <ExamDeskPrintPapers bookingId={bookingId} compact />}
+      {/* Shown on the row once the candidate has an access document, so it is at hand on the day. */}
+      {accessDocs && docCount > 0 && (
+        <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" aria-label="Access document" title="Access document"
+          onClick={() => setDocsOpen(true)}>
+          <KeyRound className="h-4 w-4" />
+        </Button>
+      )}
       {notes && (
         <RecordNotesDialog target="exam" recordId={notes.examId} title={notes.title}
           canWrite={notes.canWrite} currentUserId={notes.currentUserId} compact />
@@ -72,8 +84,16 @@ export function ExamDeskRowActions({ bookingId, studentId, actions, canOpenBooki
             {canOpenBooking && (
               <DropdownMenuItem onSelect={() => setDrawerOpen(true)}><CalendarClock className="h-4 w-4" /> Open booking</DropdownMenuItem>
             )}
+            {accessDocs && (
+              <DropdownMenuItem onSelect={() => setDocsOpen(true)}>
+                <KeyRound className="h-4 w-4" /> {docCount > 0 ? `Access document (${docCount})` : "Add access document"}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
+      )}
+      {accessDocs && (
+        <ExamAccessDocsDialog docs={accessDocs} studentName={notes?.title ?? "this student"} open={docsOpen} onOpenChange={setDocsOpen} />
       )}
       {canOpenBooking && (
         <BookingDrawer bookingId={drawerOpen ? bookingId : null} onClose={() => setDrawerOpen(false)} canConfirm={canWrite} />

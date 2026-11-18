@@ -81,6 +81,13 @@ const STALE_STUDENT: ActionResult<never> = {
 /**
  * Create a new student with auto-generated student code
  */
+/** The status a new case starts in: Enquiry, or New where Enquiry is not set up. */
+async function startingStatusId(supabase: ReturnType<typeof createClient>): Promise<number> {
+  const { data } = await supabase.from('student_statuses').select('id, code').in('code', ['enquiry', 'new'])
+  const rows = (data ?? []) as { id: number; code: string }[]
+  return (rows.find(r => r.code === 'enquiry') ?? rows.find(r => r.code === 'new'))?.id ?? 1
+}
+
 export async function createStudent(
   input: CreateStudentInput,
   options: { sibling?: { id: string; relationship: 'brother' | 'sister' } | null } = {},
@@ -100,7 +107,8 @@ export async function createStudent(
     const studentData: StudentInsert = {
       ...withSchool,
       student_code: newCode,
-      status_id: input.status_id ?? 1, // Default to 'new' status
+      // Every new case starts as an enquiry (New while that status does not exist).
+      status_id: input.status_id ?? (await startingStatusId(supabase)),
     }
 
     const { data, error } = await supabase

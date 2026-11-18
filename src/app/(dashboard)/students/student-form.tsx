@@ -327,7 +327,7 @@ export function StudentForm({
       <FormBlock title="With Academic Asia" description="Where the student stands with us, who looks after them and how they found us.">
         <div className={GRID}>
           <Field id="status_id" label="Status" hint="New enquiry, active client, on hold (pending), closed or lost (dead).">
-            <Select name="status_id" defaultValue={student?.status?.id?.toString() ?? statuses.find(s => s.code === "new")?.id?.toString() ?? ""}>
+            <Select name="status_id" defaultValue={student?.status?.id?.toString() ?? (statuses.find(s => s.code === "enquiry") ?? statuses.find(s => s.code === "new"))?.id?.toString() ?? ""}>
               <SelectTrigger id="status_id" className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
               <SelectContent>
                 {statuses.map(status => <SelectItem key={status.id} value={status.id.toString()}>{status.label}</SelectItem>)}

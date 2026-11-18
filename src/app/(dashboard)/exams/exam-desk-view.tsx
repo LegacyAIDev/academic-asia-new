@@ -11,6 +11,7 @@ import type { RawSearchParams } from "@/lib/scheduler/search-params"
 import { EXAM_DESK_MAX_ROWS, getExamDeskBookings } from "@/lib/supabase/queries/exam-desk"
 import { getExamPaperStatuses } from "@/lib/supabase/queries/exam-papers"
 import { getSignedInUserId } from "@/lib/supabase/queries/record-notes"
+import { getAttachmentsForMany } from "@/lib/supabase/queries/record-attachments"
 import { ExamDeskFilters } from "./exam-desk-filters"
 import { ExamDeskTable } from "./exam-desk-table"
 
@@ -39,6 +40,9 @@ export async function ExamDeskView({ raw }: { raw: RawSearchParams }) {
   const params = reconcileExamDeskFilters(requested, options)
   const rows = sortExamDeskRows(filterExamDeskRows(allRows, params), params.sort, params.dir)
   const { booked, showedUp, waiting } = splitExamDeskRows(rows)
+  // Each candidate's own documents (an online test's access code, say): the exam team's only.
+  const examIds = [...new Set(rows.map(row => row.examId).filter((id): id is string => Boolean(id)))]
+  const accessDocs = canPrintPapers ? await getAttachmentsForMany("student_exam_access", examIds) : null
 
   const filtered = hasExamDeskFilters(params)
   const tableProps = {
@@ -50,6 +54,7 @@ export async function ExamDeskView({ raw }: { raw: RawSearchParams }) {
     canOpenBooking,
     canOpenStudent,
     canPrintPapers,
+    accessDocs,
     currentUserId,
   }
 

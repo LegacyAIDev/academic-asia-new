@@ -5,19 +5,22 @@ import type { SupabaseClient } from '@supabase/supabase-js'
  *
  * The table is tiny (under 20 rows) and effectively static, so it is cached for
  * the lifetime of the server process rather than re-queried on every upload.
+ * A miss reloads it once, so a category added by a migration is found without
+ * a restart.
  */
 let cache: Map<number, string> | null = null
+
+async function load(supabase: SupabaseClient): Promise<void> {
+  const { data } = await supabase.from('document_categories').select('id, code')
+  if (data) cache = new Map(data.map((c: { id: number; code: string }) => [c.id, c.code]))
+}
 
 export async function getCategoryCode(
   supabase: SupabaseClient,
   categoryId: number
 ): Promise<string> {
-  if (!cache) {
-    const { data } = await supabase.from('document_categories').select('id, code')
-    if (data) cache = new Map(data.map((c: { id: number; code: string }) => [c.id, c.code]))
-  }
-  // 'other' keeps a file reachable rather than failing the upload outright if a
-  // category was added after this process started.
+  if (!cache?.has(categoryId)) await load(supabase)
+  // 'other' keeps a file reachable rather than failing the upload outright.
   return cache?.get(categoryId) ?? 'other'
 }
 
@@ -31,12 +34,11 @@ export async function getCategoryId(
   supabase: SupabaseClient,
   code: string
 ): Promise<number | null> {
-  if (!cache) {
-    const { data } = await supabase.from('document_categories').select('id, code')
-    if (data) cache = new Map(data.map((c: { id: number; code: string }) => [c.id, c.code]))
-  }
-  for (const [id, c] of cache ?? []) if (c === code) return id
-  return null
+  const find = () => { for (const [id, c] of cache ?? []) if (c === code) return id; return null }
+  const hit = find()
+  if (hit !== null) return hit
+  await load(supabase)
+  return find()
 }
 
 /** Drop the cache — call after seeding or changing categories. */

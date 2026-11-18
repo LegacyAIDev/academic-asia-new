@@ -60,7 +60,7 @@ export async function StudentCalendarSection({ studentId, canBook, start }: Prop
           </Button>
           {canBook && (
             <ScheduleBookingButton
-              label="Book consultation"
+              label="Booking"
               variant="outline"
               initial={{ booking_type: 'consultation', student_id: studentId }}
             />
@@ -91,7 +91,7 @@ export async function StudentCalendarSection({ studentId, canBook, start }: Prop
       {groups.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border px-4 py-8 text-center">
           <p className="text-sm font-medium">Nothing scheduled in this period.</p>
-          <p className="mt-1 text-sm text-muted-foreground">Book a consultation to add the first one.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Use Booking to add the first one.</p>
         </div>
       ) : (
         <div className="space-y-5">

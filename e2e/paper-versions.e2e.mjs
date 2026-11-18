@@ -5,13 +5,21 @@
  * only the current file is offered for printing or listed as a document.
  * Needs E2E_EXAM_ID (a seeded English Year 9 entrance exam of Headington) and
  * E2E_BOOKING_ID (an examination booking today whose papers include it).
+ * Needs psql on PATH and E2E_DB_URL for the local test database.
  */
+import { execFileSync } from 'node:child_process'
 import path from 'node:path'
 import { assert, click, launch, notSeeText, open, SEED, seeText, shot, signIn, step, summary } from './lib/harness.mjs'
 
 const FIX = process.env.E2E_FIXTURES ?? '/tmp/aa-localdb/fixtures'
 const DIALOG = '[role="dialog"]'
 const examsTab = `/schools/${SEED.headington}?tab=entrance-exams`
+const DB = process.env.E2E_DB_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
+const sql = query => execFileSync('psql', [DB, '-X', '-A', '-t', '-q', '-c', query], { encoding: 'utf8' }).trim()
+
+// Papers left by an earlier run would count as extra versions.
+const reset = () => sql(`delete from public.school_documents where attachable_type = 'school_entrance_exams' and file_name like 'english-v%'`)
+reset()
 
 async function openExamDialog(page) {
   await open(page, examsTab)
@@ -123,6 +131,7 @@ try {
     await notSeeText(staff, 'english-v', 'ol[aria-label="Activity"]')
   })
 } finally {
+  reset()
   await browser.close()
 }
 process.exit(summary() ? 1 : 0)

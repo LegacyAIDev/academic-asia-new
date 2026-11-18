@@ -14,7 +14,7 @@ import { BASE, launch, SEED, signIn } from './lib/harness.mjs'
 const S = SEED.student, H = SEED.headington, A = SEED.application
 const PAGES = [
   '/tasks', '/students',
-  ...['overview', 'resume', 'family', 'education', 'documents', 'applications', 'communications', 'events', 'immigration'].map(t => `/students/${S}?tab=${t}`),
+  ...['overview', 'resume', 'family', 'documents', 'applications', 'communications', 'events', 'immigration'].map(t => `/students/${S}?tab=${t}`),
   `/students/${S}/applications/${A}`,
   '/schools',
   ...['basic', 'entrance-exams', 'fees', 'academic-results', 'contacts', 'events', 'notes', 'documents', 'communications', 'courses', 'bank-details', 'visits'].map(t => `/schools/${H}?tab=${t}`),

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import type { StudentSectionCounts } from "@/lib/supabase/queries/student-sections"
-import { STUDENT_SECTIONS, type StudentSectionKey } from "./student-sections"
+import { VISIBLE_SECTIONS, type StudentSectionKey } from "./student-sections"
 
 /**
  * The student's sections as one bar that stays at the top while scrolling,
@@ -15,7 +15,7 @@ export function StudentSectionBar({ studentId, current, counts }: {
   return (
     <nav aria-label="Student sections" className="sticky top-14 z-30 -mx-4 border-b bg-background/95 px-4 backdrop-blur sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-8 lg:px-8">
       <ul className="-mb-px flex gap-1 overflow-x-auto">
-        {STUDENT_SECTIONS.map(section => {
+        {VISIBLE_SECTIONS.map(section => {
           const count = section.key in counts ? counts[section.key as keyof StudentSectionCounts] : null
           const active = section.key === current
           return (

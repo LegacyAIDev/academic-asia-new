@@ -20,6 +20,7 @@ import { AddStudentSheet } from "./[id]/edit-student-sheet"
 import { RegistrationLinkDialog } from "./registration-link-dialog"
 
 const statusStyles: Record<string, string> = {
+  enquiry: "bg-violet-50 text-violet-700 ring-violet-600/15",
   active: "bg-emerald-50 text-emerald-700 ring-emerald-600/15",
   new: "bg-sky-50 text-sky-700 ring-sky-600/15",
   pending: "bg-amber-50 text-amber-800 ring-amber-600/20",

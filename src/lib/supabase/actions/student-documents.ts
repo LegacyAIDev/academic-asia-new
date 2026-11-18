@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { buildDocumentPath } from '@/lib/supabase/storage-paths'
 import { getCategoryCode, getCategoryId } from '@/lib/supabase/document-categories'
+import { EXAM_PAPER_ACCESS } from '@/lib/attachments/exam-paper-access'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { ALLOWED_MIME, MAX_BYTES } from '@/lib/attachments/constraints'
@@ -241,6 +242,13 @@ export async function getDocumentSignedUrl(filePath: string): Promise<ActionResu
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+
+    // An exam access document needs the exam team's rights, whichever download asks for it.
+    const { data: rows } = await supabase.from('student_documents').select('attachable_type').eq('file_path', filePath).limit(20)
+    if ((rows ?? []).some(row => (row as { attachable_type: string | null }).attachable_type === 'student_individual_exams')) {
+      const examDenied = await assertAccess(EXAM_PAPER_ACCESS.module, EXAM_PAPER_ACCESS.read)
+      if (examDenied) return examDenied
+    }
 
     const { data, error } = await supabase.storage
       .from('student-documents')

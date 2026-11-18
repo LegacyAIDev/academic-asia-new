@@ -13,6 +13,8 @@ import { ACCESS, MODULES } from '@/lib/permissions/modules'
 const STUDENT_TYPES = [
   'students', 'student_visas', 'student_travel', 'student_exam_results',
   'student_resume', 'student_applications', 'student_application_deposits',
+  // 20261118201939_student_exam_access_documents.sql
+  'student_individual_exams',
 ]
 
 // Mirrors school_documents_attachable_type_ck.
@@ -33,6 +35,7 @@ const SEEDED_CATEGORY_CODES = [
   'travel_document', 'exam_paper', 'qualification_certificate', 'exam_result_doc',
   'application_document', 'deposit_receipt',
   'school_entrance_exam_paper', 'school_note_attachment', 'school_bank_document',
+  'exam_access_document',
 ]
 
 describe('ATTACH_POINTS registry', () => {
@@ -100,9 +103,10 @@ describe('attachAccess', () => {
     expect(attachAccess('school_entrance_exam_paper')).toEqual({ module: MODULES.EXAMS, read: ACCESS.WRITE, write: ACCESS.WRITE, restricted: true })
   })
 
-  it('is the only attach point with its own rule', () => {
+  it('only exam papers and a student\'s exam access documents have their own rule', () => {
     const special = ATTACH_POINT_KEYS.filter(key => attachAccess(key).module !== ownerConfig(key).module)
-    expect(special).toEqual(['school_entrance_exam_paper'])
-    expect(ATTACH_POINT_KEYS.filter(key => attachAccess(key).restricted)).toEqual(['school_entrance_exam_paper'])
+    expect(special.sort()).toEqual(['school_entrance_exam_paper', 'student_exam_access'])
+    expect(ATTACH_POINT_KEYS.filter(key => attachAccess(key).restricted).sort()).toEqual(['school_entrance_exam_paper', 'student_exam_access'])
+    expect(attachAccess('student_exam_access')).toEqual(attachAccess('school_entrance_exam_paper'))
   })
 })

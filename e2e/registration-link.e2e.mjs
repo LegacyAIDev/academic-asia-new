@@ -56,7 +56,7 @@ try {
     await seeText(family, 'Please agree so we can keep these details')
   })
 
-  await step(family, 'a complete form creates the student, status New, with their mother', async () => {
+  await step(family, 'a complete form creates the student, as an Enquiry, with their mother', async () => {
     await family.type('#first_name', 'Regan')
     await family.type('#surname', 'Regtest')
     await choose(family, '#gender', 'Female')
@@ -67,8 +67,9 @@ try {
     await family.click('#consent')
     await click(family, 'Send registration')
     await seeText(family, 'We have received the registration')
-    const row = sql(`select s.status_id || '|' || s.entry_year || '|' || (s.remarks like 'Registered online%') from public.students s where s.surname = 'REGTEST'`)
-    assert(row === `1|${new Date().getFullYear() + 2}|true`, `student: ${row}`)
+    const row = sql(`select st.code || '|' || s.entry_year || '|' || (s.remarks like 'Registered online%') from public.students s
+      join public.student_statuses st on st.id = s.status_id where s.surname = 'REGTEST'`)
+    assert(row === `enquiry|${new Date().getFullYear() + 2}|true`, `student: ${row}`)
     const mother = sql(`select c.first_name || '|' || c.surname || '|' || c.mobile from public.student_contacts c join public.students s on s.id = c.student_id
       join public.contact_relationships r on r.id = c.relationship_id where s.surname = 'REGTEST' and r.code = 'mother'`)
     assert(mother === 'Wong Mei|Ling|9876 5432', `mother: ${mother}`)
@@ -86,7 +87,7 @@ try {
   await step(page, 'staff see the new student in the list', async () => {
     await open(page, '/students?search=Regtest')
     await seeText(page, 'Regan REGTEST')
-    await seeText(page, 'New')
+    await seeText(page, 'Enquiry')
   })
 } finally {
   reset()

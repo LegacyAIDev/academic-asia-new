@@ -7,6 +7,7 @@ import { BookingStatusBadge } from "@/components/scheduler/booking-status-badge"
 import { RoomChip } from "@/components/scheduler/room-chip"
 import { EXAM_DESK_STATUS_LABELS, examDeskActions, type ExamDeskRow } from "@/lib/exams/exam-desk-rows"
 import { examsHref, nextSort, type ExamDeskSortKey, type SortDirection } from "@/lib/exams/exam-page-search-params"
+import type { AttachmentRecord } from "@/lib/supabase/queries/record-attachments"
 import type { RawSearchParams } from "@/lib/scheduler/search-params"
 import { formatHkDate, formatHkTime } from "@/lib/scheduler/time-utils"
 import { ExamDeskRowActions } from "./exam-desk-row-actions"
@@ -28,6 +29,8 @@ type Props = {
   canOpenStudent: boolean
   /** Exam team only: may open the paper files of a booking. */
   canPrintPapers: boolean
+  /** Each candidate's own exam documents by exam record; null for staff outside the exam team. */
+  accessDocs: Map<string, AttachmentRecord[]> | null
   /** Signed-in user, so each note's author can edit it; the desk itself needs Exams access to open. */
   currentUserId: string | null
 }
@@ -48,7 +51,7 @@ const dash = <span className="text-muted-foreground">—</span>
 
 /** One list of the exam desk (booked or showed up). Server-rendered; only the action buttons are interactive. */
 export function ExamDeskTable(props: Props) {
-  const { rows, raw, sort, dir, canWrite, canOpenBooking, canPrintPapers, currentUserId } = props
+  const { rows, raw, sort, dir, canWrite, canOpenBooking, canPrintPapers, accessDocs, currentUserId } = props
   // Everyone who sees the desk may print a cover slip, so the column appears as soon as a row has a candidate.
   const showActions = canWrite || canOpenBooking || canPrintPapers || rows.some(row => row.candidates.length > 0 || row.examId)
 
@@ -144,6 +147,9 @@ export function ExamDeskTable(props: Props) {
                       } : null}
                       actions={examDeskActions(row, canWrite)}
                       canOpenBooking={canOpenBooking}
+                      // Only a row with its own candidate and exam record can carry their document.
+                      accessDocs={accessDocs && row.examId && row.studentId
+                        ? { studentId: row.studentId, examId: row.examId, files: accessDocs.get(row.examId) ?? [] } : null}
                       canWrite={canWrite}
                       canPrintPapers={canPrintPapers && Boolean(row.availability?.canPrint)}
                       coverSlipHref={row.candidates.length > 0 ? `/api/exams/cover-slip/pdf?booking=${row.bookingId}` : null}

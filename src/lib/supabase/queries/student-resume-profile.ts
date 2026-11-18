@@ -86,6 +86,8 @@ export async function getStudentDocuments(studentId: string, section?: string): 
     .from('student_documents')
     .select('*, category:document_categories(id, code, label)')
     .eq('student_id', studentId)
+    // Exam access documents are the exam team's, opened from the exam desk; never listed here.
+    .or('attachable_type.is.null,attachable_type.neq.student_individual_exams')
     .order('created_at', { ascending: false })
 
   if (section) {

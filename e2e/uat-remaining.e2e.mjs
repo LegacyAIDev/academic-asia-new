@@ -1,7 +1,7 @@
 /**
  * End-to-end checks of UAT DEV24-006, 007, 008, 009, 011 and 012:
  *   006 New booking starts on the day the calendar shows
- *   007 Book consultation from a student keeps that student
+ *   007 Booking from a student keeps that student
  *   008 a seat beyond the room's seats is named, and can be corrected
  *   009 an exam result's school is chosen by name
  *   011 Add > Note starts a note
@@ -51,9 +51,9 @@ try {
     await page.keyboard.press('Escape')
   })
 
-  await step(page, '007: Book consultation from the student keeps the student and offers their applications', async () => {
+  await step(page, '007: Booking from the student keeps the student and offers their applications', async () => {
     await open(page, `/students/${S}?tab=calendar`)
-    await click(page, 'Book consultation')
+    await click(page, 'Booking')
     await page.waitForSelector(DIALOG)
     await seeText(page, 'Lucas Ng', DIALOG)
     assert(!(await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] button')].some(b => b.innerText.trim() === 'Search students...'))), 'the student search is still showing')
@@ -108,22 +108,13 @@ try {
     assert(sql(`select string_agg(seat_no::text, ',' order by seat_no) from public.scheduler_booking_attendees a join public.scheduler_bookings b on b.id = a.booking_id where b.title = 'UAT rem group'`) === '1,2', 'seats not saved')
   })
 
-  await step(page, '009: an exam result school is searched and chosen by name, and shown again when editing', async () => {
+  await step(page, '009 (since 18 Nov): the Tutoring & exams tab is hidden until tutoring returns as its own module', async () => {
     await open(page, `/students/${S}?tab=education`)
-    await click(page, 'Add exam result', 'main')
-    await page.waitForSelector(DIALOG)
-    assert(!(await page.evaluate(() => document.querySelector('[role="dialog"]').innerText.includes('UUID'))), 'still asks for a UUID')
-    await click(page, 'Search schools (optional)', DIALOG, { prefix: true }).catch(() => page.click(`${DIALOG} button[aria-label="School"]`))
-    await page.waitForSelector('[cmdk-input]')
-    await page.type('[cmdk-input]', 'Head')
-    const option = await page.waitForFunction(() => [...document.querySelectorAll('[cmdk-list] [cmdk-item]')].find(o => o.innerText.includes('Headington School')) ?? null, { polling: 100 })
-    await option.asElement().click()
-    await chooseByLabel(page, 'Type of test', 'AA Test')
-    await page.type(`${DIALOG} textarea[name="remarks"], ${DIALOG} input[name="remarks"]`, 'UAT rem result')
-    await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] button[type="submit"]')].pop().click())
-    await page.waitForFunction(() => !document.querySelector('[role="dialog"]'), { polling: 100, timeout: 30000 })
-    assert(sql(`select s.name from public.student_exam_results r join public.schools s on s.id = r.school_id where r.remarks = 'UAT rem result'`) === 'Headington School', 'school not saved')
+    const tabs = await page.$$eval('nav a', links => links.map(a => a.innerText.trim()))
+    assert(!tabs.some(t => t.startsWith('Tutoring')), `tab still shown: ${tabs.join(', ')}`)
+    await seeText(page, 'Notes')
   })
+
 
   const addNote = async () => {
     await click(page, 'Add', 'main header')

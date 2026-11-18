@@ -5,7 +5,8 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
-import { isExamBooking } from '@/lib/scheduler/config'
+import { BOOKING_TYPE_LABELS, isExamBooking } from '@/lib/scheduler/config'
+import { defaultBookingTitle } from '@/lib/scheduler/booking-title'
 import {
   bookingFormSchema,
   cancelReasonSchema,
@@ -59,6 +60,24 @@ function toRpcPayload(values: BookingFormValues) {
 }
 
 /** Creates or updates a booking through the atomic save RPC, warning about busy people first. */
+/** A title from the booking's type, student (or first candidate), school and room, for one left empty. */
+async function titleFor(supabase: ReturnType<typeof createClient>, values: BookingFormValues): Promise<string> {
+  const studentId = values.student_id ?? values.attendees.find(a => a.student_id)?.student_id ?? null
+  const [student, school, room] = await Promise.all([
+    studentId ? supabase.from('students').select('first_name, surname').eq('id', studentId).maybeSingle() : null,
+    values.school_id ? supabase.from('schools').select('name').eq('id', values.school_id).maybeSingle() : null,
+    values.location_type === 'room' && values.room_id ? supabase.from('scheduler_rooms').select('display_name').eq('id', values.room_id).maybeSingle() : null,
+  ])
+  const s = student?.data as { first_name: string | null; surname: string | null } | null | undefined
+  const candidates = values.attendees.filter(a => a.student_id).length
+  const who = s ? [s.first_name, s.surname].filter(Boolean).join(' ') + (candidates > 1 ? ` and ${candidates - 1} more` : '') : null
+  return defaultBookingTitle(BOOKING_TYPE_LABELS[values.booking_type], [
+    who,
+    (school?.data as { name: string | null } | null | undefined)?.name,
+    values.location_type === 'online' ? 'Online' : (room?.data as { display_name: string | null } | null | undefined)?.display_name,
+  ])
+}
+
 export async function saveBooking(input: BookingFormInput): Promise<SaveBookingResult> {
   const denied = await assertAccess(MODULES.SCHEDULER, ACCESS.WRITE)
   if (denied) return denied
@@ -85,6 +104,7 @@ export async function saveBooking(input: BookingFormInput): Promise<SaveBookingR
 
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+    if (!values.title) values.title = await titleFor(supabase, values)
     const { data, error } = await supabase.rpc('scheduler_save_booking', toRpcPayload(values))
     if (error) return { success: false, error: mapSchedulerError(error) }
 

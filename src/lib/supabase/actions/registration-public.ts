@@ -43,10 +43,14 @@ export async function submitRegistration(token: string, raw: Partial<Registratio
   try {
     const { student, parents, notes } = checked.data
     const code = await nextStudentCode(admin as never)
+    // Online registrations start as enquiries, like every new case.
+    const { data: statuses } = await admin.from('student_statuses').select('id, code').in('code', ['enquiry', 'new'])
+    const statusRows = (statuses ?? []) as { id: number; code: string }[]
+    const statusId = (statusRows.find(r => r.code === 'enquiry') ?? statusRows.find(r => r.code === 'new'))?.id ?? 1
     const remarks = ['Registered online by the family.', notes ? `Family's notes: ${notes}` : null].filter(Boolean).join('\n')
     const { data: created, error: studentError } = await admin
       .from('students')
-      .insert({ ...student, student_code: code, status_id: 1, remarks } as never)
+      .insert({ ...student, student_code: code, status_id: statusId, remarks } as never)
       .select('id')
       .single()
     if (studentError || !created) {

@@ -66,8 +66,8 @@ export function BookingFormBasics({ form, isEditing, part }: { form: BookingForm
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-muted-foreground">Title</Label>
-            <Input {...form.register('title')} placeholder="e.g. Maths mock exam" />
+            <Label className="text-xs font-medium text-muted-foreground">Title (optional)</Label>
+            <Input {...form.register('title')} placeholder="Named from the type and student if left empty" />
           </div>
         </div>
         {status && (

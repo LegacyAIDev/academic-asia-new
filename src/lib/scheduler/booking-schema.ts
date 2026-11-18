@@ -29,7 +29,8 @@ export type AttendeeInput = z.infer<typeof attendeeSchema>
 
 const baseBookingSchema = z.object({
   id: uuid.optional(),
-  title: z.string().trim().min(1, 'Title is required').max(200),
+  // Optional: an empty title is filled from the type, student, school and room when saved.
+  title: z.string().trim().max(200).default(''),
   booking_type: z.enum(BOOKING_TYPES),
   status: z.enum(['pending', 'confirmed']).optional(),
   start_at: isoDatetime,

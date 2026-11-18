@@ -15,7 +15,7 @@ const S = SEED.student, H = SEED.headington, A = SEED.application
 const booking = sql(`select id from public.scheduler_bookings where status <> 'cancelled' order by created_at limit 1`)
 const profile = sql(`select p.id from public.profiles p join auth.users u on u.id = p.id where u.email = 'staff@aa.test'`)
 
-const STUDENT_TABS = ['overview', 'resume', 'family', 'education', 'documents', 'applications', 'communications', 'events', 'immigration', 'calendar']
+const STUDENT_TABS = ['overview', 'resume', 'family', 'documents', 'applications', 'communications', 'events', 'immigration', 'calendar']
 const SCHOOL_TABS = ['basic', 'entrance-exams', 'fees', 'academic-results', 'contacts', 'events', 'notes', 'documents', 'communications', 'courses', 'bank-details', 'visits']
 const EVENT_TYPES = ['expo-fair', 'seminar-webinar', 'briefing-meeting', 'reception-social', 'interview', 'audition-day', 'group-entrance-exam', 'school-assessment-scholarship']
 

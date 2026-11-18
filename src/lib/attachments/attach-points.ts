@@ -61,6 +61,14 @@ export const ATTACH_POINTS = {
     categoryCode: 'travel_document',
     label: 'Travel document',
   },
+  /** A school's per-student document for an online test (an access code PDF): exam team only, like the papers. */
+  student_exam_access: {
+    owner: 'student',
+    attachableType: 'student_individual_exams',
+    categoryCode: 'exam_access_document',
+    label: 'Access document',
+    access: EXAM_PAPER_ACCESS,
+  },
   student_application: {
     owner: 'student',
     attachableType: 'student_applications',
