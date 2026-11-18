@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/auth'
 import { noteTarget } from '@/lib/notes/note-targets'
 import { NOTE_LIMIT, NOTE_SELECT, toRecordNote, type NoteRow, type RecordNote } from '@/lib/notes/record-note'
 
@@ -42,8 +43,5 @@ export async function getRecordNotes(target: string, recordId: string): Promise<
 
 /** Id of the signed-in user, used to decide whose notes may be edited. */
 export async function getSignedInUserId(): Promise<string | null> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-  const { data } = await supabase.auth.getUser()
-  return data.user?.id ?? null
+  return (await getAuthUser())?.id ?? null
 }

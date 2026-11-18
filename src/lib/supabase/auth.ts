@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 
@@ -10,13 +11,24 @@ export type CurrentUser = {
   admin_level: number | null
 }
 
-/** Get the current authenticated user with profile data */
-export async function getCurrentUser(): Promise<CurrentUser | null> {
+/**
+ * The signed-in user as Supabase Auth confirms them, asked once per request:
+ * the layout, the permission check and the page all need it, and each call is
+ * a round trip to the Auth server.
+ */
+export const getAuthUser = cache(async () => {
+  const supabase = createClient(await cookies())
+  const { data: { user }, error } = await supabase.auth.getUser()
+  return error ? null : user
+})
+
+/** Get the current authenticated user with profile data (once per request). */
+export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return null
+  const user = await getAuthUser()
+  if (!user) return null
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -32,4 +44,4 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     department_label: (profile?.department as unknown as { label: string } | null)?.label ?? null,
     admin_level: profile?.admin_level ?? null,
   }
-}
+})

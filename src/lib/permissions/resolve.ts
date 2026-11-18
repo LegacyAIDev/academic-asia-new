@@ -1,4 +1,5 @@
 import { cache } from 'react'
+import { getAuthUser } from '@/lib/supabase/auth'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import {
@@ -40,7 +41,7 @@ export const getPermissions = cache(async (): Promise<PermissionMap> => {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getAuthUser()
     if (!user) return denyAll()
 
     const { data, error } = await supabase.rpc('resolve_permissions', {

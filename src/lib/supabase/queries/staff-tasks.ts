@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/auth'
 import { TASK_SELECT, toStaffTask, type StaffTask, type TaskRow } from '@/lib/tasks/task-rules'
 
 /** Completed tasks kept on the page; older ones stay stored but out of sight. */
@@ -12,12 +13,12 @@ export const MAX_COMPLETED_SHOWN = 100
  */
 export async function getMyTasks(): Promise<{ active: StaffTask[]; completed: StaffTask[] } | null> {
   const supabase = createClient(await cookies())
-  const { data: auth } = await supabase.auth.getUser()
-  if (!auth.user) return null
+  const user = await getAuthUser()
+  if (!user) return null
 
   const [active, completed] = await Promise.all([
-    supabase.from('staff_tasks').select(TASK_SELECT).eq('owner_id', auth.user.id).is('completed_at', null).limit(500),
-    supabase.from('staff_tasks').select(TASK_SELECT).eq('owner_id', auth.user.id).not('completed_at', 'is', null)
+    supabase.from('staff_tasks').select(TASK_SELECT).eq('owner_id', user.id).is('completed_at', null).limit(500),
+    supabase.from('staff_tasks').select(TASK_SELECT).eq('owner_id', user.id).not('completed_at', 'is', null)
       .order('completed_at', { ascending: false }).limit(MAX_COMPLETED_SHOWN),
   ])
   if (active.error || completed.error) {
