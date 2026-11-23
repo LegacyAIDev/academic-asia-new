@@ -1,5 +1,6 @@
 "use client"
 
+import type { DocumentCategory } from "@/lib/supabase/queries/cached-lists"
 import { DocumentManager } from "@/components/features/document-manager"
 import {
   uploadStudentDocuments, renameStudentDocument,
@@ -9,15 +10,17 @@ import type { StudentDocumentRecord } from "@/lib/supabase/queries/student-resum
 
 /** Student document manager — thin wrapper over the shared DocumentManager. */
 export function StudentDocumentsSection({
-  studentId, documents, canWrite,
+  studentId, documents, categories, canWrite,
 }: {
   studentId: string
   documents: StudentDocumentRecord[]
   /** Read-only staff can download only. */
+  categories: DocumentCategory[]
   canWrite: boolean
 }) {
   return (
     <DocumentManager
+      categories={categories}
       ownerId={studentId}
       documents={documents}
       categorySections={["resume", "legal_documents", "other", "documents"]}

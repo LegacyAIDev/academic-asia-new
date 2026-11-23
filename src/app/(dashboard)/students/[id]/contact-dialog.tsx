@@ -50,7 +50,7 @@ import {
   updateStudentContact,
   deleteStudentContact,
   type CreateContactInput,
-} from "@/lib/supabase/actions/students"
+} from "@/lib/supabase/actions/student-contacts"
 import type { StudentContactWithRelations as ContactWithRelations } from "@/lib/supabase/queries/students"
 import type { LinkedStudent } from "@/lib/supabase/queries/student-family"
 import { FamilyStudentPicker } from "./family-student-picker"

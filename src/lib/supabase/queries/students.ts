@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { cachedList, LIST_TAGS } from './cached-lists'
 import { cookies } from 'next/headers'
-import type { StudentStatus, PlacementStatus, Course } from '@/types/database.types'
+import type { StudentStatus, PlacementStatus, Course } from '@/types/models'
 import type { LinkedStudent } from '@/lib/supabase/queries/student-family'
 
 type SupabaseServerClient = ReturnType<typeof createClient>

@@ -1,3 +1,4 @@
+import { getDocumentCategories } from "@/lib/supabase/queries/cached-lists"
 import Link from "@/components/ui/link"
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
@@ -272,7 +273,7 @@ async function Section({ id, section, canWrite, student, contacts, name, calenda
       )
     }
     case "documents":
-      return <StudentDocumentsSection studentId={id} documents={await getStudentDocuments(id)} canWrite={canWrite} />
+      return <StudentDocumentsSection studentId={id} documents={await getStudentDocuments(id)} categories={await getDocumentCategories()} canWrite={canWrite} />
     case "communications":
       return <CommunicationsSection context={{ kind: "student", student: { id, name } }} />
     case "events": {

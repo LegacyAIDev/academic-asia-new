@@ -1,4 +1,4 @@
-// Application-facing type aliases over the generated Supabase schema.
+// Row type aliases (Student, School, ...) over the generated Supabase schema.
 //
 // The generated types live in `./database` and are rewritten wholesale by
 // `npm run db:types` — never hand-edit that file. Everything below is

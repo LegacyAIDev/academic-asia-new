@@ -2,7 +2,7 @@
 
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES, shownModules } from '@/lib/permissions/modules'
-import { ADMIN_LEVELS, hasMinLevel } from '@/lib/auth-utils'
+import { ADMIN_LEVELS, hasMinLevel } from '@/lib/permissions/admin-levels'
 import { getCurrentUser } from '@/lib/supabase/auth'
 import { getAdminLevels, getDepartments, getStaffById } from '@/lib/supabase/queries/staff'
 import { getAllLevelPermissions, getPermissionModules, getProfileOverrides } from '@/lib/supabase/queries/permissions'

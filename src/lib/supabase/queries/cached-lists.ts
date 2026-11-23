@@ -26,3 +26,8 @@ type Admin = ReturnType<typeof createAdminClient>
 export function cachedList<T>(key: string, tags: string[], load: (db: Admin) => Promise<T>, revalidate = 3600) {
   return unstable_cache(() => load(createAdminClient()), ['lists', key], { tags, revalidate })
 }
+
+/** Document categories (code, label, section), for the upload forms. */
+export type DocumentCategory = { id: number; code: string; label: string; section: string | null }
+export const getDocumentCategories = cachedList('document-categories', [LIST_TAGS.lookups], async supabase =>
+  ((await supabase.from('document_categories').select('id, code, label, section').order('sort_order')).data ?? []) as DocumentCategory[])

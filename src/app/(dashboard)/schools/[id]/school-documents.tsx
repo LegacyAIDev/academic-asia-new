@@ -1,5 +1,6 @@
 "use client"
 
+import type { DocumentCategory } from "@/lib/supabase/queries/cached-lists"
 import { DocumentManager } from "@/components/features/document-manager"
 import {
   uploadSchoolDocuments, renameSchoolDocument,
@@ -13,14 +14,16 @@ const HIDDEN_CATEGORIES = [EXAM_PAPER_CATEGORY_CODE]
 
 /** School document manager — thin wrapper over the shared DocumentManager. */
 export function SchoolDocumentsSection({
-  schoolId, documents, canWrite = true,
+  schoolId, documents, categories, canWrite = true,
 }: {
   schoolId: string
   documents: SchoolDocumentRecord[]
+  categories: DocumentCategory[]
   canWrite?: boolean
 }) {
   return (
     <DocumentManager
+      categories={categories}
       ownerId={schoolId}
       documents={documents}
       categorySections={["school", "other"]}

@@ -1,7 +1,8 @@
 "use client"
 
+import type { DocumentCategory } from "@/lib/supabase/queries/cached-lists"
 import type { ActionResult } from '@/lib/action-result'
-import { useEffect, useState, useTransition } from "react"
+import { useMemo, useState, useTransition } from "react"
 import { Panel } from "@/components/ui/panel"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,11 +11,9 @@ import {
 } from "@/components/ui/select"
 import { FileUp, Loader2, Trash2, Download, X, Check, Pencil } from "lucide-react"
 import { toast } from "sonner"
-import { createClient } from "@/lib/supabase/client"
 import { ALLOWED_MIME, checkUploadable, formatFileSize } from "@/lib/attachments/constraints"
 import { openInNewTab } from "@/lib/attachments/open-in-new-tab"
 
-type Category = { id: number; code: string; label: string }
 type Staged = { file: File; name: string; categoryId: string }
 
 /** Minimal shape shared by student_documents and school_documents rows. */
@@ -32,6 +31,8 @@ type DocumentManagerProps = {
   ownerId: string
   documents: ManagedDocument[]
   /** Restrict the category picker to these document_categories.section values. */
+  /** Every document category, loaded with the page (cached on the server). */
+  categories: DocumentCategory[]
   categorySections?: string[]
   /** Categories not offered here (e.g. exam papers, which are added on their entrance exam). */
   hiddenCategoryCodes?: string[]
@@ -48,10 +49,9 @@ type DocumentManagerProps = {
 /** Reusable multi-file document manager: staged upload with per-file name +
  *  category, plus rename / download / delete of existing documents. */
 export function DocumentManager({
-  ownerId, documents, categorySections, hiddenCategoryCodes,
+  ownerId, documents, categories: allCategories, categorySections, hiddenCategoryCodes,
   uploadAction, renameAction, deleteAction, signedUrlAction, getFilePath, canWrite = true,
 }: DocumentManagerProps) {
-  const [categories, setCategories] = useState<Category[]>([])
   const [staged, setStaged] = useState<Staged[]>([])
   const [isPending, startTransition] = useTransition()
   const [renamingId, setRenamingId] = useState<string | null>(null)
@@ -62,18 +62,9 @@ export function DocumentManager({
   // Filter chips: null shows every type.
   const [shownType, setShownType] = useState<string | null>(null)
 
-  useEffect(() => {
-    let query = createClient()
-      .from("document_categories")
-      .select("id, code, label, section")
-      .order("sort_order")
-    if (categorySections && categorySections.length > 0) {
-      query = query.in("section", categorySections)
-    }
-    query.then(({ data }) => {
-      if (data) setCategories((data as Category[]).filter(c => !hiddenCategoryCodes?.includes(c.code)))
-    })
-  }, [categorySections, hiddenCategoryCodes])
+  const categories = useMemo(() => allCategories.filter(c =>
+    (!categorySections?.length || (c.section !== null && categorySections.includes(c.section)))
+    && !hiddenCategoryCodes?.includes(c.code)), [allCategories, categorySections, hiddenCategoryCodes])
 
   const defaultCategoryId = () =>
     (categories.find((c) => c.code === "other") ?? categories[0])?.id.toString() ?? ""

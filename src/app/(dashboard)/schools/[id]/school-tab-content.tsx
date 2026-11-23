@@ -1,3 +1,4 @@
+import { getDocumentCategories } from "@/lib/supabase/queries/cached-lists"
 import { canAccess } from "@/lib/permissions/guard"
 import { EXAM_PAPER_ACCESS } from "@/lib/attachments/exam-paper-access"
 import type { SchoolTabKey } from "@/lib/schools/school-tabs"
@@ -85,7 +86,8 @@ async function NotesTab({ schoolId, canWrite, supPage }: SchoolTabProps) {
 }
 
 async function DocumentsTab({ schoolId, canWrite }: SchoolTabProps) {
-  return <SchoolDocumentsSection schoolId={schoolId} documents={await getSchoolDocuments(schoolId)} canWrite={canWrite} />
+  const [documents, categories] = await Promise.all([getSchoolDocuments(schoolId), getDocumentCategories()])
+  return <SchoolDocumentsSection schoolId={schoolId} documents={documents} categories={categories} canWrite={canWrite} />
 }
 
 /** Emails filed against the school, including those also filed on a student (D4). */

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { ADMIN_LEVELS, hasMinLevel } from '@/lib/auth-utils'
+import { ADMIN_LEVELS, hasMinLevel } from '@/lib/permissions/admin-levels'
 import { ACCESS, type AccessLevel, type ModuleKey, type PermissionMap } from './modules'
 import { getPermissions } from './resolve'
 

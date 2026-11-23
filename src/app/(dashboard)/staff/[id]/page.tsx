@@ -8,7 +8,7 @@ import { getAllLevelPermissions, getPermissionModules, getProfileOverrides } fro
 import { getCurrentUser } from "@/lib/supabase/auth"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES, shownModules, type AccessLevel } from "@/lib/permissions/modules"
-import { ADMIN_LEVELS } from "@/lib/auth-utils"
+import { ADMIN_LEVELS } from "@/lib/permissions/admin-levels"
 import { StaffHeaderActions } from "./staff-header-actions"
 
 type StaffDetailPageParams = {

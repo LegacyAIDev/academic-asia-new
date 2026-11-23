@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Search, X } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { StudentsAdvancedFilters } from './students-advanced-filters'
 import { useRouterWithProgress } from '@/components/layout/navigation-progress'
 
@@ -39,45 +38,22 @@ type Consultant = {
  *   do not count as an active filter. The brief introduction export keeps its
  *   student selection in the URL, and clearing a filter there should narrow the
  *   list, not silently discard what the consultant has picked.
- * @param options Dropdown choices loaded with the page, so they are there on the
- *   first paint; without them the component loads its own.
+ * @param options Dropdown choices loaded with the page (cached on the server),
+ *   so they are there on the first paint.
  * @param showStatus False where the page shows status as tabs instead.
  */
 export function StudentsFilters({ preserveParams = [], options, showStatus = true }: {
   preserveParams?: string[]
-  options?: StudentFilterOptions
+  options: StudentFilterOptions
   showStatus?: boolean
-} = {}) {
+}) {
   const router = useRouterWithProgress()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
   const [search, setSearch] = useState(searchParams.get('search') ?? '')
-  const [statuses, setStatuses] = useState<ReferenceItem[]>(options?.statuses ?? [])
-  const [placements, setPlacements] = useState<ReferenceItem[]>(options?.placements ?? [])
-  const [consultants, setConsultants] = useState<Consultant[]>(options?.consultants ?? [])
-
-  // Fetch reference data for dropdowns when the page did not pass it
-  const hasOptions = Boolean(options)
-  useEffect(() => {
-    if (hasOptions) return
-    const fetchReferenceData = async () => {
-      const supabase = createClient()
-
-      const [statusRes, placementRes, consultantRes] = await Promise.all([
-        supabase.from('student_statuses').select('id, code, label').order('sort_order'),
-        supabase.from('placement_statuses').select('id, code, label').order('sort_order'),
-        supabase.from('profiles').select('id, first_name, surname').order('first_name'),
-      ])
-
-      if (statusRes.data) setStatuses(statusRes.data)
-      if (placementRes.data) setPlacements(placementRes.data)
-      if (consultantRes.data) setConsultants(consultantRes.data)
-    }
-
-    fetchReferenceData()
-  }, [hasOptions])
+  const { statuses, placements, consultants } = options
 
   // Create URL with updated params
   const createQueryString = useCallback(

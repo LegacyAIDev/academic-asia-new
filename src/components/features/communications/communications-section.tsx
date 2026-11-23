@@ -1,6 +1,6 @@
 import { canAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
-import { ADMIN_LEVELS, hasMinLevel } from "@/lib/auth-utils"
+import { ADMIN_LEVELS, hasMinLevel } from "@/lib/permissions/admin-levels"
 import { getCurrentUser } from "@/lib/supabase/auth"
 import { getApplicationOptions, getFiledEmails } from "@/lib/supabase/queries/filed-emails"
 import type { EmailContext } from "@/lib/emails/email-draft"

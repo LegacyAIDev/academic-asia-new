@@ -13,7 +13,7 @@ vi.mock('@/lib/permissions/guard', () => ({
 vi.mock('@/lib/supabase/actions/record-attachments', () => ({ purgeOwnerStorage: vi.fn() }))
 
 import { revalidatePath } from 'next/cache'
-import { createStudentContact, deleteStudentContact, updateStudentContact } from '../students'
+import { createStudentContact, deleteStudentContact, updateStudentContact } from '../student-contacts'
 import { searchStudentsForFamilyAction } from '../student-family'
 
 type Result = { data: unknown; error: unknown }
