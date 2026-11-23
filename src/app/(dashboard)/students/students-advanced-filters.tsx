@@ -15,7 +15,6 @@ import {
   SheetTitle, SheetTrigger,
 } from '@/components/ui/sheet'
 import { SearchableSelect, type SearchableOption } from '@/components/ui/searchable-select'
-import { createClient } from '@/lib/supabase/client'
 
 const fieldLabel = 'text-xs font-medium text-muted-foreground'
 
@@ -39,22 +38,17 @@ export function StudentsAdvancedFilters({ searchParams, onApply }: Props) {
   const [events, setEvents] = useState<SearchableOption[]>([])
 
   useEffect(() => {
-    const supabase = createClient()
-    const load = async () => {
-      const [courseRes, schoolRes, eventRes] = await Promise.all([
-        supabase.from('courses').select('id, label').eq('is_active', true).order('sort_order'),
-        supabase.from('schools').select('id, name').order('name'),
-        supabase.from('events').select('id, name').order('name'),
-      ])
-      // Supabase-js bails deep select inference to `never` on large tables, so
-      // type these rows explicitly.
-      const schoolRows = (schoolRes.data ?? []) as { id: string; name: string }[]
-      const eventRows = (eventRes.data ?? []) as { id: string; name: string }[]
-      if (courseRes.data) setCourses(courseRes.data as Course[])
-      setSchools(schoolRows.map((s) => ({ value: s.id, label: s.name })))
-      setEvents(eventRows.map((e) => ({ value: e.id, label: e.name })))
-    }
-    load()
+    let live = true
+    fetch('/api/lists/student-filters')
+      .then(res => (res.ok ? res.json() : null))
+      .then((lists: { courses: Course[]; schools: { id: string; name: string }[]; events: { id: string; name: string }[] } | null) => {
+        if (!live || !lists) return
+        setCourses(lists.courses)
+        setSchools(lists.schools.map((s) => ({ value: s.id, label: s.name })))
+        setEvents(lists.events.map((e) => ({ value: e.id, label: e.name })))
+      })
+      .catch(() => {})
+    return () => { live = false }
   }, [])
 
   const activeCount = useMemo(

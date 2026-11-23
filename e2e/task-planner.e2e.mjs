@@ -2,8 +2,15 @@
  * End-to-end check of the Task Planner (Phase 1 spec, meeting note 2, Phase 1.5):
  * create a task, add a priority and a deadline, mark complete, remove completed
  * tasks from the active list; each person sees only their own tasks.
+ * Needs psql on PATH and E2E_DB_URL for the local test database.
  */
+import { execFileSync } from 'node:child_process'
 import { assert, choose, click, hkDay, launch, notSeeText, open, pickDate, seeText, shot, signIn, step, summary } from './lib/harness.mjs'
+
+const DB = process.env.E2E_DB_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
+// Tasks left by an earlier run would break "starts empty" and the ordering checks.
+const reset = () => execFileSync('psql', [DB, '-X', '-q', '-c', `delete from public.staff_tasks where owner_id in (select id from auth.users where email like '%@aa.test')`])
+reset()
 
 const NEW = 'input[aria-label="New task"]'
 const TODO = 'ul[aria-label="Tasks to do"]'
@@ -129,6 +136,7 @@ try {
     await notSeeText(page, 'Book the Year 9 assessment room')
   })
 } finally {
+  reset()
   await browser.close()
 }
 process.exit(summary() ? 1 : 0)

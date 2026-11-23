@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ACCESS } from '../modules'
 
 const rpc = vi.hoisted(() => vi.fn())
-const getUser = vi.hoisted(() => vi.fn())
+const getClaims = vi.hoisted(() => vi.fn())
 
 vi.mock('next/headers', () => ({ cookies: async () => ({}) }))
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: () => ({ auth: { getUser }, rpc }),
+  createClient: () => ({ auth: { getClaims }, rpc }),
 }))
 
 /**
@@ -20,13 +20,13 @@ async function freshGetPermissions() {
 
 beforeEach(() => {
   rpc.mockReset()
-  getUser.mockReset()
+  getClaims.mockReset()
   vi.spyOn(console, 'error').mockImplementation(() => {})
 })
 
 describe('getPermissions', () => {
   it('maps resolver rows onto the permission map', async () => {
-    getUser.mockResolvedValue({ data: { user: { id: 'u1' } } })
+    getClaims.mockResolvedValue({ data: { claims: { sub: 'u1' } }, error: null })
     rpc.mockResolvedValue({
       data: [
         { module_key: 'students', access: 2 },
@@ -41,7 +41,7 @@ describe('getPermissions', () => {
   })
 
   it('closes modules the resolver did not return', async () => {
-    getUser.mockResolvedValue({ data: { user: { id: 'u1' } } })
+    getClaims.mockResolvedValue({ data: { claims: { sub: 'u1' } }, error: null })
     rpc.mockResolvedValue({ data: [{ module_key: 'students', access: 2 }], error: null })
 
     const permissions = await (await freshGetPermissions())()
@@ -50,7 +50,7 @@ describe('getPermissions', () => {
   })
 
   it('denies everything when signed out, without calling the resolver', async () => {
-    getUser.mockResolvedValue({ data: { user: null } })
+    getClaims.mockResolvedValue({ data: null, error: null })
 
     const permissions = await (await freshGetPermissions())()
     expect(Object.values(permissions).every(v => v === ACCESS.NONE)).toBe(true)
@@ -58,7 +58,7 @@ describe('getPermissions', () => {
   })
 
   it('fails closed on a resolver error', async () => {
-    getUser.mockResolvedValue({ data: { user: { id: 'u1' } } })
+    getClaims.mockResolvedValue({ data: { claims: { sub: 'u1' } }, error: null })
     rpc.mockResolvedValue({ data: null, error: { message: 'boom' } })
 
     const permissions = await (await freshGetPermissions())()
@@ -66,7 +66,7 @@ describe('getPermissions', () => {
   })
 
   it('fails closed when the client throws', async () => {
-    getUser.mockRejectedValue(new Error('network down'))
+    getClaims.mockRejectedValue(new Error('network down'))
 
     const permissions = await (await freshGetPermissions())()
     expect(Object.values(permissions).every(v => v === ACCESS.NONE)).toBe(true)
@@ -77,13 +77,13 @@ describe('getPermissions', () => {
     // into a denyAll() would break rendering and hide the reason.
     for (const digest of ['DYNAMIC_SERVER_USAGE', 'NEXT_REDIRECT;replace;/login', 'NEXT_NOT_FOUND']) {
       const err = Object.assign(new Error('control flow'), { digest })
-      getUser.mockRejectedValue(err)
+      getClaims.mockRejectedValue(err)
       await expect((await freshGetPermissions())()).rejects.toThrow('control flow')
     }
   })
 
   it('ignores unknown module keys from the database', async () => {
-    getUser.mockResolvedValue({ data: { user: { id: 'u1' } } })
+    getClaims.mockResolvedValue({ data: { claims: { sub: 'u1' } }, error: null })
     rpc.mockResolvedValue({
       data: [{ module_key: 'not_a_module', access: 2 }, { module_key: 'exams', access: 1 }],
       error: null,
@@ -95,7 +95,7 @@ describe('getPermissions', () => {
   })
 
   it('clamps out-of-range access values to NONE', async () => {
-    getUser.mockResolvedValue({ data: { user: { id: 'u1' } } })
+    getClaims.mockResolvedValue({ data: { claims: { sub: 'u1' } }, error: null })
     rpc.mockResolvedValue({ data: [{ module_key: 'students', access: 9 }], error: null })
 
     const permissions = await (await freshGetPermissions())()

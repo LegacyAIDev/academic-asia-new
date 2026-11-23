@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import type { FamilyEntry } from "@/lib/students/family-relationships"
 import { linkedStudentDetails } from "@/lib/students/linked-student-label"
 import type { StudentContactWithRelations } from "@/lib/supabase/queries/students"

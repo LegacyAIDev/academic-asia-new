@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { RichTextEditor } from "@/components/ui/rich-text-editor-lazy"
 import { Pencil, Loader2, FileText, Check, Plus } from "lucide-react"
 import { upsertStudentResumeProfile, type UpsertResumeProfileInput } from "@/lib/supabase/actions/student-resume-profile"
 import type { ResumeProfileRecord } from "@/lib/supabase/queries/student-resume-profile"

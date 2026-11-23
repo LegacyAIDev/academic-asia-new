@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { ChevronRight } from "lucide-react"
 import { Panel, PanelEmpty } from "@/components/ui/panel"
 import { getEventsList, EVENT_TYPE_LABELS, URL_TO_TYPE_CODE, type EventListItem } from "@/lib/supabase/queries/events"

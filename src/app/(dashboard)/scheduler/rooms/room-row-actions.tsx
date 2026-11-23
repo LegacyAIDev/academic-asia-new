@@ -25,7 +25,7 @@ export function RoomMoreMenu({ room, blocks }: { room: SchedulerRoom; blocks: Bl
   const [isPending, startTransition] = useTransition()
   const [blockedOpen, setBlockedOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const inUse = room.booking_count > 0
+  const inUse = (room.booking_count ?? 0) > 0
 
   const toggleActive = () => {
     startTransition(async () => {

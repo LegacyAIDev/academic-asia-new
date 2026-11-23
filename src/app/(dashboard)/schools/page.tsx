@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { Suspense } from "react"
 import { Building2, ChevronLeft, ChevronRight, ExternalLink, Mail, MoreHorizontal, Pencil, Phone } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -38,9 +38,6 @@ export default async function SchoolsPage({
 }: {
   searchParams: SearchParams
 }) {
-  await requireAccess(MODULES.SCHOOLS)
-  const canWrite = await canAccess(MODULES.SCHOOLS, ACCESS.WRITE)
-
   const params = await searchParams
   const page = parseInt(params.page ?? "1", 10)
   const search = params.search ?? ""
@@ -57,7 +54,11 @@ export default async function SchoolsPage({
     return Math.min(Math.floor(value), max)
   }
 
-  const [{ schools, totalCount, totalPages }, filterOptions] = await Promise.all([
+  // Reads are open to every signed-in user, so the list loads alongside the
+  // access check instead of after it; a refusal redirects before anything shows.
+  const [, canWrite, { schools, totalCount, totalPages }, filterOptions] = await Promise.all([
+    requireAccess(MODULES.SCHOOLS),
+    canAccess(MODULES.SCHOOLS, ACCESS.WRITE),
     getSchoolsList({
       page,
       pageSize: 50,

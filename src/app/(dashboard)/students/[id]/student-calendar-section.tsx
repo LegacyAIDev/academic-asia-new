@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/ui/link'
 import { Panel } from '@/components/ui/panel'
 import { addDays, format } from 'date-fns'
 import { TZDate } from '@date-fns/tz'

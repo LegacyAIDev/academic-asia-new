@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 
 export type Kpi = { label: string; value: number | null; note: string | null; href: string }
 

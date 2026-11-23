@@ -19,6 +19,17 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
 
   /**
+   * Keep a page the browser has just loaded for 30 seconds, so going back to a
+   * list or between tabs is instant instead of another round trip to the
+   * server (in Europe, for staff in Hong Kong). Saving anything calls
+   * revalidatePath or router.refresh, which drops these copies, so nobody sees
+   * their own change go missing.
+   */
+  experimental: {
+    staleTimes: { dynamic: 30 },
+  },
+
+  /**
    * Keyed per route path, NOT per package — every route that renders a PDF needs
    * its own entry here or the binary is simply absent from that function. The
    * failure is invisible locally, where Chrome is resolved from the developer's

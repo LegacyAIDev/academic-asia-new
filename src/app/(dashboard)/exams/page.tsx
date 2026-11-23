@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { Button } from "@/components/ui/button"
 import { requireAccess } from "@/lib/permissions/guard"
 import { MODULES } from "@/lib/permissions/modules"

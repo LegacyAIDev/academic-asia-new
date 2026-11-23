@@ -5,7 +5,7 @@ const state = vi.hoisted(() => ({ client: null as unknown, rights: new Set<strin
 const DENIED = { success: false, error: 'You do not have permission to perform this action.' }
 
 vi.mock('next/headers', () => ({ cookies: vi.fn(async () => ({})) }))
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+vi.mock('next/cache', () => ({ revalidatePath: vi.fn(), updateTag: vi.fn(), unstable_cache: (fn: unknown) => fn }))
 vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn(() => state.client) }))
 vi.mock('@/lib/permissions/guard', () => ({
   assertAccess: vi.fn(async (module: string, level = 1) => (state.rights.has(`${module}:${level}`) ? null : DENIED)),

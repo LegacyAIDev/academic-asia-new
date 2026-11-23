@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { Badge } from "@/components/ui/badge"
 import { Panel } from "@/components/ui/panel"
 import { SortableTableHead } from "@/components/ui/sortable-table-head"

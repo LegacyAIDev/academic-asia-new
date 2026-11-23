@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { Suspense } from "react"
 import { ChevronLeft, ChevronRight, Mail, MoreHorizontal, Pencil, Phone, Plus, SearchX, UserRound } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -48,17 +48,22 @@ const addedDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "sho
  * URL, so any view can be shared or bookmarked.
  */
 export default async function StudentsPage({ searchParams }: { searchParams: Promise<Params> }) {
-  await requireAccess(MODULES.STUDENTS)
   const params = await searchParams
   const filters = parseStudentListFilters(params)
   const pageSize = pageSizeFrom(params.per)
   const sort: SortKey = (SORTABLE as readonly string[]).includes(params.sort ?? "") ? (params.sort as SortKey) : "created_at"
   const dir = params.dir === "asc" || params.dir === "desc" ? params.dir : sort === "created_at" ? "desc" : "asc"
 
-  const [canWrite, list, counts, options] = await Promise.all([
+  // The tab counts are several count queries; the table does not wait for them.
+  // One promise feeds both the header total and the tabs, so they run once.
+  // A failed count leaves the tabs without numbers rather than failing the page.
+  const counts = getStudentStatusCounts(filters).catch(() => null)
+  // Reads are open to every signed-in user, so the list loads alongside the
+  // access check instead of after it; a refusal redirects before anything shows.
+  const [, canWrite, list, options] = await Promise.all([
+    requireAccess(MODULES.STUDENTS),
     canAccess(MODULES.STUDENTS, ACCESS.WRITE),
     getStudentsList({ page: parseInt(params.page ?? "1", 10), pageSize, sortBy: sort, sortOrder: dir, ...filters }),
-    getStudentStatusCounts(filters),
     getStudentFilterOptions(),
   ])
   const { students, totalCount, totalPages, page } = list
@@ -81,9 +86,9 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-brand-navy">Students</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {counts.all === null ? "Every student profile" : `${counts.all.toLocaleString("en-GB")} ${filtered ? "matching" : "in total"}`}
-          </p>
+          <Suspense fallback={<p className="mt-1 text-sm text-muted-foreground">Every student profile</p>}>
+            <TotalLine counts={counts} filtered={filtered} />
+          </Suspense>
         </div>
         {canWrite && (
           <div className="flex flex-wrap items-center gap-2">
@@ -94,29 +99,9 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
       </header>
 
       <section className="overflow-hidden rounded-lg border bg-card">
-      <nav aria-label="Status" className="flex gap-1 overflow-x-auto border-b px-2 pt-2 sm:px-3">
-        {[{ id: null, label: "All", count: counts.all }, ...counts.statuses.map(s => ({ id: String(s.id), label: s.label, count: s.count }))].map(tab => {
-          const current = (params.status ?? null) === tab.id
-          return (
-            <Link
-              key={tab.label}
-              href={studentsListHref(params, { status: tab.id })}
-              aria-current={current ? "page" : undefined}
-              className={cn(
-                "-mb-px flex shrink-0 items-center gap-2 border-b-2 px-3 pb-2.5 pt-2 text-sm font-medium transition-colors",
-                current ? "border-brand-navy text-brand-navy" : "border-transparent text-muted-foreground hover:border-border hover:text-foreground",
-              )}
-            >
-              {tab.label}
-              {tab.count !== null && (
-                <span className={cn("rounded-full px-2 py-0.5 text-xs tabular-nums", current ? "bg-brand-navy text-white" : "bg-muted text-muted-foreground")}>
-                  {tab.count.toLocaleString("en-GB")}
-                </span>
-              )}
-            </Link>
-          )
-        })}
-      </nav>
+      <Suspense fallback={<StatusTabs params={params} all={null} statuses={options.statuses.map(s => ({ ...s, count: null }))} />}>
+        <StatusTabsWithCounts params={params} counts={counts} fallbackStatuses={options.statuses} />
+      </Suspense>
 
         <div className="border-b px-4 py-3 sm:px-5">
           <Suspense fallback={<Skeleton className="h-9 w-full max-w-md" />}>
@@ -175,6 +160,57 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
         )}
       </section>
     </div>
+  )
+}
+
+type StatusCounts = Awaited<ReturnType<typeof getStudentStatusCounts>>
+
+async function TotalLine({ counts, filtered }: { counts: Promise<StatusCounts | null>; filtered: boolean }) {
+  const all = (await counts)?.all ?? null
+  return (
+    <p className="mt-1 text-sm text-muted-foreground">
+      {all === null ? "Every student profile" : `${all.toLocaleString("en-GB")} ${filtered ? "matching" : "in total"}`}
+    </p>
+  )
+}
+
+async function StatusTabsWithCounts({ params, counts, fallbackStatuses }: {
+  params: Params
+  counts: Promise<StatusCounts | null>
+  fallbackStatuses: { id: number; label: string }[]
+}) {
+  const loaded = await counts
+  const statuses = loaded?.statuses ?? fallbackStatuses.map(s => ({ ...s, count: null }))
+  return <StatusTabs params={params} all={loaded?.all ?? null} statuses={statuses} />
+}
+
+/** Status tabs; while the counts load they show without numbers. */
+function StatusTabs({ params, all, statuses }: { params: Params; all: number | null; statuses: { id: number; label: string; count: number | null }[] }) {
+  const tabs = [{ id: null as string | null, label: "All", count: all }, ...statuses.map(s => ({ id: String(s.id), label: s.label, count: s.count }))]
+  return (
+      <nav aria-label="Status" className="flex gap-1 overflow-x-auto border-b px-2 pt-2 sm:px-3">
+        {tabs.map(tab => {
+          const current = (params.status ?? null) === tab.id
+          return (
+            <Link
+              key={tab.label}
+              href={studentsListHref(params, { status: tab.id })}
+              aria-current={current ? "page" : undefined}
+              className={cn(
+                "-mb-px flex shrink-0 items-center gap-2 border-b-2 px-3 pb-2.5 pt-2 text-sm font-medium transition-colors",
+                current ? "border-brand-navy text-brand-navy" : "border-transparent text-muted-foreground hover:border-border hover:text-foreground",
+              )}
+            >
+              {tab.label}
+              {tab.count !== null && (
+                <span className={cn("rounded-full px-2 py-0.5 text-xs tabular-nums", current ? "bg-brand-navy text-white" : "bg-muted text-muted-foreground")}>
+                  {tab.count.toLocaleString("en-GB")}
+                </span>
+              )}
+            </Link>
+          )
+        })}
+      </nav>
   )
 }
 

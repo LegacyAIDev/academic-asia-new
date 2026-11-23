@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Calendar, Users, CalendarClock, ChevronLeft, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
+import Link from '@/components/ui/link'
 import { DndContext, DragOverlay, closestCenter, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { toast } from 'sonner'
 import type {

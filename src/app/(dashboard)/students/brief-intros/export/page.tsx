@@ -1,9 +1,9 @@
-import Link from 'next/link'
+import Link from '@/components/ui/link'
 import { ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { requireAccess } from '@/lib/permissions/guard'
 import { MODULES } from '@/lib/permissions/modules'
-import { getStudentsList } from '@/lib/supabase/queries/students'
+import { getStudentFilterOptions, getStudentsList } from '@/lib/supabase/queries/students'
 import {
   getStudentIdsWithBriefIntro,
   MAX_EXCEL_INTROS,
@@ -42,11 +42,14 @@ export default async function BriefIntroExportPage({
   const selectedIds = (params.ids ?? '').split(',').map((id) => id.trim()).filter(Boolean)
 
   // The list clamps a page past the end, so page numbers below use the page it served.
-  const { students, totalCount, totalPages, page } = await getStudentsList({
-    page: parseInt(params.page ?? '1', 10),
-    pageSize: PAGE_SIZE,
-    ...parseStudentListFilters(params),
-  })
+  const [{ students, totalCount, totalPages, page }, filterOptions] = await Promise.all([
+    getStudentsList({
+      page: parseInt(params.page ?? '1', 10),
+      pageSize: PAGE_SIZE,
+      ...parseStudentListFilters(params),
+    }),
+    getStudentFilterOptions(),
+  ])
 
   // One lookup covering both the rows on screen and the wider selection, so the
   // "will be left out" warning stays accurate while paging.
@@ -75,7 +78,7 @@ export default async function BriefIntroExportPage({
         </p>
       </div>
 
-      <StudentsFilters preserveParams={['ids']} />
+      <StudentsFilters preserveParams={['ids']} options={filterOptions} />
 
       <nav aria-label="Introduction" className="flex flex-wrap gap-1.5">
         {([[null, 'All students'], ['yes', 'Introduction written'], ['no', 'Not written yet']] as const).map(([value, label]) => {

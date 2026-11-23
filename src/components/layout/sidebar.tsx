@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { usePathname } from "next/navigation"
 import { useState, type ReactNode } from "react"
 import { ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react"

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { AuthError, AuthField, AuthHeading } from "../auth-field"
 import { Button } from "@/components/ui/button"
 import { Loader2, Mail, Lock } from "lucide-react"

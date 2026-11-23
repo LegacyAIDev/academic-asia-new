@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { canAccess, requireAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { getPresentSchoolsWithCounts } from "@/lib/supabase/queries/present-schools"

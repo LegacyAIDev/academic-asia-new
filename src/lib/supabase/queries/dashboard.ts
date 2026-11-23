@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers'
+import { cachedList, LIST_TAGS } from './cached-lists'
 import { createClient } from '@/lib/supabase/server'
 import { ACTIVITY_SELECT, hiddenActivityKinds, toActivityEntry, type ActivityEntry, type ActivityRow } from '@/lib/activity/activity-format'
 import { EXAM_BOOKING_TYPES } from '@/lib/scheduler/config'
@@ -24,6 +25,23 @@ export type DashboardCounts = {
   eventsNext30Days: number | null
 }
 
+/** Student and application status ids by code; they change only with a migration. */
+const statusIdRows = cachedList('dashboard-status-ids', [LIST_TAGS.lookups], async supabase => {
+  const [student, application] = await Promise.all([
+    supabase.from('student_statuses').select('id, code'),
+    supabase.from('application_statuses').select('id, code'),
+  ])
+  return { student: (student.data ?? []) as { id: number; code: string }[], application: (application.data ?? []) as { id: number; code: string }[] }
+})
+
+async function statusIds() {
+  const rows = await statusIdRows()
+  return {
+    student: new Map(rows.student.map(r => [r.code, r.id])),
+    application: new Map(rows.application.map(r => [r.code, r.id])),
+  }
+}
+
 export async function getDashboardCounts(
   rights: { students: boolean; scheduler: boolean; events: boolean },
   today: string,
@@ -35,9 +53,7 @@ export async function getDashboardCounts(
     return error ? null : n ?? 0
   }
 
-  const activeStatusId = rights.students
-    ? (await supabase.from('student_statuses').select('id').eq('code', 'active').maybeSingle()).data?.id ?? null
-    : null
+  const activeStatusId = rights.students ? (await statusIds()).student.get('active') ?? null : null
   const [activeStudents, studentsAddedThisMonth, examsNext7Days, eventsNext30Days] = await Promise.all([
     rights.students && activeStatusId !== null
       ? count(supabase.from('students').select('id', { count: 'exact', head: true }).eq('status_id', activeStatusId))
@@ -155,15 +171,10 @@ export type PipelineStage = { stage: JourneyStage; label: string; count: number 
  */
 export async function getApplicationPipeline(): Promise<PipelineStage[] | null> {
   const supabase = createClient(await cookies())
-  const { data: statuses, error } = await supabase.from('application_statuses').select('id, code')
-  if (error) {
-    console.error('Dashboard pipeline failed:', error.message)
-    return null
-  }
   const idsByStage = new Map<JourneyStage, number[]>()
-  for (const status of statuses ?? []) {
-    const { stage, outcome } = journeyFor(status.code)
-    if (stage && outcome === 'open') idsByStage.set(stage, [...(idsByStage.get(stage) ?? []), status.id])
+  for (const [code, id] of (await statusIds()).application) {
+    const { stage, outcome } = journeyFor(code)
+    if (stage && outcome === 'open') idsByStage.set(stage, [...(idsByStage.get(stage) ?? []), id])
   }
   const counts = await Promise.all(JOURNEY_STAGES.map(async stage => {
     const ids = idsByStage.get(stage) ?? []

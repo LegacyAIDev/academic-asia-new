@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { RichTextEditor } from "@/components/ui/rich-text-editor-lazy"
 import { Plus, Loader2, Pencil, Languages, Check } from "lucide-react"
 import {
   upsertStudentBriefIntro, type UpsertBriefIntroInput,

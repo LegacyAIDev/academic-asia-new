@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { formatDistanceToNowStrict } from "date-fns"
 import { describeGroup } from "@/lib/dashboard/group-activity"
 import type { RecentActivity } from "@/lib/supabase/queries/dashboard"

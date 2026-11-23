@@ -12,14 +12,20 @@ export type CurrentUser = {
 }
 
 /**
- * The signed-in user as Supabase Auth confirms them, asked once per request:
- * the layout, the permission check and the page all need it, and each call is
- * a round trip to the Auth server.
+ * The signed-in user, checked once per request: the layout, the permission
+ * check and the page all need it.
+ *
+ * getClaims verifies the session token's signature; with the project's
+ * asymmetric signing keys that happens here, without a call to the Auth server
+ * (it falls back to one on projects still on the shared secret). Actions that
+ * guard against something sensitive, such as resetting a colleague's password,
+ * still ask the Auth server with getUser.
  */
-export const getAuthUser = cache(async () => {
+export const getAuthUser = cache(async (): Promise<{ id: string; email: string | null } | null> => {
   const supabase = createClient(await cookies())
-  const { data: { user }, error } = await supabase.auth.getUser()
-  return error ? null : user
+  const { data, error } = await supabase.auth.getClaims()
+  if (error || !data?.claims?.sub) return null
+  return { id: data.claims.sub, email: typeof data.claims.email === 'string' ? data.claims.email : null }
 })
 
 /** Get the current authenticated user with profile data (once per request). */
@@ -38,7 +44,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
 
   return {
     id: user.id,
-    email: user.email ?? null,
+    email: user.email,
     first_name: profile?.first_name ?? null,
     surname: profile?.surname ?? null,
     department_label: (profile?.department as unknown as { label: string } | null)?.label ?? null,

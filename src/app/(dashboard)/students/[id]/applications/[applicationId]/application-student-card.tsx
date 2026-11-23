@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { ArrowRight } from "lucide-react"
 import type { StudentWithJoins } from "@/lib/supabase/queries/students"
 import { ageInYears, formatDate } from "@/lib/applications/application-display"

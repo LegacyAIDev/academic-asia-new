@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import Link from 'next/link'
+import Link from '@/components/ui/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Check, Minus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'

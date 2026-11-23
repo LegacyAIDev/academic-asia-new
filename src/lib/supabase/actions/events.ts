@@ -1,6 +1,7 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
+import { LIST_TAGS } from '@/lib/supabase/queries/cached-lists'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
@@ -77,6 +78,8 @@ export async function createEvent(input: CreateEventInput): Promise<ActionResult
     }
 
     revalidatePath('/events')
+
+    updateTag(LIST_TAGS.events)
     return { success: true, data: { id: data.id } }
   } catch (err) {
     console.error('Error in createEvent:', err)
@@ -111,6 +114,8 @@ export async function updateEvent(id: string, input: Partial<CreateEventInput>):
     }
 
     revalidatePath('/events')
+
+    updateTag(LIST_TAGS.events)
     revalidatePath(`/events/[type]/${id}`)
     return { success: true }
   } catch (err) {
@@ -150,6 +155,8 @@ export async function deleteEvent(id: string): Promise<ActionResult> {
     }
 
     revalidatePath('/events')
+
+    updateTag(LIST_TAGS.events)
     return { success: true }
   } catch (err) {
     console.error('Error in deleteEvent:', err)

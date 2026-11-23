@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/ui/link'
 import { TIMEZONE_LABEL, isExamBooking } from '@/lib/scheduler/config'
 import { examListHref } from '@/lib/exams/exam-page-search-params'
 import { hkDay } from '@/lib/hk-day'

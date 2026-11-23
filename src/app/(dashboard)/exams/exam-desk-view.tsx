@@ -3,7 +3,7 @@ import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import {
   deriveExamDeskOptions, filterExamDeskRows, hasExamDeskFilters, reconcileExamDeskFilters, sortExamDeskRows,
 } from "@/lib/exams/exam-desk-filter-sort"
-import { splitExamDeskRows, toExamDeskRows } from "@/lib/exams/exam-desk-rows"
+import { examCandidates, splitExamDeskRows, toExamDeskRows } from "@/lib/exams/exam-desk-rows"
 import { examsHref, parseExamDeskParams } from "@/lib/exams/exam-page-search-params"
 import { attachAccess } from "@/lib/attachments/attach-points"
 import { snapshotPapers } from "@/lib/scheduler/assessment-snapshot"
@@ -34,15 +34,19 @@ export async function ExamDeskView({ raw }: { raw: RawSearchParams }) {
 
   // Paper files are uploaded after an exam is booked, so their state is read fresh for the papers on screen.
   const paperIds = bookings.flatMap(booking => snapshotPapers(booking.assessment_snapshot).map(paper => paper.id))
-  const paperStatuses = await getExamPaperStatuses(paperIds)
+  // Each candidate's own documents (an online test's access code, say): the exam team's only.
+  // Read for every exam in the date range, alongside the papers, rather than after filtering.
+  const examIds = [...new Set(bookings.flatMap(booking => [booking.exam_id, ...examCandidates(booking).map(c => c.examId)])
+    .filter((id): id is string => Boolean(id)))]
+  const [paperStatuses, accessDocs] = await Promise.all([
+    getExamPaperStatuses(paperIds),
+    canPrintPapers ? getAttachmentsForMany("student_exam_access", examIds) : null,
+  ])
   const allRows = toExamDeskRows(bookings, paperStatuses)
   const options = deriveExamDeskOptions(allRows)
   const params = reconcileExamDeskFilters(requested, options)
   const rows = sortExamDeskRows(filterExamDeskRows(allRows, params), params.sort, params.dir)
   const { booked, showedUp, waiting } = splitExamDeskRows(rows)
-  // Each candidate's own documents (an online test's access code, say): the exam team's only.
-  const examIds = [...new Set(rows.map(row => row.examId).filter((id): id is string => Boolean(id)))]
-  const accessDocs = canPrintPapers ? await getAttachmentsForMany("student_exam_access", examIds) : null
 
   const filtered = hasExamDeskFilters(params)
   const tableProps = {

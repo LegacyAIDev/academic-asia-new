@@ -1,10 +1,16 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { updateSession } from '@/lib/supabase/proxy-session'
 
 /** Routes that don't require authentication. /register is the families' online form, opened with a one-use link. */
 const publicRoutes = ['/login', '/forgot-password', '/reset-password', '/auth/callback', '/register/']
 
-export async function middleware(request: NextRequest) {
+/**
+ * Runs before every page, RSC fetch and server action. Next 16's proxy runs on
+ * Node in the app's own region (next to the database), not at an edge near the
+ * user, so the session check below is a short hop rather than a round trip from
+ * Hong Kong to Europe.
+ */
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
 

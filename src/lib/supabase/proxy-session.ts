@@ -29,8 +29,12 @@ export async function updateSession(request: NextRequest) {
     },
   )
 
-  // Refresh the session — this is what keeps the user logged in
-  const { data: { user } } = await supabase.auth.getUser()
+  // Refreshes the session when it has expired, which is what keeps the user
+  // signed in. getClaims verifies the token against the project's signing keys
+  // without a call to the Auth server when the project uses asymmetric keys;
+  // with the older shared secret it falls back to asking the Auth server.
+  const { data } = await supabase.auth.getClaims()
+  const user = data?.claims ? { id: data.claims.sub } : null
 
   return { user, supabaseResponse }
 }

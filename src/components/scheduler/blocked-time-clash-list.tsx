@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/ui/link'
 import { AlertTriangle } from 'lucide-react'
 import type { BlockClash } from '@/lib/scheduler/blocked-times'
 import { bookingPageHref } from '@/lib/scheduler/return-path'

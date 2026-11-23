@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { ChevronLeft, Eye, MoreHorizontal, Pencil } from "lucide-react"

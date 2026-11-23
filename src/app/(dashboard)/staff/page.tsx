@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { Suspense } from "react"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -20,13 +20,15 @@ type SearchParams = Promise<{
 }>
 
 export default async function StaffPage({ searchParams }: { searchParams: SearchParams }) {
-  await requireAccess(MODULES.STAFF)
-  const canWrite = await canAccess(MODULES.STAFF, ACCESS.WRITE)
-
-  const filters = parseStaffFilters(await searchParams)
+  const [, canWrite, rawParams, team] = await Promise.all([
+    requireAccess(MODULES.STAFF),
+    canAccess(MODULES.STAFF, ACCESS.WRITE),
+    searchParams,
+    getStaffList(),
+  ])
+  const filters = parseStaffFilters(rawParams)
   const filtered = Boolean(filters.search || filters.level !== null || filters.departmentId !== null)
 
-  const team = await getStaffList()
   const options = staffFilterOptions(team)
   const staff = filterStaff(team, filters)
 

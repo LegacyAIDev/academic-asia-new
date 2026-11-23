@@ -15,8 +15,12 @@ const SHEET = '[role="dialog"]'
 const TODAY = bookingDay()
 const ALL_EXAMS_TODAY = `/exams?view=all&from=${TODAY}&to=${TODAY}`
 
-sql(`delete from public.scheduler_bookings where title like 'UAT complete%'`)
-sql(`delete from public.student_individual_exams where subject like 'UAT complete%'`)
+// Cleared before and after: a leftover booking makes later suites' bookings clash with it.
+const reset = () => {
+  sql(`delete from public.scheduler_bookings where title like 'UAT complete%'`)
+  sql(`delete from public.student_individual_exams where subject like 'UAT complete%'`)
+}
+reset()
 
 const examOf = title => sql(`select e.subject || '|' || e.status_id || '|' || e.confirmed_date || '|' || coalesce(e.room, '-') from public.scheduler_bookings b join public.student_individual_exams e on e.id = b.exam_id where b.title = '${title}'`)
 
@@ -92,6 +96,7 @@ try {
     assert(rows.some(r => r.includes('Lucas Ng')) && rows.some(r => r.includes('Ava DATEDRIFT')), `group rows: ${rows}`)
   })
 } finally {
+  reset()
   await browser.close()
 }
 process.exit(summary() ? 1 : 0)

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { cachedList, LIST_TAGS } from './cached-lists'
 import { cookies } from 'next/headers'
 import type { StudentStatus, PlacementStatus, Course } from '@/types/database.types'
 import type { LinkedStudent } from '@/lib/supabase/queries/student-family'
@@ -459,10 +460,7 @@ export async function getStudentStats() {
 /**
  * Fetch all reference data for forms
  */
-export async function getReferenceData() {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
+export const getReferenceData = cachedList('student-reference', [LIST_TAGS.lookups, LIST_TAGS.events, LIST_TAGS.staff], async supabase => {
   const [statuses, placements, nationalities, courses, schoolTypes, events, profiles] = await Promise.all([
     supabase.from('student_statuses').select('*').order('sort_order'),
     supabase.from('placement_statuses').select('*').order('sort_order'),
@@ -482,15 +480,12 @@ export async function getReferenceData() {
     events: events.data ?? [],
     profiles: (profiles.data ?? []) as { id: string; first_name: string | null; surname: string | null }[],
   }
-}
+})
 
 /**
  * Fetch reference data for contact forms (relationships and titles)
  */
-export async function getContactReferenceData() {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
+export const getContactReferenceData = cachedList('contact-reference', [LIST_TAGS.lookups], async supabase => {
   const [relationships, titles] = await Promise.all([
     supabase.from('contact_relationships').select('*').order('sort_order'),
     supabase.from('contact_titles').select('*').order('sort_order')
@@ -500,15 +495,28 @@ export async function getContactReferenceData() {
     relationships: relationships.data ?? [],
     titles: titles.data ?? []
   }
-}
+})
 
 /** Choices for the students list dropdowns, loaded with the page so they never pop in. */
-export async function getStudentFilterOptions() {
-  const supabase = createClient(await cookies())
+export const getStudentFilterOptions = cachedList('student-filters', [LIST_TAGS.lookups, LIST_TAGS.staff], async supabase => {
   const [statuses, placements, consultants] = await Promise.all([
     supabase.from('student_statuses').select('id, code, label').order('sort_order'),
     supabase.from('placement_statuses').select('id, code, label').order('sort_order'),
     supabase.from('profiles').select('id, first_name, surname').order('first_name'),
   ])
   return { statuses: statuses.data ?? [], placements: placements.data ?? [], consultants: consultants.data ?? [] }
-}
+})
+
+/** Courses, schools and events for the students "Filters" panel, served to the browser by /api/lists/student-filters. */
+export const getStudentAdvancedFilterOptions = cachedList('student-advanced-filters', [LIST_TAGS.lookups, LIST_TAGS.schools, LIST_TAGS.events], async supabase => {
+  const [courses, schools, events] = await Promise.all([
+    supabase.from('courses').select('id, label').eq('is_active', true).order('sort_order'),
+    supabase.from('schools').select('id, name').order('name'),
+    supabase.from('events').select('id, name').order('name'),
+  ])
+  return {
+    courses: (courses.data ?? []) as { id: number; label: string }[],
+    schools: (schools.data ?? []) as { id: string; name: string }[],
+    events: (events.data ?? []) as { id: string; name: string }[],
+  }
+}, 600)

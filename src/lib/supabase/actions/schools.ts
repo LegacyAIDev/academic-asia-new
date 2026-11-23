@@ -1,6 +1,7 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
+import { LIST_TAGS } from '@/lib/supabase/queries/cached-lists'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { normaliseCounty } from '@/lib/schools/county'
@@ -87,6 +88,8 @@ export async function createSchool(input: CreateSchoolInput): Promise<ActionResu
     }
 
     revalidatePath('/schools')
+
+    updateTag(LIST_TAGS.schools)
     return { success: true, data: { id: (data as { id: string }).id } }
   } catch (err) {
     console.error('Error in createSchool:', err)
@@ -116,6 +119,8 @@ export async function updateSchool(id: string, input: Partial<CreateSchoolInput>
     }
 
     revalidatePath('/schools')
+
+    updateTag(LIST_TAGS.schools)
     revalidatePath(`/schools/${id}`)
     return { success: true }
   } catch (err) {
@@ -156,6 +161,8 @@ export async function deleteSchool(id: string): Promise<ActionResult> {
     }
 
     revalidatePath('/schools')
+
+    updateTag(LIST_TAGS.schools)
     return { success: true }
   } catch (err) {
     console.error('Error in deleteSchool:', err)

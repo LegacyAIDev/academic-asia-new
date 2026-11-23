@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { Check, ChevronRight } from "lucide-react"
 import type { AttentionItem, AttentionTone } from "@/lib/dashboard/attention"
 import { cn } from "@/lib/utils"

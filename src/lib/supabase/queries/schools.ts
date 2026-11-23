@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { cachedList, LIST_TAGS } from './cached-lists'
 import { cookies } from 'next/headers'
 
 export type SchoolsListParams = {
@@ -281,10 +282,7 @@ export async function getSchoolStats() {
 /**
  * Fetch all reference data for school forms
  */
-export async function getSchoolReferenceData() {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
+export const getSchoolReferenceData = cachedList('school-reference', [LIST_TAGS.lookups], async supabase => {
   const [countries, genderTypes, institutionTypes, phases, religiousAffiliations, coedFromOptions] = await Promise.all([
     supabase.from('countries').select('*').order('sort_order'),
     supabase.from('school_gender_types').select('*').order('sort_order'),
@@ -302,7 +300,7 @@ export async function getSchoolReferenceData() {
     religiousAffiliations: religiousAffiliations.data ?? [],
     coedFromOptions: coedFromOptions.data ?? []
   }
-}
+})
 
 export type SchoolFilterOptions = {
   countries: { id: number; label: string }[]
@@ -324,10 +322,7 @@ export type SchoolFilterOptions = {
  * Counties come from the cleaned column, so placeholders like "N/A" and nations
  * like "Scotland" never appear as if they were counties.
  */
-export async function getSchoolFilterOptions(): Promise<SchoolFilterOptions> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
+export const getSchoolFilterOptions = cachedList('school-filters', [LIST_TAGS.lookups, LIST_TAGS.schools], async (supabase): Promise<SchoolFilterOptions> => {
   const [countries, genderTypes, phases, institutionTypes, religiousAffiliations, counties] =
     await Promise.all([
       supabase.from('schools').select('country_id').not('country_id', 'is', null),
@@ -369,4 +364,4 @@ export async function getSchoolFilterOptions(): Promise<SchoolFilterOptions> {
       ),
     ].sort(),
   }
-}
+})

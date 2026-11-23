@@ -11,7 +11,7 @@ export default async function SchedulerRoomsPage() {
   const canManage = await canAccess(MODULES.EXAMS, ACCESS.WRITE)
 
   const [rooms, locations] = await Promise.all([
-    getRooms({ includeInactive: true }),
+    getRooms({ includeInactive: true, withBookingCounts: true }),
     getLocations({ includeInactive: true }),
   ])
   const blocks = await listBlockedTimes({ roomIds: rooms.map(room => room.id) })

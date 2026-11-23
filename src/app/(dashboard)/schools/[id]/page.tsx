@@ -7,7 +7,7 @@ import { getSchoolById } from "@/lib/supabase/queries/schools"
 import { getSchoolSectionCounts } from "@/lib/supabase/queries/school-sections"
 import { SchoolHeader } from "./school-header"
 import { SchoolTabNav } from "./school-tab-nav"
-import { SchoolTabSkeleton } from "./school-tab-skeleton"
+import { SectionSkeleton } from "@/components/layout/section-skeleton"
 import { SCHOOL_TAB_CONTENT } from "./school-tab-content"
 
 type SchoolDetailPageParams = {
@@ -43,7 +43,7 @@ export default async function SchoolDetailPage({ params, searchParams }: SchoolD
       <SchoolHeader school={school} canWrite={canWrite} />
       <SchoolTabNav schoolId={id} current={tab} counts={counts} />
       <div className="pt-6">
-        <Suspense key={tab} fallback={<SchoolTabSkeleton />}>
+        <Suspense key={tab} fallback={<SectionSkeleton />}>
           <ActiveTab schoolId={id} school={school} canWrite={canWrite} supPage={supPage} />
         </Suspense>
       </div>

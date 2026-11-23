@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { AuthError, AuthField, AuthHeading } from "../auth-field"
 import { Button } from "@/components/ui/button"
 import { Loader2, Mail, ArrowLeft, CheckCircle2 } from "lucide-react"

@@ -1,4 +1,5 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
+import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import { ChevronLeft } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -46,6 +47,7 @@ import { StudentHeaderActions } from "./student-header-actions"
 import { StudentSectionBar } from "./student-section-bar"
 import { sectionFromParam } from "./student-sections"
 import { STUDENT_NOTES_ANCHOR } from "./quick-add-note-button"
+import { SectionSkeleton } from "@/components/layout/section-skeleton"
 
 const statusStyles: Record<string, string> = {
   enquiry: "bg-violet-50 text-violet-700 ring-violet-600/15",
@@ -79,15 +81,17 @@ type StudentDetailPageParams = {
  * open section's data loaded.
  */
 export default async function StudentDetailPage({ params, searchParams }: StudentDetailPageParams) {
-  await requireAccess(MODULES.STUDENTS)
   const { id } = await params
   const query = await searchParams
   const section = sectionFromParam(query.tab)
 
-  const [student, canWrite, counts, contacts] = await Promise.all([
+  // The section bar's counts stream in; the header does not wait for them.
+  // Caught here: if the page bails out first (unknown student) nothing awaits it.
+  const counts = getStudentSectionCounts(id).catch(() => ({}))
+  const [, student, canWrite, contacts] = await Promise.all([
+    requireAccess(MODULES.STUDENTS),
     getStudentById(id),
     canAccess(MODULES.STUDENTS, ACCESS.WRITE),
-    getStudentSectionCounts(id),
     // The header's "Email parent" needs the family; the Family section reuses it.
     getStudentContacts(id),
   ])
@@ -143,13 +147,25 @@ export default async function StudentDetailPage({ params, searchParams }: Studen
         />
       </header>
 
-      <StudentSectionBar studentId={id} current={section} counts={counts} />
+      <Suspense fallback={<StudentSectionBar studentId={id} current={section} counts={{}} />}>
+        <SectionBarWithCounts studentId={id} current={section} counts={counts} />
+      </Suspense>
 
       <div className="pt-6">
-        <Section id={id} section={section} canWrite={canWrite} student={student} contacts={contacts} name={name} calendarFrom={query.from} />
+        <Suspense key={section} fallback={<SectionSkeleton />}>
+          <Section id={id} section={section} canWrite={canWrite} student={student} contacts={contacts} name={name} calendarFrom={query.from} />
+        </Suspense>
       </div>
     </div>
   )
+}
+
+async function SectionBarWithCounts({ studentId, current, counts }: {
+  studentId: string
+  current: ReturnType<typeof sectionFromParam>
+  counts: Promise<Partial<Awaited<ReturnType<typeof getStudentSectionCounts>>>>
+}) {
+  return <StudentSectionBar studentId={studentId} current={current} counts={await counts} />
 }
 
 type Student = NonNullable<Awaited<ReturnType<typeof getStudentById>>>

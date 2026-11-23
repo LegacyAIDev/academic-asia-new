@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useRouterWithProgress } from "@/components/layout/navigation-progress"
 import { applyResultsImport, previewResultsImport, type ImportPreview } from "@/lib/supabase/actions/school-results-import"
-import { IMPORT_COLUMNS, SAMPLE_CSV } from "@/lib/schools/results-import"
+import { IMPORT_COLUMNS, SAMPLE_CSV } from "@/lib/schools/results-import-format"
 
 /** How many problems are listed before "and N more". */
 const SHOWN_PROBLEMS = 50

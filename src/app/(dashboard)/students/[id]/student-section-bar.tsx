@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { cn } from "@/lib/utils"
 import type { StudentSectionCounts } from "@/lib/supabase/queries/student-sections"
 import { VISIBLE_SECTIONS, type StudentSectionKey } from "./student-sections"
@@ -10,13 +10,14 @@ import { VISIBLE_SECTIONS, type StudentSectionKey } from "./student-sections"
 export function StudentSectionBar({ studentId, current, counts }: {
   studentId: string
   current: StudentSectionKey
-  counts: StudentSectionCounts
+  /** Empty while the counts are still loading; the tabs then show without numbers. */
+  counts: Partial<StudentSectionCounts>
 }) {
   return (
     <nav aria-label="Student sections" className="sticky top-14 z-30 -mx-4 border-b bg-background/95 px-4 backdrop-blur sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-8 lg:px-8">
       <ul className="-mb-px flex gap-1 overflow-x-auto">
         {VISIBLE_SECTIONS.map(section => {
-          const count = section.key in counts ? counts[section.key as keyof StudentSectionCounts] : null
+          const count = counts[section.key as keyof StudentSectionCounts] ?? null
           const active = section.key === current
           return (
             <li key={section.key} className="shrink-0">

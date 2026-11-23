@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/ui/link'
 import { getCurrentUser } from '@/lib/supabase/auth'
 import { getSchoolExportData, MAX_EXPORT_SCHOOLS } from '@/lib/supabase/queries/school-export'
 import { AGENCY_CONTACT } from '@/lib/schools/agency-contact'

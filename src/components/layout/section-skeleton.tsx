@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 
-/** Placeholder shown while a school tab loads its data; header and tab bar stay in place. */
-export function SchoolTabSkeleton() {
+/** Placeholder while a record's open tab or section loads its data; the header and tab bar stay in place. */
+export function SectionSkeleton() {
   return (
     <Card className="border-0 shadow-sm" aria-busy="true" aria-label="Loading">
       <CardHeader className="pb-4">

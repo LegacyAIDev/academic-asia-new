@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition, useEffect } from "react"
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { Button } from "@/components/ui/button"
 import { Save, Loader2 } from "lucide-react"
 import { createEvent, updateEvent, type CreateEventInput } from "@/lib/supabase/actions/events"

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { checkRows, readCsv, resultKey, SAMPLE_CSV } from '../results-import'
+import { checkRows, readCsv, resultKey } from '../results-import'
+import { SAMPLE_CSV } from '../results-import-format'
 
 const schools = [
   { id: 's-brighton', name: 'Brighton College' },

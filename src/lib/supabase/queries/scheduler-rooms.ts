@@ -25,7 +25,8 @@ export type SchedulerRoom = {
   is_active: boolean
   sort_order: number
   location: { id: string; name: string; address: string | null; building: string | null } | null
-  booking_count: number
+  /** Non-cancelled bookings in the room; null unless asked for (only the rooms page shows it). */
+  booking_count: number | null
 }
 
 /** Bookable sites (office branches), optionally including inactive ones. */
@@ -51,10 +52,11 @@ export async function getLocations(params: { includeInactive?: boolean } = {}): 
 }
 
 /**
- * Rooms with their location and a live count of non-cancelled bookings, used
- * to warn admins before they deactivate or delete a room that's in use.
+ * Rooms with their location. The rooms page also asks for a live count of
+ * non-cancelled bookings, to warn admins before they deactivate or delete a
+ * room that's in use; the calendar and forms skip that query per room.
  */
-export async function getRooms(params: { includeInactive?: boolean } = {}): Promise<SchedulerRoom[]> {
+export async function getRooms(params: { includeInactive?: boolean; withBookingCounts?: boolean } = {}): Promise<SchedulerRoom[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
@@ -80,6 +82,7 @@ export async function getRooms(params: { includeInactive?: boolean } = {}): Prom
 
   const rooms = (data ?? []) as unknown as Omit<SchedulerRoom, 'booking_count'>[]
   if (rooms.length === 0) return []
+  if (!params.withBookingCounts) return rooms.map(room => ({ ...room, booking_count: null }))
 
   // Booking counts fetched per room via head counts — the table has no
   // group-by-count RPC, and this stays simple for the handful of rooms in use.

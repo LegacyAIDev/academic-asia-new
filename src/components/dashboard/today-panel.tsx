@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { BOOKING_TYPE_LABELS, type BookingType } from "@/lib/scheduler/config"
 import { formatHkTime } from "@/lib/scheduler/time-utils"
 import type { TodayBooking } from "@/lib/supabase/queries/dashboard"

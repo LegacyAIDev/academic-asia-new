@@ -1,6 +1,7 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
+import { LIST_TAGS } from '@/lib/supabase/queries/cached-lists'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { assertAccess, assertNoEscalation, assertOutranksTarget } from '@/lib/permissions/guard'
 import { getCurrentUser } from '@/lib/supabase/auth'
@@ -101,6 +102,8 @@ export async function createStaff(input: StaffInput): Promise<ActionResult<{ id:
     }
 
     revalidatePath('/staff')
+
+    updateTag(LIST_TAGS.staff)
     return { success: true, data: { id: authUser.user.id } }
   } catch (err) {
     console.error('Error in createStaff:', err)
@@ -166,6 +169,8 @@ export async function updateStaff(id: string, input: Partial<StaffInput>): Promi
     }
 
     revalidatePath('/staff')
+
+    updateTag(LIST_TAGS.staff)
     revalidatePath(`/staff/${id}`)
     return { success: true }
   } catch (err) {
@@ -206,6 +211,8 @@ export async function deleteStaff(id: string): Promise<ActionResult> {
     }
 
     revalidatePath('/staff')
+
+    updateTag(LIST_TAGS.staff)
     return { success: true }
   } catch (err) {
     console.error('Error in deleteStaff:', err)
@@ -238,6 +245,8 @@ export async function setStaffActive(id: string, active: boolean): Promise<Actio
     }
 
     revalidatePath('/staff')
+
+    updateTag(LIST_TAGS.staff)
     revalidatePath(`/staff/${id}`)
     return { success: true }
   } catch (err) {

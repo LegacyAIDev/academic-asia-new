@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { cachedList, LIST_TAGS } from './cached-lists'
 import { cookies } from 'next/headers'
 
 /**
@@ -147,6 +148,10 @@ export type EventsListResult = {
   totalPages: number
 }
 
+/** Event type ids by code; they change only with a migration. */
+const eventTypeIds = cachedList('event-type-ids', [LIST_TAGS.lookups], async supabase =>
+  ((await supabase.from('event_types').select('id, code')).data ?? []) as { id: number; code: string }[])
+
 /**
  * Fetch paginated events list with filters
  */
@@ -167,16 +172,7 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
   const supabase = createClient(cookieStore)
   const offset = (page - 1) * pageSize
 
-  // Get the event_type_id for the given type code
-  let eventTypeId: number | null = null
-  if (typeCode) {
-    const { data: eventType } = await supabase
-      .from('event_types')
-      .select('id')
-      .eq('code', typeCode)
-      .single()
-    eventTypeId = eventType?.id ?? null
-  }
+  const eventTypeId = typeCode ? (await eventTypeIds()).find(t => t.code === typeCode)?.id ?? null : null
 
   // Build main query
   let query = supabase
@@ -195,7 +191,11 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
       created_at,
       updated_at,
       event_type:event_types!events_event_type_id_fkey(id, code, label, color),
-      assigned_to_profile:profiles!events_assigned_to_fkey(id, first_name, surname)
+      assigned_to_profile:profiles!events_assigned_to_fkey(id, first_name, surname),
+      schools:event_schools(count),
+      representatives:event_representatives(count),
+      schedules:event_schedules(count),
+      applications:student_event_applications(count)
     `, { count: 'exact' })
 
   // Filter by event type
@@ -236,26 +236,16 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
     throw new Error(`Failed to fetch events: ${error.message}`)
   }
 
-  // Get event IDs for aggregation queries
-  const eventIds = (data ?? []).map(e => e.id)
-
-  // Fetch aggregated counts for each event in parallel
-  const [schoolCounts, representativeCounts, scheduleCounts, applicationCounts] = await Promise.all([
-    getEventSchoolCounts(supabase, eventIds),
-    getEventRepresentativeCounts(supabase, eventIds),
-    getEventScheduleCounts(supabase, eventIds),
-    getEventApplicationCounts(supabase, eventIds),
-  ])
-
-  // Merge counts into event data
-  const eventsWithCounts: EventListItem[] = (data ?? []).map(event => ({
+  // Child rows are counted in the same query (PostgREST embedded counts).
+  const countOf = (embedded: unknown) => (embedded as { count: number }[] | null)?.[0]?.count ?? 0
+  const eventsWithCounts: EventListItem[] = (data ?? []).map(({ schools, representatives, schedules, applications, ...event }) => ({
     ...event,
     event_type: event.event_type as unknown as EventType | null,
     assigned_to_profile: event.assigned_to_profile as unknown as { id: string; first_name: string | null; surname: string | null } | null,
-    school_count: schoolCounts[event.id] ?? 0,
-    representative_count: representativeCounts[event.id] ?? 0,
-    schedule_count: scheduleCounts[event.id] ?? 0,
-    application_count: applicationCounts[event.id] ?? 0,
+    school_count: countOf(schools),
+    representative_count: countOf(representatives),
+    schedule_count: countOf(schedules),
+    application_count: countOf(applications),
   }))
 
   const totalCount = count ?? 0
@@ -271,106 +261,13 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
 }
 
 /**
- * Helper: Get school counts per event
- */
-async function getEventSchoolCounts(
-  supabase: ReturnType<typeof createClient>,
-  eventIds: string[]
-): Promise<Record<string, number>> {
-  if (eventIds.length === 0) return {}
-
-  const { data } = await supabase
-    .from('event_schools')
-    .select('event_id')
-    .in('event_id', eventIds)
-
-  const counts: Record<string, number> = {}
-  data?.forEach(row => {
-    counts[row.event_id] = (counts[row.event_id] ?? 0) + 1
-  })
-  return counts
-}
-
-/**
- * Helper: Get representative counts per event
- */
-async function getEventRepresentativeCounts(
-  supabase: ReturnType<typeof createClient>,
-  eventIds: string[]
-): Promise<Record<string, number>> {
-  if (eventIds.length === 0) return {}
-
-  const { data } = await supabase
-    .from('event_representatives')
-    .select('event_id')
-    .in('event_id', eventIds)
-
-  const counts: Record<string, number> = {}
-  data?.forEach(row => {
-    counts[row.event_id] = (counts[row.event_id] ?? 0) + 1
-  })
-  return counts
-}
-
-/**
- * Helper: Get schedule counts per event
- */
-async function getEventScheduleCounts(
-  supabase: ReturnType<typeof createClient>,
-  eventIds: string[]
-): Promise<Record<string, number>> {
-  if (eventIds.length === 0) return {}
-
-  const { data } = await supabase
-    .from('event_schedules')
-    .select('event_id')
-    .in('event_id', eventIds)
-
-  const counts: Record<string, number> = {}
-  data?.forEach(row => {
-    counts[row.event_id] = (counts[row.event_id] ?? 0) + 1
-  })
-  return counts
-}
-
-/**
- * Helper: Get application counts per event
- */
-async function getEventApplicationCounts(
-  supabase: ReturnType<typeof createClient>,
-  eventIds: string[]
-): Promise<Record<string, number>> {
-  if (eventIds.length === 0) return {}
-
-  const { data } = await supabase
-    .from('student_event_applications')
-    .select('event_id')
-    .in('event_id', eventIds)
-
-  const counts: Record<string, number> = {}
-  data?.forEach(row => {
-    counts[row.event_id] = (counts[row.event_id] ?? 0) + 1
-  })
-  return counts
-}
-
-/**
  * Get stats for events by type
  */
 export async function getEventStats(typeCode?: EventTypeCode) {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  // Get the event_type_id for the given type code
-  let eventTypeId: number | null = null
-  if (typeCode) {
-    const { data: eventType } = await supabase
-      .from('event_types')
-      .select('id')
-      .eq('code', typeCode)
-      .single()
-    eventTypeId = eventType?.id ?? null
-  }
+  const eventTypeId = typeCode ? (await eventTypeIds()).find(t => t.code === typeCode)?.id ?? null : null
 
   // Build base query for total count
   let totalQuery = supabase.from('events').select('id', { count: 'exact', head: true })

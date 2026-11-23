@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import type { ExamDay } from "@/lib/supabase/queries/dashboard"
 import { DashboardPanel } from "./dashboard-panel"
 
