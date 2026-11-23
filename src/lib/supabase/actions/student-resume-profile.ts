@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
@@ -7,7 +8,6 @@ import { sanitizeRichText } from '@/lib/rich-text'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
-type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 export type UpsertResumeProfileInput = {
   student_id: string

@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import {
@@ -9,7 +10,6 @@ import {
   type SchedulerStudentOption,
 } from '@/lib/supabase/queries/scheduler-people'
 
-export type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 /** Student lookup for the booking dialog's attendee/candidate search. */
 export async function searchStudentsAction(q: string): Promise<ActionResult<SchedulerStudentOption[]>> {

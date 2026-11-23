@@ -1,5 +1,6 @@
 "use client"
 
+import { FormField } from "@/components/forms/form-field"
 import { useRef, useState, useTransition } from "react"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import {
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -67,23 +67,6 @@ type EntranceExamDialogProps = {
   onOpenChange?: (open: boolean) => void
 }
 
-
-function FormField({
-  label,
-  children,
-  className = "",
-}: {
-  label: string
-  children: React.ReactNode
-  className?: string
-}) {
-  return (
-    <div className={`space-y-2 ${className}`}>
-      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
-      {children}
-    </div>
-  )
-}
 
 export function EntranceExamDialog({
   schoolId,

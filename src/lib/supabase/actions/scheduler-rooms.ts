@@ -1,10 +1,11 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
-import { revalidateSchedulerPaths, toActionResult, type ActionResult } from '@/lib/scheduler/action-helpers'
+import { revalidateSchedulerPaths, toActionResult } from '@/lib/scheduler/action-helpers'
 import { roomFormSchema } from '@/lib/scheduler/room-schema'
 
 export type CreateRoomInput = {

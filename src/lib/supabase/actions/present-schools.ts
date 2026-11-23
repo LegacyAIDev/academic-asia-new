@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
@@ -12,7 +13,6 @@ import {
   isUsableSchoolName,
   schoolSearchKeys,
 } from '@/lib/students/present-school-name'
-import type { ActionResult } from '@/lib/supabase/actions/students'
 
 /*
  * Adding and renaming present schools (the schools students attend now). Anyone

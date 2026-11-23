@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
@@ -11,7 +12,6 @@ import { ALLOWED_MIME, MAX_BYTES } from '@/lib/attachments/constraints'
 import { EXAM_PAPER_ACCESS, EXAM_PAPER_CATEGORY_CODE, isExamPaperRow } from '@/lib/attachments/exam-paper-access'
 import { findStoredSchoolDocument } from '@/lib/supabase/queries/school-documents'
 
-type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 const BUCKET = 'school-documents'
 

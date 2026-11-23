@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { insertDocument } from '@/lib/supabase/document-rows'
 import { cookies } from 'next/headers'
@@ -13,7 +14,6 @@ import {
 } from '@/lib/attachments/attach-points'
 import { ALLOWED_MIME, MAX_BYTES, isSafeExternalUrl, urlHostname } from '@/lib/attachments/constraints'
 
-type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 /**
  * Attach an uploaded file to a specific record.

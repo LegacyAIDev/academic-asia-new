@@ -1,11 +1,11 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { getBooking, type BookingDetail } from '@/lib/supabase/queries/scheduler-bookings'
 import { getBookingHistory, type SchedulerBookingHistoryEntry } from '@/lib/supabase/queries/scheduler-history'
 
-export type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 export type BookingDetailsPayload = {
   booking: BookingDetail

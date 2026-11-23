@@ -1,5 +1,8 @@
 "use client"
 
+import { DialogCloseButton } from "@/components/forms/dialog-close-button"
+import { FormField } from "@/components/forms/form-field"
+import { ConfirmDeleteButton } from "@/components/features/confirm-delete-button"
 import { useRef, useState, useTransition, useMemo } from "react"
 import {
   Dialog,
@@ -8,19 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
@@ -46,7 +38,6 @@ import {
   Pencil,
   Plus,
   School,
-  Trash2,
 } from "lucide-react"
 import {
   createStudentApplication,
@@ -87,23 +78,6 @@ type ApplicationDialogProps = {
   attachmentsByDeposit?: Map<string, AttachmentRecord[]>
 }
 
-
-function FormField({
-  label,
-  children,
-  className = "",
-}: {
-  label: string
-  children: React.ReactNode
-  className?: string
-}) {
-  return (
-    <div className={`space-y-2 ${className}`}>
-      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
-      {children}
-    </div>
-  )
-}
 
 /** A folded group of optional fields; native <details>, so it stays in the form when closed. */
 function MoreDetails({ title, open, children }: { title: string; open?: boolean; children: React.ReactNode }) {
@@ -359,14 +333,7 @@ export function ApplicationDialog({
               </p>
             </DialogHeader>
 
-            <button
-              onClick={() => setOpen(false)}
-              className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <DialogCloseButton onClick={() => setOpen(false)} />
           </div>
         </div>
 
@@ -764,73 +731,12 @@ export function DeleteApplicationButton({
   studentId: string
   schoolName: string
 }) {
-  const [open, setOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
-
-  const handleDelete = () => {
-    setError(null)
-    startTransition(async () => {
-      const result = await deleteStudentApplication(applicationId, studentId)
-      if (result.success) {
-        setOpen(false)
-      } else {
-        setError(result.error ?? "Failed to delete application")
-      }
-    })
-  }
-
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <Button aria-label="Delete" title="Delete"
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-        onClick={() => setOpen(true)}
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-      </Button>
-      <AlertDialogContent className="sm:max-w-[420px]">
-        <AlertDialogHeader>
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-destructive/10">
-              <Trash2 className="h-5 w-5 text-destructive" />
-            </div>
-            <div className="space-y-1.5">
-              <AlertDialogTitle className="text-lg">Delete Application</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete the application to <strong className="text-foreground">{schoolName}</strong>?
-                This will also remove any associated deposits. This action cannot be undone.
-              </AlertDialogDescription>
-            </div>
-          </div>
-        </AlertDialogHeader>
-        {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-        <AlertDialogFooter className="gap-2 sm:gap-2">
-          <AlertDialogCancel disabled={isPending} className="rounded-lg">Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={isPending}
-            className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 gap-2"
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Deleting...
-              </>
-            ) : (
-              <>
-                <Trash2 className="h-4 w-4" />
-                Delete
-              </>
-            )}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmDeleteButton
+      title="Delete Application"
+      description={<>Are you sure you want to delete the application to <strong className="text-foreground">{schoolName}</strong>? This will also remove any associated deposits. This action cannot be undone.</>}
+      failMessage="Failed to delete application"
+      onDelete={() => deleteStudentApplication(applicationId, studentId)}
+    />
   )
 }

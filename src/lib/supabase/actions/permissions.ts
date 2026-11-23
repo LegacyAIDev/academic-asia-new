@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/supabase/auth'
@@ -9,11 +10,6 @@ import {
 import { ACCESS, MODULES, toAccessLevel, type AccessLevel, type ModuleKey } from '@/lib/permissions/modules'
 import { getPermissionModules, getLevelPermissions } from '@/lib/supabase/queries/permissions'
 
-type ActionResult<T = void> = {
-  success: boolean
-  data?: T
-  error?: string
-}
 
 /** Turn a module-id map into a module-key map, for the escalation check. */
 async function keyed(

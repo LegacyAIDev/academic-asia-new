@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { insertDocument } from '@/lib/supabase/document-rows'
 import { cookies } from 'next/headers'
@@ -11,7 +12,6 @@ import { ALLOWED_MIME, MAX_BYTES } from '@/lib/attachments/constraints'
 import { earlierVersions } from '@/lib/attachments/versions'
 import { isUuid } from '@/lib/scheduler/uuid'
 import { personName, type NamedPerson } from '@/lib/scheduler/person-name'
-import type { ActionResult } from '@/lib/scheduler/action-helpers'
 
 /**
  * Replacing a paper with a newer version (ASM-03, ASM-05). The new file is

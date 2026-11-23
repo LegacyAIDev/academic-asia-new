@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
@@ -9,11 +10,6 @@ import { deleteAttachmentsForRecord } from '@/lib/supabase/actions/record-attach
 import { EXAM_PAPER_ACCESS } from '@/lib/attachments/exam-paper-access'
 import { countExamPapers } from '@/lib/supabase/queries/school-documents'
 
-type ActionResult<T = void> = {
-  success: boolean
-  data?: T
-  error?: string
-}
 
 export type CreateSchoolEntranceExamInput = {
   school_id: string

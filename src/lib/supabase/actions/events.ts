@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath, updateTag } from 'next/cache'
 import { LIST_TAGS } from '@/lib/supabase/queries/cached-lists'
 import { cookies } from 'next/headers'
@@ -28,11 +29,6 @@ export type CreateEventInput = {
   assigned_to?: string | null
 }
 
-export type ActionResult<T = void> = {
-  success: boolean
-  data?: T
-  error?: string
-}
 
 /**
  * Create a new event

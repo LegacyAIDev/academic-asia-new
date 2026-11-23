@@ -1,5 +1,6 @@
 "use client"
 
+import type { ActionResult } from '@/lib/action-result'
 import { useEffect, useState, useTransition } from "react"
 import { Panel } from "@/components/ui/panel"
 import { Button } from "@/components/ui/button"
@@ -26,7 +27,6 @@ export type ManagedDocument = {
 }
 
 type BatchResult = { uploaded: number; failed: number; errors: string[] }
-type ActionResult<T = unknown> = { success: boolean; data?: T; error?: string }
 
 type DocumentManagerProps = {
   ownerId: string

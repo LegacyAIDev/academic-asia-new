@@ -1,10 +1,10 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { searchSchoolOptions } from '@/lib/supabase/queries/filed-emails'
 
-type ActionResult<T> = { success: boolean; data?: T; error?: string }
 
 /** Schools whose name contains the search, for pickers on student records (two characters or more). */
 export async function searchSchoolsAction(query: string): Promise<ActionResult<{ id: string; name: string }[]>> {

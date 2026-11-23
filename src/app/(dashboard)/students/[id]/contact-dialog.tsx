@@ -1,5 +1,7 @@
 "use client"
 
+import { DialogCloseButton } from "@/components/forms/dialog-close-button"
+import { FormField } from "@/components/forms/form-field"
 import { useState, useTransition } from "react"
 import {
   Dialog,
@@ -20,7 +22,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -76,26 +77,6 @@ type ContactDialogProps = {
 }
 
 /** Floating card section for form grouping with visual indicator */
-
-/** Clean form field with label */
-function FormField({
-  label,
-  children,
-  className = "",
-}: {
-  label: string
-  children: React.ReactNode
-  className?: string
-}) {
-  return (
-    <div className={`space-y-2 ${className}`}>
-      <Label className="text-xs font-medium text-muted-foreground">
-        {label}
-      </Label>
-      {children}
-    </div>
-  )
-}
 
 export function ContactDialog({
   studentId,
@@ -217,14 +198,7 @@ export function ContactDialog({
             </DialogHeader>
 
             {/* Close button */}
-            <button
-              onClick={() => setOpen(false)}
-              className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <DialogCloseButton onClick={() => setOpen(false)} />
           </div>
         </div>
 

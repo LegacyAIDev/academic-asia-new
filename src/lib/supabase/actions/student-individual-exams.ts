@@ -1,15 +1,12 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
-type ActionResult = {
-  success: boolean
-  error?: string
-}
 
 export type CreateIndividualExamInput = {
   student_id: string

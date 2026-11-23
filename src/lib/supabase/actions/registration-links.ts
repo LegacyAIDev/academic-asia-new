@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
@@ -7,7 +8,6 @@ import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { getCurrentUser } from '@/lib/supabase/auth'
 import { LINK_DAYS, hashRegistrationToken, newRegistrationToken } from '@/lib/registration/registration-form'
 
-type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 /**
  * A new registration link for one family. The secret is returned once, for

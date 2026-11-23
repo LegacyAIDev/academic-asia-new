@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
@@ -12,7 +13,6 @@ import { getExamPaperStatuses, getSchoolExamPaperOptions, type ExamPaperOption }
 import { getAttachmentsForMany } from '@/lib/supabase/queries/record-attachments'
 import { getAttachmentSignedUrl } from './record-attachment-signed-url'
 
-type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 export type BookingPaperFile = { paperId: string; subject: string; name: string; url: string; kind: 'file' | 'link' }
 export type BookingPaperFiles = { files: BookingPaperFile[]; toRequest: string[]; schoolId: string | null }

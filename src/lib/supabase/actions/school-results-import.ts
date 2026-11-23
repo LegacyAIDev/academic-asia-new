@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import type { TablesInsert } from '@/types/database'
 import { cookies } from 'next/headers'
@@ -8,7 +9,6 @@ import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { checkRows, readCsv, resultKey, type ExamTypeRef, type ImportProblem, type ImportRow, type SchoolRef } from '@/lib/schools/results-import'
 
-type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 /** What an upload would do, shown before anything is saved. */
 export type ImportPreview = {

@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
@@ -10,7 +11,6 @@ import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { ALLOWED_MIME, MAX_BYTES } from '@/lib/attachments/constraints'
 
-type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 export type UploadDocumentInput = {
   student_id: string

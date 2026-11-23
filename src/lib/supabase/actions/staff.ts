@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath, updateTag } from 'next/cache'
 import { LIST_TAGS } from '@/lib/supabase/queries/cached-lists'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -7,11 +8,6 @@ import { assertAccess, assertNoEscalation, assertOutranksTarget } from '@/lib/pe
 import { getCurrentUser } from '@/lib/supabase/auth'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 
-type ActionResult<T = void> = {
-  success: boolean
-  data?: T
-  error?: string
-}
 
 /**
  * Staff profile writes go through the service role client.

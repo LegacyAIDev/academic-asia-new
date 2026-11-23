@@ -1,5 +1,6 @@
 "use client"
 
+import { DialogCloseButton } from "@/components/forms/dialog-close-button"
 import { useState, useTransition } from "react"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -71,11 +72,7 @@ export function ResumeProfileDialog({ studentId, profile }: Props) {
               </DialogTitle>
               <p className="text-sm text-muted-foreground">English standard, interests, and parents input</p>
             </DialogHeader>
-            <button onClick={() => setOpen(false)} aria-label="Close" className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors">
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <DialogCloseButton onClick={() => setOpen(false)} />
           </div>
         </div>
 

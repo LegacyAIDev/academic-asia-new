@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
@@ -13,7 +14,6 @@ import { detailColumns, emailDetailsSchema, emailLinksSchema, firstIssue, linkCo
 import { DETAIL_SELECT, storedAttachments, toFiledEmailDetail, type FiledEmailDetail, type FiledEmailRow } from '@/lib/emails/filed-email'
 import { applicationBelongsTo, removeStoredFiles, revalidateEmailPages } from '@/lib/supabase/filed-email-store'
 import { getApplicationOptions, searchSchoolOptions, type ApplicationOption } from '@/lib/supabase/queries/filed-emails'
-import type { ActionResult } from '@/lib/scheduler/action-helpers'
 
 /** Opening, editing, archiving and removing a filed email (EF-13, EF-17 to EF-23). */
 

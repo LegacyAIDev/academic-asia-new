@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
@@ -23,7 +24,6 @@ import { getBooking } from '@/lib/supabase/queries/scheduler-bookings'
 import { bookingDetailToFormInput } from '@/lib/scheduler/booking-defaults'
 import type { Json } from '@/types/database'
 
-export type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 export type SaveBookingResult = ActionResult<{ id?: string; conflicts?: ConflictSummary }>
 

@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import type { TablesInsert } from '@/types/database'
 import { cookies } from 'next/headers'
@@ -11,7 +12,6 @@ import { noteTarget } from '@/lib/notes/note-targets'
 import { NOTE_SELECT, toRecordNote, type NoteRow, type RecordNote } from '@/lib/notes/record-note'
 import { readRecordNotesPage } from '@/lib/supabase/queries/record-notes'
 import { isUuid } from '@/lib/scheduler/uuid'
-import type { ActionResult } from '@/lib/scheduler/action-helpers'
 
 const UNKNOWN_TARGET = { success: false as const, error: 'Unknown kind of record' }
 const SIGN_IN_AGAIN = { success: false as const, error: 'Please sign in again.' }

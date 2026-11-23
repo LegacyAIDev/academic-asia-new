@@ -1,9 +1,9 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { searchStudentsForFamily, type LinkedStudent } from '@/lib/supabase/queries/student-family'
-import type { ActionResult } from '@/lib/supabase/actions/students'
 
 /** The family member picker's search, run as staff type. Seeing students is enough to search them. */
 export async function searchStudentsForFamilyAction(query: string, excludeId: string): Promise<ActionResult<LinkedStudent[]>> {

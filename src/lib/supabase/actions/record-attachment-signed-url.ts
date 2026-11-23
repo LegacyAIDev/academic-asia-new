@@ -1,11 +1,11 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ATTACH_POINTS, attachAccess, ownerConfig, type AttachPointKey } from '@/lib/attachments/attach-points'
 
-type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 /** Download links normally last an hour; a link to an exam paper only long enough to open it. */
 const LINK_SECONDS = 3600

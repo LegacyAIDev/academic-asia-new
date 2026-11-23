@@ -1,10 +1,10 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { isUuid } from '@/lib/scheduler/uuid'
 import { searchFiledEmailBodies, type EmailListTarget } from '@/lib/supabase/queries/filed-emails'
-import type { ActionResult } from '@/lib/scheduler/action-helpers'
 
 type SearchTarget = { kind: 'student' | 'school' | 'application'; id: string }
 

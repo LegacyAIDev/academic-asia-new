@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { differenceInCalendarDays } from 'date-fns'
 import { assertAccess } from '@/lib/permissions/guard'
 import { MAX_RANGE_DAYS } from '@/lib/scheduler/config'
@@ -13,7 +14,6 @@ import {
   type FreeBusyParams,
 } from '@/lib/supabase/queries/scheduler-availability'
 
-export type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 /** Availability lookups are per booking; refuse ranges wider than the calendar itself shows. */
 function rangeTooWide(from: string, to: string): boolean {

@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 import type { Tables } from '@/types/database'
 import { cookies } from 'next/headers'
@@ -47,13 +48,6 @@ export type CreateStudentInput = {
   assigned_to?: string | null
 }
 
-export type ActionResult<T = void> = {
-  success: boolean
-  data?: T
-  error?: string
-  /** The record changed after the editor opened, so nothing was saved. */
-  conflict?: boolean
-}
 
 /**
  * A current school chosen from the list is stored twice: its id, and its list

@@ -1,6 +1,6 @@
+import type { ActionResult } from '@/lib/action-result'
 import { revalidatePath } from 'next/cache'
 
-export type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 /** Maps a Postgres error from a rooms/locations write to a friendly action result. */
 export function toActionResult<T>(error: { code?: string; message: string }): ActionResult<T> {

@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
@@ -12,7 +13,6 @@ import {
 import {
   applicationBelongsTo, findDuplicate, removeStoredFiles, revalidateEmailPages, storeStagedEmail,
 } from '@/lib/supabase/filed-email-store'
-import type { ActionResult } from '@/lib/scheduler/action-helpers'
 
 /**
  * Filing an email (EF-01 to EF-12). The browser uploads the file straight to

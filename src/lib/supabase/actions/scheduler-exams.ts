@@ -1,5 +1,6 @@
 'use server'
 
+import type { ActionResult } from '@/lib/action-result'
 import { canAccess, assertAccess } from '@/lib/permissions/guard'
 import { ACCESS, MODULES } from '@/lib/permissions/modules'
 import { getCurrentUser } from '@/lib/supabase/auth'
@@ -13,7 +14,6 @@ import { getStudentsByIds, listActiveStaff, type SchedulerStaffOption } from '@/
 import { personName } from '@/lib/scheduler/person-name'
 import { getRooms, type SchedulerRoom } from '@/lib/supabase/queries/scheduler-rooms'
 
-export type ActionResult<T = void> = { success: boolean; data?: T; error?: string }
 
 export type BookingDialogContext = {
   rooms: SchedulerRoom[]
