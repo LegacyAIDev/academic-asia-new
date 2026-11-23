@@ -261,86 +261,6 @@ export async function getEventsList(params: EventsListParams = {}): Promise<Even
 }
 
 /**
- * Get stats for events by type
- */
-export async function getEventStats(typeCode?: EventTypeCode) {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const eventTypeId = typeCode ? (await eventTypeIds()).find(t => t.code === typeCode)?.id ?? null : null
-
-  // Build base query for total count
-  let totalQuery = supabase.from('events').select('id', { count: 'exact', head: true })
-  if (eventTypeId) {
-    totalQuery = totalQuery.eq('event_type_id', eventTypeId)
-  }
-  const { count: totalCount } = await totalQuery
-
-  // Get upcoming events count (start_date >= today)
-  const today = new Date().toISOString().split('T')[0]
-  let upcomingQuery = supabase
-    .from('events')
-    .select('id', { count: 'exact', head: true })
-    .gte('start_date', today)
-  if (eventTypeId) {
-    upcomingQuery = upcomingQuery.eq('event_type_id', eventTypeId)
-  }
-  const { count: upcomingCount } = await upcomingQuery
-
-  // Get event IDs for this type to count related records
-  let eventIdsQuery = supabase.from('events').select('id')
-  if (eventTypeId) {
-    eventIdsQuery = eventIdsQuery.eq('event_type_id', eventTypeId)
-  }
-  const { data: eventIdsData } = await eventIdsQuery
-  const eventIds = (eventIdsData ?? []).map(e => e.id)
-
-  // Count schools, representatives, schedules for these events
-  let schoolCount = 0
-  let representativeCount = 0
-  let scheduleCount = 0
-
-  if (eventIds.length > 0) {
-    const [schools, representatives, schedules] = await Promise.all([
-      supabase.from('event_schools').select('id', { count: 'exact', head: true }).in('event_id', eventIds),
-      supabase.from('event_representatives').select('id', { count: 'exact', head: true }).in('event_id', eventIds),
-      supabase.from('event_schedules').select('id', { count: 'exact', head: true }).in('event_id', eventIds),
-    ])
-    schoolCount = schools.count ?? 0
-    representativeCount = representatives.count ?? 0
-    scheduleCount = schedules.count ?? 0
-  }
-
-  return {
-    totalEvents: totalCount ?? 0,
-    upcomingEvents: upcomingCount ?? 0,
-    totalSchools: schoolCount,
-    totalRepresentatives: representativeCount,
-    totalSchedules: scheduleCount,
-  }
-}
-
-/**
- * Get all event types for reference
- */
-export async function getEventTypes() {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { data, error } = await supabase
-    .from('event_types')
-    .select('*')
-    .order('sort_order')
-
-  if (error) {
-    console.error('Error fetching event types:', error)
-    return []
-  }
-
-  return data ?? []
-}
-
-/**
  * Get single event with all relations
  */
 export async function getEventById(id: string) {
@@ -430,25 +350,4 @@ export async function getStaffProfiles() {
   }
 
   return data ?? []
-}
-
-/**
- * Get event type ID by code
- */
-export async function getEventTypeIdByCode(code: string): Promise<number | null> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { data, error } = await supabase
-    .from('event_types')
-    .select('id')
-    .eq('code', code)
-    .single()
-
-  if (error) {
-    console.error('Error fetching event type:', error)
-    return null
-  }
-
-  return data?.id ?? null
 }

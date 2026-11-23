@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -10,20 +8,33 @@
 !.yarn/releases
 !.yarn/versions
 
+# npm is the package manager; its lockfile is committed so installs are
+# reproducible. Other managers' lockfiles are not used.
+yarn.lock
+pnpm-lock.yaml
+
 # testing
 /coverage
+.nyc_output
 
-# next.js
+# next.js / vercel
 /.next/
 /out/
+/build
 dist/
 bin/
+.vercel
+next-env.d.ts
+*.tsbuildinfo
 
-# production
-/build
+# env files (opt in with .env.example)
+.env*
+!.env.example
 
-# misc
+# editors and OS
 .DS_Store
+.idea/
+~$*
 *.pem
 
 # debug
@@ -31,47 +42,25 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+logs.txt
 
-# package manager
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# semantic-release
-.nyc_output
-
-# env files (can opt-in for committing if needed)
-.env*
-!.env.example
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# flutter
-.dart_tool
-build
-GoogleService-Info.plist
-
+# local tooling
 repomix-output.xml
 .serena/cache
+.gemini/settings.json
+.claude/settings.bak.json
+test-ck
+__pycache__
+prompt.md
+
+# working notes kept out of the repo
 plans/**/*
 !plans/templates/*
 screenshots/*
 docs/screenshots/*
 docs/journals/*
 docs/research/*
-logs.txt
-test-ck
-__pycache__
-prompt.md
 
-# Gemini CLI settings (symlink to .claude/.mcp.json)
-.gemini/settings.json
-.claude/settings.bak.json
 # Legacy file dumps — student/school PII. Never commit.
 # Also required for the build: Tailwind v4 auto-scans every path not listed
 # here, and tries to parse these PDFs/BMPs as source files.

@@ -101,33 +101,3 @@ export async function getRooms(params: { includeInactive?: boolean; withBookingC
     booking_count: counts[index].count ?? 0,
   }))
 }
-
-/** Single room with its location, for edit forms. */
-export async function getRoom(id: string): Promise<SchedulerRoom | null> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { data, error } = await supabase
-    .from('scheduler_rooms')
-    .select(`
-      id, location_id, display_name, floor, room_number, capacity,
-      is_exam_suitable, online_station_count, is_accessible, facilities_notes,
-      color, is_active, sort_order,
-      location:scheduler_locations(id, name, address, building)
-    `)
-    .eq('id', id)
-    .single()
-
-  if (error) {
-    console.error('Error fetching scheduler room:', error)
-    return null
-  }
-
-  const { count } = await supabase
-    .from('scheduler_bookings')
-    .select('id', { count: 'exact', head: true })
-    .eq('room_id', id)
-    .neq('status', 'cancelled')
-
-  return { ...(data as unknown as Omit<SchedulerRoom, 'booking_count'>), booking_count: count ?? 0 }
-}

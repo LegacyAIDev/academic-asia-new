@@ -35,7 +35,7 @@ export type CreateSchoolFeeInput = {
  * resolveCurrentFee().
  *
  * A failure here must not fail the fee write — the cache is recoverable by
- * rerunning scripts/42_backfill-school-current-fee.ts.
+ * rerunning scripts/legacy-migration/42_backfill-school-current-fee.ts.
  */
 async function refreshCurrentFee(
   supabase: Awaited<ReturnType<typeof createClient>>,

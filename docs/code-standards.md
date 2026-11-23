@@ -48,7 +48,7 @@ Three distinct clients exist. Use the right one:
 | Server client | `src/lib/supabase/server.ts` | Server Components, Server Actions, Route Handlers |
 | Admin client | `src/lib/supabase/admin.ts` | Server-only operations requiring service role (e.g., creating auth users from migration scripts). **Never import in client components or expose to browser.** |
 
-The server client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` (not the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+The server client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (not the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
 
 ```typescript
 // Server Component or Server Action

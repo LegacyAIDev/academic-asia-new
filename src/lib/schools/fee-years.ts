@@ -23,7 +23,7 @@ export function financialYearStart(value: string | null): number | null {
 }
 
 /** The option a fee belongs to: its trimmed year, or NO_YEAR when there is no usable year. */
-export function feeYearKey(fee: WithYear): string {
+function feeYearKey(fee: WithYear): string {
   const year = fee.financial_year?.trim() ?? ''
   return financialYearStart(year) == null ? NO_YEAR : year
 }

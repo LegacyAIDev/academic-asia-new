@@ -6,7 +6,7 @@ export type TimeSlot = {
 }
 
 /** Parse a time string (HH:mm or ISO timestamp) into minutes since midnight */
-export function parseTimeToMinutes(timeStr: string): number {
+function parseTimeToMinutes(timeStr: string): number {
   if (timeStr.includes('T')) {
     // ISO timestamp — extract HH:mm directly to avoid timezone issues
     const timePart = timeStr.split('T')[1]
@@ -18,7 +18,7 @@ export function parseTimeToMinutes(timeStr: string): number {
 }
 
 /** Format minutes since midnight to HH:mm string */
-export function minutesToTime(minutes: number): string {
+function minutesToTime(minutes: number): string {
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`

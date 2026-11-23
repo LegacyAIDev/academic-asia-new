@@ -3,10 +3,8 @@ import { getAuthUser } from '@/lib/supabase/auth'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import {
-  ACCESS,
   denyAll,
   toAccessLevel,
-  type AccessLevel,
   type ModuleKey,
   type PermissionMap,
 } from './modules'
@@ -67,9 +65,3 @@ export const getPermissions = cache(async (): Promise<PermissionMap> => {
     return denyAll()
   }
 })
-
-/** Effective access for a single module. */
-export async function getModuleAccess(module: ModuleKey): Promise<AccessLevel> {
-  const permissions = await getPermissions()
-  return permissions[module] ?? ACCESS.NONE
-}

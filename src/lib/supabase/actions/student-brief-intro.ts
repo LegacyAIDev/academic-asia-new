@@ -100,35 +100,3 @@ export async function upsertStudentBriefIntro(
     return { success: false, error: 'Failed to save brief intro' }
   }
 }
-
-/**
- * Delete the brief intro record
- */
-export async function deleteStudentBriefIntro(
-  introId: string,
-  studentId: string
-): Promise<ActionResult> {
-  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase
-      .from('student_brief_intro')
-      .delete()
-      .eq('id', introId)
-
-    if (error) {
-      console.error('Error deleting brief intro:', error)
-      return { success: false, error: error.message }
-    }
-
-    revalidatePath(`/students/${studentId}`)
-    return { success: true }
-  } catch (err) {
-    console.error('Error in deleteStudentBriefIntro:', err)
-    return { success: false, error: 'Failed to delete brief intro' }
-  }
-}

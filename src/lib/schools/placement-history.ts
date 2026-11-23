@@ -77,7 +77,7 @@ export function toPlacementRows(counts: PlacementYearCounts[]): { rows: Placemen
 }
 
 /** Key of a year in the select: the start year, 'none' for no entry year, 'all' for every year. */
-export function yearKey(start: number | null): string {
+function yearKey(start: number | null): string {
   return start === null ? 'none' : String(start)
 }
 

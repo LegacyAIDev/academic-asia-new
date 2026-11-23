@@ -18,6 +18,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Not the app: agent tooling, the client's source material, and the
+    // one-off scripts that imported the old system's data.
+    ".claude/**",
+    "requirements/**",
+    "data/**",
+    "plans/**",
+    "scripts/legacy-migration/**",
   ]),
 ]);
 

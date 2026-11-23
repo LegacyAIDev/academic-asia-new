@@ -18,9 +18,3 @@ export function hasMinLevel(userLevel: number | null | undefined, requiredLevel:
   if (userLevel === null || userLevel === undefined) return false
   return userLevel <= requiredLevel
 }
-
-/** Extract admin_level from JWT claims (set by custom_access_token_hook) */
-export function getAdminLevel(session: { user?: { app_metadata?: Record<string, unknown> } } | null): number {
-  const level = session?.user?.app_metadata?.admin_level
-  return typeof level === 'number' ? level : ADMIN_LEVELS.BASIC
-}

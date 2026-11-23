@@ -1,175 +1,141 @@
-# Academic Asia — Student Management System
+# Academic Asia CRM
 
-A comprehensive student recruitment and school application management platform for an international education-recruitment agency. It manages students, partner schools, staff, and the full lifecycle of recruitment events (expos, interviews, auditions, group entrance exams, seminars, briefings, assessments, and scholarship events).
+Student recruitment and school placement system for Academic Asia (Hong Kong). It manages students and their families, partner schools, applications, entrance exams, the room and exam scheduler, events, staff and their access levels.
 
-This project is a full rebuild of a legacy system, migrating existing data from CSV exports into a modern Next.js + Supabase stack.
+It replaced a legacy system; the old data was imported from CSV exports (see [Legacy data](#legacy-data)).
 
----
-
-## Tech Stack
+## Stack
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 16.0.10 (App Router), React 19 |
+| Framework | Next.js 16 (App Router, server components and actions), React 19 |
 | Language | TypeScript 5 |
-| Database / Auth | Supabase (Postgres + Auth + SSR sessions) |
-| Styling | Tailwind CSS v4, shadcn/ui (53 Radix-based primitives) |
-| Forms | react-hook-form + zod + @hookform/resolvers |
-| Calendar | FullCalendar v7 (Premium resource views) + @dnd-kit/core for the event scheduler |
-| Charts | recharts |
-| Toasts | sonner |
+| Database and auth | Supabase (Postgres, Auth, Storage) via `@supabase/ssr` |
+| UI | Tailwind CSS v4, shadcn/ui on Radix, lucide icons, sonner toasts |
+| Forms | react-hook-form + zod (scheduler), server actions elsewhere |
+| Calendar | FullCalendar v7 Premium (scheduler), @dnd-kit (event scheduler) |
+| Rich text | Tiptap |
+| Tests | Vitest (unit), Puppeteer (browser, `e2e/`) |
+| Hosting | Vercel, region `dub1` (next to the Supabase project in eu-west-1) |
 
----
+## Getting started
 
-## Quick Start
-
-### 1. Prerequisites
-
-- Node.js 20+
-- Supabase CLI (`npm i -g supabase`)
-- A linked Supabase project
-
-### 2. Environment Variables
-
-Copy `.env.local.example` to `.env.local` and fill in:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
-
-# NOTE: The server client reads NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-# (the newer Supabase publishable-key name), NOT NEXT_PUBLIC_SUPABASE_ANON_KEY.
-# Make sure this variable is set — the anon key alias alone will not work.
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=<your-publishable-key>
-
-# Service role key — server-only, never expose to browser
-SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
-
-# FullCalendar Premium license for the Scheduler module.
-# Leave empty to run on the evaluation key during development.
-NEXT_PUBLIC_FULLCALENDAR_LICENSE_KEY=<your-fullcalendar-license-key>
-```
-
-### 3. Install & Run
+Prerequisites: Node.js 20+, npm, and for the browser tests Docker, the Supabase CLI and `psql`.
 
 ```bash
-npm install
-
-# Push all migrations to your linked Supabase project
-npm run db:push
-
-# Regenerate TypeScript types from the database schema
-npm run db:types
-
-# Start the dev server
-npm run dev
+cp .env.example .env.local   # fill in from Supabase: Project Settings -> API Keys
+npm ci
+npm run dev                  # http://localhost:3000, redirects to /login
 ```
 
-Open [http://localhost:3000](http://localhost:3000). You will be redirected to `/login` if not authenticated.
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Browser key |
+| `SUPABASE_SECRET_KEY` | Server-only key (admin actions, cached lists, scripts). `SUPABASE_SERVICE_ROLE_KEY` also works |
+| `NEXT_PUBLIC_FULLCALENDAR_LICENSE_KEY` | Scheduler licence; empty uses the evaluation key |
 
-### 4. Useful Scripts
+## Scripts
 
 ```bash
-npm run build          # Production build
-npm run type-check     # TypeScript type check (no emit)
-npm run lint           # ESLint
-npm run db:reset       # Reset linked DB to migration baseline (destructive)
+npm run build              # production build
+npm run type-check         # tsc --noEmit
+npm run lint               # eslint
+npm test                   # unit tests (vitest)
+npm run check:permissions  # every page and action guarded by a permission
+npm run db:types           # regenerate src/types/database.ts from the linked project
+npm run e2e:setup          # local Supabase stack for the browser tests (Docker)
+npm run seed:test-env      # sample logins and students on the test project
 ```
 
----
+### Browser tests
 
-## Project Structure
+They run against a local Supabase stack, never a hosted database:
+
+```bash
+npm run e2e:setup && source /tmp/aa-localdb/env.sh
+npm run build && npx next start -p 3100
+node e2e/students-list.e2e.mjs          # any e2e/*.e2e.mjs, or e2e/app-sweep.mjs
+```
+
+`email-filing` and `activity-log` also need real mail files (`offer.eml`, `sent.msg`) in `/tmp/aa-localdb/fixtures`.
+
+## Database changes
+
+Migrations live in `supabase/migrations` and must be safe to run more than once (the local setup replays them all). The live project's migration history has older drift, so do not run a blanket `supabase db push`: apply the new files with `psql` in one transaction, record their versions in `supabase_migrations.schema_migrations`, and back up the affected tables first. Apply them to the test project too.
+
+## Environments
+
+| | App | Database |
+|---|---|---|
+| Live | Vercel project `academic-asia-new` | Supabase `sotfycrfhwanjbcemrai` |
+| Test (for the client) | Vercel project `academic-asia-test`, https://academic-asia-test.vercel.app | Supabase `xzgqcummphcxpqoitgso`: schema and reference data, sample students, no personal data |
+
+Both deploy from `main`.
+
+## Project layout
 
 ```
 src/
-├── app/
-│   ├── (auth)/              # Login, forgot-password, reset-password
-│   ├── (dashboard)/         # All protected app routes
-│   │   ├── students/        # Student list, detail, new, edit
-│   │   ├── schools/         # School list, detail, new, edit
-│   │   ├── staff/           # Staff list, detail, new, edit
-│   │   ├── events/[type]/   # Type-parameterized event pages + event scheduler
-│   │   ├── exams/           # Exam desk (day view, attendance) + full exam list
-│   │   └── scheduler/       # Rooms, bookings, exam scheduling (FullCalendar v7)
-│   │       ├── rooms/       # Rooms + locations admin
-│   │       └── bookings/[id]/  # Booking detail route
-│   └── auth/callback/       # Supabase OAuth/email callback route
-├── components/
-│   ├── ui/                  # 53 shadcn/ui primitives
-│   └── layout/              # Sidebar, Header
-├── lib/
-│   ├── supabase/
-│   │   ├── client.ts        # Browser Supabase client (anon key)
-│   │   ├── server.ts        # Server component client (cookie-based SSR)
-│   │   ├── admin.ts         # Service role client — server-only
-│   │   ├── middleware.ts    # Session refresh via updateSession()
-│   │   ├── auth.ts          # getCurrentUser() — profile + admin_level
-│   │   ├── actions/         # ~30 'use server' mutation files (one per domain)
-│   │   └── queries/         # ~35 read/query files (one per domain)
-│   ├── auth-utils.ts        # RBAC constants + hasMinLevel()
-│   └── utils.ts             # cn() class merge helper
-├── hooks/
-│   └── use-mobile.ts
-└── types/
-    ├── database.ts           # Supabase-generated types
-    └── database.types.ts     # Extended/aliased types
-supabase/
-├── migrations/              # 84 SQL migrations (001–078 + timestamped, incl. Scheduler)
-└── config.toml
-scripts/                     # 34 one-off TypeScript data migration scripts
-data/                        # Source CSVs + migration artifacts
-requirements/                # Legacy spec docs and DB exports
+  app/
+    (auth)/            login, password reset
+    (dashboard)/       the signed-in app: students, schools, scheduler, exams,
+                       events, staff, tasks, settings
+    api/               PDF and spreadsheet exports, cached lists
+    register/          families' one-use online registration form
+  components/
+    ui/                shadcn primitives (plus link.tsx: hover-only prefetch)
+    layout/            app shell, sidebar, header
+    features/          shared record features: attachments, notes, activity, emails
+    scheduler/         booking forms and calendar pieces
+  lib/
+    supabase/          clients (server, browser, admin), auth, actions/, queries/
+    permissions/       modules, access levels, guards
+    <domain>/          pure helpers per area (students, schools, exams, scheduler...)
+  proxy.ts             session refresh and sign-in redirect (Next 16 proxy)
+  types/database.ts    generated Supabase types
+supabase/migrations/   SQL migrations
+e2e/                   browser tests and the local database setup
+scripts/               test-environment seed, permission coverage check
+scripts/legacy-migration/  one-off import of the old system's data
+docs/                  architecture, standards, deployment, roadmap
 ```
 
----
+## Access control
 
-## Authentication & Access Control
-
-All routes except `/login`, `/forgot-password`, `/reset-password`, and `/auth/callback` are protected by Next.js middleware. Sessions are managed via `@supabase/ssr` cookie-based session refresh.
-
-RBAC uses numeric admin levels (lower = more privileged):
+Every page and server action checks a permission module (`src/lib/permissions`): access per module is none, read or write, set per access level in Settings and overridable per person. Levels are numeric, lower is more senior:
 
 | Level | Role |
 |---|---|
-| 0 | SUPER_ADMIN |
-| 3 | MANAGER |
-| 4 | SENIOR_STAFF |
-| 6 | STAFF |
-| 7 | JUNIOR_STAFF |
-| 8 | BASIC |
+| 0 | Super admin |
+| 3 | Manager |
+| 4 | Senior staff |
+| 6 | Staff |
+| 7 | Junior staff |
+| 8 | Basic |
 
-The `admin_level` is injected into JWT `app_metadata` via a Postgres `custom_access_token_hook` (migration `065_custom_access_token_hook.sql`).
+Row-level security is on but mostly permissive (any signed-in user may read), so the app's permission checks are what restrict access. Exam paper files are the sensitive case; see `docs/system-architecture.md`.
 
----
+## Performance notes
+
+- Links prefetch on hover, not when they appear (`src/components/ui/link.tsx`); every page is rendered per request, so on-screen prefetch meant a server render per visible link.
+- Reference lists are cached on the server (`src/lib/supabase/queries/cached-lists.ts`) and expired by the actions that edit them.
+- The browser reuses a page for 30 seconds (`staleTimes` in `next.config.ts`).
+- Slow counts stream in behind `<Suspense>` instead of holding up the page.
+
+## Legacy data
+
+`scripts/legacy-migration/` holds the numbered scripts that imported the old system's CSV exports (run with `tsx`, in number order, from the repo root). They are kept for reference and for re-running a single import; `remigrate.sh` there runs the first batch.
 
 ## Documentation
 
-| Document | Description |
+| Document | |
 |---|---|
-| [docs/project-overview-pdr.md](docs/project-overview-pdr.md) | Product overview & requirements |
-| [docs/codebase-summary.md](docs/codebase-summary.md) | Codebase summary and file map |
-| [docs/code-standards.md](docs/code-standards.md) | Coding standards and conventions |
-| [docs/system-architecture.md](docs/system-architecture.md) | System architecture |
-| [docs/project-roadmap.md](docs/project-roadmap.md) | Development roadmap |
-| [docs/deployment-guide.md](docs/deployment-guide.md) | Deployment instructions |
-| [docs/design-guidelines.md](docs/design-guidelines.md) | UI/UX design guidelines |
-| [docs/scheduler-user-guide.md](docs/scheduler-user-guide.md) | Scheduler quick guide for staff |
-
----
-
-## Legacy Data Migration
-
-To re-run the full data migration pipeline from source CSVs:
-
-```bash
-./remigrate.sh
-```
-
-Individual migration scripts live in `scripts/` and are numbered in dependency order (e.g., `1_migrate-profiles.ts` through `34_migrate-aa-test.ts`). They are run with `tsx`.
-
----
-
-## Known Gotchas
-
-- **Env var naming**: The server client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`, not the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Both must be set if other tooling expects the old name.
-- **RLS**: Row-Level Security is enabled but its policies are permissive (any signed-in user), so access control is enforced at the application layer (middleware + RBAC). Exam paper files are the case where this matters: only the exam team may open them in the app, but the storage bucket is still readable by any signed-in user via the Supabase API. See `docs/system-architecture.md` §5.7.
-- **Settings/Reports pages**: Sidebar links for `/settings` and `/reports` exist but no pages are implemented yet.
+| [docs/project-overview-pdr.md](docs/project-overview-pdr.md) | Product overview and requirements |
+| [docs/codebase-summary.md](docs/codebase-summary.md) | File map |
+| [docs/code-standards.md](docs/code-standards.md) | Conventions |
+| [docs/system-architecture.md](docs/system-architecture.md) | Architecture |
+| [docs/deployment-guide.md](docs/deployment-guide.md) | Deployment |
+| [docs/project-roadmap.md](docs/project-roadmap.md) | Roadmap and change log |
+| [docs/design-guidelines.md](docs/design-guidelines.md) | UI guidelines |
+| [docs/scheduler-user-guide.md](docs/scheduler-user-guide.md) | Scheduler guide for staff |

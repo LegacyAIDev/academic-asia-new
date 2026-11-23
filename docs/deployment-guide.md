@@ -22,11 +22,11 @@ Create `.env.local` at the project root. **Never commit this file.**
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 
 # IMPORTANT: The server Supabase client (src/lib/supabase/server.ts) reads
-# NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY — this is the newer Supabase
+# NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY — this is the newer Supabase
 # publishable key naming convention. The old name NEXT_PUBLIC_SUPABASE_ANON_KEY
 # is NOT read by the server client and will be silently ignored.
 # Set this correctly or sessions will fail to initialize.
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=<your-publishable-anon-key>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<your-publishable-anon-key>
 
 # Service role key — NEVER expose to the browser or commit to git
 # Used only by src/lib/supabase/admin.ts (data migration scripts, admin operations)
@@ -157,8 +157,8 @@ Migration `20261021204752_present_schools.sql` was applied through the Supabase 
 Load the Hong Kong school list and link students whose typed school matches exactly. Always dry-run first:
 
 ```bash
-npx tsx scripts/43_import-present-schools.ts --dry-run
-npx tsx scripts/43_import-present-schools.ts
+npx tsx scripts/legacy-migration/43_import-present-schools.ts --dry-run
+npx tsx scripts/legacy-migration/43_import-present-schools.ts
 # optional: --file <path>  (default requirements/Hong_Kong_All_Primary_and_Secondary_Schools.txt)
 ```
 
@@ -198,7 +198,7 @@ npm run lint
 2. Import the repository in Vercel.
 3. Set the environment variables in Vercel project settings (Settings → Environment Variables):
    - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
 4. Deploy. Vercel automatically runs `npm run build`.
 
@@ -219,7 +219,7 @@ The app has three PDF exports (Selected School List, Brief Introduction, exam co
 
 ### Env var naming mismatch
 
-The server Supabase client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`. If you only set `NEXT_PUBLIC_SUPABASE_ANON_KEY` (the older convention), the server client will be initialized with `undefined` as the key. This causes all server-side Supabase calls to fail silently. Double-check both variable names are set in your deployment environment.
+The server Supabase client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. If you only set `NEXT_PUBLIC_SUPABASE_ANON_KEY` (the older convention), the server client will be initialized with `undefined` as the key. This causes all server-side Supabase calls to fail silently. Double-check both variable names are set in your deployment environment.
 
 ### custom_access_token_hook not firing
 
@@ -228,7 +228,7 @@ If RBAC checks always return BASIC level, the custom access token hook may not b
 ### Session cookie issues in production
 
 If users are getting unexpectedly logged out, check that:
-- The middleware is running on all protected routes (verify `matcher` in `src/middleware.ts`).
+- The proxy is running on all protected routes (verify `matcher` in `src/proxy.ts`).
 - The Supabase project URL matches the deployment URL (no mixed http/https).
 - Cookies are not being blocked by a CDN or proxy stripping `Set-Cookie` headers.
 
@@ -243,5 +243,5 @@ Data migration scripts require `SUPABASE_SERVICE_ROLE_KEY` and a `dotenv` setup.
 | Variable | Required | Scope | Purpose |
 |---|---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Public (browser + server) | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` | Yes | Public (browser + server) | Anon/publishable key for user-context requests |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Yes | Public (browser + server) | Anon/publishable key for user-context requests |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes (migration only) | Server-only | Service role key for admin operations |

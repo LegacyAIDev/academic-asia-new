@@ -23,7 +23,7 @@ export function parseStaffFilters(raw: { search?: string; level?: string; depart
  * Every word typed must appear in the name or email, so "sam staff" finds Sam
  * Staff and "sam aa.test" finds them by email.
  */
-export function matchesSearch(person: FilterableStaff, search: string): boolean {
+function matchesSearch(person: FilterableStaff, search: string): boolean {
   const words = search.toLowerCase().split(/\s+/).filter(Boolean)
   if (words.length === 0) return true
   const haystack = [person.first_name, person.surname, person.email_1].filter(Boolean).join(' ').toLowerCase()

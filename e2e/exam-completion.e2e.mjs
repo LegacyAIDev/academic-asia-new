@@ -5,7 +5,7 @@
  * Needs psql on PATH and E2E_DB_URL for the local test database.
  */
 import { execFileSync } from 'node:child_process'
-import { assert, click, hkDay, launch, open, seeText, signIn, step, summary } from './lib/harness.mjs'
+import { assert, click, launch, open, seeText, signIn, step, summary } from './lib/harness.mjs'
 import { newExam, openBookingFromCalendar, saveBooking, bookingDay } from './lib/booking-form.mjs'
 
 const DB = process.env.E2E_DB_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'

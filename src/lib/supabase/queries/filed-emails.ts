@@ -34,22 +34,6 @@ export async function getFiledEmails(target: EmailListTarget): Promise<FiledEmai
   return (data as unknown as FiledEmailRow[]).map(toFiledEmailSummary)
 }
 
-/** Live (not archived) emails on a record, for the count on its tab (EF-14); 0 when it cannot be read. */
-export async function getFiledEmailCount(target: EmailListTarget): Promise<number> {
-  const [key, id] = Object.entries(target)[0] as [keyof typeof COLUMN, string]
-  const supabase = createClient(await cookies())
-  const { count, error } = await supabase
-    .from('filed_emails')
-    .select('id', { count: 'exact', head: true })
-    .eq(COLUMN[key], id)
-    .is('archived_at', null)
-  if (error) {
-    console.error('Error counting filed emails:', error.message)
-    return 0
-  }
-  return count ?? 0
-}
-
 /**
  * Ids of the record's emails whose full text contains every word, for search
  * beyond the preview the list carries (EF-16). LIKE wildcards are matched literally.
@@ -76,7 +60,7 @@ type ApplicationOptionRow = {
   school: { name: string | null } | null
 }
 
-export function toApplicationOption(row: ApplicationOptionRow): ApplicationOption {
+function toApplicationOption(row: ApplicationOptionRow): ApplicationOption {
   return {
     id: row.id,
     label: applicationLabel(row),

@@ -9,7 +9,7 @@ export type SchoolsListParams = {
   countryId?: number | null
   genderTypeId?: number | null
   phaseId?: number | null
-  /** Cleaned county value — see scripts/40_normalise-school-county.ts. */
+  /** Cleaned county value — see scripts/legacy-migration/40_normalise-school-county.ts. */
   county?: string | null
   religiousAffiliationId?: number | null
   institutionTypeId?: number | null
@@ -244,39 +244,6 @@ export async function getSchoolById(id: string): Promise<SchoolWithJoins | null>
   }
 
   return data as unknown as SchoolWithJoins
-}
-
-/**
- * Get school stats for dashboard
- */
-export async function getSchoolStats() {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { data: schools, error } = await supabase
-    .from('schools')
-    .select('status, accepts_applications, country_id, countries!schools_country_id_fkey(label)')
-
-  if (error) {
-    console.error('Error fetching school stats:', error)
-    return {
-      total: 0,
-      accepting: 0,
-      byCountry: {}
-    }
-  }
-
-  const total = schools?.length ?? 0
-  const accepting = schools?.filter(s => s.accepts_applications).length ?? 0
-  const byCountry: Record<string, number> = {}
-
-  type SchoolRow = { status: string | null; accepts_applications: boolean | null; country_id: number | null; countries: { label: string } | null }
-  ;(schools as unknown as SchoolRow[] | null)?.forEach((s) => {
-    const label = s.countries?.label ?? 'Unknown'
-    byCountry[label] = (byCountry[label] ?? 0) + 1
-  })
-
-  return { total, accepting, byCountry }
 }
 
 /**

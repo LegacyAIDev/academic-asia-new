@@ -425,39 +425,6 @@ export async function getSiblingParents(siblingIds: string[]): Promise<SharedPar
 }
 
 /**
- * Get student stats for dashboard
- */
-export async function getStudentStats() {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  // Get counts by status
-  const { data: statusCounts, error } = await supabase
-    .from('students')
-    .select('status_id, student_statuses!students_status_id_fkey(label)')
-
-  if (error) {
-    console.error('Error fetching student stats:', error)
-    return {
-      total: 0,
-      byStatus: {}
-    }
-  }
-
-  // Count total and by status
-  const total = statusCounts?.length ?? 0
-  const byStatus: Record<string, number> = {}
-
-  type StatusCountRow = { status_id: number | null; student_statuses: { label: string } | null }
-  ;(statusCounts as unknown as StatusCountRow[] | null)?.forEach((s) => {
-    const label = s.student_statuses?.label ?? 'Unknown'
-    byStatus[label] = (byStatus[label] ?? 0) + 1
-  })
-
-  return { total, byStatus }
-}
-
-/**
  * Fetch all reference data for forms
  */
 export const getReferenceData = cachedList('student-reference', [LIST_TAGS.lookups, LIST_TAGS.events, LIST_TAGS.staff], async supabase => {

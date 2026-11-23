@@ -54,37 +54,6 @@ export async function createApplicationDeposit(
   }
 }
 
-/** Update an existing deposit */
-export async function updateApplicationDeposit(
-  depositId: string,
-  studentId: string,
-  input: Partial<Omit<CreateDepositInput, 'application_id'>>
-): Promise<ActionResult> {
-  const denied = await assertAccess(MODULES.STUDENTS, ACCESS.WRITE)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase
-      .from('student_application_deposits')
-      .update(input as never)
-      .eq('id', depositId)
-
-    if (error) {
-      console.error('Error updating deposit:', error)
-      return { success: false, error: error.message }
-    }
-
-    revalidatePath(`/students/${studentId}`)
-    return { success: true }
-  } catch (err) {
-    console.error('Error in updateApplicationDeposit:', err)
-    return { success: false, error: 'Failed to update deposit' }
-  }
-}
-
 /** Delete a deposit */
 export async function deleteApplicationDeposit(
   depositId: string,

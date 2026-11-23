@@ -215,33 +215,6 @@ export type CreateEventRepresentativeInput = {
   remarks?: string | null
 }
 
-export async function addEventRepresentative(input: CreateEventRepresentativeInput): Promise<ActionResult<{ id: string }>> {
-  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { data, error } = await supabase
-      .from('event_representatives')
-      .insert(input)
-      .select('id')
-      .single()
-
-    if (error) {
-      console.error('Error adding event representative:', error)
-      return { success: false, error: error.message }
-    }
-
-    revalidatePath(`/events`)
-    return { success: true, data: { id: data.id } }
-  } catch (err) {
-    console.error('Error in addEventRepresentative:', err)
-    return { success: false, error: 'Failed to add representative' }
-  }
-}
-
 // Event Schedules CRUD
 
 export type CreateEventScheduleInput = {
@@ -251,31 +224,4 @@ export type CreateEventScheduleInput = {
   timeslot?: number | null
   representative_name?: string | null
   remarks?: string | null
-}
-
-export async function addEventSchedule(input: CreateEventScheduleInput): Promise<ActionResult<{ id: string }>> {
-  const denied = await assertAccess(MODULES.EVENTS, ACCESS.WRITE)
-  if (denied) return denied
-
-  try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { data, error } = await supabase
-      .from('event_schedules')
-      .insert(input)
-      .select('id')
-      .single()
-
-    if (error) {
-      console.error('Error adding event schedule:', error)
-      return { success: false, error: error.message }
-    }
-
-    revalidatePath(`/events`)
-    return { success: true, data: { id: data.id } }
-  } catch (err) {
-    console.error('Error in addEventSchedule:', err)
-    return { success: false, error: 'Failed to add schedule' }
-  }
 }

@@ -58,7 +58,7 @@ export type ActionResult<T = void> = {
 /**
  * Keep county_normalised in step with whatever county was typed, so a school
  * saved today appears in the list filter without waiting for someone to rerun
- * scripts/40_normalise-school-county.ts.
+ * scripts/legacy-migration/40_normalise-school-county.ts.
  *
  * Only applied when `county` is part of the write — a partial update that does
  * not touch county must not clear the normalised value.

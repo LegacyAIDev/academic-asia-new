@@ -10,7 +10,7 @@ export type EventTypeWithCategory = {
 }
 
 /** Fetch event categories for dropdown */
-export async function getEventCategories(): Promise<EventCategory[]> {
+async function getEventCategories(): Promise<EventCategory[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const { data, error } = await supabase
@@ -22,7 +22,7 @@ export async function getEventCategories(): Promise<EventCategory[]> {
 }
 
 /** Fetch delivery modes for dropdown */
-export async function getDeliveryModes(): Promise<DeliveryMode[]> {
+async function getDeliveryModes(): Promise<DeliveryMode[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const { data, error } = await supabase
@@ -34,7 +34,7 @@ export async function getDeliveryModes(): Promise<DeliveryMode[]> {
 }
 
 /** Fetch event visibilities for dropdown */
-export async function getEventVisibilities(): Promise<EventVisibility[]> {
+async function getEventVisibilities(): Promise<EventVisibility[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const { data, error } = await supabase
@@ -46,7 +46,7 @@ export async function getEventVisibilities(): Promise<EventVisibility[]> {
 }
 
 /** Fetch scheduling modes for dropdown */
-export async function getSchedulingModes(): Promise<SchedulingMode[]> {
+async function getSchedulingModes(): Promise<SchedulingMode[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const { data, error } = await supabase
@@ -58,7 +58,7 @@ export async function getSchedulingModes(): Promise<SchedulingMode[]> {
 }
 
 /** Fetch event types with category_id for filtered dropdowns */
-export async function getEventTypesWithCategory(): Promise<EventTypeWithCategory[]> {
+async function getEventTypesWithCategory(): Promise<EventTypeWithCategory[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const { data, error } = await supabase
@@ -70,7 +70,7 @@ export async function getEventTypesWithCategory(): Promise<EventTypeWithCategory
 }
 
 /** Lightweight school list for dropdowns */
-export async function getSchoolsDropdown(): Promise<{ id: string; name: string }[]> {
+async function getSchoolsDropdown(): Promise<{ id: string; name: string }[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const { data, error } = await supabase
@@ -82,7 +82,7 @@ export async function getSchoolsDropdown(): Promise<{ id: string; name: string }
 }
 
 /** Parent event dropdown: only events from last 3 months and future */
-export async function getEventsForParentDropdown(excludeId?: string): Promise<{ id: string; name: string }[]> {
+async function getEventsForParentDropdown(excludeId?: string): Promise<{ id: string; name: string }[]> {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const threeMonthsAgo = new Date()

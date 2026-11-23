@@ -60,21 +60,3 @@ export async function getCourseReferenceData() {
 
   return { courses: (data ?? []) as CourseItem[] }
 }
-
-/** Count courses for a school */
-export async function getSchoolCourseCount(schoolId: string): Promise<number> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { count, error } = await supabase
-    .from('school_courses')
-    .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
-
-  if (error) {
-    console.error('Error fetching course count:', error)
-    return 0
-  }
-
-  return count ?? 0
-}

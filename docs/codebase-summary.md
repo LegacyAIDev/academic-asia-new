@@ -508,7 +508,7 @@ Source CSVs (`data/`): `AA_Student.csv`, `AA_School.csv`, `AA_Event*.csv`, and o
 
 | Package | Purpose |
 |---|---|
-| `next` 16.0.10 | App framework |
+| `next` 16.4 | App framework |
 | `react` 19.2.1 | UI |
 | `@supabase/supabase-js` ^2.47 | Supabase client |
 | `@supabase/ssr` ^0.5 | Cookie-based SSR sessions |

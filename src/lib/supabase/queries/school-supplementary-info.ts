@@ -116,40 +116,6 @@ export async function getSchoolSupplementaryInfo(params: SchoolSupInfoListParams
 }
 
 /**
- * Get a single supplementary info by ID
- */
-export async function getSchoolSupInfoById(id: string): Promise<SchoolSupplementaryInfo | null> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { data, error } = await supabase
-    .from('school_supplementary_info')
-    .select(`
-      id,
-      school_id,
-      legacy_info_type,
-      category_id,
-      category:school_sup_info_categories!school_supplementary_info_category_id_fkey(id, code, label),
-      info,
-      school_year,
-      remarks,
-      assigned_to,
-      created_at,
-      updated_at,
-      assigned_profile:profiles!school_supplementary_info_assigned_to_fkey(id, first_name, surname)
-    `)
-    .eq('id', id)
-    .single()
-
-  if (error) {
-    console.error('Error fetching supplementary info:', error)
-    return null
-  }
-
-  return data as unknown as SchoolSupplementaryInfo
-}
-
-/**
  * Get all categories for the dropdown
  */
 export async function getSupInfoCategories(): Promise<SupInfoCategory[]> {
@@ -168,30 +134,3 @@ export async function getSupInfoCategories(): Promise<SupInfoCategory[]> {
 
   return (data ?? []) as SupInfoCategory[]
 }
-
-/**
- * Get distinct school years for filtering
- */
-export async function getDistinctSchoolYears(schoolId?: string): Promise<string[]> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  let query = supabase
-    .from('school_supplementary_info')
-    .select('school_year')
-
-  if (schoolId) {
-    query = query.eq('school_id', schoolId)
-  }
-
-  const { data, error } = await query
-
-  if (error) {
-    console.error('Error fetching school years:', error)
-    return []
-  }
-
-  const uniqueYears = [...new Set((data ?? []).map(d => d.school_year))].filter(Boolean).sort().reverse()
-  return uniqueYears as string[]
-}
-

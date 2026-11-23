@@ -65,21 +65,3 @@ export async function getBankReferenceData() {
     currencies: (currencies.data ?? []) as Currency[],
   }
 }
-
-/** Count bank details for a school */
-export async function getSchoolBankDetailCount(schoolId: string): Promise<number> {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const { count, error } = await supabase
-    .from('school_bank_details')
-    .select('*', { count: 'exact', head: true })
-    .eq('school_id', schoolId)
-
-  if (error) {
-    console.error('Error fetching bank detail count:', error)
-    return 0
-  }
-
-  return count ?? 0
-}
