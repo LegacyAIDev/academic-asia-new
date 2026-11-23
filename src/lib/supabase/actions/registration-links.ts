@@ -23,12 +23,12 @@ export async function createRegistrationLink(note: string): Promise<ActionResult
     const token = newRegistrationToken()
     const expiresAt = new Date(Date.now() + LINK_DAYS * 24 * 3600 * 1000).toISOString()
     const supabase = createClient(await cookies())
-    const { error } = await supabase.from('registration_links' as never).insert({
+    const { error } = await supabase.from('registration_links').insert({
       token_hash: hashRegistrationToken(token),
       note: note.trim().slice(0, 120) || null,
       created_by: user.id,
       expires_at: expiresAt,
-    } as never)
+    })
     if (error) {
       console.error('Error creating registration link:', error)
       return { success: false, error: 'Could not create the link. Please try again.' }

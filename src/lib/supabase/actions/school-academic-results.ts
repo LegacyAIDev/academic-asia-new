@@ -37,7 +37,7 @@ export async function createSchoolAcademicResult(
 
     const { data, error } = await supabase
       .from('school_academic_results')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -71,7 +71,7 @@ export async function updateSchoolAcademicResult(
 
     const { error } = await supabase
       .from('school_academic_results')
-      .update(input as never)
+      .update(input)
       .eq('id', resultId)
 
     if (error) {

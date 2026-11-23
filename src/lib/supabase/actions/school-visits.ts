@@ -42,7 +42,7 @@ export async function createSchoolVisit(
 
     const { data, error } = await supabase
       .from('school_visits')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -74,7 +74,7 @@ export async function updateSchoolVisit(
 
     const { error } = await supabase
       .from('school_visits')
-      .update(input as never)
+      .update(input)
       .eq('id', visitId)
 
     if (error) {

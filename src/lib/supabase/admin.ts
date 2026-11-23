@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
 
 /**
  * Server-only Supabase client using the secret (service role) key.
@@ -19,7 +20,7 @@ export function createAdminClient() {
     throw new Error('Missing SUPABASE_SECRET_KEY (or SUPABASE_SERVICE_ROLE_KEY) env var')
   }
 
-  return createClient(url, secretKey, {
+  return createClient<Database>(url, secretKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   })
 }

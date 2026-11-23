@@ -54,7 +54,7 @@ export async function createStudentResume(
 
     const { data, error } = await supabase
       .from('student_resume')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -88,7 +88,7 @@ export async function updateStudentResume(
 
     const { error } = await supabase
       .from('student_resume')
-      .update(input as never)
+      .update(input)
       .eq('id', resumeId)
 
     if (error) {

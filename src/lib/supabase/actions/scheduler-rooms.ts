@@ -36,7 +36,7 @@ export async function createRoom(input: CreateRoomInput): Promise<ActionResult<{
 
     const { data, error } = await supabase
       .from('scheduler_rooms')
-      .insert(input as never)
+      .insert(parsed.data)
       .select('id')
       .single()
 
@@ -65,7 +65,7 @@ export async function updateRoom(id: string, input: UpdateRoomInput): Promise<Ac
 
     const { error } = await supabase
       .from('scheduler_rooms')
-      .update(input as never)
+      .update(parsed.data)
       .eq('id', id)
 
     if (error) {
@@ -91,7 +91,7 @@ export async function setRoomActive(id: string, active: boolean): Promise<Action
 
     const { error } = await supabase
       .from('scheduler_rooms')
-      .update({ is_active: active } as never)
+      .update({ is_active: active })
       .eq('id', id)
 
     if (error) {

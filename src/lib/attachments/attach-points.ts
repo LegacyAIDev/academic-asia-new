@@ -113,7 +113,7 @@ export type AttachPointKey = keyof typeof ATTACH_POINTS
 
 export const ATTACH_POINT_KEYS = Object.keys(ATTACH_POINTS) as AttachPointKey[]
 
-type OwnerConfig = {
+export type OwnerConfig = {
   table: 'student_documents' | 'school_documents'
   bucket: 'student-documents' | 'school-documents'
   ownerColumn: 'student_id' | 'school_id'

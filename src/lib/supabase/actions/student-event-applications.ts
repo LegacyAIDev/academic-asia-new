@@ -48,7 +48,7 @@ export async function createStudentEventApplication(
 
     const { data, error } = await supabase
       .from('student_event_applications')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -82,7 +82,7 @@ export async function updateStudentEventApplication(
 
     const { error } = await supabase
       .from('student_event_applications')
-      .update(input as never)
+      .update(input)
       .eq('id', applicationId)
 
     if (error) {

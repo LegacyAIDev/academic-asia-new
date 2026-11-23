@@ -50,7 +50,7 @@ export async function createStudentExamResult(
 
     const { data, error } = await supabase
       .from('student_exam_results')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -84,7 +84,7 @@ export async function updateStudentExamResult(
 
     const { error } = await supabase
       .from('student_exam_results')
-      .update(input as never)
+      .update(input)
       .eq('id', resultId)
 
     if (error) {

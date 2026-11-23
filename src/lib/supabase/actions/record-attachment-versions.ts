@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { insertDocument } from '@/lib/supabase/document-rows'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { buildDocumentPath } from '@/lib/supabase/storage-paths'
@@ -65,7 +66,8 @@ export async function replaceAttachmentFile(
       .select('id, attachable_id, category_id, title, file_path, superseded_by')
       .eq('id', attachmentId)
       .eq('attachable_type', ATTACH_POINTS[point].attachableType)
-      .eq(cfg.ownerColumn, ownerId)
+      // student_documents or school_documents: the owner column depends on the table.
+      .filter(cfg.ownerColumn, 'eq', ownerId)
       .maybeSingle()
     const row = current as CurrentRow | null
     if (!row || !row.file_path) return NOT_FOUND
@@ -77,10 +79,7 @@ export async function replaceAttachmentFile(
     const { error: uploadError } = await supabase.storage.from(cfg.bucket).upload(filePath, file, { contentType: file.type, upsert: false })
     if (uploadError) return { success: false, error: 'Could not store the new version. Please try again.' }
 
-    const { data: inserted, error: insertError } = await supabase
-      .from(cfg.table)
-      .insert({
-        [cfg.ownerColumn]: ownerId,
+    const { data: inserted, error: insertError } = await insertDocument(supabase, cfg, ownerId, {
         category_id: row.category_id,
         attachable_type: ATTACH_POINTS[point].attachableType,
         attachable_id: row.attachable_id,
@@ -90,9 +89,7 @@ export async function replaceAttachmentFile(
         mime_type: file.type,
         title: row.title,
         uploaded_by: auth.user?.id ?? null,
-      } as never)
-      .select('id')
-      .single()
+    })
     if (insertError || !inserted) {
       await supabase.storage.from(cfg.bucket).remove([filePath])
       return { success: false, error: 'Could not save the new version. Please try again.' }
@@ -102,7 +99,7 @@ export async function replaceAttachmentFile(
     // Only replaces a row that is still current, so two people replacing at once cannot fork the history.
     const { data: marked, error: markError } = await supabase
       .from(cfg.table)
-      .update({ superseded_by: newId, superseded_at: new Date().toISOString() } as never)
+      .update({ superseded_by: newId, superseded_at: new Date().toISOString() })
       .eq('id', row.id)
       .is('superseded_by', null)
       .select('id')

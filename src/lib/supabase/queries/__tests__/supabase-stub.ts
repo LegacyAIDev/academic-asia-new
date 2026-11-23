@@ -6,7 +6,7 @@ export type StorageCall = { bucket: string; method: string; args: unknown[] }
 type Result = { data: unknown; error: unknown; count?: number | null }
 
 const CHAIN_METHODS = [
-  'select', 'eq', 'neq', 'gte', 'lte', 'in', 'or', 'order', 'limit',
+  'select', 'eq', 'filter', 'neq', 'gte', 'lte', 'in', 'or', 'order', 'limit',
   'like', 'overlaps', 'range', 'not', 'is', 'ilike',
   'insert', 'update', 'delete', 'single', 'maybeSingle',
 ]

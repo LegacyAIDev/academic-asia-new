@@ -24,8 +24,8 @@ export async function submitRegistration(token: string, raw: Partial<Registratio
   const now = new Date().toISOString()
   // Claim the link: only an unused, unexpired link matches, and only once.
   const { data: claimed, error: claimError } = await admin
-    .from('registration_links' as never)
-    .update({ used_at: now } as never)
+    .from('registration_links')
+    .update({ used_at: now })
     .eq('token_hash', hashRegistrationToken(token))
     .is('used_at', null)
     .gt('expires_at', now)
@@ -38,11 +38,11 @@ export async function submitRegistration(token: string, raw: Partial<Registratio
   if (!linkId) return { success: false, error: SPENT }
 
   // Gives the link back if the student cannot be saved, so the family can try again.
-  const release = () => admin.from('registration_links' as never).update({ used_at: null } as never).eq('id', linkId)
+  const release = () => admin.from('registration_links').update({ used_at: null }).eq('id', linkId)
 
   try {
     const { student, parents, notes } = checked.data
-    const code = await nextStudentCode(admin as never)
+    const code = await nextStudentCode(admin)
     // Online registrations start as enquiries, like every new case.
     const { data: statuses } = await admin.from('student_statuses').select('id, code').in('code', ['enquiry', 'new'])
     const statusRows = (statuses ?? []) as { id: number; code: string }[]
@@ -50,7 +50,7 @@ export async function submitRegistration(token: string, raw: Partial<Registratio
     const remarks = ['Registered online by the family.', notes ? `Family's notes: ${notes}` : null].filter(Boolean).join('\n')
     const { data: created, error: studentError } = await admin
       .from('students')
-      .insert({ ...student, student_code: code, status_id: statusId, remarks } as never)
+      .insert({ ...student, student_code: code, status_id: statusId, remarks })
       .select('id')
       .single()
     if (studentError || !created) {
@@ -69,15 +69,15 @@ export async function submitRegistration(token: string, raw: Partial<Registratio
         first_name: parent.first_name, surname: parent.surname, mobile: parent.mobile, email_1: parent.email_1,
         gender: parent.relationship === 'mother' ? 'F' : 'M',
         priority: i + 1,
-      })) as never)
+      })))
       // The student is saved; a parent row that failed is noted for staff rather than lost silently.
       if (parentError) {
         console.error('Error saving registered parents:', parentError)
-        await admin.from('students').update({ remarks: `${remarks}\nParents' details could not be saved; please ask the family again.` } as never).eq('id', studentId)
+        await admin.from('students').update({ remarks: `${remarks}\nParents' details could not be saved; please ask the family again.` }).eq('id', studentId)
       }
     }
 
-    await admin.from('registration_links' as never).update({ student_id: studentId } as never).eq('id', linkId)
+    await admin.from('registration_links').update({ student_id: studentId }).eq('id', linkId)
     return { success: true }
   } catch (err) {
     console.error('Error in submitRegistration:', err)

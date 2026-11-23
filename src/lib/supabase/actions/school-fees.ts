@@ -43,7 +43,7 @@ async function refreshCurrentFee(
 ) {
   const { error } = await supabase.rpc('refresh_school_current_fee', {
     target_school_id: schoolId,
-  } as never)
+  })
   if (error) console.error('Could not refresh cached current fee:', error.message)
 }
 
@@ -59,7 +59,7 @@ export async function createSchoolFee(
 
     const { data, error } = await supabase
       .from('school_fees')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -95,7 +95,7 @@ export async function updateSchoolFee(
 
     const { error } = await supabase
       .from('school_fees')
-      .update(input as never)
+      .update(input)
       .eq('id', feeId)
 
     if (error) {

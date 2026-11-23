@@ -34,7 +34,7 @@ export async function createSchoolNote(
 
     const { data, error } = await supabase
       .from('school_notes')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -68,7 +68,7 @@ export async function updateSchoolNote(
 
     const { error } = await supabase
       .from('school_notes')
-      .update(input as never)
+      .update(input)
       .eq('id', noteId)
 
     if (error) {

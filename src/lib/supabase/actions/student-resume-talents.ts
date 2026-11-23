@@ -52,7 +52,7 @@ export async function createStudentTalent(input: CreateTalentInput, formData?: F
 
     const { data, error } = await supabase
       .from('student_resume_talents')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 

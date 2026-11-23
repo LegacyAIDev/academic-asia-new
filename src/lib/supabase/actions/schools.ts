@@ -78,7 +78,7 @@ export async function createSchool(input: CreateSchoolInput): Promise<ActionResu
 
     const { data, error } = await supabase
       .from('schools')
-      .insert(withNormalisedCounty(input) as never)
+      .insert(withNormalisedCounty(input))
       .select('id')
       .single()
 
@@ -110,7 +110,7 @@ export async function updateSchool(id: string, input: Partial<CreateSchoolInput>
 
     const { error } = await supabase
       .from('schools')
-      .update(withNormalisedCounty(input) as never)
+      .update(withNormalisedCounty(input))
       .eq('id', id)
 
     if (error) {
@@ -196,7 +196,7 @@ export async function createSchoolSupInfo(input: CreateSupInfoInput): Promise<Ac
 
     const { data, error } = await supabase
       .from('school_supplementary_info')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -230,7 +230,7 @@ export async function updateSchoolSupInfo(
 
     const { error } = await supabase
       .from('school_supplementary_info')
-      .update(input as never)
+      .update(input)
       .eq('id', id)
 
     if (error) {

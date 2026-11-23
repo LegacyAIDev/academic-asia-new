@@ -57,7 +57,7 @@ export async function createStudentVisa(
 
     const { data, error } = await supabase
       .from('student_visas')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -91,7 +91,7 @@ export async function updateStudentVisa(
 
     const { error } = await supabase
       .from('student_visas')
-      .update(input as never)
+      .update(input)
       .eq('id', visaId)
 
     if (error) {

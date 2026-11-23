@@ -106,7 +106,7 @@ export async function createSchoolContact(
 
     const { data, error } = await supabase
       .from('school_contacts')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -138,7 +138,7 @@ export async function updateSchoolContact(
 
     const { error } = await supabase
       .from('school_contacts')
-      .update(input as never)
+      .update(input)
       .eq('id', contactId)
       // The contact must belong to the school the caller is working on.
       .eq('school_id', schoolId)

@@ -2059,6 +2059,54 @@ export type Database = {
           },
         ]
       }
+      registration_links: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          note: string | null
+          student_id: string | null
+          token_hash: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          note?: string | null
+          student_id?: string | null
+          token_hash: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          note?: string | null
+          student_id?: string | null
+          token_hash?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registration_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registration_links_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_types: {
         Row: {
           code: string
@@ -3377,7 +3425,7 @@ export type Database = {
           created_at: string | null
           id: string
           info: string | null
-          legacy_info_type: string
+          legacy_info_type: string | null
           legacy_last_update: string | null
           legacy_school_id: number | null
           remarks: string | null
@@ -3391,7 +3439,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           info?: string | null
-          legacy_info_type: string
+          legacy_info_type?: string | null
           legacy_last_update?: string | null
           legacy_school_id?: number | null
           remarks?: string | null
@@ -3405,7 +3453,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           info?: string | null
-          legacy_info_type?: string
+          legacy_info_type?: string | null
           legacy_last_update?: string | null
           legacy_school_id?: number | null
           remarks?: string | null

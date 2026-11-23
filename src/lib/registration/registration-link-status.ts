@@ -6,7 +6,7 @@ import { hashRegistrationToken, looksLikeToken } from './registration-form'
 export async function registrationLinkStatus(token: string): Promise<'open' | 'spent'> {
   if (!looksLikeToken(token)) return 'spent'
   const { data, error } = await createAdminClient()
-    .from('registration_links' as never)
+    .from('registration_links')
     .select('id')
     .eq('token_hash', hashRegistrationToken(token))
     .is('used_at', null)

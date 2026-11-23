@@ -84,7 +84,7 @@ export async function uploadSchoolDocuments(
           file_size: file.size,
           mime_type: file.type,
           title: items[i].title?.trim() || null,
-        } as never)
+        })
 
       if (insertError) {
         await supabase.storage.from(BUCKET).remove([filePath])
@@ -120,7 +120,7 @@ export async function renameSchoolDocument(
     }
     const { error } = await supabase
       .from('school_documents')
-      .update({ title: title.trim() || null } as never)
+      .update({ title: title.trim() || null })
       .eq('id', documentId)
     if (error) return { success: false, error: error.message }
     revalidatePath(`/schools/${schoolId}`)

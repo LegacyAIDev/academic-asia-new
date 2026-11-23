@@ -49,7 +49,7 @@ export async function createSchoolBankDetail(
 
     const { data, error } = await supabase
       .from('school_bank_details')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -81,7 +81,7 @@ export async function updateSchoolBankDetail(
 
     const { error } = await supabase
       .from('school_bank_details')
-      .update(input as never)
+      .update(input)
       .eq('id', detailId)
 
     if (error) {

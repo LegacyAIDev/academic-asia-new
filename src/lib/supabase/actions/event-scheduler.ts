@@ -263,7 +263,8 @@ export async function moveStudentSlot(scheduleId: string, eventId: string, input
     }
 
     // Validate no student overlap (exclude current entry)
-    const studentConflict = await hasStudentOverlap(
+    // A slot without a student cannot clash with another of that student's slots.
+    const studentConflict = current.student_id !== null && await hasStudentOverlap(
       supabase, eventId, current.student_id,
       input.schedule_date, input.start_time, input.end_time, scheduleId
     )

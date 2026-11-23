@@ -44,7 +44,7 @@ export async function createIndividualExam(
 
     const { error } = await supabase
       .from('student_individual_exams')
-      .insert(input as never)
+      .insert(input)
 
     if (error) {
       console.error('Error creating individual exam:', error)
@@ -99,7 +99,7 @@ export async function updateExamFields(
 
     const { error } = await supabase
       .from('student_individual_exams')
-      .update({ score: input.score, remarks: input.remarks, status_id } as never)
+      .update({ score: input.score, remarks: input.remarks, status_id })
       .eq('id', examId)
 
     if (error) return { success: false, error: error.message }

@@ -28,7 +28,7 @@ export async function createLocation(input: CreateLocationInput): Promise<Action
 
     const { data, error } = await supabase
       .from('scheduler_locations')
-      .insert(input as never)
+      .insert(parsed.data)
       .select('id')
       .single()
 
@@ -57,7 +57,7 @@ export async function updateLocation(id: string, input: UpdateLocationInput): Pr
 
     const { error } = await supabase
       .from('scheduler_locations')
-      .update(input as never)
+      .update(parsed.data)
       .eq('id', id)
 
     if (error) {
@@ -83,7 +83,7 @@ export async function setLocationActive(id: string, active: boolean): Promise<Ac
 
     const { error } = await supabase
       .from('scheduler_locations')
-      .update({ is_active: active } as never)
+      .update({ is_active: active })
       .eq('id', id)
 
     if (error) {

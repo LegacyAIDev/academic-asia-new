@@ -45,7 +45,7 @@ export async function upsertStudentResumeProfile(
       const { student_id: _, ...updateFields } = input
       const { error } = await supabase
         .from('student_resume_profile')
-        .update(updateFields as never)
+        .update(updateFields)
         .eq('id', existing.id)
       if (error) return { success: false, error: error.message }
       revalidatePath(`/students/${input.student_id}`)
@@ -54,7 +54,7 @@ export async function upsertStudentResumeProfile(
 
     const { data, error } = await supabase
       .from('student_resume_profile')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
     if (error) return { success: false, error: error.message }

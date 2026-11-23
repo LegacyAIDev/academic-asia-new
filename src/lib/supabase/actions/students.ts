@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import type { Tables } from '@/types/database'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import type { StudentInsert, StudentUpdate } from '@/types/database.types'
@@ -99,7 +100,7 @@ export async function createStudent(
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const newCode = await nextStudentCode(supabase as never)
+    const newCode = await nextStudentCode(supabase)
 
     const withSchool = await withListSchoolName(input)
     if (!withSchool) return UNKNOWN_SCHOOL
@@ -113,7 +114,7 @@ export async function createStudent(
 
     const { data, error } = await supabase
       .from('students')
-      .insert(studentData as never)
+      .insert(studentData)
       .select('id')
       .single()
 
@@ -161,7 +162,7 @@ export async function updateStudent(
 
     let update = supabase
       .from('students')
-      .update(updateData as never)
+      .update(updateData)
       .eq('id', id)
     if (expectedUpdatedAt) update = update.eq('updated_at', expectedUpdatedAt)
     const { data, error } = await update.select('id')
@@ -294,7 +295,8 @@ const PARENT_FIELDS = [
   'address_1', 'address_2', 'occupation', 'office_telephone', 'office_fax', 'priority', 'remarks',
 ] as const
 
-type ParentRow = Record<(typeof PARENT_FIELDS)[number], unknown> & {
+type ParentFields = Pick<Tables<'student_contacts'>, (typeof PARENT_FIELDS)[number]>
+type ParentRow = ParentFields & {
   id: string; student_id: string; created_at: string | null
   first_name: string | null; surname: string | null; mobile: string | null; telephone: string | null; email_1: string | null
   relationship: { code: string } | null
@@ -340,9 +342,9 @@ async function mergeSiblingParents(supabase: SupabaseServer, firstId: string, se
   const parents = ((data ?? []) as unknown as ParentRow[]).filter(row => row.relationship && PARENT_CODES.has(row.relationship.code))
   const merges = parentMerges(parents.filter(p => p.student_id === firstId), parents.filter(p => p.student_id === secondId))
   for (const { keep, drop } of merges) {
-    const patch = fillBlanks(keep, drop, [...PARENT_FIELDS])
+    const patch = fillBlanks<ParentFields>(keep, drop, [...PARENT_FIELDS])
     if (Object.keys(patch).length > 0) {
-      const { error: updateError } = await supabase.from('student_contacts').update(patch as never).eq('id', keep.id)
+      const { error: updateError } = await supabase.from('student_contacts').update(patch).eq('id', keep.id)
       if (updateError) { console.error('Could not merge parent details:', updateError.message); continue }
     }
     const { error: deleteError } = await supabase.from('student_contacts').delete().eq('id', drop.id)
@@ -358,7 +360,7 @@ async function linkSibling(supabase: SupabaseServer, studentId: string, siblingI
   if ('error' in linked) return linked.error
   const { error } = await supabase.from('student_contacts').insert({
     student_id: studentId, relationship_id: (rel as { id: number }).id, ...linked.input,
-  } as never)
+  })
   if (error) return error.code === UNIQUE_VIOLATION ? ALREADY_LINKED : error.message
   await mergeSiblingParents(supabase, studentId, siblingId)
   revalidateFamilyPages(studentId, [siblingId, ...(await siblingIdsOf(supabase, siblingId))])
@@ -383,7 +385,7 @@ export async function createStudentContact(input: CreateContactInput): Promise<A
 
     const { data, error } = await supabase
       .from('student_contacts')
-      .insert(linked.input as never)
+      .insert(linked.input)
       .select('id')
       .single()
 
@@ -398,7 +400,9 @@ export async function createStudentContact(input: CreateContactInput): Promise<A
       // Brothers and sisters share their parents: the same parent held on both is merged into one record.
       // The link is already saved; a failed merge is logged and leaves both records showing.
       try {
-        const { data: rel } = await supabase.from('contact_relationships').select('code').eq('id', input.relationship_id).maybeSingle()
+        const { data: rel } = input.relationship_id == null
+          ? { data: null }
+          : await supabase.from('contact_relationships').select('code').eq('id', input.relationship_id).maybeSingle()
         if (rel && SIBLING_CODES.has((rel as { code: string }).code)) await mergeSiblingParents(supabase, input.student_id, relatedId)
       } catch (err) {
         console.error('Could not merge the siblings\' parents:', err)
@@ -442,13 +446,12 @@ export async function updateStudentContact(
     if ('error' in linked) return { success: false, error: linked.error }
 
     // Contact details only: which student owns the row and who created it never change here.
-    const fields: Record<string, unknown> = { ...linked.input }
-    delete fields.student_id
-    delete fields.created_by
+    // The type leaves these out, but a crafted call could still send them.
+    const { student_id: _owner, created_by: _creator, ...fields } = linked.input as Partial<CreateContactInput> & { created_by?: string | null }
 
     const { error } = await supabase
       .from('student_contacts')
-      .update(fields as never)
+      .update(fields)
       .eq('id', contactId)
       .eq('student_id', studentId)
 

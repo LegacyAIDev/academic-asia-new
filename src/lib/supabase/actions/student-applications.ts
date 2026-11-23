@@ -57,7 +57,7 @@ export async function createStudentApplication(
 
     const { data, error } = await supabase
       .from('student_applications')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -89,8 +89,8 @@ export async function updateStudentApplication(
   if (denied) return denied
   if (!isUuid(applicationId) || !isUuid(studentId)) return { success: false, error: 'Application not found' }
 
-  const changes: Record<string, unknown> = { ...input }
-  delete changes.student_id
+  // A crafted call could still carry student_id; it is never changed here.
+  const { student_id: _ignored, ...changes } = input as Partial<CreateApplicationInput>
 
   try {
     const cookieStore = await cookies()
@@ -98,7 +98,7 @@ export async function updateStudentApplication(
 
     const { data, error } = await supabase
       .from('student_applications')
-      .update(changes as never)
+      .update(changes)
       .eq('id', applicationId)
       .eq('student_id', studentId)
       .select('id')

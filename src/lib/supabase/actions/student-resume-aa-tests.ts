@@ -29,7 +29,7 @@ export async function createAATestBooking(input: CreateAATestInput): Promise<Act
 
     const { error } = await supabase
       .from('student_individual_exams')
-      .insert({ ...input, status_id: 1 } as never)
+      .insert({ ...input, status_id: 1 })
 
     if (error) {
       console.error('Error creating AA test booking:', error)

@@ -51,7 +51,7 @@ import { FormSection } from "@/components/forms/form-section"
 import { GRADE_OPTIONS } from "@/lib/schools/result-grades"
 import { useAddParam } from "@/lib/students/use-add-param"
 
-type ExamTypeItem = { id: number; code: string; label: string; country: string }
+type ExamTypeItem = { id: number; code: string; label: string; country: string | null }
 
 export type AcademicResultReferenceData = {
   examTypes: ExamTypeItem[]

@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import type { TablesUpdate } from '@/types/database'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
@@ -76,7 +77,7 @@ export async function setTaskCompleted(id: string, completed: boolean): Promise<
   return write(id, { completed_at: completed ? new Date().toISOString() : null })
 }
 
-async function write(id: string, change: Record<string, unknown>): Promise<ActionResult<StaffTask>> {
+async function write(id: string, change: TablesUpdate<'staff_tasks'>): Promise<ActionResult<StaffTask>> {
   try {
     const session = await signedIn()
     if (!session) return SIGN_IN_AGAIN

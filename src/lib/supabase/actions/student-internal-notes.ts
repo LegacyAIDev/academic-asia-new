@@ -44,7 +44,7 @@ export async function upsertStudentInternalNotes(
       const { student_id: _, ...updateFields } = input
       const { error } = await supabase
         .from('student_internal_notes')
-        .update(updateFields as never)
+        .update(updateFields)
         .eq('id', existing.id)
 
       if (error) {
@@ -58,7 +58,7 @@ export async function upsertStudentInternalNotes(
 
     const { data, error } = await supabase
       .from('student_internal_notes')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 

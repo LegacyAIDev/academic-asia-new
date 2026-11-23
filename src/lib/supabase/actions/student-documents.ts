@@ -84,7 +84,7 @@ export async function uploadStudentDocuments(
           file_size: file.size,
           mime_type: file.type,
           title: items[i].title?.trim() || null,
-        } as never)
+        })
 
       if (insertError) {
         await supabase.storage.from('student-documents').remove([filePath])
@@ -117,7 +117,7 @@ export async function renameStudentDocument(
 
     const { error } = await supabase
       .from('student_documents')
-      .update({ title: title.trim() || null } as never)
+      .update({ title: title.trim() || null })
       .eq('id', documentId)
 
     if (error) return { success: false, error: error.message }
@@ -180,7 +180,7 @@ export async function uploadStudentDocument(
         title: input.title || null,
         description: input.description || null,
         academic_year: input.academic_year || null,
-      } as never)
+      })
       .select('id')
       .single()
 

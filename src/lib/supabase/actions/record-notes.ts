@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import type { TablesInsert } from '@/types/database'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
@@ -81,7 +82,7 @@ export async function addRecordNote(
     const supabase = createClient(cookieStore)
     const { data, error } = await supabase
       .from('record_notes')
-      .insert({ [config.column]: recordId, body: parsed.body })
+      .insert({ [config.column]: recordId, body: parsed.body } as TablesInsert<'record_notes'>)
       .select(NOTE_SELECT)
       .single()
     if (error) {

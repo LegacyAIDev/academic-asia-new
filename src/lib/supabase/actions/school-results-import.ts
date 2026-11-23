@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import type { TablesInsert } from '@/types/database'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { assertAccess } from '@/lib/permissions/guard'
@@ -90,7 +91,7 @@ export async function applyResultsImport(csv: string): Promise<ActionResult<{ ad
     if ('error' in prepared) return { success: false, error: prepared.error }
     const { valid, problems, existing } = prepared
 
-    const toInsert: Record<string, unknown>[] = []
+    const toInsert: TablesInsert<'school_academic_results'>[] = []
     let updated = 0
     for (const row of valid) {
       const fields = { result_percentage: row.result_percentage, remarks: row.remarks }
@@ -103,12 +104,12 @@ export async function applyResultsImport(csv: string): Promise<ActionResult<{ ad
         continue
       }
       // Older data can hold the same result twice; both copies take the new figure.
-      const { error } = await supabase.from('school_academic_results').update(fields as never).in('id', ids)
+      const { error } = await supabase.from('school_academic_results').update(fields).in('id', ids)
       if (error) return { success: false, error: `Stopped at line ${row.line}: ${error.message}. Rows before it were saved.` }
       updated++
     }
     for (let i = 0; i < toInsert.length; i += CHUNK) {
-      const { error } = await supabase.from('school_academic_results').insert(toInsert.slice(i, i + CHUNK) as never)
+      const { error } = await supabase.from('school_academic_results').insert(toInsert.slice(i, i + CHUNK))
       if (error) return { success: false, error: `Could not add the new results: ${error.message}. ${updated} updated results were saved.` }
     }
 

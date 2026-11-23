@@ -37,7 +37,7 @@ export async function createApplicationDeposit(
     // Returns the new id so the dialog can attach staged files to the deposit.
     const { data, error } = await supabase
       .from('student_application_deposits')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 

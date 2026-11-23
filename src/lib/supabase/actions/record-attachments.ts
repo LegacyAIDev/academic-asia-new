@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { insertDocument } from '@/lib/supabase/document-rows'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { buildDocumentPath } from '@/lib/supabase/storage-paths'
@@ -62,10 +63,7 @@ export async function attachFileToRecord(
 
     const title = (formData.get('title') as string | null)?.trim() || null
 
-    const { data, error } = await supabase
-      .from(cfg.table)
-      .insert({
-        [cfg.ownerColumn]: ownerId,
+    const { data, error } = await insertDocument(supabase, cfg, ownerId, {
         category_id: categoryId,
         attachable_type: attachableType,
         attachable_id: attachableId,
@@ -74,9 +72,7 @@ export async function attachFileToRecord(
         file_size: file.size,
         mime_type: file.type,
         title,
-      } as never)
-      .select('id')
-      .single()
+    })
 
     if (error) {
       await supabase.storage.from(cfg.bucket).remove([filePath])
@@ -117,19 +113,14 @@ export async function attachLinkToRecord(
     const categoryId = await getCategoryId(supabase, categoryCode)
     if (!categoryId) return { success: false, error: `Unknown document category: ${categoryCode}` }
 
-    const { data, error } = await supabase
-      .from(cfg.table)
-      .insert({
-        [cfg.ownerColumn]: ownerId,
+    const { data, error } = await insertDocument(supabase, cfg, ownerId, {
         category_id: categoryId,
         attachable_type: attachableType,
         attachable_id: attachableId,
         external_url: trimmed,
         // A link with no label renders as an empty row, so fall back to the host.
         title: label?.trim() || urlHostname(trimmed),
-      } as never)
-      .select('id')
-      .single()
+    })
 
     if (error) return { success: false, error: error.message }
 

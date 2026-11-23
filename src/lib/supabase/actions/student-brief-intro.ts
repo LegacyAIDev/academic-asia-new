@@ -70,7 +70,7 @@ export async function upsertStudentBriefIntro(
       }
       const { error } = await supabase
         .from('student_brief_intro')
-        .update(updateFields as never)
+        .update(updateFields)
         .eq('id', existing.id)
 
       if (error) {
@@ -84,7 +84,7 @@ export async function upsertStudentBriefIntro(
 
     const { data, error } = await supabase
       .from('student_brief_intro')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 

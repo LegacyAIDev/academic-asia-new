@@ -44,7 +44,7 @@ export async function createSchoolEntranceExam(
 
     const { data, error } = await supabase
       .from('school_entrance_exams')
-      .insert(input as never)
+      .insert(input)
       .select('id')
       .single()
 
@@ -78,7 +78,7 @@ export async function updateSchoolEntranceExam(
 
     const { error } = await supabase
       .from('school_entrance_exams')
-      .update(input as never)
+      .update(input)
       .eq('id', examId)
 
     if (error) {
