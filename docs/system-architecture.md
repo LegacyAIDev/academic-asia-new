@@ -1,6 +1,6 @@
 # System Architecture
 
-**Last updated:** 2026-10-22
+**Last updated:** 2026-11-24
 
 ---
 
@@ -12,9 +12,9 @@ Academic Asia is a server-centric Next.js application backed by Supabase (manage
 Browser
   │
   ▼
-Next.js Middleware (session refresh + auth guard)
+src/proxy.ts (Next 16 proxy — session refresh + auth guard)
   │
-  ├─ Public routes (/login, /forgot-password, /reset-password, /auth/callback)
+  ├─ Public routes (/login, /forgot-password, /reset-password, /auth/callback, /register/)
   │
   └─ Protected routes (dashboard)
        │
@@ -44,14 +44,16 @@ The `(dashboard)/layout.tsx` loads the current user server-side via `getCurrentU
 
 ### 3.1 Supabase Auth + SSR
 
-Sessions are managed by Supabase Auth using cookie-based storage via `@supabase/ssr`. On every request, the middleware calls `updateSession()` which:
+Sessions are managed by Supabase Auth using cookie-based storage via `@supabase/ssr` 0.12. On every request, `src/proxy.ts` (Next 16's proxy, replacing the old `src/middleware.ts`) calls `updateSession()` (`src/lib/supabase/proxy-session.ts`) which:
 1. Creates a Supabase server client with cookie access
-2. Calls `supabase.auth.getUser()` to validate and refresh the session
+2. Calls `supabase.auth.getClaims()` to validate (and, when the token is near expiry, refresh) the session — this verifies the token's signature against the project's own signing keys without a call to the Auth server, falling back to one only on projects still using the shared secret
 3. Writes updated session cookies to the response
 
-This means sessions are transparently refreshed on every request without any client-side polling.
+This means sessions are transparently refreshed on every request without any client-side polling. The proxy runs on Node in the app's own region, next to the database, rather than at an edge near the user, so this check is a short hop rather than a round trip from Hong Kong to Europe.
 
-### 3.2 Middleware Flow
+Elsewhere in the app, `getAuthUser()` (`src/lib/supabase/auth.ts`) does the equivalent per-request check with the same `getClaims()` call, wrapped in React `cache()`, and returns `{ id, email }`. Actions that guard something sensitive (e.g. resetting a colleague's password) still call `supabase.auth.getUser()` to ask the Auth server directly.
+
+### 3.2 Proxy Flow
 
 ```
 Incoming request
@@ -68,7 +70,7 @@ Route access decision:
   └─ Unauthenticated + protected route → redirect to /login (Cache-Control: private, no-store)
 ```
 
-Middleware matcher excludes static assets (`_next/static`, `_next/image`, images, `favicon.ico`).
+The proxy's `matcher` (in `src/proxy.ts`) excludes static assets (`_next/static`, `_next/image`, images, `favicon.ico`).
 
 ### 3.3 RBAC — Module Permission Matrix
 
@@ -116,8 +118,8 @@ A claim would only refresh when the token does — up to an hour — so revoking
 access would not take effect until then. Per-request resolution is always current, and
 costs the same as the profile lookup `getCurrentUser()` already performs.
 
-Trade-off: this means the map is unavailable in middleware without a DB round-trip on
-every navigation. Middleware therefore stays authentication-only, and authorisation
+Trade-off: this means the map is unavailable in the proxy without a DB round-trip on
+every navigation. The proxy therefore stays authentication-only, and authorisation
 happens in server components and Server Actions, which already run server-side.
 
 ### 3.5 Enforcement points
@@ -177,9 +179,13 @@ src/lib/supabase/
 │                 need reactive Supabase access. Rarely used — prefer Server Actions.
 ├── server.ts   — Server (cookie-based SSR). Used in Server Components, Server Actions,
 │                 Route Handlers. Reads NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.
-└── admin.ts    — Service role. Bypasses RLS. Server-only. Used only in data migration
-                  scripts and auth user creation flows. Never imported in client bundles.
+└── admin.ts    — Service role. Bypasses RLS. Server-only. Used in writes under
+                  actions/ (several tables ship SELECT-only RLS policies and expect
+                  mutations to come from here), cached reference lists, and the
+                  data migration scripts. Never imported in client bundles.
 ```
+
+`server.ts` and `admin.ts` are both typed with `Database` (`src/types/database.ts`, generated): `createServerClient<Database>` / `createClient<Database>`, instead of the untyped client used before. This closed a gap where a call against a column that did not exist compiled and failed only at runtime — including a save that always silently failed. The admin client accepts `SUPABASE_SECRET_KEY` (Supabase's current name) or the older `SUPABASE_SERVICE_ROLE_KEY`.
 
 ### 4.2 Query / Action Separation
 
@@ -195,17 +201,28 @@ One file per domain entity in each directory (e.g., `queries/students.ts`, `acti
 
 ### 4.3 ActionResult Contract
 
-All Server Actions return `ActionResult<T>`:
+All Server Actions return `ActionResult<T>`, defined once in `src/lib/action-result.ts`:
 
 ```typescript
 type ActionResult<T = void> = {
   success: boolean
   data?: T
   error?: string   // human-readable error string for toast display
+  conflict?: boolean // the record changed after the editor opened, so nothing was saved
 }
 ```
 
 Client components read `result.success` and show `result.error` via sonner toast.
+
+### 4.4 Caching and performance
+
+Changes made in the 2026-11-24 performance pass (see also the README's "Performance notes"):
+
+- **Hover/focus prefetch, not on-screen.** `src/components/ui/link.tsx` wraps `next/link` and only prefetches when the pointer rests on a link (80ms) or it gets keyboard focus, never as soon as it is visible. Every page here is rendered per request (no static generation), so Next's default on-screen prefetch meant a full server render for every link on screen — the sidebar, every status tab, every row of a table. Every app link imports this wrapper instead of `next/link` directly.
+- **30-second client-side page cache.** `experimental.staleTimes.dynamic = 30` in `next.config.ts` keeps a page the browser already rendered for 30 seconds, so navigating back to a list or between tabs is instant. Any action that calls `revalidatePath` or `router.refresh()` drops the relevant cached copy, so a save is never hidden behind this.
+- **Cached reference lists.** `cachedList()` (`src/lib/supabase/queries/cached-lists.ts`) wraps `unstable_cache`, reading with the admin client (no request cookies are available to a cached function) so one cached copy serves every signed-in user. It is only safe for a table whose RLS read policy is `authenticated` + `true` — a restricted table behind it would leak rows cross-user. `LIST_TAGS` names the tags; the schools, events and staff actions call `updateTag(LIST_TAGS.x)` after a write so the cache does not serve stale rows until its own expiry (default one hour). `getDocumentCategories` and `getStudentAdvancedFilterOptions` (courses, schools, events for the students "Filters" panel) are both built on it; the latter is served through `/api/lists/student-filters`, with an additional 5-minute `Cache-Control` header so the browser does not even re-ask the server on repeat visits.
+- **Streamed slow counts.** The students list and student detail page stream their counts behind `<Suspense>` (shared fallback `src/components/layout/section-skeleton.tsx`) instead of making the whole page wait on a slow aggregate query.
+- **Lazy rich text editor.** `src/components/ui/rich-text-editor-lazy.tsx` lazily loads the Tiptap-based editor (`rich-text-editor.tsx`), so pages that do not show it do not pay for its bundle.
 
 ---
 
@@ -213,7 +230,7 @@ Client components read `result.success` and show `result.error` via sonner toast
 
 ### 5.1 Supabase Postgres
 
-Hosted Supabase project (`aa-new`). 89 SQL migrations define the schema. Heavy use of reference/lookup tables for normalized categorical data.
+Hosted Supabase project (`aa-new`). 111 SQL migrations define the schema. Heavy use of reference/lookup tables for normalized categorical data.
 
 ### 5.2 Core Entity Tables
 
@@ -544,7 +561,7 @@ All five original RPCs plus `scheduler_record_attendance` are `revoke`d from `pu
 
 **Attendance action:** `recordAttendance(id, attendance)` in `src/lib/supabase/actions/scheduler-bookings.ts` requires `EXAMS WRITE` and wraps `scheduler_record_attendance`.
 
-**Dashboard:** `src/app/(dashboard)/pending-exam-bookings-card.tsx` shows a count of examination/group-examination bookings still `pending` (spec NOT-01). `getPendingExamBookings()` (`src/lib/supabase/queries/scheduler-stats.ts`) returns `{ count, earliestDate }`; the card links to the Rooms week view on the earliest pending exam date with `status=pending` and the exam types filtered.
+**Dashboard:** the home page (`src/app/(dashboard)/page.tsx`) was rebuilt as a set of titled panels (`src/components/dashboard/`: `KpiStrip`, `TodayPanel`, `AttentionPanel`, `ExamLoadPanel`, `PipelinePanel`, `RecentActivityPanel`, `ShortcutsPanel`) backed by `src/lib/supabase/queries/dashboard.ts` (`getDashboardCounts`, `getExamLoad`, `getApplicationPipeline`, `getMyBookingsToday`, `getRecentActivity`) and `src/lib/dashboard/` (`attention.ts`, `group-activity.ts`). This replaced the single `pending-exam-bookings-card.tsx` / `scheduler-stats.ts` pending-bookings count. This section needs a fuller rewrite describing the new panels; out of scope for this pass.
 
 **Exam scheduling has a single write path.** The exam *request* still originates on the application form (`application-exam-form.tsx`, unchanged). Date, time, room, and seat are set only via the scheduler booking dialog — opened from both the Exams page and the student detail calendar tab, same component. `updateExamFields` (in `student-individual-exams.ts`) is narrowed to score/remarks only; Exams-page date/time/room cells are read-only.
 
@@ -692,11 +709,11 @@ examination gives one page per student). Opened from the exam desk row action "C
 data/                    ← Source CSVs (AA_Student.csv, AA_School.csv, AA_Event*.csv, ...)
     │
     ▼
-scripts/
+scripts/legacy-migration/
     1_migrate-profiles.ts
     2_migrate-schools.ts
-    ...                  ← 34 numbered scripts, run via tsx
-    34_migrate-aa-test.ts
+    ...                  ← 43 numbered scripts, run via tsx, plus manifest/classifier helpers
+    43_import-present-schools.ts
     │
     ▼
 Supabase Postgres (via service-role admin client)
@@ -707,7 +724,7 @@ data/
     school-courses-skipped.json       ← Skipped records log
 ```
 
-`remigrate.sh` orchestrates re-running all scripts in order. Scripts use `papaparse` to parse CSVs and the admin Supabase client to write directly to Postgres. The `requirements/` directory holds legacy spec documents and database exports that served as the migration source of truth.
+`scripts/legacy-migration/remigrate.sh` orchestrates re-running the scripts in order (moved out of the repo root). Scripts use `papaparse` to parse CSVs and the admin Supabase client to write directly to Postgres. The `requirements/` directory holds legacy spec documents and database exports that served as the migration source of truth.
 
 ---
 
@@ -724,7 +741,7 @@ See `docs/deployment-guide.md` for environment variable setup and deployment ste
 | Gap | Severity | Notes |
 |---|---|---|
 | RLS enabled but permissive | High | Migration `075` enabled RLS everywhere, but policies are `using (true)` for `authenticated`. App-layer guards are the real gate — see §3.7. Next step: policies that read `resolve_permissions` via a JWT claim |
-| Thin test coverage | Medium | Vitest configured; 543 tests in 36 files, concentrated on permissions, export pipelines and scheduler pure helpers. No E2E |
+| Thin test coverage | Medium | Vitest configured; 1,462 tests in 121 files, concentrated on permissions, export pipelines and scheduler pure helpers. Browser tests exist in `e2e/` (against a local Supabase stack only) but are not run in CI |
 | No CI/CD pipeline | Medium | No `.github/workflows/` found. `npm run check:permissions` is written and passing but not wired to CI |
 | `/reports` not implemented | Low | Sidebar link exists, no page yet. `/settings` now has the Access Levels section |
 | No permission audit log | Medium | Access-right changes are not recorded. Cheaper to add before the matrix is in real use than after |

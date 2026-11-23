@@ -222,7 +222,7 @@ Default icon size in buttons: `h-4 w-4`. Slightly larger in section headers: `h-
 
 ## 7. Responsive Design
 
-The app is primarily a desktop internal tool. The `use-mobile.ts` hook is available for responsive adaptations.
+The app is primarily a desktop internal tool. Responsive behaviour is done with Tailwind breakpoints; there is no viewport hook.
 
 - Sidebar collapses or hides on mobile (managed by `sidebar.tsx`).
 - Detail pages stack sections vertically on narrow screens.

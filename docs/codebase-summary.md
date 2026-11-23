@@ -1,6 +1,6 @@
 # Codebase Summary
 
-**Last updated:** 2026-10-28
+**Last updated:** 2026-11-24
 **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase
 
 ---
@@ -9,14 +9,14 @@
 
 | Metric | Value |
 |---|---|
-| Source files (src/) | ~290 files |
-| Estimated LOC (src/) | ~40,500 |
-| SQL migrations | 89 (numbered 001–078 + timestamped, incl. 7 scheduler migrations) |
-| Server action files | 37 |
-| Query files | 43+ |
-| shadcn/ui primitives | 53 |
-| Legacy migration scripts | 34 |
-| Test files | 36 (543 tests) |
+| Source files (src/) | ~710 files |
+| Estimated LOC (src/) | ~78,300 |
+| SQL migrations | 111 (numbered 001–078 + timestamped, incl. scheduler, email filing, task planner, activity log, document versions and list/index migrations) |
+| Server action files | 63 |
+| Query files | 56 |
+| shadcn/ui primitives | 37 (23 unused ones removed in the 2026-11-24 cleanup, incl. sidebar, chart, form, pagination) |
+| Legacy migration scripts | 43 numbered, in `scripts/legacy-migration/` |
+| Test files | 121 (1,462 tests) |
 
 ---
 
@@ -26,21 +26,24 @@
 aa-new/
 ├── src/                  # Application source
 ├── supabase/
-│   ├── migrations/       # 89 SQL migration files
+│   ├── migrations/       # 111 SQL migration files
 │   └── config.toml       # Supabase project config (project_id: aa-new)
-├── scripts/              # 34 data migration TypeScript scripts (run via tsx)
+├── scripts/              # check-permission-coverage.mjs, seed-test-env.mjs, legacy-migration/
+│   └── legacy-migration/ # 43 numbered data migration TypeScript scripts (run via tsx) + manifest/classifier helpers + remigrate.sh
 ├── data/                 # Source CSVs + migration output artifacts
 ├── requirements/         # Legacy spec documents (Word/PDF) + DB exports
 ├── docs/                 # Project docs; scheduler-user-guide.md is the staff-facing Scheduler guide
 ├── public/               # Static assets
 ├── components.json       # shadcn/ui config
-├── next.config.ts
+├── next.config.ts        # experimental.staleTimes.dynamic = 30; PDF route chromium tracing
 ├── tsconfig.json
 ├── postcss.config.mjs
 ├── eslint.config.mjs
-├── e2e/                  # Browser tests (puppeteer-core + local Chrome) against a local Supabase stack: email filing, task planner, activity history, paper versions
-└── remigrate.sh          # Re-runs the full data migration pipeline
+├── .env.example          # Template for .env.local
+└── e2e/                  # Browser tests (puppeteer-core + local Chrome) against a local Supabase stack: email filing, task planner, activity history, paper versions
 ```
+
+`remigrate.sh` (re-runs the data migration pipeline) now lives in `scripts/legacy-migration/`, not the repo root. `nextjs-supabase-starter/` and `.opencode/` (leftover starter template and tooling) were removed.
 
 ---
 
@@ -61,7 +64,7 @@ src/app/
 └── (dashboard)/                   # Protected routes — layout renders Sidebar + Header
     ├── layout.tsx                 # Loads getCurrentUser() server-side, renders shell
     ├── page.tsx                   # Dashboard home
-    ├── pending-exam-bookings-card.tsx  # Dashboard alert: pending exam bookings count (spec NOT-01)
+    │                                 # Home page rebuilt as titled panels (src/components/dashboard/: KpiStrip, TodayPanel, AttentionPanel, ExamLoadPanel, PipelinePanel, RecentActivityPanel, ShortcutsPanel), replacing the old pending-exam-bookings-card.tsx; see system-architecture §6a dashboard note
     ├── tasks/                     # Task Planner (/tasks): page, task-planner, task-row, task-edit-dialog, task-fields
     ├── students/
     │   ├── page.tsx               # Student list with filters
@@ -195,26 +198,33 @@ src/app/
             ├── room-form-fields.tsx
             └── locations-panel.tsx / location-dialog.tsx
 
-src/app/api/                       # Route Handlers — file downloads only
+src/app/api/                       # Route Handlers
 ├── exams/cover-slip/pdf/          # Exam cover slip PDF (one page per candidate; route.ts + __tests__/route.test.ts)
 ├── schools/export/pdf/            # Selected School List PDF
-└── students/brief-intro/export/
-    ├── pdf/                       # Brief Introduction booklet
-    └── xlsx/                      # Brief Introduction data sheet
+├── students/brief-intro/export/
+│   ├── pdf/                       # Brief Introduction booklet
+│   └── xlsx/                      # Brief Introduction data sheet
+└── lists/student-filters/         # Cached student-filter reference lists (route.ts), used by the students list/export filters
 ```
 
 ### components/ — Shared Components
 
 ```
 src/components/
-├── ui/                           # 53 shadcn/ui primitives
+├── ui/                           # 37 shadcn/ui primitives (23 unused ones removed 2026-11-24, incl. sidebar, chart, form, pagination)
 │   ├── button.tsx, input.tsx, select.tsx, dialog.tsx, ...
+│   ├── link.tsx                  # next/link wrapper: prefetches on hover/focus, not on-screen; every app link uses it (`import Link from '@/components/ui/link'`)
+│   ├── rich-text-editor-lazy.tsx # Lazily-loaded wrapper around rich-text-editor.tsx (Tiptap), so the editor bundle only loads where used
 │   ├── sonner.tsx                # Toast wrapper
 │   └── sortable-table-head.tsx   # Link-based sortable column heading (URL sort/dir)
+├── forms/                        # Shared form/dialog pieces
+│   ├── form-field.tsx            # Label + control + error wrapper reused across record forms
+│   └── dialog-close-button.tsx   # Shared Cancel/Close button for the record dialogs
 ├── features/                     # Cross-route feature components
 │   ├── document-manager.tsx      # Owner-level Documents tab: batch upload, rename, download
 │   ├── attachment-field.tsx      # Inline attach file/link next to a text field
 │   ├── attachment-list.tsx       # Attachment rows: open (spinner while signing), delete
+│   ├── confirm-delete-button.tsx # Shared "Delete" button + confirmation dialog, used by every record delete action
 │   ├── record-notes.tsx          # Notes list for a student, application or exam (eyebrow, count, composer)
 │   ├── record-note-item.tsx      # One note: byline, Edited marker, author-only Edit / Delete
 │   ├── record-note-composer.tsx  # Text box + "Add note" (Ctrl/Cmd+Enter)
@@ -252,7 +262,8 @@ src/components/
 └── layout/
     ├── sidebar.tsx               # App navigation sidebar
     ├── sidebar-navigation.ts     # Nav item config, incl. Scheduler entry; activeChildHref() highlights only the most specific child (Students vs Students → Current Schools); test in __tests__/sidebar-navigation.test.ts
-    └── header.tsx                # Top header bar
+    ├── header.tsx                # Top header bar
+    └── section-skeleton.tsx      # Shared Suspense fallback for streamed sections (tab content, counts)
 ```
 
 ### lib/ — Business Logic & Data Access
@@ -261,13 +272,14 @@ src/components/
 src/lib/
 ├── utils.ts                      # cn() — Tailwind class merge (clsx + tailwind-merge)
 ├── hk-day.ts                     # hkDay / hkToday: Hong Kong calendar day (tasks, email date filters)
-├── auth-utils.ts                 # ADMIN_LEVELS constants, hasMinLevel(), getAdminLevel()
+├── action-result.ts              # ActionResult<T> — the single type every server action returns (moved out of actions/students.ts)
 ├── permissions/                  # Module access rights — the enforcement core
+│   ├── admin-levels.ts           # ADMIN_LEVELS constants, hasMinLevel() (moved from lib/auth-utils.ts)
 │   ├── modules.ts                # MODULES/ACCESS constants, PermissionMap, denyAll()
 │   ├── resolve.ts                # getPermissions() — per-request, React cache(), fails closed
 │   ├── guard.ts                  # requireAccess / assertAccess / canAccess / assertNoEscalation
 │   ├── route-map.ts              # moduleForPath() — pathname → module (pure)
-│   └── __tests__/                # 30 tests: route-map, guard, seed parity, resolver
+│   └── __tests__/                # route-map, guard, seed parity, resolver
 ├── students/
 │   ├── phone-link.ts             # telHref: tel: link only for one callable number (pure; tested)
 │   ├── linked-student-label.ts   # linkedStudentName, linkedStudentDetails, sharedDetailsText (suggestion "matched on" text) (picker, Family tab cards and suggestions; tested in __tests__/linked-student-label.test.ts)
@@ -292,6 +304,7 @@ src/lib/
 │   ├── placement-history.ts      # PURE: academicYearLabel, placementRate (accepted / applications), currentAcademicYearStart, placementYearOptions, defaultPlacementYear, figuresForYear, toPlacementRows
 │   ├── academic-results-summary.ts # PURE: summariseResultsByYear (year blocks, aligned band columns per grading scale, bar shares, range filter), resultsSummaryText, bandLabel, IB average points
 │   ├── fee-years.ts              # PURE: financial-year list/default, fee ordering (reuses year-levels.ts)
+│   ├── results-import-format.ts  # PURE: results CSV columns + sample, kept apart from the papaparse-using parser so the sample download doesn't ship papaparse to the browser
 │   └── __tests__/                # placement-history (+ Headington case), school-tabs, academic-results-summary, fee-years
 ├── brief-intro/                  # Brief Introduction export (PDF booklet + Excel sheet)
 │   ├── export-types.ts           # One payload for single and bulk, PDF and Excel
@@ -347,12 +360,15 @@ src/lib/
 │                                  # fixtures: booking-detail-fixture, calendar-item-fixture
 └── supabase/
     ├── client.ts                 # Browser Supabase client (anon/publishable key)
-    ├── server.ts                 # Server component client (cookie SSR)
-    ├── admin.ts                  # Service-role client — server-only
-    ├── middleware.ts             # updateSession() — refreshes session cookies per request
-    ├── auth.ts                   # getCurrentUser() → { id, email, first_name, surname, department_label, admin_level }
+    ├── server.ts                 # Server component client (cookie SSR), typed with Database from src/types/database.ts
+    ├── admin.ts                  # Service-role client — server-only, typed with Database; accepts SUPABASE_SECRET_KEY or the older SUPABASE_SERVICE_ROLE_KEY
+    ├── proxy-session.ts          # updateSession() — refreshes session cookies per request via auth.getClaims(); called from src/proxy.ts (session refresh moved out of lib/supabase)
+    ├── auth.ts                   # getAuthUser() (auth.getClaims() → { id, email }) and getCurrentUser() → { id, email, first_name, surname, department_label, admin_level }
+    ├── document-rows.ts          # insertDocument — shared row-building for student/school document uploads
+    ├── student-siblings.ts       # withLinkedStudent (copies a linked student's name onto the contact row), sibling/family helpers shared by student-contacts.ts
     ├── actions/                  # 'use server' mutation files — one per domain
-    │   ├── students.ts           # createStudent, updateStudent, deleteStudent; ActionResult<T> defined here; withListSchoolName copies the list school name; contact create/update use withLinkedStudent (family link, copies the linked student's name)
+    │   ├── students.ts           # createStudent, updateStudent, deleteStudent; withListSchoolName copies the list school name (contact actions split out to actions/student-contacts.ts)
+    │   ├── student-contacts.ts   # Family contact create/update/delete, split out of students.ts; uses withLinkedStudent from lib/supabase/student-siblings.ts
     │   ├── student-family.ts     # searchStudentsForFamilyAction (Students READ); test in __tests__/student-contact-link.test.ts
     │   ├── present-schools.ts    # addPresentSchool (picker, Students WRITE): existing school by search-key overlap or new staff row; createPresentSchool / updatePresentSchool (Current Schools page; rename replaces the old name and updates linked students' present_school); tests in __tests__/present-schools.test.ts, present-schools-manage.test.ts, student-present-school.test.ts
     │   ├── schools.ts
@@ -401,6 +417,7 @@ src/lib/
     │   ├── scheduler-blocked-times.ts # create/update/delete blocked times; owner = signed-in user; room blocks need EXAMS WRITE; returns clashes
     │   └── scheduler-availability.ts  # Wraps scheduler_free_busy / scheduler_available_rooms
     └── queries/                  # Read-only data fetching for Server Components
+        ├── cached-lists.ts           # cachedList() — unstable_cache + admin client for tables with an open (authenticated-read) RLS policy; LIST_TAGS, getDocumentCategories; updateTag() in the schools/events/staff actions expires the relevant tag on edit
         ├── exam-papers.ts            # getSchoolExamPaperOptions; getExamPaperStatuses (live counts per paper, null on failure)
         ├── filed-emails.ts           # getFiledEmails (student / school / application, newest 500, null on failure), getApplicationOptions, searchSchoolOptions
         ├── activity-log.ts           # getActivity: a student's, school's or application's history, newest 200
@@ -418,7 +435,6 @@ src/lib/
         ├── exam-management.ts
         ├── student-applications.ts   # incl. getStudentApplicationById(applicationId, studentId), getApplicationReferenceData (+ subStatuses)
         ├── application-bookings.ts   # getApplicationBookings: scheduler bookings of an application, [] without Scheduler READ
-        ├── student-application-deposits.ts
         ├── student-education.ts
         ├── student-event-applications.ts
         ├── student-brief-intro.ts
@@ -438,30 +454,24 @@ src/lib/
         ├── scheduler-exams.ts       # Exam bookings for Exams page + student tab
         ├── exam-desk.ts             # getExamDeskBookings: exam bookings in a date range (exam desk)
         ├── scheduler-blocked-times.ts  # listBlockedTimes, getBlockedTimeOccurrences (calendar shading), getRoomItemsInRange
-        ├── scheduler-history.ts     # scheduler_booking_history reads
-        └── scheduler-stats.ts       # Rooms-view / dashboard counts
+        └── scheduler-history.ts     # scheduler_booking_history reads
 ```
 
 ### types/ — TypeScript Types
 
 ```
 src/types/
-├── database.ts          # Supabase-generated types (npm run db:types)
-└── database.types.ts    # Extended/aliased types (StudentInsert, StudentUpdate, etc.)
+├── database.ts          # Supabase-generated types (npm run db:types) — never hand-edit
+└── models.ts            # Hand-written row type aliases (Student, StudentInsert, ...), moved from database.types.ts; re-exports Database, Json, Tables, etc.
 ```
 
-### hooks/
-
-```
-src/hooks/
-└── use-mobile.ts        # Responsive breakpoint hook
-```
+`src/hooks/` (just `use-mobile.ts`, unused) was removed in the 2026-11-24 cleanup.
 
 ---
 
 ## Database Migrations Overview
 
-Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped (89 total).
+Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timestamped (111 total).
 
 | Range | Theme |
 |---|---|
@@ -481,12 +491,13 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 | Timestamped (2026-10-23) | `20261023193522_record_notes_and_school_note_authors.sql` (table `record_notes` with author-only write RLS, `school_notes.created_by`) |
 | Timestamped (2026-10-28) | `20261028181144_filed_emails.sql` (table `filed_emails`, private bucket `filed-emails` 25 MB, duplicate Message-ID partial unique indexes) |
 | Timestamped (2026-10-20) | `20261020110718_student_application_status_history.sql` (table `student_application_status_history`, trigger `student_applications_status_history`, select-only RLS), `20261020133120_student_application_status_history_revoke_execute.sql` (revokes EXECUTE on the trigger function) |
+| Timestamped (2026-11-23) | `20261123210828_list_and_dashboard_indexes.sql` (indexes for the dashboard activity feed and the students list: `activity_log(occurred_at, id)`, `students(status_id, created_at, id)`, `students(assigned_to, created_at, id)`, `students(entry_year)`); `20261123221316_sup_info_legacy_type_optional.sql` (drops the `NOT NULL` on `school_supplementary_info.legacy_info_type`, which had no default and made adding a new supplementary-info entry in the app always fail) |
 
 ---
 
-## Legacy Migration Scripts (`scripts/`)
+## Legacy Migration Scripts (`scripts/legacy-migration/`)
 
-34 TypeScript scripts numbered by dependency order, run via `tsx`:
+43 TypeScript scripts numbered by dependency order, run via `tsx`, plus manifest/classifier helpers and `remigrate.sh` (moved here from the repo root):
 
 - `1_migrate-profiles.ts` — staff profiles from CSV
 - `2_migrate-schools.ts` — school records
@@ -497,8 +508,9 @@ Migrations are in `supabase/migrations/` — numbered `001`–`078`, then timest
 - `7_migrate-events.ts`
 - `8_migrate-event-school-representatives.ts`
 - `9_migrate-event-applications.ts`
-- `10_migrate-event-results.ts` through `34_migrate-aa-test.ts`
+- `10_migrate-event-results.ts` through `42_backfill-school-current-fee.ts`
 - `43_import-present-schools.ts` — loads the Hong Kong school list into `present_schools` and links students (not part of `remigrate.sh`; see deployment guide 5a)
+- `build-school-document-manifest.ts`, `build-student-document-manifest.ts`, `school-document-classifier.ts`, `student-document-classifier.ts` — shared helpers used by the document-migration scripts
 
 Source CSVs (`data/`): `AA_Student.csv`, `AA_School.csv`, `AA_Event*.csv`, and others.
 
@@ -506,17 +518,18 @@ Source CSVs (`data/`): `AA_Student.csv`, `AA_School.csv`, `AA_Event*.csv`, and o
 
 ## Key Dependencies
 
+54 runtime dependencies, 14 dev dependencies (17 unused packages removed in the 2026-11-24 cleanup, e.g. the old shadcn primitives' Radix packages and `recharts`, which no longer has any chart to render). `package-lock.json` is now committed.
+
 | Package | Purpose |
 |---|---|
-| `next` 16.4 | App framework |
-| `react` 19.2.1 | UI |
-| `@supabase/supabase-js` ^2.47 | Supabase client |
-| `@supabase/ssr` ^0.5 | Cookie-based SSR sessions |
+| `next` ^16.4.6 | App framework |
+| `react` / `react-dom` 19.2.1 | UI |
+| `@supabase/supabase-js` ^2.119 | Supabase client |
+| `@supabase/ssr` ^0.12 | Cookie-based SSR sessions |
 | `react-hook-form` ^7.68 | Form state management |
 | `zod` ^3.25 | Schema validation |
 | `@fullcalendar/react` 7.1.0 | Scheduler module calendar (Premium, resource views via `@fullcalendar/react-scheduler`) |
 | `@dnd-kit/core` ^6.3 | Drag-and-drop for event scheduler |
-| `recharts` ^2.15 | Charts |
 | `sonner` ^2.0 | Toast notifications |
 | `papaparse` ^5.5 | CSV parsing in migration scripts |
 | `puppeteer-core` ^25.8 + `@sparticuz/chromium` ^149 | Headless Chromium for the PDF exports |
@@ -524,4 +537,5 @@ Source CSVs (`data/`): `AA_Student.csv`, `AA_School.csv`, `AA_Event*.csv`, and o
 | `sanitize-html` ^2.17 | Cleans editor HTML on save; flattens it for spreadsheet cells |
 | `lucide-react` ^0.561 | Icon set |
 | `date-fns` ^4.1 | Date utilities |
+| `postal-mime` ^4.1 / `@kenjiuno/msgreader` ^1.29 | Parse `.eml` / `.msg` for email filing |
 | `tsx` ^4.21 | Run TypeScript migration scripts directly |

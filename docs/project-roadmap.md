@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-10-23
+**Last updated:** 2026-11-24
 **Current phase:** Phase 2 — Feature Completion
 
 > Items marked as "Inferred" are based on codebase signals (sidebar links, migration patterns, absence of test/CI config) and not from explicit specifications.
@@ -30,7 +30,7 @@
 
 **Status: In Progress**
 
-- [x] 34-script legacy data migration pipeline (`scripts/`, `remigrate.sh`)
+- [x] 43-script legacy data migration pipeline (`scripts/legacy-migration/`, `remigrate.sh`)
 - [x] Source CSV parsing (papaparse)
 - [x] School contacts `is_active` flag (migration 068)
 - [x] Schedule blocker support (migration 066)
@@ -71,7 +71,7 @@
 
 **Status: In Progress**
 
-- [x] Test runner: Vitest, scoped to `src/**` (36 files, 543 tests passing)
+- [x] Test runner: Vitest, scoped to `src/**` (121 files, 1,462 tests passing as of 2026-11-24)
 - [x] Unit + integration tests for the permission layer (30 tests)
 - [ ] Unit tests for remaining utilities: `getAdminLevel`, `cn`, time-slot utils
 - [ ] Unit tests for Server Action input validation (zod schemas)
@@ -208,7 +208,7 @@ Branch `feature/email-filing`. Requirements EF-01 to EF-26 and decisions D1 to D
 ## Backlog (Unscheduled)
 
 - Dark mode refinement (next-themes is installed but not prominently tested)
-- Mobile responsiveness audit (use-mobile hook exists; full mobile QA not done)
+- Mobile responsiveness audit (the unused `use-mobile` hook was removed 2026-11-24; full mobile QA still not done)
 - Internationalisation / Chinese language support (student profiles have `chinese_name` and `chinese_address` fields)
 - Bulk operations on student list (bulk assign staff, bulk status update)
 - Email notifications for application status changes
@@ -217,6 +217,7 @@ Branch `feature/email-filing`. Requirements EF-01 to EF-26 and decisions D1 to D
 
 ## Changelog
 
+- **2026-11-24** — Repository cleanup and performance pass (five commits, no feature change). **Structure:** `src/middleware.ts` → `src/proxy.ts` (Next 16 proxy, exported `proxy`); session refresh moved to `src/lib/supabase/proxy-session.ts` using `auth.getClaims()`; `getAuthUser()` (`lib/supabase/auth.ts`) does the same per-request check. `src/lib/auth-utils.ts` → `src/lib/permissions/admin-levels.ts`. Hand-written row aliases `src/types/database.types.ts` → `src/types/models.ts`. Student contact actions split out of `actions/students.ts` into `actions/student-contacts.ts`. Removed: `nextjs-supabase-starter/`, `.opencode/`, 23 unused shadcn primitives (`sidebar`, `chart`, `form`, `pagination`, ...), `src/hooks/use-mobile.ts`, `queries/scheduler-stats.ts`, `queries/student-application-deposits.ts`, ~35 other unused functions, 17 npm packages (incl. `recharts`, which had nothing left to chart). `scripts/` reorganised: legacy migration scripts + `remigrate.sh` moved to `scripts/legacy-migration/`; new `npm run e2e:setup` and `npm run seed:test-env`; `db:reset` removed (see deployment guide §3.1 — no blanket `db push` against the live project); `package-lock.json` now committed; `.env.example` added. **Typed clients:** `server.ts` and `admin.ts` now typed with the generated `Database`, which surfaced a save that always failed (adding supplementary info). **Shared pieces:** single `ActionResult<T>` in `src/lib/action-result.ts`; `confirm-delete-button.tsx`, `form-field.tsx`, `dialog-close-button.tsx` factor out the record dialogs' repeated parts; `document-rows.ts` (`insertDocument`), `student-siblings.ts` (`withLinkedStudent`). **Performance:** `src/components/ui/link.tsx` now wraps every app link (hover/focus prefetch instead of on-screen); `next.config.ts` `staleTimes.dynamic = 30`; `cachedList()` (`queries/cached-lists.ts`) caches reference lists read under an open RLS policy, with `updateTag` wired into the schools/events/staff actions and a new `/api/lists/student-filters` route; students list and detail stream slow counts behind `<Suspense>` (shared `section-skeleton.tsx`); rich text editor loads lazily (`rich-text-editor-lazy.tsx`). **Migrations:** `20261123210828_list_and_dashboard_indexes.sql` (dashboard and students-list indexes) and `20261123221316_sup_info_legacy_type_optional.sql` (fixed adding supplementary info, which always failed because `legacy_info_type` was `NOT NULL` with no default). Details: codebase-summary.md, system-architecture.md §4.1/§4.3/§4.4, code-standards.md, deployment-guide.md.
 - **2026-10-31** — Decision: automatic Outlook sync (Phase 1.5, meeting note 3 advanced) is dropped and will not be built. Email filing stays manual (upload `.eml`, `.msg` or PDF, or type a record). The feasibility note is kept for reference only.
 - **2026-10-30** — Entrance assessment paper versions (customer item 11; Phase 1.5, meeting note 11; ASM-03, ASM-05): `superseded_by` / `superseded_at` on both document tables (migration `20261030183451`) and `uploaded_by` defaulting to the signed-in user. The exam team can "Replace with new version" on a paper; "Earlier versions (n)" lists the older files with who uploaded them and when, each still openable. Printing on the exam desk, paper availability and the Documents tab use only the current version. Edit buttons on entrance exam rows now have an accessible name. Browser tested on a local Supabase stack. Details: system-architecture 5.2g.
 - **2026-10-30** — Activity history (customer item 18; Phase 1.5, meeting note 18; SEC-06, STU-14): new table `activity_log` written by a `log_activity()` trigger on students, applications, exams, family contacts, documents, scheduler bookings and attendees, filed emails, schools, school contacts, school documents and entrance assessments (migration `20261030182948`). Records action, record, changed column names, staff member ("System" without one) and time; survives deletion of the record; cannot be changed through the API. Read-only "Activity" cards on the student Overview, the application page and the school Notes & Info tab. Browser tested on a local Supabase stack. Details: system-architecture 5.2f.

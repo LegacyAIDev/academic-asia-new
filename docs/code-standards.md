@@ -1,6 +1,6 @@
 # Code Standards & Conventions
 
-**Last updated:** 2026-09-28
+**Last updated:** 2026-11-24
 
 This document is the canonical reference for how code is written and organized in this project. All contributors must follow these patterns. When in doubt, look at `students/[id]/` (most complex entity) and `schools/[id]/` as the reference implementations.
 
@@ -19,7 +19,7 @@ This document is the canonical reference for how code is written and organized i
 - TypeScript strict mode is on (`tsconfig.json`).
 - Run `npm run type-check` to verify before committing.
 - Types for the database are generated — never hand-write database row types. Run `npm run db:types` to regenerate `src/types/database.ts` after schema changes.
-- Extended/aliased types (e.g., `StudentInsert`, `StudentUpdate`) live in `src/types/database.types.ts`.
+- Extended/aliased types (e.g., `StudentInsert`, `StudentUpdate`) live in `src/types/models.ts`.
 
 ---
 
@@ -46,9 +46,9 @@ Three distinct clients exist. Use the right one:
 |---|---|---|
 | Browser client | `src/lib/supabase/client.ts` | Client components that need Supabase access (rare — prefer Server Actions) |
 | Server client | `src/lib/supabase/server.ts` | Server Components, Server Actions, Route Handlers |
-| Admin client | `src/lib/supabase/admin.ts` | Server-only operations requiring service role (e.g., creating auth users from migration scripts). **Never import in client components or expose to browser.** |
+| Admin client | `src/lib/supabase/admin.ts` | Server-only operations requiring service role (e.g., creating auth users from migration scripts, `cachedList` reads). **Never import in client components or expose to browser.** |
 
-The server client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (not the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+The server client reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (not the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`). The admin client accepts `SUPABASE_SECRET_KEY` or the older `SUPABASE_SERVICE_ROLE_KEY`. Both clients are typed with `Database` from `src/types/database.ts` — a client call with a wrong table or column name is now a type error, not a runtime surprise (this is how a save that silently always failed was found).
 
 ```typescript
 // Server Component or Server Action
@@ -92,13 +92,14 @@ export type CreateStudentInput = {
 
 **5.3 ActionResult return type**
 
-Every action returns `ActionResult<T>`. This type is defined in `src/lib/supabase/actions/students.ts` and re-used across actions.
+Every action returns `ActionResult<T>`. This type is defined once in `src/lib/action-result.ts` and imported everywhere — it used to be defined in `src/lib/supabase/actions/students.ts` and re-exported, which is no longer the case.
 
 ```typescript
 export type ActionResult<T = void> = {
   success: boolean
   data?: T
   error?: string
+  conflict?: boolean   // the record changed after the editor opened, so nothing was saved
 }
 ```
 
@@ -158,6 +159,8 @@ export async function getStudent(id: string) {
 
 **Separation rule**: queries/ = reads only. actions/ = writes only. Never mix them.
 
+**Cached reference lists**: `cachedList(key, tags, load)` (`src/lib/supabase/queries/cached-lists.ts`) wraps `unstable_cache` and reads with the admin client, so one copy serves every signed-in user. Use it **only** for a table whose RLS read policy is open to any `authenticated` caller (`using (true)`) — the cache has no request cookies, so it cannot vary by who is asking, and putting a restricted table behind it would leak rows to users who should not see them. Call `updateTag(LIST_TAGS.x)` (already wired into the schools/events/staff actions) after any write that changes a cached list, or the cache will keep serving the old rows until it expires on its own (default one hour).
+
 **Pure helpers**: business logic that has no I/O (zod schemas, conflict detection, calendar
 adapters, error-code mapping) does not belong in `actions/` or `queries/`. The scheduler module
 keeps this kind of code in `src/lib/scheduler/` (e.g. `booking-schema.ts`, `conflicts.ts`,
@@ -175,6 +178,12 @@ Student and school detail pages follow a section + dialog split pattern. Each su
 - A **dialog component** (e.g., `contact-dialog.tsx`) — modal for creating or editing a single record.
 
 This keeps individual files well under the 200-line target. `students/[id]/page.tsx` composes all section components.
+
+**Shared pieces, reuse them rather than re-writing:**
+- `src/components/features/confirm-delete-button.tsx` — the "Delete" button plus its confirmation dialog, used by every record delete action.
+- `src/components/forms/form-field.tsx` — label + control + error wrapper for record forms.
+- `src/components/forms/dialog-close-button.tsx` — the dialog's Cancel/Close button.
+- `src/lib/action-result.ts` — the `ActionResult<T>` type every action/dialog reads (see §5.3).
 
 ### 7.2 Shared forms
 
@@ -266,6 +275,8 @@ Use existing shadcn/ui primitives from `src/components/ui/`. Do not hand-write R
 ```bash
 npx shadcn add <component-name>
 ```
+
+**Links**: always `import Link from '@/components/ui/link'`, never `next/link` directly. It only prefetches a page when the pointer rests on the link or it gets keyboard focus, instead of as soon as it scrolls into view. Every page here renders per request, so Next's on-screen prefetch meant a full server render for every visible link (the sidebar, every table row); importing `next/link` reintroduces that cost.
 
 Class composition uses `cn()` from `src/lib/utils.ts`:
 

@@ -1,6 +1,6 @@
 # Deployment Guide
 
-**Last updated:** 2026-10-22
+**Last updated:** 2026-11-24
 
 ---
 
@@ -15,7 +15,7 @@
 
 ## 1. Environment Variables
 
-Create `.env.local` at the project root. **Never commit this file.**
+Copy `.env.example` to `.env.local` at the project root and fill it in. **Never commit `.env.local`.**
 
 ```env
 # Supabase project URL
@@ -28,12 +28,20 @@ NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 # Set this correctly or sessions will fail to initialize.
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<your-publishable-anon-key>
 
-# Service role key — NEVER expose to the browser or commit to git
-# Used only by src/lib/supabase/admin.ts (data migration scripts, admin operations)
-SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+# Secret key — NEVER expose to the browser or commit to git.
+# Used by src/lib/supabase/admin.ts (staff/permission actions, cached reference
+# lists, the migration scripts). SUPABASE_SERVICE_ROLE_KEY also works, for
+# projects still on the older name.
+SUPABASE_SECRET_KEY=<your-secret-key>
+
+# FullCalendar Premium licence for the Scheduler. Empty uses the evaluation key.
+NEXT_PUBLIC_FULLCALENDAR_LICENSE_KEY=
+
+# Database password, only needed to apply migrations with psql (not read by the app).
+SUPABASE_DB_PASSWORD=<your-database-password>
 ```
 
-You can find both keys in your Supabase project dashboard under **Project Settings → API**.
+You can find the project URL and keys in the Supabase project dashboard under **Project Settings → API Keys**, and the database password under **Project Settings → Database**.
 
 ---
 
@@ -51,29 +59,27 @@ supabase link --project-ref <your-project-ref>
 
 ## 3. Database Setup
 
-### 3.1 Push Migrations
+### 3.1 Applying migrations (live and test projects)
 
-Apply all 89 SQL migrations to your Supabase project:
+**Do not run a blanket `supabase db push`.** The live project's migration history has older drift from migrations applied by hand (see §5), so `db push` can try to re-apply or skip the wrong files. There is no `db:reset` npm script for this reason either — a reset replays from the CLI's own history, which does not match the live project.
 
-```bash
-npm run db:push
-# equivalent: supabase db push
-```
+Instead, for each new migration file:
 
-This is safe to run repeatedly — migrations already applied are skipped.
+1. Back up the affected tables first.
+2. Apply the specific file(s) with `psql`, in one transaction:
+   ```bash
+   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -1 -f supabase/migrations/<timestamp>_<name>.sql
+   ```
+   (`$DATABASE_URL` is the pooler connection string, using `SUPABASE_DB_PASSWORD`.)
+3. Record the version in `supabase_migrations.schema_migrations` so the CLI's history stays accurate:
+   ```sql
+   insert into supabase_migrations.schema_migrations (version, name) values ('<timestamp>', '<name>');
+   ```
+4. Apply the same file(s) to the test project (Supabase `xzgqcummphcxpqoitgso`, see §10) as well as the live one.
 
-### 3.2 Reset (Destructive)
+Local development and the browser tests are the exception: `e2e/setup-local-db.sh` builds a throwaway local Supabase stack and replays every migration in `supabase/migrations/` from scratch (Docker + Supabase CLI + `psql`), so migrations must stay safe to run more than once. It patches two old migrations that only replay cleanly on an empty database (see the script's header comment).
 
-To wipe the linked database and replay all migrations from scratch:
-
-```bash
-npm run db:reset
-# equivalent: supabase db reset --linked
-```
-
-**Warning:** This deletes all data. Use only in development or when re-running the legacy data migration.
-
-### 3.3 Regenerate TypeScript Types
+### 3.2 Regenerate TypeScript Types
 
 After any schema change, regenerate the database types:
 
@@ -93,15 +99,15 @@ npm install
 npm run dev
 ```
 
-The app starts at [http://localhost:3000](http://localhost:3000). Middleware redirects unauthenticated requests to `/login`.
+The app starts at [http://localhost:3000](http://localhost:3000). `src/proxy.ts` redirects unauthenticated requests to `/login`.
 
-You do **not** need to run a local Supabase stack — the app connects to the hosted Supabase project specified in `.env.local`. If you want a fully local database, run `supabase start` (requires Docker) and update your env vars to point at the local instance.
+You do **not** need to run a local Supabase stack for normal development — the app connects to the hosted Supabase project specified in `.env.local`. The browser tests (`e2e/`) are the exception: they always run against a local stack, never the hosted database — see `npm run e2e:setup` in the README.
 
 ---
 
 ## 4a. Email filing (2026-10-28)
 
-`supabase/migrations/20261028181144_filed_emails.sql` creates the `filed_emails` table and the private `filed-emails` storage bucket (25 MB per object) with its policies. Apply it with the other migrations (`npm run db:push`), then regenerate types (`npm run db:types`); `src/types/database.ts` was edited by hand to match until then.
+`supabase/migrations/20261028181144_filed_emails.sql` creates the `filed_emails` table and the private `filed-emails` storage bucket (25 MB per object) with its policies. Apply it with `psql` per §3.1, then regenerate types (`npm run db:types`); `src/types/database.ts` was edited by hand to match until then.
 
 Email files are uploaded from the browser straight to storage through a signed upload URL, so no server action body limit applies. If uploads fail with a CORS error on a custom domain, check the project's storage settings allow the app's origin.
 
@@ -121,16 +127,16 @@ To populate the database from the legacy CSV exports in `data/`:
 
 ```bash
 # Make the script executable if needed
-chmod +x remigrate.sh
+chmod +x scripts/legacy-migration/remigrate.sh
 
-# Run the full migration pipeline
-./remigrate.sh
+# Run the migration pipeline (first batch of scripts; see scripts/legacy-migration/remigrate.sh)
+./scripts/legacy-migration/remigrate.sh
 ```
 
-This runs all 34 scripts in `scripts/` in numbered order via `tsx`. Migration artifacts are written to `data/` (e.g., `school-courses-skipped.json`).
+`remigrate.sh` and the 43 numbered scripts live in `scripts/legacy-migration/` (moved out of the repo root). This runs the scripts in numbered order via `tsx`. Migration artifacts are written to `data/` (e.g., `school-courses-skipped.json`).
 
 **Prerequisites for migration:**
-- `SUPABASE_SERVICE_ROLE_KEY` must be set (migration scripts use the admin client)
+- `SUPABASE_SECRET_KEY` (or the older `SUPABASE_SERVICE_ROLE_KEY`) must be set (migration scripts use the admin client)
 - `NEXT_PUBLIC_SUPABASE_URL` must be set
 - Source CSVs must be present in `data/`
 
@@ -146,13 +152,13 @@ If history rows were already written by an import, delete them before go-live (h
 
 ### 5-family. Family links migration (customer item 5)
 
-Migration `20261022152919_student_contacts_related_student.sql` (adds `student_contacts.related_student_id`) was applied through the Supabase MCP, then renamed to the applied version. Other environments get it with `npm run db:push`. No data import.
+Migration `20261022152919_student_contacts_related_student.sql` (adds `student_contacts.related_student_id`) was applied through the Supabase MCP, then renamed to the applied version. Other environments get it with `psql` per §3.1. No data import.
 
 Migration `20261022165842_student_family_suggestions.sql` (function `student_family_suggestions` and two indexes, phase 3) was applied the same way.
 
 ### 5a. Present schools import (customer item 6)
 
-Migration `20261021204752_present_schools.sql` was applied through the Supabase MCP (the CLI login is unavailable), then renamed to the applied version. Other environments get it with `npm run db:push`.
+Migration `20261021204752_present_schools.sql` was applied through the Supabase MCP (the CLI login is unavailable), then renamed to the applied version. Other environments get it with `psql` per §3.1.
 
 Load the Hong Kong school list and link students whose typed school matches exactly. Always dry-run first:
 
@@ -199,7 +205,8 @@ npm run lint
 3. Set the environment variables in Vercel project settings (Settings → Environment Variables):
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_SECRET_KEY` (or `SUPABASE_SERVICE_ROLE_KEY`)
+   - `NEXT_PUBLIC_FULLCALENDAR_LICENSE_KEY`
 4. Deploy. Vercel automatically runs `npm run build`.
 
 **Supabase Auth redirect URL**: After deploying, add your Vercel production URL to the Supabase Auth allowed redirect URLs in the Supabase dashboard (Authentication → URL Configuration). Include:
@@ -234,7 +241,7 @@ If users are getting unexpectedly logged out, check that:
 
 ### Migration scripts failing
 
-Data migration scripts require `SUPABASE_SERVICE_ROLE_KEY` and a `dotenv` setup. If running outside of the shell with `.env.local`, ensure the env vars are exported before running `./remigrate.sh`.
+Data migration scripts require `SUPABASE_SECRET_KEY` (or `SUPABASE_SERVICE_ROLE_KEY`) and a `dotenv` setup. If running outside of the shell with `.env.local`, ensure the env vars are exported before running `./scripts/legacy-migration/remigrate.sh`.
 
 ---
 
@@ -244,4 +251,21 @@ Data migration scripts require `SUPABASE_SERVICE_ROLE_KEY` and a `dotenv` setup.
 |---|---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Public (browser + server) | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Yes | Public (browser + server) | Anon/publishable key for user-context requests |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes (migration only) | Server-only | Service role key for admin operations |
+| `SUPABASE_SECRET_KEY` | Yes | Server-only | Admin client: staff/permission actions, cached reference lists, migration scripts. `SUPABASE_SERVICE_ROLE_KEY` also accepted |
+| `NEXT_PUBLIC_FULLCALENDAR_LICENSE_KEY` | No | Public (browser + server) | Scheduler's FullCalendar Premium licence; empty uses the evaluation key |
+| `SUPABASE_DB_PASSWORD` | Migrations only | Local/operator only | Applying migrations with `psql` (§3.1); not read by the app |
+
+See `.env.example` for the authoritative list.
+
+---
+
+## 10. Test Environment
+
+The client tests in a separate environment, kept apart from live data:
+
+| | App | Database |
+|---|---|---|
+| Live | Vercel project `academic-asia-new` | Supabase `sotfycrfhwanjbcemrai` |
+| Test | Vercel project `academic-asia-test`, https://academic-asia-test.vercel.app | Supabase `xzgqcummphcxpqoitgso`: schema and reference data, sample students, no personal data |
+
+Both deploy from `main`. Apply every new migration to the test project the same way as live (§3.1). `npm run seed:test-env` (`scripts/seed-test-env.mjs`) seeds one login per access level and sample students on the test project; it refuses to run against the live project ref and is safe to run more than once.
