@@ -20,6 +20,7 @@ try {
   await step(page, 'add student opens as a drawer from the dashboard and lands on the new student', async () => {
     await open(page, '/')
     await click(page, 'Add student', 'main header')
+    await click(page, 'Add new student', '[role="menu"]', { prefix: true })
     await page.waitForSelector('[role="dialog"] #surname', { timeout: 60000 })
     const surname = `DRAWER${Date.now() % 100000}`
     await page.type('[role="dialog"] #surname', surname)

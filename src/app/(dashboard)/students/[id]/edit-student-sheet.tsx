@@ -112,15 +112,30 @@ export function EditStudentSheet({ studentId, studentName }: { studentId: string
   )
 }
 
-/** "Add student", anywhere; `?add=student` on the page opens it too. */
-export function AddStudentSheet({ size = "default", label = "Add student" }: { size?: "default" | "sm"; label?: string }) {
-  const [open, setOpen] = useAddParam("student")
+/**
+ * "Add student" with the full form, anywhere; `?add=student` on the page opens
+ * it too. With `hideButton` it is opened from elsewhere (the Add student menu).
+ */
+export function AddStudentSheet({ size = "default", label = "Add student", hideButton = false, open: openFromParent = false, onOpenChange }: {
+  size?: "default" | "sm"
+  label?: string
+  hideButton?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}) {
+  const [openFromUrl, setOpenFromUrl] = useAddParam("student")
+  const setOpen = (next: boolean) => {
+    setOpenFromUrl(next)
+    onOpenChange?.(next)
+  }
   return (
     <>
-      <Button size={size} onClick={() => setOpen(true)} className="gap-2">
-        <Plus className="h-4 w-4" /> {label}
-      </Button>
-      <StudentFormSheet open={open} onOpenChange={setOpen} title="Add a student" description="Only the name is required; everything else can be filled in later." />
+      {!hideButton && (
+        <Button size={size} onClick={() => setOpen(true)} className="gap-2">
+          <Plus className="h-4 w-4" /> {label}
+        </Button>
+      )}
+      <StudentFormSheet open={openFromUrl || openFromParent} onOpenChange={setOpen} title="Add a new student" description="Only the name is required; everything else can be filled in later." />
     </>
   )
 }

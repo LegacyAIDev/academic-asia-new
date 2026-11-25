@@ -16,7 +16,7 @@ import { canAccess, requireAccess } from "@/lib/permissions/guard"
 import { ACCESS, MODULES } from "@/lib/permissions/modules"
 import { cn } from "@/lib/utils"
 import { StudentsFilters } from "./students-filters"
-import { AddStudentSheet } from "./[id]/edit-student-sheet"
+import { AddStudentMenu } from "./add-student-menu"
 import { RegistrationLinkDialog } from "./registration-link-dialog"
 
 const statusStyles: Record<string, string> = {
@@ -93,7 +93,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
         {canWrite && (
           <div className="flex flex-wrap items-center gap-2">
             <RegistrationLinkDialog />
-            <AddStudentSheet />
+            <AddStudentMenu />
           </div>
         )}
       </header>

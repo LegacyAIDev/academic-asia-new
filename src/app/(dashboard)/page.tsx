@@ -8,7 +8,7 @@ import { PipelinePanel } from "@/components/dashboard/pipeline-panel"
 import { RecentActivityPanel } from "@/components/dashboard/recent-activity-panel"
 import { ShortcutsPanel, type Shortcut } from "@/components/dashboard/shortcuts-panel"
 import { TodayPanel } from "@/components/dashboard/today-panel"
-import { AddStudentSheet } from "./students/[id]/edit-student-sheet"
+import { AddStudentMenu } from "./students/add-student-menu"
 import { attentionItems, greeting } from "@/lib/dashboard/attention"
 import { hkToday } from "@/lib/hk-day"
 import { EXAM_PAPER_ACCESS } from "@/lib/attachments/exam-paper-access"
@@ -99,7 +99,7 @@ export default async function DashboardPage() {
             </form>
           )}
           {schedulerWrite && <ScheduleBookingButton label="New booking" variant="outline" size="default" />}
-          {studentsWrite && <AddStudentSheet />}
+          {studentsWrite && <AddStudentMenu />}
         </div>
       </header>
 
